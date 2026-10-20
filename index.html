@@ -73,7 +73,6 @@
     </div>
   </div>
 
-  <!-- Top Sticky Header -->
   <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-sm">
     <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
       <!-- Brand Identity -->
@@ -143,7 +142,7 @@
             Action Required in Your Firebase Console (`tripp-pay`)
           </h3>
           <p id="dbErrorDesc" class="text-xs sm:text-sm text-slate-700 leading-relaxed">
-            Your Firebase project <strong>tripp-pay</strong> is blocking reads/writes because Firestore Database rules are locked. Go to <a href="https://console.firebase.google.com/project/tripp-pay/firestore/rules" target="_blank" class="underline font-bold text-rose-700">Firebase Console → Firestore Database → Rules</a> and paste:
+            Your Firebase project <strong>tripp-pay</strong> is blocking reads/writes because Firestore Database rules are either locked. Go to <a href="https://console.firebase.google.com/project/tripp-pay/firestore/rules" target="_blank" class="underline font-bold text-rose-700">Firebase Console → Firestore Database → Rules</a> and paste:
           </p>
           <div class="bg-slate-900 text-emerald-300 font-mono text-xs p-3 rounded-xl overflow-x-auto border border-slate-700">
 <pre>rules_version = '2';
@@ -294,13 +293,13 @@ service cloud.firestore {
 
       <!-- Two-Column Payment & Form Layout -->
       <div id="paymentFormGrid" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <!-- Left Column: Step 1 - UPI QR & Native Phone App Selector -->
+        <!-- Left Column: Step 1 - UPI QR & Instant Pay -->
         <div class="lg:col-span-5 expressive-card border border-slate-200/90 rounded-3xl p-5 sm:p-6">
           <div class="flex items-center justify-between mb-3.5">
             <span class="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-200">
               Step 1: Scan or Pay
             </span>
-            <span class="text-[11px] font-semibold text-slate-400">Installed Phone Apps</span>
+            <span class="text-[11px] font-semibold text-slate-400">All UPI Apps Supported</span>
           </div>
 
           <!-- Expressive QR Code Box -->
@@ -348,71 +347,16 @@ service cloud.firestore {
             </button>
           </div>
 
-          <!-- PRIMARY BUTTON: Directly Opens Installed UPI Apps on Phone/Device -->
-          <a
-            id="nativeUpiPayLink"
-            href="upi://pay?pa=mohdshemeemkp%40oksbi&pn=Mohd%20Shemeem%20KP&am=1500&cu=INR&tn=Trip%20Payment"
-            onclick="handleDirectPhoneUpiClick(event)"
+          <!-- Open UPI App Button -> Opens Upi Chooser Modal -->
+          <button
+            type="button"
+            onclick="openUpiChooserModal()"
             class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 transition active:scale-[0.98]"
           >
             <i data-lucide="smartphone" class="w-4 h-4"></i>
-            <span id="upiDeepLinkText">Pay ₹1,500 — Select Installed App</span>
+            <span id="upiDeepLinkText">Pay ₹1,500 — Select UPI App</span>
             <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-          </a>
-          <p class="text-[11px] text-center text-slate-500 mt-2">
-            Opens your phone's native installed UPI app chooser
-          </p>
-
-          <!-- Direct App Scheme Strip (Used if phone's OS settings locked WhatsApp as default) -->
-          <div class="mt-3.5 pt-3 border-t border-slate-200/80">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-                Or open specific installed app directly:
-              </span>
-              <button
-                type="button"
-                onclick="openUpiChooserModal()"
-                class="text-[11px] font-bold text-emerald-700 hover:underline flex items-center gap-0.5"
-              >
-                <span>All Apps</span>
-                <i data-lucide="chevron-right" class="w-3 h-3"></i>
-              </button>
-            </div>
-            <div class="grid grid-cols-4 gap-1.5">
-              <button
-                type="button"
-                onclick="chooseAndOpenUpiApp('Google Pay')"
-                class="py-2 px-1.5 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-blue-50 hover:border-blue-300 flex flex-col items-center gap-1 transition active:scale-95"
-              >
-                <span class="w-6 h-6 rounded-lg bg-blue-600 text-white font-display font-extrabold text-[11px] flex items-center justify-center">G</span>
-                <span class="text-[10px] font-bold text-slate-700 truncate">GPay</span>
-              </button>
-              <button
-                type="button"
-                onclick="chooseAndOpenUpiApp('PhonePe')"
-                class="py-2 px-1.5 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-purple-50 hover:border-purple-300 flex flex-col items-center gap-1 transition active:scale-95"
-              >
-                <span class="w-6 h-6 rounded-lg bg-purple-600 text-white font-display font-extrabold text-[11px] flex items-center justify-center">Pe</span>
-                <span class="text-[10px] font-bold text-slate-700 truncate">PhonePe</span>
-              </button>
-              <button
-                type="button"
-                onclick="chooseAndOpenUpiApp('Paytm')"
-                class="py-2 px-1.5 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-sky-50 hover:border-sky-300 flex flex-col items-center gap-1 transition active:scale-95"
-              >
-                <span class="w-6 h-6 rounded-lg bg-sky-500 text-white font-display font-extrabold text-[11px] flex items-center justify-center">P</span>
-                <span class="text-[10px] font-bold text-slate-700 truncate">Paytm</span>
-              </button>
-              <button
-                type="button"
-                onclick="chooseAndOpenUpiApp('BHIM UPI')"
-                class="py-2 px-1.5 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-orange-50 hover:border-orange-300 flex flex-col items-center gap-1 transition active:scale-95"
-              >
-                <span class="w-6 h-6 rounded-lg bg-orange-500 text-white font-display font-extrabold text-[11px] flex items-center justify-center">B</span>
-                <span class="text-[10px] font-bold text-slate-700 truncate">BHIM</span>
-              </button>
-            </div>
-          </div>
+          </button>
         </div>
 
         <!-- Right Column: Step 2 - New/Advance Registration OR Pay Remaining Balance -->
@@ -449,7 +393,7 @@ service cloud.firestore {
                 Register & Pay Advance or Full Fee
               </h3>
               <p class="text-xs text-slate-500 mt-0.5">
-                Choose Full Payment or Advance Payment, pay using any installed UPI app on your phone, and submit.
+                Choose Full Payment or Advance Payment, complete payment via any UPI app, and submit.
               </p>
             </div>
 
@@ -553,8 +497,8 @@ service cloud.firestore {
                   onchange="syncSelectedAppFromDropdown(this.value)"
                   class="w-full px-3.5 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-semibold text-slate-800"
                 >
-                  <option value="Installed UPI App" selected>Installed UPI App (Phone Chooser)</option>
-                  <option value="Google Pay">Google Pay (GPay)</option>
+                  <option value="Phone System Chooser">Phone's Installed UPI Apps</option>
+                  <option value="Google Pay" selected>Google Pay (GPay)</option>
                   <option value="PhonePe">PhonePe</option>
                   <option value="Paytm">Paytm</option>
                   <option value="BHIM UPI">BHIM UPI</option>
@@ -680,8 +624,8 @@ service cloud.firestore {
                     onchange="syncSelectedAppFromDropdown(this.value)"
                     class="w-full px-3.5 py-3 rounded-xl bg-white border border-slate-200 text-sm font-semibold text-slate-800"
                   >
-                    <option value="Installed UPI App" selected>Installed UPI App (Phone Chooser)</option>
-                    <option value="Google Pay">Google Pay (GPay)</option>
+                    <option value="Phone System Chooser">Phone's Installed UPI Apps</option>
+                    <option value="Google Pay" selected>Google Pay (GPay)</option>
                     <option value="PhonePe">PhonePe</option>
                     <option value="Paytm">Paytm</option>
                     <option value="BHIM UPI">BHIM UPI</option>
@@ -958,7 +902,7 @@ service cloud.firestore {
     </div>
   </div>
 
-  <!-- MODAL 4: INSTALLED UPI APPS & DIRECT APP LAUNCHER SHEET -->
+  <!-- MODAL 4: SELECT UPI APP CHOOSER SHEET (OPENS AFTER CLICKING PAY BUTTON) -->
   <div id="upiChooserModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white border-t sm:border border-slate-200 rounded-t-3xl sm:rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3.5 mb-4">
@@ -967,7 +911,7 @@ service cloud.firestore {
             <i data-lucide="smartphone" class="w-5 h-5"></i>
           </div>
           <div class="min-w-0">
-            <h3 class="font-display text-base sm:text-lg font-extrabold text-slate-900">Open Installed UPI App</h3>
+            <h3 class="font-display text-base sm:text-lg font-extrabold text-slate-900">Select UPI App to Pay</h3>
             <p class="text-xs text-slate-500 truncate">
               Paying <strong id="chooserAmountText" class="text-emerald-700 font-extrabold">₹1,500</strong> to <span id="chooserUpiText" class="font-mono text-slate-700">mohdshemeemkp@oksbi</span>
             </p>
@@ -991,13 +935,13 @@ service cloud.firestore {
             </div>
             <div class="min-w-0">
               <span class="inline-block text-[10px] font-extrabold uppercase tracking-wider bg-amber-300 text-slate-950 px-2 py-0.5 rounded-full mb-0.5">
-                Native Device Chooser
+                Recommended • Avoids WhatsApp
               </span>
               <p class="text-xs sm:text-sm font-extrabold text-white truncate">
-                Select from Installed Apps on Phone
+                Show Installed UPI Apps on My Phone
               </p>
               <p class="text-[11px] text-emerald-100 truncate">
-                Opens your device's system tray of installed UPI apps
+                Opens your phone's native app tray (Super.money, Navi, Slice, Bank Apps)
               </p>
             </div>
           </div>
@@ -1006,7 +950,7 @@ service cloud.firestore {
       </div>
 
       <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2.5">
-        Or launch a specific installed app directly (bypasses WhatsApp default):
+        Or tap a specific UPI app directly:
       </p>
 
       <div class="grid grid-cols-2 gap-2.5 mb-4">
@@ -1015,12 +959,12 @@ service cloud.firestore {
           type="button"
           onclick="chooseAndOpenUpiApp('Google Pay')"
           id="upiBtn-Google Pay"
-          class="p-3 rounded-2xl border border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50/40 flex items-center gap-2.5 text-left transition active:scale-95"
+          class="p-3 rounded-2xl border-2 border-emerald-500 bg-emerald-50/70 hover:bg-emerald-50 flex items-center gap-2.5 text-left transition active:scale-95"
         >
           <span class="w-9 h-9 rounded-xl bg-blue-600 text-white font-display font-extrabold text-sm flex items-center justify-center shrink-0 shadow-sm">G</span>
           <div class="min-w-0">
             <p class="text-xs font-extrabold text-slate-900 truncate">Google Pay</p>
-            <p class="text-[10px] text-emerald-700 font-semibold truncate">Direct Scheme</p>
+            <p class="text-[10px] text-emerald-700 font-semibold truncate">Direct Launch</p>
           </div>
         </button>
 
@@ -1034,7 +978,7 @@ service cloud.firestore {
           <span class="w-9 h-9 rounded-xl bg-purple-600 text-white font-display font-extrabold text-sm flex items-center justify-center shrink-0 shadow-sm">Pe</span>
           <div class="min-w-0">
             <p class="text-xs font-extrabold text-slate-900 truncate">PhonePe</p>
-            <p class="text-[10px] text-emerald-700 font-semibold truncate">Direct Scheme</p>
+            <p class="text-[10px] text-emerald-700 font-semibold truncate">Direct Launch</p>
           </div>
         </button>
 
@@ -1048,7 +992,7 @@ service cloud.firestore {
           <span class="w-9 h-9 rounded-xl bg-sky-500 text-white font-display font-extrabold text-sm flex items-center justify-center shrink-0 shadow-sm">P</span>
           <div class="min-w-0">
             <p class="text-xs font-extrabold text-slate-900 truncate">Paytm</p>
-            <p class="text-[10px] text-emerald-700 font-semibold truncate">Direct Scheme</p>
+            <p class="text-[10px] text-emerald-700 font-semibold truncate">Direct Launch</p>
           </div>
         </button>
 
@@ -1062,7 +1006,7 @@ service cloud.firestore {
           <span class="w-9 h-9 rounded-xl bg-orange-500 text-white font-display font-extrabold text-sm flex items-center justify-center shrink-0 shadow-sm">B</span>
           <div class="min-w-0">
             <p class="text-xs font-extrabold text-slate-900 truncate">BHIM UPI</p>
-            <p class="text-[10px] text-emerald-700 font-semibold truncate">Direct Scheme</p>
+            <p class="text-[10px] text-emerald-700 font-semibold truncate">Direct Launch</p>
           </div>
         </button>
 
@@ -1121,11 +1065,39 @@ service cloud.firestore {
             <p class="text-[10px] text-slate-500 truncate">Open CRED</p>
           </div>
         </button>
+
+        <!-- Fampay / Slice / Mobikwik -->
+        <button
+          type="button"
+          onclick="chooseAndOpenUpiApp('Fampay / Slice / Mobikwik')"
+          id="upiBtn-Fampay / Slice / Mobikwik"
+          class="p-3 rounded-2xl border border-slate-200 bg-white hover:border-pink-300 hover:bg-pink-50/40 flex items-center gap-2.5 text-left transition active:scale-95"
+        >
+          <span class="w-9 h-9 rounded-xl bg-pink-600 text-white font-display font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm">FM</span>
+          <div class="min-w-0">
+            <p class="text-xs font-extrabold text-slate-900 truncate">FamPay / Slice</p>
+            <p class="text-[10px] text-slate-500 truncate">Mobikwik / Jupiter</p>
+          </div>
+        </button>
+
+        <!-- WhatsApp Pay -->
+        <button
+          type="button"
+          onclick="chooseAndOpenUpiApp('WhatsApp Pay')"
+          id="upiBtn-WhatsApp Pay"
+          class="p-3 rounded-2xl border border-slate-200 bg-white hover:border-emerald-300 hover:bg-emerald-50/40 flex items-center gap-2.5 text-left transition active:scale-95"
+        >
+          <span class="w-9 h-9 rounded-xl bg-emerald-500 text-white font-display font-extrabold text-sm flex items-center justify-center shrink-0 shadow-sm">W</span>
+          <div class="min-w-0">
+            <p class="text-xs font-extrabold text-slate-900 truncate">WhatsApp</p>
+            <p class="text-[10px] text-slate-500 truncate">WA UPI Pay</p>
+          </div>
+        </button>
       </div>
 
       <!-- Help Box -->
       <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200/80 text-[11px] text-amber-900 mb-3.5 leading-relaxed">
-        <strong>Phone locked to WhatsApp?</strong> If your phone's Android settings have WhatsApp set as the default for <code>upi://</code> links, tap <strong>Google Pay, PhonePe, Paytm, or BHIM</strong> above (which use direct app schemes that WhatsApp cannot intercept), or go to <em>Phone Settings → Apps → WhatsApp → Set as default → Clear defaults</em>.
+        <strong>Why does WhatsApp sometimes open?</strong> If an app isn't installed or WhatsApp is set as your phone's default `upi://` app, Android redirects there. Tap <strong>"Show Installed UPI Apps on My Phone"</strong> above or download the QR code below!
       </div>
 
       <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100">
@@ -1315,7 +1287,6 @@ service cloud.firestore {
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Payment Method</label>
             <select id="editApp" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800">
-              <option value="Installed UPI App">Installed UPI App</option>
               <option value="Google Pay">Google Pay</option>
               <option value="PhonePe">PhonePe</option>
               <option value="Paytm">Paytm</option>
@@ -1456,10 +1427,10 @@ service cloud.firestore {
     let selectedBalanceStudent = null;
     let pendingDeleteId = null;
     let draftDepartments = [];
-    let selectedUpiApp = 'Installed UPI App';
+    let selectedUpiApp = 'Google Pay';
 
     const SUPPORTED_UPI_APPS = [
-      'Installed UPI App',
+      'Phone System Chooser',
       'Google Pay',
       'PhonePe',
       'Paytm',
@@ -1477,32 +1448,6 @@ service cloud.firestore {
       return String(phoneStr || '').replace(/\D/g, '').slice(-10);
     }
 
-    function getActivePaymentAmountAndNote() {
-      let currentAmount = Number(tripConfig.tripAmount) || 1500;
-      let note = 'Trip Payment';
-      if (currentPaymentMode === 'balance' && selectedBalanceStudent) {
-        const rawBal = Number(document.getElementById('balAmountInput')?.value);
-        currentAmount = rawBal > 0 ? rawBal : getBalanceDue(selectedBalanceStudent);
-        note = `Bal-${selectedBalanceStudent.studentName.slice(0, 15)}`;
-      } else {
-        const rawAmount = Number(document.getElementById('inpAmount')?.value);
-        currentAmount = rawAmount > 0 ? rawAmount : tripConfig.tripAmount;
-        const nameVal = document.getElementById('inpName')?.value.trim() || 'Student';
-        note = `Trip-${nameVal.slice(0, 16)}`;
-      }
-      return { currentAmount, note };
-    }
-
-    function buildStandardNativeUpiUri(amount, note) {
-      const pa = encodeURIComponent(tripConfig.upiId.trim());
-      const pn = encodeURIComponent(tripConfig.receiverName.trim());
-      const am = encodeURIComponent(String(amount));
-      const tn = encodeURIComponent(note);
-      // Standard upi://pay URI triggers the phone's native installed UPI apps chooser
-      // without adding Android's CATEGORY_BROWSABLE filter (which caused WhatsApp to hijack it)
-      return `upi://pay?pa=${pa}&pn=${pn}&am=${am}&cu=INR&tn=${tn}`;
-    }
-
     function buildAppSpecificUpiUrl(appName, amount, note) {
       const pa = encodeURIComponent(tripConfig.upiId.trim());
       const pn = encodeURIComponent(tripConfig.receiverName.trim());
@@ -1510,7 +1455,10 @@ service cloud.firestore {
       const tn = encodeURIComponent(note);
       const queryParams = `pa=${pa}&pn=${pn}&am=${am}&cu=INR&tn=${tn}`;
 
-      // Dedicated custom schemes that WhatsApp cannot intercept
+      const ua = navigator.userAgent || '';
+      const isAndroid = /Android/i.test(ua);
+      const isIOS = /iPhone|iPad|iPod/i.test(ua);
+
       const directAppSchemes = {
         'Google Pay': `tez://upi/pay?${queryParams}`,
         'PhonePe': `phonepe://pay?${queryParams}`,
@@ -1520,45 +1468,52 @@ service cloud.firestore {
         'CRED UPI': `credpay://upi/pay?${queryParams}`
       };
 
-      if (directAppSchemes[appName]) {
-        return directAppSchemes[appName];
-      }
-
-      const ua = navigator.userAgent || '';
-      const isAndroid = /Android/i.test(ua);
-
       if (isAndroid) {
         const androidPackages = {
+          'Google Pay': 'com.google.android.apps.nbu.paisa.user',
+          'PhonePe': 'com.phonepe.app',
+          'Paytm': 'net.one97.paytm',
+          'BHIM UPI': 'in.org.npci.upiapp',
           'Super.money': 'money.super.payments',
           'Navi UPI': 'com.naviapp',
+          'Amazon Pay': 'in.amazon.mShop.android.shopping',
+          'CRED UPI': 'com.dreamplug.androidapp',
           'WhatsApp Pay': 'com.whatsapp'
         };
+
+        if (appName === 'Phone System Chooser' || appName === 'Fampay / Slice / Mobikwik' || appName === 'Other UPI App') {
+          return `intent://pay?${queryParams}#Intent;scheme=upi;action=android.intent.action.VIEW;category=android.intent.category.DEFAULT;category=android.intent.category.BROWSABLE;end`;
+        }
+
+        if (directAppSchemes[appName] && ['Google Pay', 'PhonePe', 'Paytm', 'BHIM UPI'].includes(appName)) {
+          return directAppSchemes[appName];
+        }
+
         const pkg = androidPackages[appName];
         if (pkg) {
           const safeFallback = encodeURIComponent(window.location.href);
           return `intent://pay?${queryParams}#Intent;scheme=upi;package=${pkg};S.browser_fallback_url=${safeFallback};end`;
         }
+
+        return `intent://pay?${queryParams}#Intent;scheme=upi;action=android.intent.action.VIEW;end`;
       }
 
-      return `upi://pay?${queryParams}`;
-    }
-
-    function handleDirectPhoneUpiClick(e) {
-      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
-      syncSelectedAppToDropdowns('Installed UPI App');
-
-      if (!isMobile) {
-        e.preventDefault();
-        copyUpiId();
-        showToast('On desktop, scan the QR code with any installed UPI app on your phone (UPI ID copied).');
-        return;
+      if (isIOS) {
+        return directAppSchemes[appName] || `upi://pay?${queryParams}`;
       }
-      // On mobile devices, let the native <a href="upi://pay?..."> link fire naturally
-      // so the mobile OS opens the installed UPI apps chooser bottom sheet.
+
+      return directAppSchemes[appName] || `upi://pay?${queryParams}`;
     }
 
     function openUpiChooserModal() {
-      const { currentAmount } = getActivePaymentAmountAndNote();
+      let currentAmount = Number(tripConfig.tripAmount) || 1500;
+      if (currentPaymentMode === 'balance' && selectedBalanceStudent) {
+        const rawBal = Number(document.getElementById('balAmountInput')?.value);
+        currentAmount = rawBal > 0 ? rawBal : getBalanceDue(selectedBalanceStudent);
+      } else {
+        const rawAmount = Number(document.getElementById('inpAmount')?.value);
+        currentAmount = rawAmount > 0 ? rawAmount : tripConfig.tripAmount;
+      }
       document.getElementById('chooserAmountText').textContent = formatINR(currentAmount);
       document.getElementById('chooserUpiText').textContent = tripConfig.upiId;
       document.getElementById('upiChooserModal').classList.remove('hidden');
@@ -1588,7 +1543,19 @@ service cloud.firestore {
       syncSelectedAppToDropdowns(appName);
       closeUpiChooserModal();
 
-      const { currentAmount, note } = getActivePaymentAmountAndNote();
+      let currentAmount = Number(tripConfig.tripAmount) || 1500;
+      let note = 'Trip Payment';
+      if (currentPaymentMode === 'balance' && selectedBalanceStudent) {
+        const rawBal = Number(document.getElementById('balAmountInput')?.value);
+        currentAmount = rawBal > 0 ? rawBal : getBalanceDue(selectedBalanceStudent);
+        note = `Bal-${selectedBalanceStudent.studentName.slice(0, 15)}`;
+      } else {
+        const rawAmount = Number(document.getElementById('inpAmount')?.value);
+        currentAmount = rawAmount > 0 ? rawAmount : tripConfig.tripAmount;
+        const nameVal = document.getElementById('inpName')?.value.trim() || 'Student';
+        note = `Trip-${nameVal.slice(0, 16)}`;
+      }
+
       const targetUrl = buildAppSpecificUpiUrl(appName, currentAmount, note);
       const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
 
@@ -1598,15 +1565,34 @@ service cloud.firestore {
         return;
       }
 
-      window.location.href = targetUrl;
+      const a = document.createElement('a');
+      a.href = targetUrl;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => document.body.removeChild(a), 300);
     }
 
     function openNativePhoneUpiChooser() {
-      updateUpiAppSelectionUI('Installed UPI App');
-      syncSelectedAppToDropdowns('Installed UPI App');
+      updateUpiAppSelectionUI('Phone System Chooser');
+      syncSelectedAppToDropdowns('Phone System Chooser');
       closeUpiChooserModal();
 
-      const { currentAmount, note } = getActivePaymentAmountAndNote();
+      let currentAmount = Number(tripConfig.tripAmount) || 1500;
+      if (currentPaymentMode === 'balance' && selectedBalanceStudent) {
+        const rawBal = Number(document.getElementById('balAmountInput')?.value);
+        currentAmount = rawBal > 0 ? rawBal : getBalanceDue(selectedBalanceStudent);
+      } else {
+        const rawAmount = Number(document.getElementById('inpAmount')?.value);
+        currentAmount = rawAmount > 0 ? rawAmount : tripConfig.tripAmount;
+      }
+
+      const pa = encodeURIComponent(tripConfig.upiId.trim());
+      const pn = encodeURIComponent(tripConfig.receiverName.trim());
+      const am = encodeURIComponent(String(currentAmount));
+      const tn = encodeURIComponent('Trip Payment');
+      const queryParams = `pa=${pa}&pn=${pn}&am=${am}&cu=INR&tn=${tn}`;
+
       const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
       if (!isMobile) {
         copyUpiId();
@@ -1614,12 +1600,20 @@ service cloud.firestore {
         return;
       }
 
-      // Use standard upi://pay URI so the phone OS displays all installed UPI apps
-      window.location.href = buildStandardNativeUpiUri(currentAmount, note);
+      const isAndroid = /Android/i.test(navigator.userAgent || '');
+      const chooserHref = isAndroid
+        ? `intent://pay?${queryParams}#Intent;scheme=upi;action=android.intent.action.VIEW;category=android.intent.category.DEFAULT;category=android.intent.category.BROWSABLE;end`
+        : `upi://pay?${queryParams}`;
+
+      const a = document.createElement('a');
+      a.href = chooserHref;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => document.body.removeChild(a), 300);
     }
 
     function syncSelectedAppToDropdowns(appName) {
-      selectedUpiApp = appName;
       const inpApp = document.getElementById('inpApp');
       const balAppInput = document.getElementById('balAppInput');
       if (inpApp) inpApp.value = appName;
@@ -1934,10 +1928,16 @@ service cloud.firestore {
     }
 
     function updateDynamicUpiLinks() {
-      const { currentAmount: cleanAmount, note } = getActivePaymentAmountAndNote();
+      let cleanAmount = Number(tripConfig.tripAmount) || 1500;
 
-      if (currentPaymentMode !== 'balance' || !selectedBalanceStudent) {
+      if (currentPaymentMode === 'balance' && selectedBalanceStudent) {
+        const rawBal = Number(document.getElementById('balAmountInput')?.value);
+        cleanAmount = rawBal > 0 ? rawBal : getBalanceDue(selectedBalanceStudent);
+      } else {
+        const rawAmount = Number(document.getElementById('inpAmount')?.value);
+        cleanAmount = rawAmount > 0 ? rawAmount : tripConfig.tripAmount;
         const remBalance = Math.max(0, (Number(tripConfig.tripAmount) || 1500) - cleanAmount);
+
         const previewEl = document.getElementById('liveBalancePreview');
         if (previewEl) {
           previewEl.innerHTML = remBalance > 0
@@ -1946,17 +1946,11 @@ service cloud.firestore {
         }
       }
 
-      const nativeUpiHref = buildStandardNativeUpiUri(cleanAmount, note);
-      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=10&data=${encodeURIComponent(nativeUpiHref)}`;
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=10&data=upi%3A%2F%2Fpay%3Fpa%3D${encodeURIComponent(tripConfig.upiId)}%26pn%3D${encodeURIComponent(tripConfig.receiverName)}%26am%3D${cleanAmount}%26cu%3DINR`;
 
       document.getElementById('upiQrImage').src = qrUrl;
       document.getElementById('qrAmountBadge').textContent = formatINR(cleanAmount);
-      document.getElementById('upiDeepLinkText').textContent = `Pay ${formatINR(cleanAmount)} — Select Installed App`;
-
-      const nativeLinkEl = document.getElementById('nativeUpiPayLink');
-      if (nativeLinkEl) {
-        nativeLinkEl.href = nativeUpiHref;
-      }
+      document.getElementById('upiDeepLinkText').textContent = `Pay ${formatINR(cleanAmount)} — Select UPI App`;
     }
 
     async function handleStudentFormSubmit(e) {
@@ -2599,7 +2593,7 @@ service cloud.firestore {
       document.getElementById('editName').value = '';
       document.getElementById('editPhone').value = '';
       document.getElementById('editAmountPaid').value = tripConfig.tripAmount;
-      document.getElementById('editApp').value = 'Installed UPI App';
+      document.getElementById('editApp').value = 'Google Pay';
       document.getElementById('editStatus').value = 'Verified';
       document.getElementById('editRemarks').value = 'Added by Admin';
       updateAdminModalBalanceText();
@@ -2616,7 +2610,7 @@ service cloud.firestore {
       document.getElementById('editDept').value = st.department || (tripConfig.departments[0] || '');
       document.getElementById('editPhone').value = st.phone || '';
       document.getElementById('editAmountPaid').value = Number(st.amountPaid) || 0;
-      document.getElementById('editApp').value = st.paymentApp || 'Installed UPI App';
+      document.getElementById('editApp').value = st.paymentApp || 'Google Pay';
       document.getElementById('editStatus').value = st.status || 'Verified';
       document.getElementById('editRemarks').value = st.remarks || '';
       updateAdminModalBalanceText();
@@ -2900,7 +2894,6 @@ service cloud.firestore {
       openDeleteModal,
       closeDeleteModal,
       confirmDeleteEntry,
-      handleDirectPhoneUpiClick,
       openUpiChooserModal,
       closeUpiChooserModal,
       chooseAndOpenUpiApp,
