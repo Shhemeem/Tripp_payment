@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
   <title>TripPay — Student Trip Payment & Tracker</title>
-  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <!-- Google Fonts: Plus Jakarta Sans, Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
@@ -16,6 +16,13 @@
   <script>
     tailwind.config = {
       theme: {
+        screens: {
+          'xs': '380px',
+          'sm': '640px',
+          'md': '768px',
+          'lg': '1024px',
+          'xl': '1280px',
+        },
         extend: {
           fontFamily: {
             sans: ['Inter', 'sans-serif'],
@@ -27,6 +34,11 @@
     };
   </script>
   <style>
+    html, body {
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      -webkit-tap-highlight-color: transparent;
+    }
     body {
       background-color: #f8fafc;
       background-image:
@@ -36,7 +48,7 @@
       background-attachment: fixed;
     }
     .expressive-card {
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.94);
       backdrop-filter: blur(12px);
       box-shadow: 0 12px 32px -8px rgba(15, 23, 42, 0.06), 0 4px 12px -2px rgba(16, 185, 129, 0.04);
     }
@@ -46,96 +58,115 @@
       background-size: 12px 1.5px;
       background-repeat: repeat-x;
     }
+    /* Prevent iOS input zoom on focus by ensuring font-size >= 16px on small screens */
+    @media (max-width: 640px) {
+      input, select, textarea {
+        font-size: 16px !important;
+      }
+    }
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
   </style>
 </head>
 
 <body class="text-slate-800 antialiased selection:bg-emerald-500 selection:text-white min-h-screen pb-16">
 
-  <!-- Floating Toast Notification -->
-  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 hidden transition-all duration-300">
+  <!-- Floating Toast Notification (Full width on mobile, bottom-right on larger screens) -->
+  <div id="toastContainer" class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-5 sm:bottom-5 z-50 hidden transition-all duration-300 sm:max-w-sm">
     <div id="toastBox" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-xl border bg-white border-emerald-200 text-slate-800">
       <div id="toastIconWrap" class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
         <i data-lucide="check-circle-2" class="w-5 h-5"></i>
       </div>
-      <span id="toastMessage" class="text-sm font-semibold">Notification</span>
-      <button onclick="hideToast()" class="ml-2 text-slate-400 hover:text-slate-700 p-1 rounded-lg">
+      <span id="toastMessage" class="text-xs sm:text-sm font-semibold flex-1 break-words">Notification</span>
+      <button onclick="hideToast()" class="ml-1 text-slate-400 hover:text-slate-700 p-1.5 rounded-lg shrink-0">
         <i data-lucide="x" class="w-4 h-4"></i>
       </button>
     </div>
   </div>
 
-  <header class="sticky top-0 z-30 bg-white/85 backdrop-blur-xl border-b border-slate-200/80 shadow-sm">
-    <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
-      <!-- Brand Identity -->
-      <div class="flex items-center gap-3">
-        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-amber-400 flex items-center justify-center shadow-md shadow-emerald-500/20 text-white">
-          <i data-lucide="bus" class="w-6 h-6"></i>
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <h1 class="font-display font-extrabold text-lg sm:text-xl tracking-tight text-slate-900">
-              TripPay <span class="text-emerald-600">Portal</span>
-            </h1>
-            <span id="cloudSyncBadge" class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">
-              <span id="cloudSyncDot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span id="cloudSyncText">Connecting...</span>
-            </span>
+  <!-- Responsive Sticky Header -->
+  <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-6xl mx-auto px-3 sm:px-6 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+      <!-- Top Row: Brand Identity + Mobile Admin Button -->
+      <div class="flex items-center justify-between gap-2 w-full sm:w-auto">
+        <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-amber-400 flex items-center justify-center shadow-md shadow-emerald-500/20 text-white shrink-0">
+            <i data-lucide="bus" class="w-5 h-5 sm:w-6 sm:h-6"></i>
           </div>
-          <p class="text-xs text-slate-500 font-medium">
-            UPI ID: <span id="headerUpiId" class="font-mono font-bold text-slate-800">mohdshemeemkp@oksbi</span>
-          </p>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <h1 class="font-display font-extrabold text-base sm:text-xl tracking-tight text-slate-900 truncate">
+                TripPay <span class="text-emerald-600">Portal</span>
+              </h1>
+              <span id="cloudSyncBadge" class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 inline-flex items-center gap-1 shrink-0">
+                <span id="cloudSyncDot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span id="cloudSyncText">Connecting...</span>
+              </span>
+            </div>
+            <p class="text-[11px] sm:text-xs text-slate-500 font-medium truncate">
+              UPI: <span id="headerUpiId" class="font-mono font-bold text-slate-800">mohdshemeemkp@oksbi</span>
+            </p>
+          </div>
         </div>
-      </div>
 
-      <!-- Navigation & Admin Controls -->
-      <div class="flex items-center gap-2.5 w-full sm:w-auto justify-end">
-        <!-- Admin Navigation Tabs (Hidden for regular students) -->
-        <nav id="adminNavTabs" class="hidden flex items-center bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200/80 flex-1 sm:flex-initial justify-between sm:justify-start">
-          <button onclick="switchTab('pay')" id="tabBtn-pay" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-white text-emerald-700 shadow-sm">
-            <i data-lucide="qr-code" class="w-4 h-4"></i>
-            <span>Payment Page</span>
-          </button>
-
-          <button onclick="switchTab('dashboard')" id="tabBtn-dashboard" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-600 hover:text-slate-900">
-            <i data-lucide="users" class="w-4 h-4"></i>
-            <span>All Payments</span>
-            <span id="navPaidCount" class="ml-1 px-2 py-0.5 rounded-full text-[11px] bg-emerald-100 text-emerald-800 font-extrabold">0</span>
-          </button>
-
-          <button onclick="openSettingsModal()" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-600 hover:text-emerald-700">
-            <i data-lucide="sliders" class="w-4 h-4"></i>
-            <span>Trip Settings</span>
-          </button>
-        </nav>
-
-        <!-- Admin Unlock / Lock Button -->
+        <!-- Admin Unlock Button (Shown cleanly on right side of mobile top bar) -->
         <button
           id="adminToggleBtn"
           onclick="handleAdminAccessClick()"
-          class="px-3.5 py-2.5 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 shadow-sm transition"
+          class="px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl sm:rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 active:scale-95 text-slate-700 text-xs font-bold flex items-center gap-1.5 shadow-sm transition shrink-0"
         >
           <i data-lucide="lock" class="w-3.5 h-3.5 text-emerald-600"></i>
-          <span>Admin Login</span>
+          <span>Admin</span>
         </button>
       </div>
+
+      <!-- Admin Navigation Tabs (Full width scrollable/grid bar on mobile when logged in) -->
+      <nav id="adminNavTabs" class="hidden grid grid-cols-3 sm:flex items-center bg-slate-100/90 p-1 rounded-2xl border border-slate-200/80 w-full sm:w-auto gap-1">
+        <button onclick="switchTab('pay')" id="tabBtn-pay" class="flex items-center justify-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-white text-emerald-700 shadow-sm truncate">
+          <i data-lucide="qr-code" class="w-3.5 h-3.5 shrink-0"></i>
+          <span class="truncate">Pay Page</span>
+        </button>
+
+        <button onclick="switchTab('dashboard')" id="tabBtn-dashboard" class="flex items-center justify-center gap-1 px-2.5 sm:px-3.5 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 truncate">
+          <i data-lucide="users" class="w-3.5 h-3.5 shrink-0"></i>
+          <span class="truncate">Payments</span>
+          <span id="navPaidCount" class="ml-0.5 px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-extrabold shrink-0">0</span>
+        </button>
+
+        <button onclick="openSettingsModal()" class="flex items-center justify-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-emerald-700 truncate">
+          <i data-lucide="sliders" class="w-3.5 h-3.5 shrink-0"></i>
+          <span class="truncate">Settings</span>
+        </button>
+      </nav>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 pt-6">
-    <div id="dbErrorBanner" class="hidden mb-6 rounded-3xl bg-rose-50 border-2 border-rose-300 p-5 sm:p-6 shadow-md text-slate-800">
-      <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-        <div class="space-y-2">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-200/80 text-rose-900 text-xs font-extrabold uppercase tracking-wider">
-            <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-700"></i>
-            <span id="dbErrorTitle">Firebase Database Permission Needed</span>
+  <main class="max-w-6xl mx-auto px-3 sm:px-6 pt-4 sm:pt-6">
+    <!-- Firebase Error Banner -->
+    <div id="dbErrorBanner" class="hidden mb-5 sm:mb-6 rounded-2xl sm:rounded-3xl bg-rose-50 border-2 border-rose-300 p-4 sm:p-6 shadow-md text-slate-800">
+      <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+        <div class="space-y-2 min-w-0">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-200/80 text-rose-900 text-[11px] sm:text-xs font-extrabold uppercase tracking-wider">
+            <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-700 shrink-0"></i>
+            <span id="dbErrorTitle" class="truncate">Firebase Database Permission Needed</span>
           </div>
-          <h3 class="font-display text-lg font-extrabold text-slate-900">
+          <h3 class="font-display text-base sm:text-lg font-extrabold text-slate-900">
             Action Required in Your Firebase Console (`tripp-pay`)
           </h3>
           <p id="dbErrorDesc" class="text-xs sm:text-sm text-slate-700 leading-relaxed">
-            Your Firebase project <strong>tripp-pay</strong> is blocking reads/writes because Firestore Database rules are either locked or Anonymous Auth is not enabled. Follow these 2 quick steps in <a href="https://console.firebase.google.com/project/tripp-pay/firestore/rules" target="_blank" class="underline font-bold text-rose-700">Firebase Console → Firestore Database → Rules</a>:
+            Your Firebase project <strong>tripp-pay</strong> is blocking reads/writes because Firestore Database rules are locked. Update rules in <a href="https://console.firebase.google.com/project/tripp-pay/firestore/rules" target="_blank" class="underline font-bold text-rose-700 break-words">Firebase Console → Firestore → Rules</a>:
           </p>
-          <div class="bg-slate-900 text-emerald-300 font-mono text-xs p-3.5 rounded-2xl overflow-x-auto border border-slate-700">
+          <div class="bg-slate-900 text-emerald-300 font-mono text-[11px] sm:text-xs p-3 rounded-xl overflow-x-auto border border-slate-700">
 <pre>rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -145,11 +176,8 @@ service cloud.firestore {
   }
 }</pre>
           </div>
-          <p class="text-xs text-slate-600">
-            *Also make sure you clicked <strong>"Create Database"</strong> under <strong>Build → Firestore Database</strong> in your Firebase Console.
-          </p>
         </div>
-        <div class="flex sm:flex-col gap-2 shrink-0">
+        <div class="grid grid-cols-2 sm:flex lg:flex-col gap-2 shrink-0">
           <button
             type="button"
             onclick="copyFirestoreRules()"
@@ -170,41 +198,41 @@ service cloud.firestore {
       </div>
     </div>
 
-    <!-- Expressive Trip Banner -->
-    <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-50 via-white to-amber-50 border border-emerald-200/80 p-6 sm:p-8 mb-8 shadow-lg shadow-emerald-900/5">
-      <div class="-top-12 -right-12 w-44 h-44 bg-amber-300/20 rounded-full blur-2xl pointer-events-none"></div>
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-        <div class="space-y-2.5">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100/90 border border-amber-300/60 text-amber-900 text-xs font-bold">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-600"></i>
-            <span>Official Trip Registration • Advance & Balance UPI Portal</span>
+    <!-- Expressive Trip Banner (Responsive across Mobile, Tablet & Desktop) -->
+    <section class="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-emerald-50 via-white to-amber-50 border border-emerald-200/80 p-4 sm:p-7 md:p-8 mb-5 sm:mb-8 shadow-lg shadow-emerald-900/5">
+      <div class="-top-12 -right-12 w-44 h-44 bg-amber-300/20 rounded-full blur-2xl pointer-events-none absolute"></div>
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6 relative z-10">
+        <div class="space-y-2 sm:space-y-2.5 min-w-0">
+          <div class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-amber-100/90 border border-amber-300/60 text-amber-900 text-[11px] sm:text-xs font-bold">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-600 shrink-0"></i>
+            <span class="truncate">Official Trip Registration • UPI Portal</span>
           </div>
-          <h2 id="heroTripTitle" class="font-display text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+          <h2 id="heroTripTitle" class="font-display text-xl xs:text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight break-words">
             Annual College Industrial & Leisure Trip
           </h2>
-          <div class="flex flex-wrap items-center gap-3 pt-1 text-xs sm:text-sm font-medium text-slate-600">
-            <span class="inline-flex items-center gap-1.5 bg-white/90 px-3 py-1.5 rounded-xl border border-slate-200/80 shadow-sm">
-              <i data-lucide="map-pin" class="w-4 h-4 text-emerald-600"></i>
-              <span id="heroDestination">Munnar, Vagamon & Kochi</span>
+          <div class="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 text-xs sm:text-sm font-medium text-slate-600">
+            <span class="inline-flex items-center gap-1.5 bg-white/90 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200/80 shadow-sm max-w-full">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 shrink-0"></i>
+              <span id="heroDestination" class="truncate">Munnar, Vagamon & Kochi</span>
             </span>
-            <span class="inline-flex items-center gap-1.5 bg-white/90 px-3 py-1.5 rounded-xl border border-slate-200/80 shadow-sm">
-              <i data-lucide="calendar" class="w-4 h-4 text-amber-600"></i>
+            <span class="inline-flex items-center gap-1.5 bg-white/90 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200/80 shadow-sm">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600 shrink-0"></i>
               <span id="heroTripDate">2026-11-15</span>
             </span>
-            <span class="inline-flex items-center gap-1.5 bg-white/90 px-3 py-1.5 rounded-xl border border-slate-200/80 shadow-sm">
-              <i data-lucide="shield-check" class="w-4 h-4 text-teal-600"></i>
-              <span>UPI: <strong id="heroUpiId" class="font-mono text-slate-900">mohdshemeemkp@oksbi</strong></span>
+            <span class="inline-flex items-center gap-1.5 bg-white/90 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200/80 shadow-sm max-w-full">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-teal-600 shrink-0"></i>
+              <span class="truncate">UPI: <strong id="heroUpiId" class="font-mono text-slate-900">mohdshemeemkp@oksbi</strong></span>
             </span>
           </div>
         </div>
 
-        <!-- Per Student Fee Box -->
-        <div class="flex items-center gap-3 self-start md:self-center bg-white border-2 border-emerald-200 px-5 py-4 rounded-2xl shadow-md">
+        <!-- Per Student Fee Box (Full width on mobile, compact card on tablet/desktop) -->
+        <div class="flex items-center justify-between md:justify-start gap-3 w-full md:w-auto bg-white border-2 border-emerald-200 px-4 py-3.5 sm:px-5 sm:py-4 rounded-2xl shadow-md shrink-0">
           <div>
-            <p class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">
+            <p class="text-[10px] sm:text-[11px] uppercase tracking-wider text-slate-400 font-bold">
               Total Trip Fee
             </p>
-            <p class="font-display text-2xl sm:text-3xl font-extrabold text-emerald-600">
+            <p class="font-display text-2xl sm:text-3xl font-extrabold text-emerald-600 leading-tight">
               <span id="heroTripAmount">₹1,500</span>
               <span class="text-xs font-medium text-slate-400">/ student</span>
             </p>
@@ -217,7 +245,7 @@ service cloud.firestore {
             id="heroAdminEditBtn"
             onclick="openSettingsModal()"
             title="Admin: Customize Trip Info, Fee & Departments"
-            class="hidden p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition"
+            class="hidden p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition shrink-0"
           >
             <i data-lucide="settings" class="w-4 h-4"></i>
           </button>
@@ -228,37 +256,37 @@ service cloud.firestore {
     <!-- USER VIEW: PAY FOR TRIP (NO LOGIN REQUIRED FOR STUDENTS) -->
     <section id="tabSection-pay">
       <!-- Digital Receipt View (Shown after form submission) -->
-      <div id="receiptCardContainer" class="hidden max-w-xl mx-auto expressive-card border-2 border-emerald-300 rounded-3xl p-6 sm:p-8">
-        <div class="flex items-center justify-between ticket-divider pb-5 mb-5">
-          <div class="flex items-center gap-3.5">
-            <div class="w-12 h-12 rounded-2xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-600">
-              <i data-lucide="check-circle-2" class="w-7 h-7"></i>
+      <div id="receiptCardContainer" class="hidden max-w-xl mx-auto expressive-card border-2 border-emerald-300 rounded-2xl sm:rounded-3xl p-4 sm:p-8">
+        <div class="flex flex-col xs:flex-row xs:items-center justify-between gap-3 ticket-divider pb-4 sm:pb-5 mb-4 sm:mb-5">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-600 shrink-0">
+              <i data-lucide="check-circle-2" class="w-6 h-6 sm:w-7 sm:h-7"></i>
             </div>
-            <div>
-              <span id="recBadgeText" class="text-xs font-extrabold uppercase tracking-wider text-emerald-600">
+            <div class="min-w-0">
+              <span id="recBadgeText" class="text-[11px] sm:text-xs font-extrabold uppercase tracking-wider text-emerald-600 block">
                 Payment Submitted
               </span>
-              <h3 id="recStudentName" class="font-display text-xl font-extrabold text-slate-900">
+              <h3 id="recStudentName" class="font-display text-lg sm:text-xl font-extrabold text-slate-900 truncate">
                 Student Name
               </h3>
             </div>
           </div>
-          <div class="text-right">
+          <div class="xs:text-right flex xs:block items-center justify-between bg-slate-50 xs:bg-transparent px-3 py-1.5 xs:p-0 rounded-xl">
             <span class="text-xs text-slate-400 font-medium block">Receipt No.</span>
-            <span id="recCode" class="font-mono font-bold text-sm text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+            <span id="recCode" class="font-mono font-bold text-xs sm:text-sm text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 inline-block mt-0.5">
               TRP-000000
             </span>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 bg-slate-50/90 rounded-2xl p-4 border border-slate-200/80 text-sm mb-6">
+        <div class="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4 bg-slate-50/90 rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 text-sm mb-5 sm:mb-6">
           <div>
             <p class="text-xs text-slate-400 font-medium">Department</p>
-            <p id="recDept" class="font-bold text-slate-800">-</p>
+            <p id="recDept" class="font-bold text-slate-800 break-words">-</p>
           </div>
           <div>
             <p class="text-xs text-slate-400 font-medium">Mobile Number</p>
-            <p id="recPhone" class="font-bold text-slate-800">-</p>
+            <p id="recPhone" class="font-bold text-slate-800 font-mono">-</p>
           </div>
           <div>
             <p class="text-xs text-slate-400 font-medium">Paid Now</p>
@@ -276,52 +304,51 @@ service cloud.firestore {
             <p class="text-xs text-slate-400 font-medium">Paid Via App</p>
             <p id="recApp" class="font-bold text-slate-800">-</p>
           </div>
-          <div>
+          <div class="xs:col-span-2 sm:col-span-1">
             <p class="text-xs text-slate-400 font-medium">Paid To UPI</p>
-            <p id="recUpi" class="font-mono text-xs font-semibold text-slate-700">mohdshemeemkp@oksbi</p>
+            <p id="recUpi" class="font-mono text-xs font-semibold text-slate-700 break-all">mohdshemeemkp@oksbi</p>
           </div>
           <div>
             <p class="text-xs text-slate-400 font-medium">Payment Status</p>
-            <span id="recStatus" class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full">
+            <span id="recStatus" class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full mt-0.5">
               Recorded
             </span>
           </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-3">
-          <button onclick="resetReceiptView()" class="w-full py-3.5 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-2">
-            <i data-lucide="check" class="w-4 h-4"></i>
-            <span>Done / Back to Payment Page</span>
-          </button>
-        </div>
+        <button onclick="resetReceiptView()" class="w-full py-3.5 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-sm shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-2">
+          <i data-lucide="check" class="w-4 h-4"></i>
+          <span>Done / Back to Payment Page</span>
+        </button>
       </div>
 
-      <!-- Two-Column Payment & Form Layout -->
-      <div id="paymentFormGrid" class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+      <!-- Two-Column Payment & Form Layout (Stacks cleanly on Mobile/Tablet, Side-by-Side on Desktop) -->
+      <div id="paymentFormGrid" class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-7 items-start">
+        
         <!-- Left Column: Step 1 - UPI QR & Instant Pay -->
-        <div class="lg:col-span-5 expressive-card border border-slate-200/90 rounded-3xl p-6">
-          <div class="flex items-center justify-between mb-4">
-            <span class="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-200">
-              Step 1: Scan or Tap to Pay
+        <div class="lg:col-span-5 expressive-card border border-slate-200/90 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:sticky lg:top-24">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-200">
+              Step 1: Scan or Tap UPI App
             </span>
-            <span class="text-xs font-semibold text-slate-400">GPay • PhonePe • Paytm</span>
+            <span class="text-[11px] sm:text-xs font-semibold text-slate-400">All UPI Apps Supported</span>
           </div>
 
           <!-- Expressive QR Code Box -->
-          <div class="bg-gradient-to-b from-emerald-50/70 to-white rounded-3xl p-5 border-2 border-dashed border-emerald-300 flex flex-col items-center text-center mb-5">
-            <p class="text-xs font-bold uppercase tracking-wider text-emerald-700">
+          <div class="bg-gradient-to-b from-emerald-50/70 to-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border-2 border-dashed border-emerald-300 flex flex-col items-center text-center mb-4 sm:mb-5">
+            <p class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-emerald-700">
               Official Trip Receiver
             </p>
-            <p id="qrReceiverName" class="font-display text-lg font-extrabold text-slate-900 mb-3">
+            <p id="qrReceiverName" class="font-display text-base sm:text-lg font-extrabold text-slate-900 mb-3">
               Mohd Shemeem KP
             </p>
 
-            <div class="p-3 bg-white rounded-2xl border border-slate-200 shadow-md">
+            <div class="p-2.5 sm:p-3 bg-white rounded-2xl border border-slate-200 shadow-md">
               <img
                 id="upiQrImage"
                 src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=10&data=upi%3A%2F%2Fpay%3Fpa%3Dmohdshemeemkp%2540oksbi%26pn%3DMohd%2520Shemeem%2520KP%26am%3D1500%26cu%3DINR"
                 alt="UPI QR Code for mohdshemeemkp@oksbi"
-                class="w-48 h-48 sm:w-52 sm:h-52 object-contain rounded-xl"
+                class="w-40 h-40 xs:w-48 xs:h-48 sm:w-52 sm:h-52 object-contain rounded-xl mx-auto"
                 onerror="this.onerror=null;this.src='https://placehold.co/260x260/f8fafc/0f172a?text=Pay+to+mohdshemeemkp@oksbi';"
               />
             </div>
@@ -333,68 +360,171 @@ service cloud.firestore {
           </div>
 
           <!-- Copyable UPI ID Box -->
-          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 mb-4 flex items-center justify-between gap-2">
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 sm:p-3.5 mb-3.5 sm:mb-4 flex items-center justify-between gap-2">
             <div class="min-w-0">
-              <p class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">
+              <p class="text-[10px] sm:text-[11px] uppercase tracking-wider text-slate-400 font-bold">
                 Receiver UPI ID
               </p>
-              <p id="cardUpiIdText" class="font-mono text-sm sm:text-base font-bold text-slate-900 truncate">
+              <p id="cardUpiIdText" class="font-mono text-xs xs:text-sm sm:text-base font-bold text-slate-900 truncate">
                 mohdshemeemkp@oksbi
               </p>
             </div>
             <button
               type="button"
               onclick="copyUpiId()"
-              class="shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition"
+              class="shrink-0 flex items-center gap-1.5 px-3 py-2 sm:px-3.5 sm:py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-bold shadow-sm transition"
             >
               <i data-lucide="copy" class="w-3.5 h-3.5"></i>
               <span>Copy UPI</span>
             </button>
           </div>
 
-          <!-- Mobile Deep Link Button -->
-          <a
+          <!-- Select & Launch Specific UPI App Grid -->
+          <div class="mb-3.5 sm:mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <p class="text-[11px] font-extrabold uppercase tracking-wider text-slate-600">
+                Select UPI App to Pay Directly
+              </p>
+              <span id="selectedUpiBadge" class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                Google Pay
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 xs:grid-cols-3 gap-2">
+              <!-- Google Pay -->
+              <button
+                type="button"
+                onclick="selectAndLaunchUpiApp('Google Pay')"
+                id="upiBtn-Google Pay"
+                class="upi-app-btn p-2.5 rounded-xl border-2 border-emerald-500 bg-emerald-50/70 hover:bg-emerald-50 flex items-center gap-2 text-left transition active:scale-95"
+              >
+                <span class="w-7 h-7 rounded-lg bg-blue-600 text-white font-display font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm">G</span>
+                <div class="min-w-0">
+                  <p class="text-xs font-extrabold text-slate-900 truncate">GPay</p>
+                  <p class="text-[10px] text-slate-500 truncate">Google Pay</p>
+                </div>
+              </button>
+
+              <!-- PhonePe -->
+              <button
+                type="button"
+                onclick="selectAndLaunchUpiApp('PhonePe')"
+                id="upiBtn-PhonePe"
+                class="upi-app-btn p-2.5 rounded-xl border border-slate-200 bg-white hover:border-purple-300 hover:bg-purple-50/40 flex items-center gap-2 text-left transition active:scale-95"
+              >
+                <span class="w-7 h-7 rounded-lg bg-purple-600 text-white font-display font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm">Pe</span>
+                <div class="min-w-0">
+                  <p class="text-xs font-extrabold text-slate-900 truncate">PhonePe</p>
+                  <p class="text-[10px] text-slate-500 truncate">Instant UPI</p>
+                </div>
+              </button>
+
+              <!-- Paytm -->
+              <button
+                type="button"
+                onclick="selectAndLaunchUpiApp('Paytm')"
+                id="upiBtn-Paytm"
+                class="upi-app-btn p-2.5 rounded-xl border border-slate-200 bg-white hover:border-sky-300 hover:bg-sky-50/40 flex items-center gap-2 text-left transition active:scale-95"
+              >
+                <span class="w-7 h-7 rounded-lg bg-sky-500 text-white font-display font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm">P</span>
+                <div class="min-w-0">
+                  <p class="text-xs font-extrabold text-slate-900 truncate">Paytm</p>
+                  <p class="text-[10px] text-slate-500 truncate">Paytm UPI</p>
+                </div>
+              </button>
+
+              <!-- WhatsApp Pay -->
+              <button
+                type="button"
+                onclick="selectAndLaunchUpiApp('WhatsApp Pay')"
+                id="upiBtn-WhatsApp Pay"
+                class="upi-app-btn p-2.5 rounded-xl border border-slate-200 bg-white hover:border-emerald-300 hover:bg-emerald-50/40 flex items-center gap-2 text-left transition active:scale-95"
+              >
+                <span class="w-7 h-7 rounded-lg bg-emerald-500 text-white font-display font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm">W</span>
+                <div class="min-w-0">
+                  <p class="text-xs font-extrabold text-slate-900 truncate">WhatsApp</p>
+                  <p class="text-[10px] text-slate-500 truncate">WA Pay</p>
+                </div>
+              </button>
+
+              <!-- BHIM UPI -->
+              <button
+                type="button"
+                onclick="selectAndLaunchUpiApp('BHIM UPI')"
+                id="upiBtn-BHIM UPI"
+                class="upi-app-btn p-2.5 rounded-xl border border-slate-200 bg-white hover:border-orange-300 hover:bg-orange-50/40 flex items-center gap-2 text-left transition active:scale-95"
+              >
+                <span class="w-7 h-7 rounded-lg bg-orange-500 text-white font-display font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm">B</span>
+                <div class="min-w-0">
+                  <p class="text-xs font-extrabold text-slate-900 truncate">BHIM</p>
+                  <p class="text-[10px] text-slate-500 truncate">NPCI UPI</p>
+                </div>
+              </button>
+
+              <!-- Amazon Pay / Navi / Cred / Other -->
+              <button
+                type="button"
+                onclick="selectAndLaunchUpiApp('Amazon Pay / Navi / Other')"
+                id="upiBtn-Amazon Pay / Navi / Other"
+                class="upi-app-btn p-2.5 rounded-xl border border-slate-200 bg-white hover:border-amber-300 hover:bg-amber-50/40 flex items-center gap-2 text-left transition active:scale-95"
+              >
+                <span class="w-7 h-7 rounded-lg bg-slate-800 text-amber-400 font-display font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm">U</span>
+                <div class="min-w-0">
+                  <p class="text-xs font-extrabold text-slate-900 truncate">Other UPI</p>
+                  <p class="text-[10px] text-slate-500 truncate">Navi / Amazon</p>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Primary Mobile Deep Link Button (Launches Selected App or System Chooser) -->
+          <button
+            type="button"
             id="upiDeepLinkBtn"
-            href="upi://pay?pa=mohdshemeemkp%40oksbi&pn=Mohd%20Shemeem%20KP&am=1500&cu=INR"
-            class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 transition"
+            onclick="launchSelectedUpiApp()"
+            class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 active:scale-[0.99] text-white font-bold text-xs sm:text-sm shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 transition text-center"
           >
-            <i data-lucide="smartphone" class="w-4 h-4"></i>
-            <span id="upiDeepLinkText">Open UPI App to Pay ₹1,500</span>
-            <i data-lucide="external-link" class="w-4 h-4"></i>
-          </a>
+            <i data-lucide="smartphone" class="w-4 h-4 shrink-0"></i>
+            <span id="upiDeepLinkText" class="truncate">Pay ₹1,500 via Google Pay</span>
+            <i data-lucide="external-link" class="w-4 h-4 shrink-0"></i>
+          </button>
+
+          <p class="text-[11px] text-slate-400 text-center mt-2.5">
+            Tip: If an app doesn't open directly on your phone, scan the QR code above or copy the UPI ID.
+          </p>
         </div>
 
         <!-- Right Column: Step 2 - New/Advance Registration OR Pay Remaining Balance -->
-        <div class="lg:col-span-7 expressive-card border border-slate-200/90 rounded-3xl p-6 sm:p-8 space-y-6">
-          <!-- Mode Switcher: New / Advance Payment vs Pay Balance of Advance -->
-          <div class="bg-slate-100 p-1.5 rounded-2xl grid grid-cols-2 gap-1.5 border border-slate-200">
+        <div class="lg:col-span-7 expressive-card border border-slate-200/90 rounded-2xl sm:rounded-3xl p-4 sm:p-7 md:p-8 space-y-5 sm:space-y-6">
+          <!-- Mode Switcher: Stacks on extra-small screens, 2 columns from 380px+ -->
+          <div class="bg-slate-100 p-1.5 rounded-2xl grid grid-cols-1 xs:grid-cols-2 gap-1.5 border border-slate-200">
             <button
               type="button"
               id="modeBtn-new"
               onclick="switchPaymentMode('new')"
-              class="py-3 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all bg-white text-emerald-700 shadow-sm flex items-center justify-center gap-2"
+              class="py-2.5 sm:py-3 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all bg-white text-emerald-700 shadow-sm flex items-center justify-center gap-2"
             >
-              <i data-lucide="user-plus" class="w-4 h-4"></i>
-              <span>New / Advance Payment</span>
+              <i data-lucide="user-plus" class="w-4 h-4 shrink-0"></i>
+              <span class="truncate">New / Advance Pay</span>
             </button>
             <button
               type="button"
               id="modeBtn-balance"
               onclick="switchPaymentMode('balance')"
-              class="py-3 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2"
+              class="py-2.5 sm:py-3 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2"
             >
-              <i data-lucide="wallet" class="w-4 h-4"></i>
-              <span>Pay Balance of Advance</span>
+              <i data-lucide="wallet" class="w-4 h-4 shrink-0"></i>
+              <span class="truncate">Pay Remaining Balance</span>
             </button>
           </div>
 
           <!-- MODE A: NEW REGISTRATION (FULL OR ADVANCE PAYMENT) -->
-          <form id="studentPayForm" onsubmit="handleStudentFormSubmit(event)" class="space-y-5">
-            <div class="border-b border-slate-200 pb-4">
-              <span class="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-amber-800 bg-amber-100 px-3 py-1 rounded-full border border-amber-200 mb-1.5">
+          <form id="studentPayForm" onsubmit="handleStudentFormSubmit(event)" class="space-y-4 sm:space-y-5">
+            <div class="border-b border-slate-200 pb-3.5 sm:pb-4">
+              <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-extrabold uppercase tracking-wider text-amber-800 bg-amber-100 px-3 py-1 rounded-full border border-amber-200 mb-1.5">
                 Step 2: Enter Your Details
               </span>
-              <h3 class="font-display text-xl font-extrabold text-slate-900">
+              <h3 class="font-display text-lg sm:text-xl font-extrabold text-slate-900">
                 Register & Pay Advance or Full Fee
               </h3>
               <p class="text-xs text-slate-500 mt-0.5">
@@ -403,18 +533,18 @@ service cloud.firestore {
             </div>
 
             <!-- Quick Payment Type Selector (Full vs Advance) -->
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 xs:grid-cols-2 gap-2.5 sm:gap-3">
               <button
                 type="button"
                 id="payTypeBtn-full"
                 onclick="selectPaymentPreset('full')"
-                class="p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-50/70 text-left transition flex flex-col justify-between"
+                class="p-3 sm:p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-50/70 text-left transition flex flex-col justify-between"
               >
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between w-full">
                   <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-800">Full Payment</span>
-                  <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+                  <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 shrink-0"></i>
                 </div>
-                <p id="presetFullText" class="font-display text-lg font-extrabold text-slate-900 mt-1">₹1,500</p>
+                <p id="presetFullText" class="font-display text-lg sm:text-xl font-extrabold text-slate-900 mt-1">₹1,500</p>
                 <span class="text-[11px] text-slate-500 font-medium">No remaining balance</span>
               </button>
 
@@ -422,18 +552,18 @@ service cloud.firestore {
                 type="button"
                 id="payTypeBtn-advance"
                 onclick="selectPaymentPreset('advance')"
-                class="p-3.5 rounded-2xl border-2 border-slate-200 bg-white hover:border-amber-300 text-left transition flex flex-col justify-between"
+                class="p-3 sm:p-3.5 rounded-2xl border-2 border-slate-200 bg-white hover:border-amber-300 text-left transition flex flex-col justify-between"
               >
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between w-full">
                   <span class="text-xs font-extrabold uppercase tracking-wider text-amber-800">Pay Advance</span>
-                  <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
+                  <i data-lucide="clock" class="w-4 h-4 text-amber-600 shrink-0"></i>
                 </div>
-                <p id="presetAdvanceText" class="font-display text-lg font-extrabold text-slate-900 mt-1">₹500</p>
+                <p id="presetAdvanceText" class="font-display text-lg sm:text-xl font-extrabold text-slate-900 mt-1">₹500</p>
                 <span class="text-[11px] text-slate-500 font-medium">Pay remaining balance later</span>
               </button>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
               <div class="sm:col-span-2">
                 <label class="block text-xs font-bold text-slate-700 mb-1.5">
                   Student Full Name *
@@ -444,7 +574,7 @@ service cloud.firestore {
                   required
                   oninput="updateDynamicUpiLinks()"
                   placeholder="e.g., Muhammed Sinan"
-                  class="w-full px-4 py-3.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none text-sm font-medium text-slate-900 transition"
+                  class="w-full px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none text-sm font-medium text-slate-900 transition"
                 />
               </div>
 
@@ -456,7 +586,7 @@ service cloud.firestore {
                   id="inpDept"
                   required
                   onchange="updateDynamicUpiLinks()"
-                  class="w-full px-4 py-3.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none text-sm font-semibold text-slate-900 transition"
+                  class="w-full px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none text-sm font-semibold text-slate-900 transition"
                 ></select>
               </div>
 
@@ -468,8 +598,9 @@ service cloud.firestore {
                   type="tel"
                   id="inpPhone"
                   required
+                  inputmode="numeric"
                   placeholder="10-digit mobile number"
-                  class="w-full px-4 py-3.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none text-sm font-medium text-slate-900 transition"
+                  class="w-full px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none text-sm font-medium text-slate-900 transition"
                 />
               </div>
 
@@ -482,9 +613,10 @@ service cloud.firestore {
                   id="inpAmount"
                   min="1"
                   required
+                  inputmode="numeric"
                   value="1500"
                   oninput="updateDynamicUpiLinks()"
-                  class="w-full px-4 py-3.5 rounded-xl bg-emerald-50/60 border border-emerald-300 focus:bg-white focus:border-emerald-600 focus:outline-none text-sm font-extrabold text-emerald-700 transition"
+                  class="w-full px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-xl bg-emerald-50/60 border border-emerald-300 focus:bg-white focus:border-emerald-600 focus:outline-none text-sm font-extrabold text-emerald-700 transition"
                 />
                 <p id="liveBalancePreview" class="text-[11px] font-semibold text-slate-500 mt-1">
                   Remaining Balance after this payment: <span class="font-bold text-emerald-700">₹0</span>
@@ -497,12 +629,15 @@ service cloud.firestore {
                 </label>
                 <select
                   id="inpApp"
-                  class="w-full px-4 py-3.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-semibold text-slate-800"
+                  onchange="syncSelectedAppFromDropdown(this.value)"
+                  class="w-full px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-semibold text-slate-800"
                 >
                   <option value="Google Pay">Google Pay (GPay)</option>
                   <option value="PhonePe">PhonePe</option>
                   <option value="Paytm">Paytm</option>
-                  <option value="BHIM / Other UPI">BHIM / Navi / Other UPI</option>
+                  <option value="WhatsApp Pay">WhatsApp Pay</option>
+                  <option value="BHIM UPI">BHIM UPI</option>
+                  <option value="Amazon Pay / Navi / Other">Amazon Pay / Navi / Super.money / Cred</option>
                 </select>
               </div>
             </div>
@@ -515,27 +650,27 @@ service cloud.firestore {
                 type="text"
                 id="inpRemarks"
                 placeholder="e.g., Advance payment / Boarding from college gate"
-                class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm text-slate-800"
+                class="w-full px-3.5 py-3 sm:px-4 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm text-slate-800"
               />
             </div>
 
             <button
               type="submit"
               id="btnSubmitNewPay"
-              class="w-full py-4 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-display font-bold text-sm sm:text-base shadow-lg shadow-emerald-600/25 transition flex items-center justify-center gap-2"
+              class="w-full py-3.5 sm:py-4 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-display font-bold text-sm sm:text-base shadow-lg shadow-emerald-600/25 transition flex items-center justify-center gap-2"
             >
-              <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+              <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
               <span>Submit My Trip Payment</span>
             </button>
           </form>
 
           <!-- MODE B: PAY BALANCE AMOUNT OF ADVANCE -->
-          <div id="balancePaySection" class="hidden space-y-5">
-            <div class="border-b border-slate-200 pb-4">
-              <span class="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-200 mb-1.5">
+          <div id="balancePaySection" class="hidden space-y-4 sm:space-y-5">
+            <div class="border-b border-slate-200 pb-3.5 sm:pb-4">
+              <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-200 mb-1.5">
                 Complete Your Trip Fee • Private Lookup
               </span>
-              <h3 class="font-display text-xl font-extrabold text-slate-900">
+              <h3 class="font-display text-lg sm:text-xl font-extrabold text-slate-900">
                 Pay Balance Amount of Advance
               </h3>
               <p class="text-xs text-slate-500 mt-0.5">
@@ -553,46 +688,47 @@ service cloud.firestore {
                 <input
                   type="tel"
                   id="balanceSearchInput"
+                  inputmode="numeric"
                   maxlength="14"
                   oninput="renderBalanceLookupResults()"
-                  placeholder="Enter your exact 10-digit mobile number..."
-                  class="w-full pl-10 pr-4 py-3.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-mono font-bold text-slate-900"
+                  placeholder="Enter your 10-digit mobile number..."
+                  class="w-full pl-10 pr-4 py-3 sm:py-3.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-mono font-bold text-slate-900"
                 />
               </div>
             </div>
 
             <!-- Matching Advance Records List -->
-            <div id="balanceLookupList" class="space-y-2.5 max-h-60 overflow-y-auto"></div>
+            <div id="balanceLookupList" class="space-y-2.5 max-h-64 overflow-y-auto"></div>
 
             <!-- Selected Student Balance Payment Form -->
-            <form id="balancePayForm" onsubmit="handleBalanceFormSubmit(event)" class="hidden p-5 rounded-2xl bg-emerald-50/60 border-2 border-emerald-300 space-y-4">
-              <div class="flex items-center justify-between border-b border-emerald-200/80 pb-3">
-                <div>
-                  <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-700">Selected Student</span>
-                  <h4 id="balSelectedName" class="font-display text-lg font-extrabold text-slate-900">-</h4>
-                  <p id="balSelectedMeta" class="text-xs text-slate-600 font-medium">-</p>
+            <form id="balancePayForm" onsubmit="handleBalanceFormSubmit(event)" class="hidden p-4 sm:p-5 rounded-2xl bg-emerald-50/60 border-2 border-emerald-300 space-y-4">
+              <div class="flex items-start sm:items-center justify-between gap-2 border-b border-emerald-200/80 pb-3">
+                <div class="min-w-0">
+                  <span class="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-emerald-700">Selected Student</span>
+                  <h4 id="balSelectedName" class="font-display text-base sm:text-lg font-extrabold text-slate-900 truncate">-</h4>
+                  <p id="balSelectedMeta" class="text-xs text-slate-600 font-medium truncate">-</p>
                 </div>
                 <button
                   type="button"
                   onclick="clearSelectedBalanceStudent()"
-                  class="text-xs font-bold text-slate-500 hover:text-rose-600 px-2.5 py-1 rounded-lg bg-white border border-slate-200"
+                  class="text-xs font-bold text-slate-500 hover:text-rose-600 px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 shrink-0"
                 >
                   Change
                 </button>
               </div>
 
-              <div class="grid grid-cols-3 gap-2.5 text-center bg-white p-3 rounded-xl border border-emerald-200">
+              <div class="grid grid-cols-3 gap-1.5 sm:gap-2.5 text-center bg-white p-2.5 sm:p-3 rounded-xl border border-emerald-200">
                 <div>
-                  <p class="text-[11px] text-slate-400 font-bold uppercase">Total Fee</p>
-                  <p id="balSummaryTotal" class="font-display font-extrabold text-slate-800 text-sm sm:text-base">₹1,500</p>
+                  <p class="text-[10px] sm:text-[11px] text-slate-400 font-bold uppercase">Total Fee</p>
+                  <p id="balSummaryTotal" class="font-display font-extrabold text-slate-800 text-xs xs:text-sm sm:text-base">₹1,500</p>
                 </div>
-                <div class="border-x border-slate-100">
-                  <p class="text-[11px] text-slate-400 font-bold uppercase">Advance Paid</p>
-                  <p id="balSummaryPaid" class="font-display font-extrabold text-emerald-600 text-sm sm:text-base">₹500</p>
+                <div class="border-x border-slate-100 px-1">
+                  <p class="text-[10px] sm:text-[11px] text-slate-400 font-bold uppercase">Paid</p>
+                  <p id="balSummaryPaid" class="font-display font-extrabold text-emerald-600 text-xs xs:text-sm sm:text-base">₹500</p>
                 </div>
                 <div>
-                  <p class="text-[11px] text-amber-700 font-bold uppercase">Balance Due</p>
-                  <p id="balSummaryDue" class="font-display font-extrabold text-amber-600 text-sm sm:text-base">₹1,000</p>
+                  <p class="text-[10px] sm:text-[11px] text-amber-700 font-bold uppercase">Balance</p>
+                  <p id="balSummaryDue" class="font-display font-extrabold text-amber-600 text-xs xs:text-sm sm:text-base">₹1,000</p>
                 </div>
               </div>
 
@@ -606,6 +742,7 @@ service cloud.firestore {
                     id="balAmountInput"
                     min="1"
                     required
+                    inputmode="numeric"
                     oninput="updateDynamicUpiLinks()"
                     class="w-full px-3.5 py-3 rounded-xl bg-white border border-emerald-400 font-extrabold text-emerald-700 text-sm focus:outline-none"
                   />
@@ -616,12 +753,15 @@ service cloud.firestore {
                   </label>
                   <select
                     id="balAppInput"
+                    onchange="syncSelectedAppFromDropdown(this.value)"
                     class="w-full px-3.5 py-3 rounded-xl bg-white border border-slate-200 text-sm font-semibold text-slate-800"
                   >
                     <option value="Google Pay">Google Pay (GPay)</option>
                     <option value="PhonePe">PhonePe</option>
                     <option value="Paytm">Paytm</option>
-                    <option value="BHIM / Other UPI">BHIM / Other UPI</option>
+                    <option value="WhatsApp Pay">WhatsApp Pay</option>
+                    <option value="BHIM UPI">BHIM UPI</option>
+                    <option value="Amazon Pay / Navi / Other">Amazon Pay / Navi / Super.money / Cred</option>
                   </select>
                 </div>
               </div>
@@ -641,9 +781,9 @@ service cloud.firestore {
               <button
                 type="submit"
                 id="btnSubmitBalancePay"
-                class="w-full py-3.5 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-display font-bold text-sm shadow-lg shadow-emerald-600/20 transition flex items-center justify-center gap-2"
+                class="w-full py-3.5 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-display font-bold text-sm shadow-lg shadow-emerald-600/20 transition flex items-center justify-center gap-2"
               >
-                <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
                 <span>Submit My Balance Payment</span>
               </button>
             </form>
@@ -653,44 +793,44 @@ service cloud.firestore {
     </section>
 
     <!-- ADMIN ONLY TAB: PAID STUDENTS DASHBOARD -->
-    <section id="tabSection-dashboard" class="hidden space-y-6">
+    <section id="tabSection-dashboard" class="hidden space-y-4 sm:space-y-6">
       <!-- Admin Mode Top Bar -->
-      <div class="bg-emerald-900 text-white rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-md">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-emerald-700 flex items-center justify-center">
+      <div class="bg-emerald-900 text-white rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+        <div class="flex items-start sm:items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-700 flex items-center justify-center shrink-0">
             <i data-lucide="shield-check" class="w-5 h-5 text-emerald-300"></i>
           </div>
-          <div>
+          <div class="min-w-0">
             <h3 class="font-display font-bold text-sm sm:text-base">Admin Payment Control Center</h3>
-            <p class="text-xs text-emerald-200">
-              Logged in as <span id="adminLoggedEmail" class="font-mono font-bold text-white">admin</span> • Full control over all student advance & balance payments.
+            <p class="text-xs text-emerald-200 break-words">
+              Logged in as <span id="adminLoggedEmail" class="font-mono font-bold text-white">admin</span> • Full control over student payments.
             </p>
           </div>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto shrink-0">
           <button
             onclick="openSettingsModal()"
-            class="px-3.5 py-2 rounded-xl bg-white text-emerald-950 hover:bg-emerald-50 font-bold text-xs flex items-center gap-1.5 transition"
+            class="px-3 py-2.5 sm:px-3.5 sm:py-2 rounded-xl bg-white text-emerald-950 hover:bg-emerald-50 font-bold text-xs flex items-center justify-center gap-1.5 transition"
           >
-            <i data-lucide="settings" class="w-3.5 h-3.5"></i>
-            <span>Trip & Admin Settings</span>
+            <i data-lucide="settings" class="w-3.5 h-3.5 shrink-0"></i>
+            <span>Settings</span>
           </button>
           <button
             onclick="logoutAdmin()"
-            class="px-3.5 py-2 rounded-xl bg-emerald-800 hover:bg-emerald-700 text-emerald-100 font-bold text-xs flex items-center gap-1.5 transition"
+            class="px-3 py-2.5 sm:px-3.5 sm:py-2 rounded-xl bg-emerald-800 hover:bg-emerald-700 text-emerald-100 font-bold text-xs flex items-center justify-center gap-1.5 transition"
           >
-            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-            <span>Logout Admin</span>
+            <i data-lucide="log-out" class="w-3.5 h-3.5 shrink-0"></i>
+            <span>Logout</span>
           </button>
         </div>
       </div>
 
-      <!-- KPI Summary Cards -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="expressive-card border border-slate-200 rounded-2xl p-5">
-          <div class="flex items-center justify-between text-slate-400 text-xs font-bold uppercase mb-2">
+      <!-- KPI Summary Cards (1 col on very small, 2 cols on mobile/tablet, 4 cols on desktop) -->
+      <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div class="expressive-card border border-slate-200 rounded-2xl p-4 sm:p-5">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-bold uppercase mb-1.5 sm:mb-2">
             <span>Total Collected</span>
-            <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+            <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
               <i data-lucide="indian-rupee" class="w-4 h-4"></i>
             </div>
           </div>
@@ -698,10 +838,10 @@ service cloud.firestore {
           <p id="statVerifiedAmount" class="text-xs font-semibold text-emerald-600 mt-1">Verified: ₹0</p>
         </div>
 
-        <div class="expressive-card border border-slate-200 rounded-2xl p-5">
-          <div class="flex items-center justify-between text-slate-400 text-xs font-bold uppercase mb-2">
+        <div class="expressive-card border border-slate-200 rounded-2xl p-4 sm:p-5">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-bold uppercase mb-1.5 sm:mb-2">
             <span>Pending Balance</span>
-            <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+            <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
               <i data-lucide="wallet" class="w-4 h-4"></i>
             </div>
           </div>
@@ -709,10 +849,10 @@ service cloud.firestore {
           <p id="statAdvanceCountText" class="text-xs font-semibold text-slate-500 mt-1">0 students with balance due</p>
         </div>
 
-        <div class="expressive-card border border-slate-200 rounded-2xl p-5">
-          <div class="flex items-center justify-between text-slate-400 text-xs font-bold uppercase mb-2">
+        <div class="expressive-card border border-slate-200 rounded-2xl p-4 sm:p-5">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-bold uppercase mb-1.5 sm:mb-2">
             <span>Paid Students</span>
-            <div class="w-8 h-8 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center">
+            <div class="w-8 h-8 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center shrink-0">
               <i data-lucide="users" class="w-4 h-4"></i>
             </div>
           </div>
@@ -720,32 +860,32 @@ service cloud.firestore {
           <p id="statVerifiedBreakdown" class="text-xs font-medium text-slate-500 mt-1">0 full paid • 0 advance</p>
         </div>
 
-        <div class="expressive-card border border-slate-200 rounded-2xl p-5 flex flex-col justify-between">
+        <div class="expressive-card border border-slate-200 rounded-2xl p-4 sm:p-5 flex flex-col justify-between">
           <div class="flex items-center justify-between text-slate-400 text-xs font-bold uppercase">
             <span>Export & Share</span>
             <i data-lucide="share-2" class="w-4 h-4 text-emerald-600"></i>
           </div>
-          <div class="flex flex-col gap-2 mt-2">
+          <div class="flex flex-col gap-2 mt-2.5">
             <button
               onclick="copyWhatsAppList()"
               class="w-full py-2 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold flex items-center justify-center gap-1.5 transition"
             >
-              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-              <span>Copy WhatsApp List</span>
+              <i data-lucide="copy" class="w-3.5 h-3.5 shrink-0"></i>
+              <span class="truncate">Copy WhatsApp List</span>
             </button>
             <button
               onclick="exportStudentsCSV()"
               class="w-full py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition"
             >
-              <i data-lucide="download" class="w-3.5 h-3.5"></i>
-              <span>Download Excel / CSV</span>
+              <i data-lucide="download" class="w-3.5 h-3.5 shrink-0"></i>
+              <span class="truncate">Download Excel / CSV</span>
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Search, Filters & Manual Add Bar -->
-      <div class="expressive-card border border-slate-200 rounded-2xl p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <!-- Search, Filters & Manual Add Bar (Responsive Grid on Mobile/Tablet) -->
+      <div class="expressive-card border border-slate-200 rounded-2xl p-3.5 sm:p-4 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
         <div class="relative flex-1">
           <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
           <input
@@ -757,11 +897,11 @@ service cloud.firestore {
           />
         </div>
 
-        <div class="flex flex-wrap items-center gap-2.5">
+        <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-4 lg:flex items-center gap-2">
           <select
             id="dashPayTypeFilter"
             onchange="renderDashboard()"
-            class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 focus:outline-none"
+            class="w-full lg:w-auto bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 focus:outline-none"
           >
             <option value="All">All Payment Types</option>
             <option value="Full Paid">Full Paid Only</option>
@@ -771,7 +911,7 @@ service cloud.firestore {
           <select
             id="dashStatusFilter"
             onchange="renderDashboard()"
-            class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 focus:outline-none"
+            class="w-full lg:w-auto bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 focus:outline-none"
           >
             <option value="All">All Verification</option>
             <option value="Verified">Verified Only</option>
@@ -781,24 +921,24 @@ service cloud.firestore {
           <select
             id="dashDeptFilter"
             onchange="renderDashboard()"
-            class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 focus:outline-none"
+            class="w-full lg:w-auto bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 focus:outline-none"
           >
             <option value="All">All Departments</option>
           </select>
 
           <button
             onclick="openManualAddModal()"
-            class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+            class="w-full lg:w-auto px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition"
           >
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>Add Student Payment</span>
+            <i data-lucide="plus" class="w-4 h-4 shrink-0"></i>
+            <span class="truncate">Add Student</span>
           </button>
         </div>
       </div>
 
-      <!-- Paid Students Table Container -->
-      <div class="expressive-card border border-slate-200 rounded-3xl overflow-hidden">
-        <div id="emptyStateBox" class="hidden p-12 text-center space-y-3">
+      <!-- Paid Students Container (Cards on Mobile <768px, Table on Desktop >=768px) -->
+      <div class="expressive-card border border-slate-200 rounded-2xl sm:rounded-3xl overflow-hidden">
+        <div id="emptyStateBox" class="hidden p-8 sm:p-12 text-center space-y-3">
           <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto text-emerald-600">
             <i data-lucide="users" class="w-6 h-6"></i>
           </div>
@@ -808,7 +948,11 @@ service cloud.firestore {
           </p>
         </div>
 
-        <div id="tableScrollWrap" class="overflow-x-auto">
+        <!-- Mobile Card List View (<768px) - Prevents horizontal table squishing on phones -->
+        <div id="studentsMobileCards" class="md:hidden divide-y divide-slate-200/80"></div>
+
+        <!-- Tablet/Desktop Table View (>=768px) -->
+        <div id="tableScrollWrap" class="hidden md:block overflow-x-auto">
           <table class="w-full text-left border-collapse">
             <thead>
               <tr class="border-b border-slate-200 bg-slate-50/90 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
@@ -829,19 +973,19 @@ service cloud.firestore {
   </main>
 
   <!-- MODAL 0: ADMIN EMAIL & PASSWORD LOGIN -->
-  <div id="adminLoginModal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-6 shadow-2xl">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
+  <div id="adminLoginModal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white border border-slate-200 rounded-2xl sm:rounded-3xl max-w-sm w-full p-5 sm:p-6 shadow-2xl my-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3.5 mb-4">
         <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+          <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
             <i data-lucide="lock" class="w-5 h-5"></i>
           </div>
           <div>
-            <h3 class="font-display text-lg font-extrabold text-slate-900">Admin Login</h3>
+            <h3 class="font-display text-base sm:text-lg font-extrabold text-slate-900">Admin Login</h3>
             <p class="text-[11px] text-slate-400 font-medium">Sign in with Admin Email & Password</p>
           </div>
         </div>
-        <button onclick="closeAdminLoginModal()" class="p-1 text-slate-400 hover:text-slate-700">
+        <button onclick="closeAdminLoginModal()" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
@@ -885,14 +1029,14 @@ service cloud.firestore {
   </div>
 
   <!-- MODAL 1: ADMIN CUSTOMIZE ALL SETTINGS, ADVANCE FEE, DEPARTMENTS & CREDENTIALS -->
-  <div id="settingsModal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
+  <div id="settingsModal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white border border-slate-200 rounded-2xl sm:rounded-3xl max-w-lg w-full p-4 sm:p-6 shadow-2xl my-auto max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3.5 mb-4 sticky top-0 bg-white z-10">
         <div>
-          <h3 class="font-display text-lg font-extrabold text-slate-900">Admin: Trip, Fee & Login Settings</h3>
+          <h3 class="font-display text-base sm:text-lg font-extrabold text-slate-900">Admin: Trip, Fee & Login Settings</h3>
           <p class="text-xs text-slate-500">Changes sync instantly to all students via Firebase</p>
         </div>
-        <button onclick="closeSettingsModal()" class="p-1 text-slate-400 hover:text-slate-700">
+        <button onclick="closeSettingsModal()" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
@@ -914,7 +1058,7 @@ service cloud.firestore {
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 xs:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Total Per Student Fee (₹)</label>
             <input type="number" id="setTripAmount" min="1" required class="w-full px-3.5 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-sm font-extrabold text-emerald-700" />
@@ -937,7 +1081,7 @@ service cloud.firestore {
         </div>
 
         <!-- Manage Selectable Departments -->
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+        <div class="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
           <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-700">
             Selectable Departments (Dropdown Options)
           </label>
@@ -945,8 +1089,8 @@ service cloud.firestore {
             <input
               type="text"
               id="newDeptInput"
-              placeholder="Add department (e.g., BCA, B.Com, BBA)"
-              class="flex-1 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
+              placeholder="Add dept (e.g., BCA, B.Com)"
+              class="flex-1 min-w-0 px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
             />
             <button
               type="button"
@@ -961,7 +1105,7 @@ service cloud.firestore {
         </div>
 
         <!-- Admin Email & Password Configuration -->
-        <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 space-y-3">
+        <div class="p-3.5 sm:p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 space-y-3">
           <p class="text-xs font-extrabold uppercase tracking-wider text-emerald-800">
             Admin Login Credentials (Email & Password)
           </p>
@@ -975,17 +1119,17 @@ service cloud.firestore {
               <input type="text" id="setAdminPassword" required class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-mono font-bold text-slate-900" />
             </div>
           </div>
-          <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 pt-1 cursor-pointer">
-            <input type="checkbox" id="setAllowCustom" checked class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" />
+          <label class="flex items-start sm:items-center gap-2 text-xs font-semibold text-slate-700 pt-1 cursor-pointer">
+            <input type="checkbox" id="setAllowCustom" checked class="mt-0.5 sm:mt-0 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" />
             <span>Allow students to edit custom payment / installment amounts</span>
           </label>
         </div>
 
         <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
-          <button type="button" onclick="closeSettingsModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold">
+          <button type="button" onclick="closeSettingsModal()" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold">
             Cancel
           </button>
-          <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm">
+          <button type="submit" class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm">
             Save All Settings
           </button>
         </div>
@@ -994,14 +1138,14 @@ service cloud.firestore {
   </div>
 
   <!-- MODAL 2: ADMIN ADD OR EDIT STUDENT PAYMENT -->
-  <div id="adminEditPaymentModal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl my-8">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
-        <div>
-          <h3 id="adminEditModalTitle" class="font-display text-lg font-extrabold text-slate-900">Edit Student Payment</h3>
-          <p class="text-xs text-slate-500">Admin full control over student details, advance & balance</p>
+  <div id="adminEditPaymentModal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white border border-slate-200 rounded-2xl sm:rounded-3xl max-w-md w-full p-4 sm:p-6 shadow-2xl my-auto max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3.5 mb-4">
+        <div class="min-w-0">
+          <h3 id="adminEditModalTitle" class="font-display text-base sm:text-lg font-extrabold text-slate-900 truncate">Edit Student Payment</h3>
+          <p class="text-xs text-slate-500">Admin control over student details, advance & balance</p>
         </div>
-        <button onclick="closeAdminEditModal()" class="p-1 text-slate-400 hover:text-slate-700">
+        <button onclick="closeAdminEditModal()" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg shrink-0">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
@@ -1014,19 +1158,19 @@ service cloud.firestore {
           <input type="text" id="editName" required placeholder="Student Name" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 font-medium" />
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 xs:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Department *</label>
             <select id="editDept" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900"></select>
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Phone Number *</label>
-            <input type="tel" id="editPhone" required placeholder="10-digit Mobile" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900" />
+            <input type="tel" id="editPhone" required inputmode="numeric" placeholder="10-digit Mobile" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900" />
           </div>
         </div>
 
         <div class="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-2.5">
-          <div class="flex items-center justify-between">
+          <div class="flex flex-wrap items-center justify-between gap-2">
             <label class="block text-xs font-extrabold text-emerald-900">Total Amount Paid (₹) *</label>
             <button
               type="button"
@@ -1041,6 +1185,7 @@ service cloud.firestore {
             id="editAmountPaid"
             min="0"
             required
+            inputmode="numeric"
             oninput="updateAdminModalBalanceText()"
             class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-emerald-300 text-sm font-extrabold text-emerald-700"
           />
@@ -1049,14 +1194,16 @@ service cloud.firestore {
           </p>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 xs:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Payment Method</label>
             <select id="editApp" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800">
               <option value="Google Pay">Google Pay (GPay)</option>
               <option value="PhonePe">PhonePe</option>
               <option value="Paytm">Paytm</option>
-              <option value="BHIM / Other UPI">BHIM / Other UPI</option>
+              <option value="WhatsApp Pay">WhatsApp Pay</option>
+              <option value="BHIM UPI">BHIM UPI</option>
+              <option value="Amazon Pay / Navi / Other">Amazon Pay / Navi / Other UPI</option>
               <option value="Cash">Cash to Admin</option>
             </select>
           </div>
@@ -1075,10 +1222,10 @@ service cloud.firestore {
         </div>
 
         <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
-          <button type="button" onclick="closeAdminEditModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold">
+          <button type="button" onclick="closeAdminEditModal()" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold">
             Cancel
           </button>
-          <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm">
+          <button type="submit" class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm">
             Save Payment Record
           </button>
         </div>
@@ -1087,8 +1234,8 @@ service cloud.firestore {
   </div>
 
   <!-- MODAL 3: DELETE CONFIRMATION -->
-  <div id="deleteModal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl space-y-4">
+  <div id="deleteModal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl sm:rounded-3xl max-w-sm w-full p-5 sm:p-6 text-center shadow-2xl space-y-4">
       <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
         <i data-lucide="trash-2" class="w-6 h-6"></i>
       </div>
@@ -1192,9 +1339,120 @@ service cloud.firestore {
     let selectedBalanceStudent = null;
     let pendingDeleteId = null;
     let draftDepartments = [];
+    let selectedUpiApp = 'Google Pay';
+    let currentCleanPayAmount = 1500;
+    let currentPaymentNote = 'Trip Payment';
 
     function normalizePhone(phoneStr) {
       return String(phoneStr || '').replace(/\D/g, '').slice(-10);
+    }
+
+    // Build app-specific UPI deep links (Android intent:// and iOS/universal schemes) so GPay, PhonePe, Paytm, BHIM, etc. open instead of defaulting only to WhatsApp
+    function buildAppSpecificUpiUrl(appName, amount, note) {
+      const pa = encodeURIComponent(tripConfig.upiId.trim());
+      const pn = encodeURIComponent(tripConfig.receiverName.trim());
+      const am = encodeURIComponent(String(amount));
+      const tn = encodeURIComponent(note);
+      const queryParams = `pa=${pa}&pn=${pn}&am=${am}&cu=INR&tn=${tn}`;
+
+      const ua = navigator.userAgent || '';
+      const isAndroid = /Android/i.test(ua);
+      const isIOS = /iPhone|iPad|iPod/i.test(ua);
+
+      if (isAndroid) {
+        const androidPackages = {
+          'Google Pay': 'com.google.android.apps.nbu.paisa.user',
+          'PhonePe': 'com.phonepe.app',
+          'Paytm': 'net.one97.paytm',
+          'WhatsApp Pay': 'com.whatsapp',
+          'BHIM UPI': 'in.org.npci.upiapp'
+        };
+        const pkg = androidPackages[appName];
+        if (pkg) {
+          return `intent://pay?${queryParams}#Intent;scheme=upi;package=${pkg};end`;
+        }
+        return `upi://pay?${queryParams}`;
+      }
+
+      if (isIOS) {
+        const iosSchemes = {
+          'Google Pay': `tez://upi/pay?${queryParams}`,
+          'PhonePe': `phonepe://pay?${queryParams}`,
+          'Paytm': `paytmmp://pay?${queryParams}`,
+          'WhatsApp Pay': `whatsapp://upi/pay?${queryParams}`,
+          'BHIM UPI': `bhim://upi/pay?${queryParams}`
+        };
+        return iosSchemes[appName] || `upi://pay?${queryParams}`;
+      }
+
+      // Universal fallback for other devices
+      const customSchemes = {
+        'Google Pay': `tez://upi/pay?${queryParams}`,
+        'PhonePe': `phonepe://pay?${queryParams}`,
+        'Paytm': `paytmmp://pay?${queryParams}`,
+        'BHIM UPI': `bhim://upi/pay?${queryParams}`
+      };
+      return customSchemes[appName] || `upi://pay?${queryParams}`;
+    }
+
+    function updateUpiAppSelectionUI(appName) {
+      selectedUpiApp = appName;
+
+      const badge = document.getElementById('selectedUpiBadge');
+      if (badge) badge.textContent = appName;
+
+      // Sync both New Payment and Balance Payment form dropdowns
+      const inpApp = document.getElementById('inpApp');
+      if (inpApp && Array.from(inpApp.options).some((o) => o.value === appName)) {
+        inpApp.value = appName;
+      }
+      const balAppInput = document.getElementById('balAppInput');
+      if (balAppInput && Array.from(balAppInput.options).some((o) => o.value === appName)) {
+        balAppInput.value = appName;
+      }
+
+      // Highlight selected app button in Step 1
+      const appNames = [
+        'Google Pay',
+        'PhonePe',
+        'Paytm',
+        'WhatsApp Pay',
+        'BHIM UPI',
+        'Amazon Pay / Navi / Other'
+      ];
+      appNames.forEach((name) => {
+        const btn = document.getElementById(`upiBtn-${name}`);
+        if (!btn) return;
+        if (name === appName) {
+          btn.className = 'upi-app-btn p-2.5 rounded-xl border-2 border-emerald-500 bg-emerald-50/70 flex items-center gap-2 text-left transition active:scale-95 shadow-sm';
+        } else {
+          btn.className = 'upi-app-btn p-2.5 rounded-xl border border-slate-200 bg-white hover:border-emerald-300 hover:bg-slate-50 flex items-center gap-2 text-left transition active:scale-95';
+        }
+      });
+
+      updateDynamicUpiLinks();
+    }
+
+    function syncSelectedAppFromDropdown(appName) {
+      updateUpiAppSelectionUI(appName);
+    }
+
+    function selectAndLaunchUpiApp(appName) {
+      updateUpiAppSelectionUI(appName);
+      launchSelectedUpiApp();
+    }
+
+    function launchSelectedUpiApp() {
+      const targetUrl = buildAppSpecificUpiUrl(selectedUpiApp, currentCleanPayAmount, currentPaymentNote);
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+
+      if (!isMobile) {
+        copyUpiId();
+        showToast(`On Desktop/Laptop, scan the QR code with ${selectedUpiApp} on your phone! (UPI ID copied)`);
+        return;
+      }
+
+      window.location.href = targetUrl;
     }
 
     function setCloudBadgeState(status, text) {
@@ -1205,13 +1463,13 @@ service cloud.firestore {
 
       label.textContent = text;
       if (status === 'connected') {
-        badge.className = 'text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1';
+        badge.className = 'text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 inline-flex items-center gap-1 shrink-0';
         dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse';
       } else if (status === 'error') {
-        badge.className = 'text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-200 flex items-center gap-1';
+        badge.className = 'text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-200 inline-flex items-center gap-1 shrink-0';
         dot.className = 'w-1.5 h-1.5 rounded-full bg-rose-500';
       } else {
-        badge.className = 'text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1';
+        badge.className = 'text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 inline-flex items-center gap-1 shrink-0';
         dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse';
       }
     }
@@ -1414,14 +1672,14 @@ service cloud.firestore {
       const secBal = document.getElementById('balancePaySection');
 
       if (mode === 'new') {
-        btnNew.className = 'py-3 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all bg-white text-emerald-700 shadow-sm flex items-center justify-center gap-2';
-        btnBal.className = 'py-3 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2';
+        btnNew.className = 'py-2.5 sm:py-3 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all bg-white text-emerald-700 shadow-sm flex items-center justify-center gap-2';
+        btnBal.className = 'py-2.5 sm:py-3 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2';
         formNew.classList.remove('hidden');
         secBal.classList.add('hidden');
         document.getElementById('qrModeLabel').textContent = 'Payable Now:';
       } else {
-        btnBal.className = 'py-3 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all bg-white text-emerald-700 shadow-sm flex items-center justify-center gap-2';
-        btnNew.className = 'py-3 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2';
+        btnBal.className = 'py-2.5 sm:py-3 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all bg-white text-emerald-700 shadow-sm flex items-center justify-center gap-2';
+        btnNew.className = 'py-2.5 sm:py-3 px-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2';
         formNew.classList.add('hidden');
         secBal.classList.remove('hidden');
         document.getElementById('qrModeLabel').textContent = 'Balance Payable:';
@@ -1439,13 +1697,13 @@ service cloud.firestore {
 
       if (type === 'full') {
         inpAmount.value = tripConfig.tripAmount;
-        btnFull.className = 'p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-50/70 text-left transition flex flex-col justify-between';
-        btnAdv.className = 'p-3.5 rounded-2xl border-2 border-slate-200 bg-white hover:border-amber-300 text-left transition flex flex-col justify-between';
+        btnFull.className = 'p-3 sm:p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-50/70 text-left transition flex flex-col justify-between';
+        btnAdv.className = 'p-3 sm:p-3.5 rounded-2xl border-2 border-slate-200 bg-white hover:border-amber-300 text-left transition flex flex-col justify-between';
         if (inpRemarks.value === 'Advance payment') inpRemarks.value = '';
       } else {
         inpAmount.value = tripConfig.advanceAmount || 500;
-        btnAdv.className = 'p-3.5 rounded-2xl border-2 border-amber-500 bg-amber-50/70 text-left transition flex flex-col justify-between';
-        btnFull.className = 'p-3.5 rounded-2xl border-2 border-slate-200 bg-white hover:border-emerald-300 text-left transition flex flex-col justify-between';
+        btnAdv.className = 'p-3 sm:p-3.5 rounded-2xl border-2 border-amber-500 bg-amber-50/70 text-left transition flex flex-col justify-between';
+        btnFull.className = 'p-3 sm:p-3.5 rounded-2xl border-2 border-slate-200 bg-white hover:border-emerald-300 text-left transition flex flex-col justify-between';
         if (!inpRemarks.value) inpRemarks.value = 'Advance payment';
       }
       updateDynamicUpiLinks();
@@ -1505,7 +1763,7 @@ service cloud.firestore {
         const previewEl = document.getElementById('liveBalancePreview');
         if (previewEl) {
           previewEl.innerHTML = remBalance > 0
-            ? `Advance Payment • Remaining Balance to pay later: <span class="font-bold text-amber-700">${formatINR(remBalance)}</span>`
+            ? `Advance Payment • Remaining Balance: <span class="font-bold text-amber-700">${formatINR(remBalance)}</span>`
             : `Full Trip Fee • <span class="font-bold text-emerald-700">No remaining balance (₹0)</span>`;
         }
 
@@ -1517,10 +1775,12 @@ service cloud.firestore {
       const upiUrl = `upi://pay?pa=${encodeURIComponent(tripConfig.upiId)}&pn=${encodeURIComponent(tripConfig.receiverName)}&am=${cleanAmount}&cu=INR&tn=${encodeURIComponent(note)}`;
       const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=10&data=${encodeURIComponent(upiUrl)}`;
 
+      currentCleanPayAmount = cleanAmount;
+      currentPaymentNote = note;
+
       document.getElementById('upiQrImage').src = qrUrl;
       document.getElementById('qrAmountBadge').textContent = formatINR(cleanAmount);
-      document.getElementById('upiDeepLinkBtn').href = upiUrl;
-      document.getElementById('upiDeepLinkText').textContent = `Open UPI App to Pay ${formatINR(cleanAmount)}`;
+      document.getElementById('upiDeepLinkText').textContent = `Pay ${formatINR(cleanAmount)} via ${selectedUpiApp}`;
     }
 
     async function handleStudentFormSubmit(e) {
@@ -1548,13 +1808,10 @@ service cloud.firestore {
       btn.innerHTML = '<span>Saving Payment to Database...</span>';
 
       const totalFee = Number(tripConfig.tripAmount) || 1500;
-
-      // Check if this student (same 10-digit phone) already has an existing payment record
       const existingRecord = payments.find((p) => normalizePhone(p.phone) === cleanPhone);
 
       try {
         if (existingRecord) {
-          // Update existing student's record by adding the new payment
           const previousPaid = Number(existingRecord.amountPaid) || 0;
           const updatedTotalPaid = previousPaid + amountPaid;
           const balanceDue = Math.max(0, totalFee - updatedTotalPaid);
@@ -1575,7 +1832,6 @@ service cloud.firestore {
             })
           });
 
-          // Optimistic local state update in case snapshot takes a moment
           const idx = payments.findIndex((p) => p.id === existingRecord.id);
           if (idx !== -1) {
             payments[idx] = {
@@ -1602,7 +1858,6 @@ service cloud.firestore {
 
           showToast('Updated your existing payment record in the database!');
         } else {
-          // Create new student payment document
           const balanceDue = Math.max(0, totalFee - amountPaid);
           const paymentTypeLabel = balanceDue > 0 ? `Advance Paid (${formatINR(amountPaid)})` : 'Full Fee Paid';
 
@@ -1625,7 +1880,6 @@ service cloud.firestore {
           const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'trip_payments');
           const docRef = await addDoc(colRef, newEntry);
 
-          // Ensure immediate local state availability
           if (!payments.some((p) => p.id === docRef.id)) {
             payments.unshift({ id: docRef.id, ...newEntry });
             updateNavBadge();
@@ -1667,7 +1921,6 @@ service cloud.firestore {
       const listContainer = document.getElementById('balanceLookupList');
       if (!listContainer) return;
 
-      // Privacy protection: Only show a student's own record when they enter a full 10-digit mobile number
       if (cleanQueryPhone.length < 10) {
         listContainer.innerHTML = `
           <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center text-xs text-slate-500">
@@ -1682,7 +1935,7 @@ service cloud.firestore {
       if (matchingStudents.length === 0) {
         listContainer.innerHTML = `
           <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-center text-xs text-amber-900 font-medium">
-            No payment record found for mobile number <span class="font-mono font-bold">${escapeHtml(cleanQueryPhone)}</span>. If you haven't paid your advance yet, switch to <strong>"New / Advance Payment"</strong>.
+            No payment record found for mobile number <span class="font-mono font-bold">${escapeHtml(cleanQueryPhone)}</span>. If you haven't paid your advance yet, switch to <strong>"New / Advance Pay"</strong>.
           </div>
         `;
         return;
@@ -1693,19 +1946,19 @@ service cloud.firestore {
           const bal = getBalanceDue(st);
           const isSelected = selectedBalanceStudent && selectedBalanceStudent.id === st.id;
           return `
-            <div class="p-4 rounded-2xl border ${
+            <div class="p-3.5 sm:p-4 rounded-2xl border ${
               isSelected ? 'border-emerald-500 bg-emerald-50/80' : 'border-slate-200 bg-white'
             } flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition shadow-sm">
-              <div>
-                <div class="flex items-center gap-2">
-                  <p class="font-bold text-slate-900 text-sm">${escapeHtml(st.studentName)}</p>
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <p class="font-bold text-slate-900 text-sm truncate">${escapeHtml(st.studentName)}</p>
                   <span class="font-mono text-[11px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">${escapeHtml(st.receiptCode)}</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-0.5">
                   ${escapeHtml(st.department)} • Phone: <span class="font-mono font-semibold">${escapeHtml(st.phone)}</span>
                 </p>
                 <p class="text-xs font-semibold text-emerald-700 mt-1">
-                  Total Paid So Far: ${formatINR(st.amountPaid)} • ${
+                  Paid So Far: ${formatINR(st.amountPaid)} • ${
                     bal > 0
                       ? `<span class="text-amber-700 font-extrabold">Balance Due: ${formatINR(bal)}</span>`
                       : `<span class="text-emerald-700 font-extrabold">Full Fee Paid (₹0 Due)</span>`
@@ -1718,11 +1971,11 @@ service cloud.firestore {
                     ? `<button
                         type="button"
                         onclick="selectStudentForBalancePay('${st.id}')"
-                        class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition"
+                        class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition text-center"
                       >
                         Pay Balance ${formatINR(bal)}
                       </button>`
-                    : `<span class="px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 text-xs font-extrabold">
+                    : `<span class="w-full sm:w-auto text-center px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 text-xs font-extrabold">
                         Fully Paid ✓
                       </span>`
                 }
@@ -1838,6 +2091,7 @@ service cloud.firestore {
 
       document.getElementById('paymentFormGrid').classList.add('hidden');
       document.getElementById('receiptCardContainer').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function resetReceiptView() {
@@ -1872,11 +2126,9 @@ service cloud.firestore {
 
       let authenticated = false;
 
-      // 1. Check against configured Admin Email & Password
       if (enteredEmail === configEmail && enteredPass === configPass) {
         authenticated = true;
       } else {
-        // 2. Also support Firebase Authentication Email/Password user if created in Firebase Console
         try {
           const userCred = await signInWithEmailAndPassword(auth, enteredEmail, enteredPass);
           if (userCred && userCred.user) {
@@ -1941,12 +2193,12 @@ service cloud.firestore {
         if (t === tabName) {
           section.classList.remove('hidden');
           if (btn) {
-            btn.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-white text-emerald-700 shadow-sm';
+            btn.className = 'flex items-center justify-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-white text-emerald-700 shadow-sm truncate';
           }
         } else {
           section.classList.add('hidden');
           if (btn) {
-            btn.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-600 hover:text-slate-900';
+            btn.className = 'flex items-center justify-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 truncate';
           }
         }
       });
@@ -2018,18 +2270,121 @@ service cloud.firestore {
 
       const filtered = getFilteredPayments();
       const tbody = document.getElementById('studentsTableBody');
+      const mobileCards = document.getElementById('studentsMobileCards');
       const emptyBox = document.getElementById('emptyStateBox');
       const tableWrap = document.getElementById('tableScrollWrap');
 
       if (filtered.length === 0) {
         emptyBox.classList.remove('hidden');
         tableWrap.classList.add('hidden');
+        if (mobileCards) mobileCards.innerHTML = '';
         return;
       }
 
       emptyBox.classList.add('hidden');
       tableWrap.classList.remove('hidden');
 
+      // 1. Render Mobile Cards (<768px)
+      if (mobileCards) {
+        mobileCards.innerHTML = filtered
+          .map((student, idx) => {
+            const isVerified = student.status === 'Verified';
+            const balanceDue = getBalanceDue(student);
+            const cleanPhone = (student.phone || '').replace(/\D/g, '').slice(-10);
+            const waMsg = encodeURIComponent(
+              balanceDue > 0
+                ? `Hi ${student.studentName}, your trip advance of ₹${student.amountPaid} is recorded. Remaining balance due is ₹${balanceDue}.`
+                : `Hi ${student.studentName}, your full trip payment of ₹${student.amountPaid} (${student.department}) is confirmed!`
+            );
+
+            return `
+              <div class="p-4 space-y-3 bg-white/60">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                      <span class="font-mono text-xs text-slate-400 font-bold">#${idx + 1}</span>
+                      <h4 class="font-bold text-slate-900 text-sm truncate">${escapeHtml(student.studentName)}</h4>
+                      <span class="px-2 py-0.5 rounded-lg text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                        ${escapeHtml(student.department)}
+                      </span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 font-mono mt-0.5">
+                      ${escapeHtml(student.receiptCode)} • ${escapeHtml(student.createdDateStr)}
+                    </p>
+                  </div>
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold shrink-0 ${
+                    isVerified
+                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                      : 'bg-amber-100 text-amber-800 border border-amber-200'
+                  }">
+                    <i data-lucide="${isVerified ? 'check-circle-2' : 'clock'}" class="w-3 h-3"></i>
+                    <span>${isVerified ? 'Verified' : 'Pending'}</span>
+                  </span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200/70 text-xs">
+                  <div>
+                    <span class="text-slate-400 block text-[10px] uppercase font-bold">Amount Paid</span>
+                    <span class="font-display font-extrabold text-emerald-700 text-sm">${formatINR(student.amountPaid)}</span>
+                    <span class="text-[10px] text-slate-400 block">${escapeHtml(student.paymentApp)}</span>
+                  </div>
+                  <div>
+                    <span class="text-slate-400 block text-[10px] uppercase font-bold">Balance Status</span>
+                    <span class="font-display font-extrabold text-sm ${balanceDue === 0 ? 'text-emerald-700' : 'text-amber-600'}">
+                      ${balanceDue === 0 ? 'Full Paid (₹0)' : `Due: ${formatINR(balanceDue)}`}
+                    </span>
+                    <a
+                      href="https://wa.me/91${cleanPhone}?text=${waMsg}"
+                      target="_blank"
+                      rel="noreferrer"
+                      class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:underline mt-0.5"
+                    >
+                      <i data-lucide="phone" class="w-3 h-3"></i>
+                      <span>${escapeHtml(student.phone)}</span>
+                    </a>
+                  </div>
+                </div>
+
+                ${
+                  student.remarks
+                    ? `<p class="text-[11px] font-medium text-amber-800 bg-amber-50/80 px-3 py-1.5 rounded-lg border border-amber-200/60 break-words">${escapeHtml(student.remarks)}</p>`
+                    : ''
+                }
+
+                <div class="flex items-center gap-2 pt-1">
+                  <button
+                    onclick="toggleVerifyStudent('${student.id}')"
+                    class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${
+                      isVerified
+                        ? 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                        : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm'
+                    }"
+                  >
+                    <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                    <span>${isVerified ? 'Unverify' : 'Verify'}</span>
+                  </button>
+                  <button
+                    onclick="openAdminEditModal('${student.id}')"
+                    class="flex-1 py-2 px-3 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 text-xs font-bold transition flex items-center justify-center gap-1.5"
+                  >
+                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                    <span>Edit</span>
+                  </button>
+                  <button
+                    onclick="openDeleteModal('${student.id}')"
+                    class="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition shrink-0"
+                    title="Remove Student"
+                  >
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+      }
+
+      // 2. Render Desktop Table (>=768px)
       tbody.innerHTML = filtered
         .map((student, idx) => {
           const isVerified = student.status === 'Verified';
@@ -2459,6 +2814,9 @@ service cloud.firestore {
     Object.assign(window, {
       hideToast,
       copyUpiId,
+      selectAndLaunchUpiApp,
+      launchSelectedUpiApp,
+      syncSelectedAppFromDropdown,
       copyFirestoreRules,
       retryDatabaseConnection,
       switchTab,
@@ -2497,6 +2855,7 @@ service cloud.firestore {
 
     window.addEventListener('DOMContentLoaded', () => {
       applyTripConfigToUI();
+      updateUpiAppSelectionUI('Google Pay');
       updateAdminUIState();
       lucide.createIcons();
       initFirebaseAndListeners();
