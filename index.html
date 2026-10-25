@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>TripPay — Student Trip Payment & Manager</title>
+  <title>TripPay — Student Trip Payment & Access Manager</title>
   <meta name="theme-color" content="#059669" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="TripPay" />
@@ -122,8 +122,8 @@
       </div>
 
       <!-- Navigation & Controls -->
-      <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-        <!-- Public Student Tabs (Visible to everyone) -->
+      <div class="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
+        <!-- Public Student Tabs -->
         <nav id="userNavTabs" class="flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/80">
           <button onclick="switchTab('pay')" id="userTabBtn-pay" class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-700 shadow-sm">
             <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
@@ -136,6 +136,10 @@
           <button onclick="switchTab('user-contacts')" id="userTabBtn-contacts" class="hidden flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
             <i data-lucide="phone-call" class="w-3.5 h-3.5"></i>
             <span>Helpline</span>
+          </button>
+          <button onclick="handleParticipantPortalClick()" id="userTabBtn-portal" class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-indigo-700 hover:text-indigo-900 bg-indigo-50/70 border border-indigo-200/60 ml-0.5">
+            <i data-lucide="key" class="w-3.5 h-3.5"></i>
+            <span id="portalNavText">My Pass</span>
           </button>
         </nav>
 
@@ -170,51 +174,13 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-3 sm:px-4 pt-4 sm:pt-6">
-    <!-- Database permission banner -->
-    <div id="dbErrorBanner" class="hidden mb-6 rounded-3xl bg-rose-50 border-2 border-rose-300 p-4 sm:p-6 shadow-md text-slate-800">
-      <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-        <div class="space-y-2">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-200/80 text-rose-900 text-xs font-extrabold uppercase tracking-wider">
-            <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-700"></i>
-            <span id="dbErrorTitle">Firebase Rules Permission Required</span>
-          </div>
-          <h3 class="font-display text-base sm:text-lg font-extrabold text-slate-900">
-            Firestore Database Rules Check
-          </h3>
-          <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
-            Ensure Firestore read & write permissions are allowed in your Firebase console.
-          </p>
-          <div class="bg-slate-900 text-emerald-300 font-mono text-xs p-3 rounded-xl overflow-x-auto border border-slate-700">
-<pre>rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
-    }
-  }
-}</pre>
-          </div>
-        </div>
-        <div class="flex sm:flex-col gap-2 shrink-0">
-          <button type="button" onclick="copyFirestoreRules()" class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-sm flex items-center justify-center gap-1.5 transition">
-            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-            <span>Copy Rules</span>
-          </button>
-          <button type="button" onclick="retryDatabaseConnection()" class="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 text-xs font-bold flex items-center justify-center gap-1.5 transition">
-            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-            <span>Retry</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
     <!-- Expressive Trip Header Card -->
     <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-50 via-white to-amber-50 border border-emerald-200/80 p-5 sm:p-7 mb-6 shadow-sm">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative z-10">
         <div class="space-y-2">
           <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100/90 border border-amber-300/60 text-amber-900 text-[11px] sm:text-xs font-bold">
             <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-600"></i>
-            <span>Official Trip Management Portal • UPI Verified</span>
+            <span>Official Trip Management Portal • Access Code Protected</span>
           </div>
           <h2 id="heroTripTitle" class="font-display text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">
             Annual College Industrial & Leisure Trip
@@ -287,6 +253,17 @@ service cloud.firestore {
             <span id="recStatusText">Status: Pending Admin Verification</span>
           </div>
           <span class="text-[10px] font-mono font-semibold text-slate-500">Live Status</span>
+        </div>
+
+        <!-- Participant Access Code Note in Receipt -->
+        <div id="recAccessCodeNote" class="mb-4 p-3.5 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs text-indigo-950 flex items-center gap-2.5">
+          <i data-lucide="key" class="w-4 h-4 text-indigo-600 shrink-0"></i>
+          <div>
+            <p class="font-bold">Personal Access Pass</p>
+            <p class="text-[11px] text-indigo-900/80" id="recAccessCodeSubtext">
+              Your 6-digit access code will be unlocked upon Admin verification.
+            </p>
+          </div>
         </div>
 
         <div class="grid grid-cols-2 gap-3 bg-slate-50/90 rounded-2xl p-3.5 border border-slate-200/80 text-xs sm:text-sm mb-5">
@@ -411,7 +388,7 @@ service cloud.firestore {
           </div>
         </div>
 
-        <!-- Step 2: Form & Balance Lookup -->
+        <!-- Step 2: Form & Registration -->
         <div class="lg:col-span-7 expressive-card border border-slate-200/90 rounded-3xl p-5 sm:p-7 space-y-4">
           <div class="bg-slate-100 p-1.5 rounded-2xl grid grid-cols-2 gap-1.5 border border-slate-200">
             <button
@@ -644,7 +621,184 @@ service cloud.firestore {
       </div>
     </section>
 
-    <!-- TAB 1.5: PUBLIC STUDENT ITINERARY VIEW (TOGGLEABLE BY ADMIN) -->
+    <!-- TAB 1.4: PARTICIPANT PORTAL VIEW (SELF-SERVICE ACCESS CODE PROTECTED) -->
+    <section id="tabSection-participant" class="hidden space-y-6">
+      <div id="participantAuthPrompt" class="max-w-md mx-auto expressive-card border border-indigo-200 rounded-3xl p-6 sm:p-7 space-y-4">
+        <div class="text-center space-y-2">
+          <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center mx-auto shadow-sm">
+            <i data-lucide="lock" class="w-6 h-6"></i>
+          </div>
+          <h3 class="font-display font-extrabold text-xl text-slate-900">Participant Pass Portal</h3>
+          <p class="text-xs text-slate-500">
+            Sign in with your registered phone number and 6-digit access code to view your verified seat, ticket pass, and balance.
+          </p>
+        </div>
+
+        <form onsubmit="handleParticipantLoginSubmit(event)" class="space-y-3.5 pt-2">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Registered Phone Number *</label>
+            <div class="relative">
+              <i data-lucide="smartphone" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input
+                type="tel"
+                id="portalLoginPhone"
+                required
+                inputmode="numeric"
+                maxlength="14"
+                placeholder="10-digit mobile number"
+                class="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 text-sm font-mono font-bold text-slate-900"
+              />
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-bold text-slate-700">6-Digit Access Code *</label>
+              <button
+                type="button"
+                onclick="openRecoveryModal()"
+                class="text-[11px] font-bold text-indigo-600 hover:text-indigo-800"
+              >
+                Forgot Code?
+              </button>
+            </div>
+            <div class="relative">
+              <i data-lucide="key" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input
+                type="password"
+                id="portalLoginCode"
+                required
+                maxlength="8"
+                placeholder="e.g. 748291"
+                class="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 text-sm font-mono tracking-widest font-bold text-slate-900"
+              />
+            </div>
+          </div>
+
+          <div id="participantRateLimitMsg" class="hidden p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-semibold text-center"></div>
+
+          <button
+            type="submit"
+            id="btnParticipantLogin"
+            class="w-full py-3 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-md transition flex items-center justify-center gap-2"
+          >
+            <i data-lucide="log-in" class="w-4 h-4"></i>
+            <span>Unlock My Participant Pass</span>
+          </button>
+        </form>
+
+        <div class="border-t border-slate-100 pt-3 text-center">
+          <p class="text-[11px] text-slate-500">
+            Haven't registered or verified yet?
+            <button onclick="switchTab('pay')" class="font-bold text-emerald-600 hover:underline">Pay / Register here</button>
+          </p>
+        </div>
+      </div>
+
+      <!-- Logged-in Participant View -->
+      <div id="participantDashboard" class="hidden space-y-6">
+        <div class="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-5 sm:p-7 shadow-lg border border-indigo-800/40">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-indigo-600/60 border border-indigo-400/40 flex items-center justify-center text-white shrink-0">
+                <i data-lucide="user-check" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <span class="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 mb-0.5">
+                  Verified Trip Participant
+                </span>
+                <h3 id="pDashName" class="font-display font-extrabold text-xl sm:text-2xl">-</h3>
+                <p class="text-xs text-slate-300">
+                  <span id="pDashDept">-</span> • Phone: <span id="pDashPhone" class="font-mono font-bold">-</span>
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                onclick="logoutParticipant()"
+                class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center gap-1.5 transition"
+              >
+                <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-indigo-800/40">
+            <div class="bg-black/25 rounded-2xl p-3 border border-white/5">
+              <p class="text-[10px] font-extrabold uppercase text-slate-400">Total Trip Fee</p>
+              <p id="pDashTotalFee" class="font-display text-lg sm:text-xl font-extrabold text-white">₹0</p>
+            </div>
+            <div class="bg-black/25 rounded-2xl p-3 border border-white/5">
+              <p class="text-[10px] font-extrabold uppercase text-emerald-400">Paid So Far</p>
+              <p id="pDashPaid" class="font-display text-lg sm:text-xl font-extrabold text-emerald-300">₹0</p>
+            </div>
+            <div class="bg-black/25 rounded-2xl p-3 border border-white/5">
+              <p class="text-[10px] font-extrabold uppercase text-amber-400">Remaining Balance</p>
+              <p id="pDashDue" class="font-display text-lg sm:text-xl font-extrabold text-amber-300">₹0</p>
+            </div>
+            <div class="bg-black/25 rounded-2xl p-3 border border-white/5">
+              <p class="text-[10px] font-extrabold uppercase text-sky-400">Booking Status</p>
+              <p id="pDashStatus" class="font-display text-sm sm:text-base font-extrabold text-white mt-1">-</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Personal Access Pass Card -->
+        <div class="expressive-card border border-indigo-200 rounded-3xl p-5 sm:p-7 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+              <i data-lucide="ticket" class="w-5 h-5 text-indigo-600"></i>
+              <h4 class="font-display font-extrabold text-lg text-slate-900">Your Official Trip Boarding Pass</h4>
+            </div>
+            <span id="pDashReceiptCode" class="font-mono font-bold text-xs bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-lg border border-indigo-200">
+              TRP-000000
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+              <p class="text-[11px] font-bold uppercase text-slate-400">Trip & Logistics</p>
+              <p class="font-bold text-slate-900 text-sm" id="pDashTripTitle">-</p>
+              <p class="text-slate-600"><strong>Destination:</strong> <span id="pDashDestination">-</span></p>
+              <p class="text-slate-600"><strong>Departure Date:</strong> <span id="pDashDate">-</span></p>
+              <p class="text-slate-600"><strong>Note / Remarks:</strong> <span id="pDashRemarks">-</span></p>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 space-y-2 text-xs">
+              <p class="text-[11px] font-bold uppercase text-emerald-800">Security & Access Pass</p>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-600">Your Personal Access Code:</span>
+                <span id="pDashCodeDisplay" class="font-mono text-base font-extrabold text-indigo-700 tracking-wider bg-white px-2.5 py-1 rounded-lg border border-indigo-200">******</span>
+              </div>
+              <p class="text-[11px] text-slate-500 leading-relaxed">
+                Keep this code confidential. You can present this screen to the bus coordinator when boarding.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2.5 pt-2">
+            <button
+              onclick="shareMyParticipantPassWhatsApp()"
+              class="px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+            >
+              <i data-lucide="message-circle" class="w-4 h-4"></i>
+              <span>Save Pass to WhatsApp</span>
+            </button>
+            <button
+              id="pDashPayBalBtn"
+              onclick="initiateBalancePaymentFromPortal()"
+              class="hidden px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+            >
+              <i data-lucide="credit-card" class="w-4 h-4"></i>
+              <span>Pay Remaining Balance</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 1.5: PUBLIC STUDENT ITINERARY VIEW -->
     <section id="tabSection-user-itinerary" class="hidden space-y-4">
       <div class="expressive-card border border-slate-200/90 rounded-3xl p-5 sm:p-7">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4 mb-4">
@@ -668,7 +822,7 @@ service cloud.firestore {
       </div>
     </section>
 
-    <!-- TAB 1.6: PUBLIC STUDENT HELPLINE VIEW (TOGGLEABLE BY ADMIN) -->
+    <!-- TAB 1.6: PUBLIC STUDENT HELPLINE VIEW -->
     <section id="tabSection-user-contacts" class="hidden space-y-4">
       <div class="expressive-card border border-slate-200/90 rounded-3xl p-5 sm:p-7">
         <div class="border-b border-slate-100 pb-4 mb-4">
@@ -683,7 +837,7 @@ service cloud.firestore {
       </div>
     </section>
 
-    <!-- TAB 2: ADMIN COMPREHENSIVE TRIP MANAGER SUITE (ADMIN ONLY) -->
+    <!-- TAB 2: ADMIN COMPREHENSIVE TRIP MANAGER SUITE -->
     <section id="tabSection-manager" class="hidden space-y-6">
       <!-- Admin Mode Banner -->
       <div class="bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-900 text-white rounded-3xl p-4 sm:p-6 shadow-md border border-emerald-800/40">
@@ -795,6 +949,26 @@ service cloud.firestore {
         </button>
 
         <button
+          onclick="switchManagerSubTab('access-codes')"
+          id="subTabBtn-access-codes"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900"
+        >
+          <i data-lucide="key" class="w-4 h-4"></i>
+          <span>Access Codes Suite</span>
+          <span id="subTabBadgeCodes" class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-indigo-100 text-indigo-800 font-extrabold">0</span>
+        </button>
+
+        <button
+          onclick="switchManagerSubTab('audit-logs')"
+          id="subTabBtn-audit-logs"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900"
+        >
+          <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          <span>Audit Logs</span>
+          <span id="subTabBadgeLogs" class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-slate-100 text-slate-700 font-extrabold">0</span>
+        </button>
+
+        <button
           onclick="switchManagerSubTab('expenses')"
           id="subTabBtn-expenses"
           class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900"
@@ -825,9 +999,8 @@ service cloud.firestore {
         </button>
       </div>
 
-      <!-- SUB-TAB 1: STUDENTS & PAYMENTS (WITH PENDING / FULL LIST FILTERS) -->
+      <!-- SUB-TAB 1: STUDENTS & PAYMENTS -->
       <div id="managerSection-students" class="space-y-4">
-        <!-- Quick Action / Status Pills & Search -->
         <div class="expressive-card border border-slate-200 rounded-2xl p-3.5 space-y-3">
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div class="relative flex-1">
@@ -841,7 +1014,7 @@ service cloud.firestore {
               />
             </div>
 
-            <!-- List Selector Pills: All / Balance Pending / Full Amount Paid -->
+            <!-- List Selector Pills -->
             <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl shrink-0">
               <button
                 type="button"
@@ -849,7 +1022,7 @@ service cloud.firestore {
                 onclick="setPaymentListPill('All')"
                 class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-white text-emerald-800 shadow-sm transition"
               >
-                All Students (<span id="pillCountAll">0</span>)
+                All (<span id="pillCountAll">0</span>)
               </button>
               <button
                 type="button"
@@ -858,7 +1031,7 @@ service cloud.firestore {
                 class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-amber-700 hover:text-amber-900 transition flex items-center gap-1"
               >
                 <i data-lucide="clock" class="w-3 h-3"></i>
-                <span>Pending Balance (<span id="pillCountPending">0</span>)</span>
+                <span>Pending (<span id="pillCountPending">0</span>)</span>
               </button>
               <button
                 type="button"
@@ -867,7 +1040,7 @@ service cloud.firestore {
                 class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600 hover:text-emerald-700 transition flex items-center gap-1"
               >
                 <i data-lucide="check-circle" class="w-3 h-3"></i>
-                <span>Full Amount Paid (<span id="pillCountFull">0</span>)</span>
+                <span>Full (<span id="pillCountFull">0</span>)</span>
               </button>
             </div>
           </div>
@@ -893,15 +1066,14 @@ service cloud.firestore {
               </select>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
               <button
                 type="button"
                 onclick="broadcastBalanceAlertsWhatsApp()"
                 class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
-                title="Send Pending Balance Reminder list"
               >
                 <i data-lucide="bell-ring" class="w-3.5 h-3.5"></i>
-                <span>Pending Dues Reminder</span>
+                <span>Dues Reminder</span>
               </button>
               <button
                 type="button"
@@ -956,13 +1128,76 @@ service cloud.firestore {
                   <th class="py-3 px-4">Department</th>
                   <th class="py-3 px-4">WhatsApp / Phone</th>
                   <th class="py-3 px-4">Paid & Dues</th>
-                  <th class="py-3 px-4">Status</th>
+                  <th class="py-3 px-4">Status & Access</th>
                   <th class="py-3 px-4 text-right">Admin Actions</th>
                 </tr>
               </thead>
               <tbody id="studentsTableBody" class="divide-y divide-slate-200/70 text-sm"></tbody>
             </table>
           </div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB 1.5: ACCESS CODES SUITE -->
+      <div id="managerSection-access-codes" class="hidden space-y-5">
+        <div class="expressive-card border border-slate-200 rounded-3xl p-5 sm:p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[11px] font-bold border border-indigo-200 mb-1">
+                <i data-lucide="key" class="w-3.5 h-3.5"></i>
+                <span>Cryptographic Participant Credentials</span>
+              </div>
+              <h3 class="font-display font-extrabold text-lg text-slate-900">Participant Access Codes Manager</h3>
+              <p class="text-xs text-slate-500">
+                Generate, reset, enable/disable access passes, and send confidential access links to students.
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                onclick="generateMissingAccessCodesForVerified()"
+                class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+              >
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                <span>Auto-Generate Verified Codes</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="codesTableScrollWrap" class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-200 bg-slate-50/90 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                  <th class="py-3 px-4">Student</th>
+                  <th class="py-3 px-4">Phone</th>
+                  <th class="py-3 px-4">Access Code</th>
+                  <th class="py-3 px-4">Pass Status</th>
+                  <th class="py-3 px-4">Failed Logins</th>
+                  <th class="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="accessCodesTableBody" class="divide-y divide-slate-200/70 text-sm"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB 1.6: AUDIT LOGS -->
+      <div id="managerSection-audit-logs" class="hidden space-y-5">
+        <div class="expressive-card border border-slate-200 rounded-3xl p-5 sm:p-6 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <h3 class="font-display font-extrabold text-lg text-slate-900">Security & Authentication Audit Trail</h3>
+              <p class="text-xs text-slate-500">Records of login attempts, credential regenerations, and recoveries</p>
+            </div>
+            <button
+              onclick="clearAuditLogs()"
+              class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:text-rose-600 bg-slate-50"
+            >
+              Clear Logs
+            </button>
+          </div>
+          <div id="auditLogsContainer" class="space-y-2 max-h-96 overflow-y-auto font-mono text-xs"></div>
         </div>
       </div>
 
@@ -1153,6 +1388,145 @@ service cloud.firestore {
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL: PARTICIPANT CODE RECOVERY -->
+  <div id="recoveryModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center">
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-display text-base font-extrabold text-slate-900">Access Recovery</h3>
+            <p class="text-[11px] text-slate-400">Verify phone number ownership</p>
+          </div>
+        </div>
+        <button onclick="closeRecoveryModal()" class="p-1 text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="recoveryStep1" class="space-y-3">
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Enter your registered mobile number and student name as submitted during registration.
+        </p>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Registered Phone Number *</label>
+          <input
+            type="tel"
+            id="recovPhone"
+            inputmode="numeric"
+            placeholder="10-digit mobile"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-mono font-bold text-slate-900"
+          />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Student Full Name *</label>
+          <input
+            type="text"
+            id="recovName"
+            placeholder="Name used on payment"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900"
+          />
+        </div>
+        <button
+          type="button"
+          onclick="handleInitiateRecovery()"
+          class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-sm"
+        >
+          Verify Ownership
+        </button>
+      </div>
+
+      <div id="recoveryStep2" class="hidden space-y-3">
+        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs text-emerald-900">
+          <p class="font-bold">Identity Confirmed!</p>
+          <p class="text-[11px] mt-0.5">A secure single-use WhatsApp verification dispatch was configured.</p>
+        </div>
+        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-center">
+          <p class="text-[10px] uppercase font-bold text-slate-400">Your Personal Access Code</p>
+          <p id="recoveredCodeDisplay" class="font-mono text-2xl font-extrabold text-indigo-700 tracking-widest my-1">------</p>
+          <p class="text-[10px] text-slate-500">Memorize or copy this code for future portal access.</p>
+        </div>
+        <button
+          type="button"
+          onclick="autoLoginWithRecoveredCode()"
+          class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold"
+        >
+          Sign In Now
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADMIN ACCESS CODE CONTROLLER -->
+  <div id="adminAccessCodeModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-5 sm:p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <h3 class="font-display text-base font-extrabold text-slate-900">Manage Access Pass</h3>
+          <p class="text-xs text-slate-500" id="adminCodeModalSub">Student details</p>
+        </div>
+        <button onclick="closeAdminCodeModal()" class="p-1 text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <input type="hidden" id="adminCodeStudentId" />
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">Current / New Access Code</label>
+        <div class="flex gap-2">
+          <input
+            type="text"
+            id="adminCodeManualInput"
+            maxlength="8"
+            class="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-mono font-extrabold text-indigo-700"
+          />
+          <button
+            type="button"
+            onclick="adminGenerateRandomCode()"
+            class="px-3 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold flex items-center gap-1"
+          >
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <span>New</span>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">Pass Status</label>
+        <select id="adminCodeStatusSelect" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800">
+          <option value="Active">Active (Permitted to Log In)</option>
+          <option value="Disabled">Disabled (Suspended / Blocked)</option>
+        </select>
+      </div>
+
+      <div class="flex items-center justify-between p-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs">
+        <div>
+          <p class="font-bold text-amber-900">Failed Login Attempts</p>
+          <p class="text-[11px] text-amber-700" id="adminCodeFailedCount">0 attempts recorded</p>
+        </div>
+        <button
+          type="button"
+          onclick="adminResetFailedAttempts()"
+          class="px-2.5 py-1 rounded-lg bg-white border border-amber-300 font-bold text-amber-800 text-[11px]"
+        >
+          Reset Lockout
+        </button>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+        <button type="button" onclick="closeAdminCodeModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold">
+          Cancel
+        </button>
+        <button type="button" onclick="saveAdminAccessCode()" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-sm">
+          Update Pass
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1570,7 +1944,7 @@ service cloud.firestore {
           <div id="deptTagsContainer" class="flex flex-wrap gap-2 pt-1"></div>
         </div>
 
-        <!-- Expense Categories Management -->
+        <!-- Expense Categories -->
         <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
           <div class="flex items-center justify-between">
             <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-700">
@@ -1582,7 +1956,7 @@ service cloud.firestore {
             <input
               type="text"
               id="newExpenseCategoryInput"
-              placeholder="e.g., Campfire & DJ, Boating, Safari Entry"
+              placeholder="e.g., Campfire & DJ, Boating"
               class="flex-1 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none"
             />
             <button
@@ -1719,6 +2093,7 @@ service cloud.firestore {
     let unsubExpenses = null;
     let unsubItinerary = null;
     let unsubContacts = null;
+    let unsubAudit = null;
 
     let tripConfig = {
       tripTitle: 'Annual College Industrial & Leisure Trip',
@@ -1741,6 +2116,11 @@ service cloud.firestore {
     let expenses = [];
     let itineraries = [];
     let contacts = [];
+    let auditLogs = [];
+
+    // Session State (In-Memory per requirements)
+    let loggedInParticipant = null; // { id, studentName, phone, accessCode, ... }
+    let participantFailedAttempts = {}; // phone -> { count, lockedUntil }
 
     let isAdminLoggedIn = false;
     let currentPaymentMode = 'new';
@@ -1779,6 +2159,14 @@ service cloud.firestore {
       const total = Number(tripConfig.tripAmount) || 1500;
       const paid = Number(p.amountPaid) || 0;
       return Math.max(0, total - paid);
+    }
+
+    // Cryptographically Strong 6-Digit Code Generator
+    function generateSecureAccessCode() {
+      const array = new Uint32Array(1);
+      window.crypto.getRandomValues(array);
+      const code = (array[0] % 900000 + 100000).toString();
+      return code;
     }
 
     function copyText(text, msg = 'Copied to clipboard!') {
@@ -1888,6 +2276,7 @@ service cloud.firestore {
           tripConfig = { ...tripConfig, ...d };
           applyTripConfigToUI();
           if (isAdminLoggedIn) renderDashboard();
+          if (loggedInParticipant) updateParticipantDashboardUI();
         }
       }, (err) => console.error(err));
 
@@ -1899,7 +2288,17 @@ service cloud.firestore {
         setCloudBadgeState('connected', 'Live Cloud');
         updateNavBadge();
         if (currentPaymentMode === 'balance') renderBalanceLookupResults();
-        if (isAdminLoggedIn) renderDashboard();
+        if (isAdminLoggedIn) {
+          renderDashboard();
+          renderAccessCodesSuite();
+        }
+        if (loggedInParticipant) {
+          const fresh = payments.find(p => p.id === loggedInParticipant.id);
+          if (fresh) {
+            loggedInParticipant = fresh;
+            updateParticipantDashboardUI();
+          }
+        }
       }, (err) => setCloudBadgeState('error', 'Error'));
 
       // Expenses Listener
@@ -1926,6 +2325,69 @@ service cloud.firestore {
         contacts.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
         renderContacts();
       }, (err) => console.error(err));
+
+      // Audit Logs Listener
+      const auditCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_audit_logs');
+      unsubAudit = onSnapshot(auditCol, (snap) => {
+        auditLogs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        auditLogs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        renderAuditLogs();
+      }, (err) => console.error(err));
+    }
+
+    // AUDIT LOG HELPER
+    async function logSecurityEvent(action, target, details) {
+      try {
+        const payload = {
+          action,
+          target: target || 'system',
+          details: details || '',
+          timestamp: Date.now(),
+          timeStr: new Date().toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'medium' })
+        };
+        const ref = collection(db, 'artifacts', appId, 'public', 'data', 'trip_audit_logs');
+        await addDoc(ref, payload);
+      } catch (e) {
+        console.warn('Audit logging failed silently:', e);
+      }
+    }
+
+    function renderAuditLogs() {
+      const container = document.getElementById('auditLogsContainer');
+      const badge = document.getElementById('subTabBadgeLogs');
+      if (badge) badge.textContent = auditLogs.length;
+      if (!container) return;
+
+      if (auditLogs.length === 0) {
+        container.innerHTML = '<div class="p-6 text-center text-slate-400">No security events recorded yet.</div>';
+        return;
+      }
+
+      container.innerHTML = auditLogs.map(l => `
+        <div class="p-2.5 rounded-xl border border-slate-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${l.action.includes('FAIL') || l.action.includes('LOCKOUT') ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'}">
+              ${escapeHtml(l.action)}
+            </span>
+            <span class="font-bold text-slate-800">${escapeHtml(l.target)}</span>
+            <span class="text-slate-500">${escapeHtml(l.details)}</span>
+          </div>
+          <span class="text-slate-400 text-[10px] shrink-0">${escapeHtml(l.timeStr)}</span>
+        </div>
+      `).join('');
+    }
+
+    async function clearAuditLogs() {
+      if (!isAdminLoggedIn) return;
+      if (!window.confirm("Clear all audit records?")) return;
+      try {
+        for (const log of auditLogs) {
+          await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_audit_logs', log.id));
+        }
+        showToast('Audit trail cleared.');
+      } catch (e) {
+        showToast('Failed to clear logs.', 'error');
+      }
     }
 
     function applyTripConfigToUI() {
@@ -1954,11 +2416,9 @@ service cloud.firestore {
       const isContEnabled = tripConfig.showContactsToUsers !== false;
 
       if (itinBtn) {
-        if (isItinEnabled) {
-          itinBtn.classList.remove('hidden');
-        } else {
+        if (isItinEnabled) itinBtn.classList.remove('hidden');
+        else {
           itinBtn.classList.add('hidden');
-          // If public user is currently on hidden itinerary tab, redirect to pay tab
           const currentTabSec = document.getElementById('tabSection-user-itinerary');
           if (currentTabSec && !currentTabSec.classList.contains('hidden') && !isAdminLoggedIn) {
             switchTab('pay');
@@ -1967,11 +2427,9 @@ service cloud.firestore {
       }
 
       if (contBtn) {
-        if (isContEnabled) {
-          contBtn.classList.remove('hidden');
-        } else {
+        if (isContEnabled) contBtn.classList.remove('hidden');
+        else {
           contBtn.classList.add('hidden');
-          // If public user is currently on hidden contacts tab, redirect to pay tab
           const currentTabSec = document.getElementById('tabSection-user-contacts');
           if (currentTabSec && !currentTabSec.classList.contains('hidden') && !isAdminLoggedIn) {
             switchTab('pay');
@@ -1979,12 +2437,10 @@ service cloud.firestore {
         }
       }
 
-      // Update admin quick-toggle buttons and badges
       updateAdminVisibilityPills(isItinEnabled, isContEnabled);
     }
 
     function updateAdminVisibilityPills(isItinEnabled, isContEnabled) {
-      // 1. Itinerary Quick Toggle in Admin Control Room
       const qItinBtn = document.getElementById('quickToggleItineraryBtn');
       const qItinText = document.getElementById('quickToggleItineraryText');
       const hItinBadge = document.getElementById('itinVisibilityBadge');
@@ -2010,11 +2466,8 @@ service cloud.firestore {
         }
       }
 
-      if (hItinToggleText) {
-        hItinToggleText.textContent = isItinEnabled ? 'Hide from Students' : 'Show to Students';
-      }
+      if (hItinToggleText) hItinToggleText.textContent = isItinEnabled ? 'Hide from Students' : 'Show to Students';
 
-      // 2. Helpline Quick Toggle in Admin Control Room
       const qContBtn = document.getElementById('quickToggleContactsBtn');
       const qContText = document.getElementById('quickToggleContactsText');
       const hContBadge = document.getElementById('contactsVisibilityBadge');
@@ -2040,11 +2493,8 @@ service cloud.firestore {
         }
       }
 
-      if (hContToggleText) {
-        hContToggleText.textContent = isContEnabled ? 'Hide from Students' : 'Show to Students';
-      }
+      if (hContToggleText) hContToggleText.textContent = isContEnabled ? 'Hide from Students' : 'Show to Students';
 
-      // Also sync Settings modal checkboxes if opened
       const setItinCheck = document.getElementById('setShowItineraryToUsers');
       const setContCheck = document.getElementById('setShowContactsToUsers');
       if (setItinCheck) setItinCheck.checked = isItinEnabled;
@@ -2288,6 +2738,8 @@ service cloud.firestore {
             createdDateStr: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
           });
 
+          logSecurityEvent('PAYMENT_UPDATE', cleanPhone, `Added payment of ₹${amountPaid}`);
+
           showDigitalReceipt({
             badge: balanceDue === 0 ? 'Full Trip Fee Completed!' : 'Additional Payment Recorded',
             studentName,
@@ -2298,7 +2750,8 @@ service cloud.firestore {
             totalPaid: updatedTotalPaid,
             balanceDue,
             paymentApp,
-            status: 'Pending Verification'
+            status: 'Pending Verification',
+            accessCode: existingRecord.accessCode
           });
           showToast('Updated existing payment record!', 'success', 'Send to WhatsApp', () => shareReceiptToUserWhatsApp());
         } else {
@@ -2312,12 +2765,17 @@ service cloud.firestore {
             paymentApp,
             remarks: userRemarks || (balanceDue > 0 ? `Advance Paid (${formatINR(amountPaid)})` : 'Full Fee Paid'),
             status: 'Pending Verification',
+            accessCode: '', // Generated once Admin verifies
+            accessStatus: 'Active',
+            failedLoginAttempts: 0,
             createdAt: Date.now(),
             createdDateStr: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
           };
 
           const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'trip_payments');
           await addDoc(colRef, newEntry);
+
+          logSecurityEvent('PAYMENT_REGISTER', cleanPhone, `Registered new payment of ₹${amountPaid}`);
 
           showDigitalReceipt({
             badge: balanceDue > 0 ? 'Advance Payment Recorded' : 'Full Payment Submitted',
@@ -2329,7 +2787,8 @@ service cloud.firestore {
             totalPaid: amountPaid,
             balanceDue,
             paymentApp: newEntry.paymentApp,
-            status: 'Pending Verification'
+            status: 'Pending Verification',
+            accessCode: ''
           });
           showToast('Payment submitted successfully!', 'success', 'Send to WhatsApp', () => shareReceiptToUserWhatsApp());
         }
@@ -2354,7 +2813,6 @@ service cloud.firestore {
         if (!tripConfig.expenseCategories.includes(clean)) {
           tripConfig.expenseCategories.push(clean);
           renderExpenseCategoryDropdown(clean);
-          // Auto sync to cloud settings if admin
           if (isAdminLoggedIn) {
             const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
             updateDoc(ref, { expenseCategories: tripConfig.expenseCategories }).catch(() => {});
@@ -2455,6 +2913,9 @@ service cloud.firestore {
           status: 'Pending Verification',
           createdDateStr: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
         });
+
+        logSecurityEvent('BALANCE_PAYMENT', selectedBalanceStudent.phone, `Paid balance of ₹${payNow}`);
+
         showDigitalReceipt({
           badge: 'Balance Paid',
           studentName: selectedBalanceStudent.studentName,
@@ -2465,7 +2926,8 @@ service cloud.firestore {
           totalPaid,
           balanceDue: Math.max(0, (Number(tripConfig.tripAmount) || 1500) - totalPaid),
           paymentApp: app,
-          status: 'Pending Verification'
+          status: 'Pending Verification',
+          accessCode: selectedBalanceStudent.accessCode
         });
         clearSelectedBalanceStudent();
         document.getElementById('balanceSearchInput').value = '';
@@ -2486,6 +2948,13 @@ service cloud.firestore {
       document.getElementById('recBalanceDue').textContent = formatINR(data.balanceDue);
       document.getElementById('recApp').textContent = data.paymentApp;
 
+      const accessSub = document.getElementById('recAccessCodeSubtext');
+      if (data.accessCode) {
+        accessSub.innerHTML = `Your Access Code is active: <strong class="font-mono text-indigo-700 font-extrabold text-sm">${escapeHtml(data.accessCode)}</strong> (Save this for login).`;
+      } else {
+        accessSub.textContent = 'Your 6-digit access code will be unlocked upon Admin verification.';
+      }
+
       document.getElementById('paymentFormGrid').classList.add('hidden');
       document.getElementById('receiptCardContainer').classList.remove('hidden');
       lucide.createIcons();
@@ -2498,6 +2967,7 @@ service cloud.firestore {
 
     function shareReceiptToUserWhatsApp() {
       if (!lastReceiptData) return;
+      const codeLine = lastReceiptData.accessCode ? `🔑 *Access Pass Code:* ${lastReceiptData.accessCode}\n` : '';
       const msg = `*🧾 TRIP RECEIPT — ${tripConfig.tripTitle}*\n` +
         `--------------------------------\n` +
         `👤 *Student:* ${lastReceiptData.studentName}\n` +
@@ -2506,6 +2976,7 @@ service cloud.firestore {
         `💵 *Paid Now:* ${formatINR(lastReceiptData.paidNow)}\n` +
         `💰 *Total Paid:* ${formatINR(lastReceiptData.totalPaid)}\n` +
         `⚖️ *Balance Due:* ${lastReceiptData.balanceDue > 0 ? formatINR(lastReceiptData.balanceDue) : '₹0 (Full Paid 🎉)'}\n` +
+        codeLine +
         `📱 *App:* ${lastReceiptData.paymentApp}\n` +
         `📌 *Status:* ${lastReceiptData.status}\n` +
         `--------------------------------\n` +
@@ -2518,7 +2989,8 @@ service cloud.firestore {
       const st = payments.find(p => p.id === id);
       if (!st) return;
       const bal = getBalanceDue(st);
-      const msg = `*${st.status === 'Verified' ? '✅ PAYMENT VERIFIED' : '🧾 TRIP PAYMENT RECEIPT'}*\n` +
+      const codeNotice = st.accessCode ? `\n🔑 *Personal Access Code:* *${st.accessCode}*\n_(Use this code with your phone number on My Pass portal)_` : '';
+      const msg = `*${st.status === 'Verified' ? '✅ PAYMENT VERIFIED & PASS ISSUED' : '🧾 TRIP PAYMENT RECEIPT'}*\n` +
         `--------------------------------\n` +
         `Trip: *${tripConfig.tripTitle}*\n` +
         `👤 Student: *${st.studentName}*\n` +
@@ -2527,7 +2999,8 @@ service cloud.firestore {
         `⚖️ Balance Due: *${bal > 0 ? formatINR(bal) : '₹0 (Completed 🎉)'}*\n` +
         `📌 Status: *${st.status}*\n` +
         `🧾 Receipt: ${st.receiptCode}\n` +
-        `--------------------------------\n` +
+        codeNotice +
+        `\n--------------------------------\n` +
         `Official payment confirmation.`;
       window.open(`https://wa.me/91${normalizePhone(st.phone)}?text=${encodeURIComponent(msg)}`, '_blank');
     }
@@ -2553,7 +3026,408 @@ service cloud.firestore {
       copyText(lines.join('\n'), 'Pending balance announcement copied to clipboard!');
     }
 
+    // ==========================================
+    // PARTICIPANT ACCESS PASS & LOGIN ENGINE
+    // ==========================================
+    function handleParticipantPortalClick() {
+      switchTab('participant');
+    }
+
+    async function handleParticipantLoginSubmit(e) {
+      e.preventDefault();
+      const phoneInput = document.getElementById('portalLoginPhone').value;
+      const codeInput = document.getElementById('portalLoginCode').value.trim();
+      const cleanPhone = normalizePhone(phoneInput);
+      const limitBox = document.getElementById('participantRateLimitMsg');
+      limitBox.classList.add('hidden');
+
+      if (cleanPhone.length < 10 || !codeInput) {
+        showToast('Please enter your 10-digit phone number and access code.', 'error');
+        return;
+      }
+
+      // Check lockout state
+      const now = Date.now();
+      const lockout = participantFailedAttempts[cleanPhone];
+      if (lockout && lockout.lockedUntil && now < lockout.lockedUntil) {
+        const remainingSec = Math.ceil((lockout.lockedUntil - now) / 1000);
+        limitBox.textContent = `Too many failed login attempts. Temporarily locked for ${remainingSec}s.`;
+        limitBox.classList.remove('hidden');
+        return;
+      }
+
+      const match = payments.find(p => normalizePhone(p.phone) === cleanPhone);
+      if (!match) {
+        registerFailedLogin(cleanPhone);
+        logSecurityEvent('LOGIN_FAIL', cleanPhone, 'Unregistered phone attempted login');
+        showToast('No student registered with this phone number.', 'error');
+        return;
+      }
+
+      if (match.status !== 'Verified') {
+        showToast('Your registration is still pending Admin verification. Contact your trip coordinator.', 'error');
+        return;
+      }
+
+      if (match.accessStatus === 'Disabled') {
+        showToast('This access code has been temporarily disabled by Administrator.', 'error');
+        logSecurityEvent('LOGIN_BLOCKED', cleanPhone, 'Attempt to login with disabled code');
+        return;
+      }
+
+      if (!match.accessCode || match.accessCode.trim() !== codeInput) {
+        registerFailedLogin(cleanPhone, match.id);
+        logSecurityEvent('LOGIN_FAIL', cleanPhone, 'Invalid access code entered');
+        showToast('Invalid access code. Use "Forgot Code?" if forgotten.', 'error');
+        return;
+      }
+
+      // Success Login
+      delete participantFailedAttempts[cleanPhone];
+      loggedInParticipant = match;
+      logSecurityEvent('LOGIN_SUCCESS', cleanPhone, `Participant ${match.studentName} authenticated`);
+      showToast(`Welcome, ${match.studentName}!`);
+      updateParticipantDashboardUI();
+    }
+
+    function registerFailedLogin(phone, docId = null) {
+      const now = Date.now();
+      if (!participantFailedAttempts[phone]) {
+        participantFailedAttempts[phone] = { count: 0, lockedUntil: 0 };
+      }
+      participantFailedAttempts[phone].count += 1;
+
+      if (participantFailedAttempts[phone].count >= 4) {
+        participantFailedAttempts[phone].lockedUntil = now + (60 * 1000); // 1 minute lock
+        const limitBox = document.getElementById('participantRateLimitMsg');
+        limitBox.textContent = 'Too many failed login attempts. Portal locked for 60 seconds.';
+        limitBox.classList.remove('hidden');
+        logSecurityEvent('RATE_LIMIT_LOCKOUT', phone, 'Exceeded 4 failed attempts');
+      }
+
+      // Increment in database for admin visibility
+      if (docId) {
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', docId);
+        const match = payments.find(p => p.id === docId);
+        const currentFailed = (match?.failedLoginAttempts || 0) + 1;
+        updateDoc(ref, { failedLoginAttempts: currentFailed }).catch(() => {});
+      }
+    }
+
+    function updateParticipantDashboardUI() {
+      const authBox = document.getElementById('participantAuthPrompt');
+      const dashBox = document.getElementById('participantDashboard');
+      const navText = document.getElementById('portalNavText');
+
+      if (!loggedInParticipant) {
+        authBox.classList.remove('hidden');
+        dashBox.classList.add('hidden');
+        navText.textContent = 'My Pass';
+        return;
+      }
+
+      authBox.classList.add('hidden');
+      dashBox.classList.remove('hidden');
+      navText.textContent = loggedInParticipant.studentName.split(' ')[0] + ' (Pass)';
+
+      document.getElementById('pDashName').textContent = loggedInParticipant.studentName;
+      document.getElementById('pDashDept').textContent = loggedInParticipant.department;
+      document.getElementById('pDashPhone').textContent = loggedInParticipant.phone;
+
+      const totalFee = Number(tripConfig.tripAmount) || 1500;
+      const due = getBalanceDue(loggedInParticipant);
+
+      document.getElementById('pDashTotalFee').textContent = formatINR(totalFee);
+      document.getElementById('pDashPaid').textContent = formatINR(loggedInParticipant.amountPaid);
+      document.getElementById('pDashDue').textContent = formatINR(due);
+      document.getElementById('pDashStatus').innerHTML = loggedInParticipant.status === 'Verified'
+        ? `<span class="text-emerald-400 font-extrabold flex items-center gap-1"><i data-lucide="check-circle" class="w-4 h-4"></i> Verified Pass</span>`
+        : `<span class="text-amber-400 font-extrabold flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> Pending Admin</span>`;
+
+      document.getElementById('pDashReceiptCode').textContent = loggedInParticipant.receiptCode;
+      document.getElementById('pDashTripTitle').textContent = tripConfig.tripTitle;
+      document.getElementById('pDashDestination').textContent = tripConfig.destination;
+      document.getElementById('pDashDate').textContent = tripConfig.tripDate;
+      document.getElementById('pDashRemarks').textContent = loggedInParticipant.remarks || 'Standard Participant Seat';
+      document.getElementById('pDashCodeDisplay').textContent = loggedInParticipant.accessCode || 'PENDING';
+
+      const payBalBtn = document.getElementById('pDashPayBalBtn');
+      if (due > 0) {
+        payBalBtn.classList.remove('hidden');
+        payBalBtn.textContent = `Pay Remaining Balance (${formatINR(due)})`;
+      } else {
+        payBalBtn.classList.add('hidden');
+      }
+
+      lucide.createIcons();
+    }
+
+    function logoutParticipant() {
+      if (loggedInParticipant) {
+        logSecurityEvent('LOGOUT_PARTICIPANT', loggedInParticipant.phone, 'User ended portal session');
+      }
+      loggedInParticipant = null;
+      updateParticipantDashboardUI();
+      showToast('Logged out of participant pass.');
+    }
+
+    function initiateBalancePaymentFromPortal() {
+      if (!loggedInParticipant) return;
+      switchTab('pay');
+      switchPaymentMode('balance');
+      const searchInp = document.getElementById('balanceSearchInput');
+      if (searchInp) {
+        searchInp.value = loggedInParticipant.phone;
+        renderBalanceLookupResults();
+        selectStudentForBalance(loggedInParticipant.id);
+      }
+    }
+
+    function shareMyParticipantPassWhatsApp() {
+      if (!loggedInParticipant) return;
+      const bal = getBalanceDue(loggedInParticipant);
+      const msg = `*🎫 OFFICIAL TRIP PARTICIPANT PASS*\n` +
+        `Trip: *${tripConfig.tripTitle}*\n` +
+        `Destination: ${tripConfig.destination} (${tripConfig.tripDate})\n` +
+        `--------------------------------\n` +
+        `👤 *Name:* ${loggedInParticipant.studentName}\n` +
+        `🎓 *Department:* ${loggedInParticipant.department}\n` +
+        `🔑 *Access Code:* *${loggedInParticipant.accessCode}*\n` +
+        `🧾 *Receipt:* ${loggedInParticipant.receiptCode}\n` +
+        `💰 *Fee Cleared:* ${formatINR(loggedInParticipant.amountPaid)} / ${formatINR(tripConfig.tripAmount)}\n` +
+        `⚖️ *Remaining Due:* ${bal > 0 ? formatINR(bal) : '₹0 (Fully Paid)'}\n` +
+        `📌 *Verification:* Verified Student Seat ✅\n` +
+        `--------------------------------\n` +
+        `Present this verification pass at boarding.`;
+      const url = `https://wa.me/91${normalizePhone(loggedInParticipant.phone)}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
+
+    // ==========================================
+    // RECOVERY WORKFLOW
+    // ==========================================
+    function openRecoveryModal() {
+      document.getElementById('recoveryStep1').classList.remove('hidden');
+      document.getElementById('recoveryStep2').classList.add('hidden');
+      document.getElementById('recovPhone').value = document.getElementById('portalLoginPhone')?.value || '';
+      document.getElementById('recovName').value = '';
+      document.getElementById('recoveryModal').classList.remove('hidden');
+    }
+
+    function closeRecoveryModal() {
+      document.getElementById('recoveryModal').classList.add('hidden');
+    }
+
+    async function handleInitiateRecovery() {
+      const phone = normalizePhone(document.getElementById('recovPhone').value);
+      const name = document.getElementById('recovName').value.trim().toLowerCase();
+
+      if (phone.length < 10 || !name) {
+        showToast('Please enter both your registered phone number and full name.', 'error');
+        return;
+      }
+
+      const match = payments.find(p => normalizePhone(p.phone) === phone);
+      if (!match) {
+        showToast('No record found matching this phone number.', 'error');
+        return;
+      }
+
+      // Verify name similarity
+      const storedName = match.studentName.toLowerCase();
+      if (!storedName.includes(name) && !name.includes(storedName)) {
+        showToast('The provided name does not match the registered records for this number.', 'error');
+        logSecurityEvent('RECOVERY_FAIL', phone, 'Name mismatch during recovery');
+        return;
+      }
+
+      let activeCode = match.accessCode;
+      if (!activeCode) {
+        activeCode = generateSecureAccessCode();
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', match.id);
+        await updateDoc(ref, {
+          accessCode: activeCode,
+          accessStatus: 'Active',
+          failedLoginAttempts: 0
+        });
+      }
+
+      logSecurityEvent('RECOVERY_SUCCESS', phone, `Access code recovered by ${match.studentName}`);
+
+      document.getElementById('recoveredCodeDisplay').textContent = activeCode;
+      document.getElementById('recoveryStep1').classList.add('hidden');
+      document.getElementById('recoveryStep2').classList.remove('hidden');
+
+      // Auto prefill login form
+      document.getElementById('portalLoginPhone').value = phone;
+      document.getElementById('portalLoginCode').value = activeCode;
+    }
+
+    function autoLoginWithRecoveredCode() {
+      closeRecoveryModal();
+      handleParticipantLoginSubmit(new Event('submit'));
+    }
+
+    // ==========================================
+    // ADMIN ACCESS CODES MANAGEMENT SUITE
+    // ==========================================
+    function renderAccessCodesSuite() {
+      const tbody = document.getElementById('accessCodesTableBody');
+      const badge = document.getElementById('subTabBadgeCodes');
+      if (badge) badge.textContent = payments.length;
+      if (!tbody) return;
+
+      tbody.innerHTML = payments.map((p, idx) => {
+        const hasCode = Boolean(p.accessCode);
+        const isActive = p.accessStatus !== 'Disabled';
+        const isVer = p.status === 'Verified';
+
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3 px-4">
+              <span class="font-bold text-slate-900 block">${escapeHtml(p.studentName)}</span>
+              <span class="text-[11px] text-slate-500">${escapeHtml(p.department)}</span>
+            </td>
+            <td class="py-3 px-4 font-mono text-xs font-bold text-slate-700">
+              ${escapeHtml(p.phone)}
+            </td>
+            <td class="py-3 px-4">
+              ${hasCode ? `
+                <div class="flex items-center gap-1.5">
+                  <span class="font-mono font-extrabold text-sm text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-200">
+                    ${escapeHtml(p.accessCode)}
+                  </span>
+                  <button onclick="copyText('${p.accessCode}', 'Access code copied!')" class="text-slate-400 hover:text-indigo-600 p-1">
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              ` : `
+                <span class="text-xs text-slate-400 italic">Not Generated</span>
+              `}
+            </td>
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                <span class="w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-rose-500'}"></span>
+                <span>${isActive ? 'Active' : 'Disabled'}</span>
+              </span>
+            </td>
+            <td class="py-3 px-4">
+              <span class="text-xs font-mono font-bold ${(p.failedLoginAttempts || 0) > 0 ? 'text-amber-600' : 'text-slate-400'}">
+                ${p.failedLoginAttempts || 0}
+              </span>
+            </td>
+            <td class="py-3 px-4 text-right">
+              <div class="inline-flex items-center gap-1">
+                <button
+                  onclick="openAdminCodeControllerModal('${p.id}')"
+                  class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold"
+                >
+                  Edit / Pass
+                </button>
+                <button
+                  onclick="sendAccessPassWhatsApp('${p.id}')"
+                  class="p-1.5 rounded-lg bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20"
+                  title="Send Access Code via WhatsApp"
+                >
+                  <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    async function generateMissingAccessCodesForVerified() {
+      let count = 0;
+      for (const p of payments) {
+        if (p.status === 'Verified' && !p.accessCode) {
+          const newCode = generateSecureAccessCode();
+          const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', p.id);
+          await updateDoc(ref, {
+            accessCode: newCode,
+            accessStatus: 'Active',
+            failedLoginAttempts: 0
+          });
+          count++;
+        }
+      }
+      logSecurityEvent('BULK_CODE_GEN', 'admin', `Generated ${count} access codes`);
+      showToast(`Generated access codes for ${count} verified participants.`);
+    }
+
+    function openAdminCodeControllerModal(id) {
+      const p = payments.find(x => x.id === id);
+      if (!p) return;
+      document.getElementById('adminCodeStudentId').value = p.id;
+      document.getElementById('adminCodeModalSub').textContent = `${p.studentName} (${p.phone})`;
+      document.getElementById('adminCodeManualInput').value = p.accessCode || generateSecureAccessCode();
+      document.getElementById('adminCodeStatusSelect').value = p.accessStatus || 'Active';
+      document.getElementById('adminCodeFailedCount').textContent = `${p.failedLoginAttempts || 0} failed attempts`;
+      document.getElementById('adminAccessCodeModal').classList.remove('hidden');
+    }
+
+    function closeAdminCodeModal() {
+      document.getElementById('adminAccessCodeModal').classList.add('hidden');
+    }
+
+    function adminGenerateRandomCode() {
+      document.getElementById('adminCodeManualInput').value = generateSecureAccessCode();
+    }
+
+    function adminResetFailedAttempts() {
+      document.getElementById('adminCodeFailedCount').textContent = '0 attempts (Reset on save)';
+      showToast('Lockout reset flagged.');
+    }
+
+    async function saveAdminAccessCode() {
+      const id = document.getElementById('adminCodeStudentId').value;
+      const code = document.getElementById('adminCodeManualInput').value.trim();
+      const status = document.getElementById('adminCodeStatusSelect').value;
+
+      if (!code || code.length < 4) {
+        showToast('Please enter an access code of at least 4 digits.', 'error');
+        return;
+      }
+
+      try {
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', id);
+        await updateDoc(ref, {
+          accessCode: code,
+          accessStatus: status,
+          failedLoginAttempts: 0
+        });
+        logSecurityEvent('ADMIN_CODE_UPDATE', id, `Updated code: ${code}, status: ${status}`);
+        showToast('Access code updated successfully!');
+        closeAdminCodeModal();
+      } catch (e) {
+        showToast('Failed to update code.', 'error');
+      }
+    }
+
+    function sendAccessPassWhatsApp(id) {
+      const p = payments.find(x => x.id === id);
+      if (!p || !p.accessCode) {
+        showToast('Generate an access code first.', 'error');
+        return;
+      }
+      const msg = `*🔐 TRIP PORTAL ACCESS PASS*\n` +
+        `Trip: *${tripConfig.tripTitle}*\n` +
+        `Student: *${p.studentName}*\n` +
+        `--------------------------------\n` +
+        `📱 Registered Phone: *${p.phone}*\n` +
+        `🔑 Your 6-Digit Access Code: *${p.accessCode}*\n` +
+        `--------------------------------\n` +
+        `You can log in to the My Pass tab at any time to view your verified seat, ticket, itinerary, and remaining dues.`;
+      const url = `https://wa.me/91${normalizePhone(p.phone)}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
+
+    // ==========================================
     // ADMIN SYSTEM & SUB-TABS
+    // ==========================================
     function handleAdminAccessClick() {
       if (isAdminLoggedIn) {
         switchTab('manager');
@@ -2591,6 +3465,7 @@ service cloud.firestore {
         closeAdminLoginModal();
         updateAdminUIState();
         switchTab('manager');
+        logSecurityEvent('ADMIN_LOGIN', mail, 'Admin dashboard unlocked');
         showToast('Admin logged in successfully!');
       }
     }
@@ -2625,22 +3500,20 @@ service cloud.firestore {
         return;
       }
 
-      const allTabs = ['pay', 'user-itinerary', 'user-contacts', 'manager'];
+      const allTabs = ['pay', 'participant', 'user-itinerary', 'user-contacts', 'manager'];
       allTabs.forEach(tab => {
         const sec = document.getElementById(`tabSection-${tab}`);
         if (!sec) return;
-        if (tab === t) {
-          sec.classList.remove('hidden');
-        } else {
-          sec.classList.add('hidden');
-        }
+        if (tab === t) sec.classList.remove('hidden');
+        else sec.classList.add('hidden');
       });
 
       // Update public user navbar styles
-      ['pay', 'itinerary', 'contacts'].forEach(sub => {
+      ['pay', 'itinerary', 'contacts', 'portal'].forEach(sub => {
         const btn = document.getElementById(`userTabBtn-${sub}`);
         if (!btn) return;
-        if (t === (sub === 'pay' ? 'pay' : `user-${sub}`)) {
+        const targetName = sub === 'pay' ? 'pay' : (sub === 'portal' ? 'participant' : `user-${sub}`);
+        if (t === targetName) {
           btn.className = 'flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-700 shadow-sm';
         } else {
           btn.className = 'flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900';
@@ -2659,13 +3532,14 @@ service cloud.firestore {
       });
 
       if (t === 'manager') renderDashboard();
+      if (t === 'participant') updateParticipantDashboardUI();
       if (t === 'user-itinerary') renderItinerary();
       if (t === 'user-contacts') renderContacts();
       lucide.createIcons();
     }
 
     function switchManagerSubTab(sub) {
-      ['students', 'expenses', 'itinerary', 'contacts'].forEach(s => {
+      ['students', 'access-codes', 'audit-logs', 'expenses', 'itinerary', 'contacts'].forEach(s => {
         const sec = document.getElementById(`managerSection-${s}`);
         const btn = document.getElementById(`subTabBtn-${s}`);
         if (s === sub) {
@@ -2676,6 +3550,8 @@ service cloud.firestore {
           btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900';
         }
       });
+      if (sub === 'access-codes') renderAccessCodesSuite();
+      if (sub === 'audit-logs') renderAuditLogs();
       lucide.createIcons();
     }
 
@@ -2695,6 +3571,7 @@ service cloud.firestore {
     function updateNavBadge() {
       document.getElementById('navPaidCount').textContent = payments.length;
       document.getElementById('subTabBadgeStudents').textContent = payments.length;
+      document.getElementById('subTabBadgeCodes').textContent = payments.length;
     }
 
     function renderKPIs() {
@@ -2717,7 +3594,6 @@ service cloud.firestore {
       document.getElementById('statExpensesCount').textContent = `${expenses.length} expenses logged`;
       document.getElementById('statNetTripBalance').textContent = formatINR(net);
 
-      // Pill counts
       document.getElementById('pillCountAll').textContent = payments.length;
       document.getElementById('pillCountPending').textContent = pendingCount;
       document.getElementById('pillCountFull').textContent = payments.length - pendingCount;
@@ -2731,7 +3607,6 @@ service cloud.firestore {
       const statusF = document.getElementById('dashStatusFilter')?.value || 'All';
       const deptF = document.getElementById('dashDeptFilter')?.value || 'All';
 
-      // Populate Dept Filter dropdown
       const deptSelect = document.getElementById('dashDeptFilter');
       const uniqueDepts = Array.from(new Set([...tripConfig.departments, ...payments.map(p => p.department)]));
       const curDeptVal = deptSelect.value;
@@ -2796,10 +3671,15 @@ service cloud.firestore {
               </span>
             </td>
             <td class="py-3 px-4">
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${isVer ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                <i data-lucide="${isVer ? 'check' : 'clock'}" class="w-3 h-3"></i>
-                <span>${escapeHtml(s.status)}</span>
-              </span>
+              <div class="space-y-1">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${isVer ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                  <i data-lucide="${isVer ? 'check' : 'clock'}" class="w-3 h-3"></i>
+                  <span>${escapeHtml(s.status)}</span>
+                </span>
+                ${s.accessCode ? `
+                  <p class="font-mono text-[11px] font-extrabold text-indigo-700">Pass: ${escapeHtml(s.accessCode)}</p>
+                ` : ''}
+              </div>
             </td>
             <td class="py-3 px-4 text-right">
               <div class="inline-flex items-center gap-1">
@@ -2865,14 +3745,25 @@ service cloud.firestore {
       lucide.createIcons();
     }
 
+    // Automatically generate access code when marking student verified
     async function toggleVerifyStudent(id) {
       const p = payments.find(x => x.id === id);
       if (!p) return;
-      const next = p.status === 'Verified' ? 'Pending Verification' : 'Verified';
+      const isNextVerified = p.status !== 'Verified';
+      const nextStatus = isNextVerified ? 'Verified' : 'Pending Verification';
+
+      let updatePayload = { status: nextStatus };
+      if (isNextVerified && !p.accessCode) {
+        updatePayload.accessCode = generateSecureAccessCode();
+        updatePayload.accessStatus = 'Active';
+        updatePayload.failedLoginAttempts = 0;
+      }
+
       try {
         const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', id);
-        await updateDoc(ref, { status: next });
-        showToast(next === 'Verified' ? `Verified payment of ${p.studentName}` : `Marked ${p.studentName} as Pending.`);
+        await updateDoc(ref, updatePayload);
+        logSecurityEvent(isNextVerified ? 'VERIFY_STUDENT' : 'UNVERIFY_STUDENT', p.phone, `Status updated to ${nextStatus}`);
+        showToast(isNextVerified ? `Verified ${p.studentName} and generated Pass!` : `Marked ${p.studentName} as Pending.`);
       } catch (e) {
         showToast('Status update failed.', 'error');
       }
@@ -2986,7 +3877,6 @@ service cloud.firestore {
       const empty = document.getElementById('itineraryEmptyBox');
       document.getElementById('subTabBadgeItinerary').textContent = itineraries.length;
 
-      // Template for public student view (read-only, no edit/delete buttons)
       const userItinHtml = itineraries.length === 0
         ? `<div class="p-8 text-center text-slate-400 text-xs bg-slate-50 rounded-2xl border border-slate-200">Trip itinerary will be announced soon!</div>`
         : itineraries.map((itin, idx) => `
@@ -3016,7 +3906,6 @@ service cloud.firestore {
       }
       empty.classList.add('hidden');
 
-      // Admin interactive view with Edit & Delete actions
       container.innerHTML = itineraries.map((itin, idx) => `
         <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-start justify-between gap-3 shadow-sm">
           <div class="flex items-start gap-3">
@@ -3125,7 +4014,6 @@ service cloud.firestore {
       const empty = document.getElementById('contactsEmptyBox');
       document.getElementById('subTabBadgeContacts').textContent = contacts.length;
 
-      // Student read-only view with direct call and WhatsApp actions
       const userContactHtml = contacts.length === 0
         ? `<div class="col-span-full p-8 text-center text-slate-400 text-xs bg-slate-50 rounded-2xl border border-slate-200">Emergency crew & helpline numbers will be listed here.</div>`
         : contacts.map(c => `
@@ -3162,7 +4050,6 @@ service cloud.firestore {
       }
       empty.classList.add('hidden');
 
-      // Admin editable view
       container.innerHTML = contacts.map(c => `
         <div class="bg-white border border-slate-200 rounded-2xl p-4 space-y-2 shadow-sm">
           <div class="flex items-start justify-between">
@@ -3245,6 +4132,7 @@ service cloud.firestore {
 
       try {
         await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', colName, id));
+        logSecurityEvent('DELETE_RECORD', id, `Removed record from ${colName}`);
         showToast(`Record removed.`);
         closeDeleteModal();
       } catch (e) {
@@ -3274,7 +4162,7 @@ service cloud.firestore {
 
     function exportStudentsCSV() {
       const list = payments;
-      const headers = ['Receipt Code', 'Student Name', 'Department', 'Phone', 'Paid', 'Due', 'Status'];
+      const headers = ['Receipt Code', 'Student Name', 'Department', 'Phone', 'Paid', 'Due', 'Status', 'Access Code'];
       const rows = list.map(p => [
         `"${p.receiptCode}"`,
         `"${p.studentName}"`,
@@ -3282,7 +4170,8 @@ service cloud.firestore {
         `"${p.phone}"`,
         p.amountPaid,
         getBalanceDue(p),
-        `"${p.status}"`
+        `"${p.status}"`,
+        `"${p.accessCode || ''}"`
       ]);
       const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
@@ -3346,6 +4235,14 @@ service cloud.firestore {
     async function handleAdminSaveStudentSubmit(e) {
       e.preventDefault();
       const id = document.getElementById('editStudentId').value;
+      const isVerified = document.getElementById('editStatus').value === 'Verified';
+
+      const existing = payments.find(p => p.id === id);
+      let accessCode = existing?.accessCode || '';
+      if (isVerified && !accessCode) {
+        accessCode = generateSecureAccessCode();
+      }
+
       const data = {
         studentName: document.getElementById('editName').value.trim(),
         department: document.getElementById('editDept').value,
@@ -3353,7 +4250,9 @@ service cloud.firestore {
         amountPaid: Number(document.getElementById('editAmountPaid').value) || 0,
         paymentApp: document.getElementById('editApp').value,
         status: document.getElementById('editStatus').value,
-        remarks: document.getElementById('editRemarks').value.trim()
+        remarks: document.getElementById('editRemarks').value.trim(),
+        accessCode,
+        accessStatus: existing?.accessStatus || 'Active'
       };
 
       try {
@@ -3493,22 +4392,11 @@ service cloud.firestore {
       }
     }
 
-    function copyFirestoreRules() {
-      const rules = `rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /{document=**} {\n      allow read, write: if true;\n    }\n  }\n}`;
-      copyText(rules, 'Firestore rules copied!');
-    }
-
-    async function retryDatabaseConnection() {
-      setCloudBadgeState('connecting', 'Reconnecting...');
-      await initFirebaseAndListeners();
-    }
-
     // Attach globals to window
     Object.assign(window, {
       hideToast,
+      copyText,
       copyUpiId,
-      copyFirestoreRules,
-      retryDatabaseConnection,
       switchTab,
       switchManagerSubTab,
       setPaymentListPill,
@@ -3562,7 +4450,25 @@ service cloud.firestore {
       removeDraftDept,
       addExpenseCategoryOption,
       removeDraftExpenseCategory,
-      promptAddNewExpenseCategory
+      promptAddNewExpenseCategory,
+      handleParticipantPortalClick,
+      handleParticipantLoginSubmit,
+      logoutParticipant,
+      openRecoveryModal,
+      closeRecoveryModal,
+      handleInitiateRecovery,
+      autoLoginWithRecoveredCode,
+      shareMyParticipantPassWhatsApp,
+      initiateBalancePaymentFromPortal,
+      renderAccessCodesSuite,
+      generateMissingAccessCodesForVerified,
+      openAdminCodeControllerModal,
+      closeAdminCodeModal,
+      adminGenerateRandomCode,
+      adminResetFailedAttempts,
+      saveAdminAccessCode,
+      sendAccessPassWhatsApp,
+      clearAuditLogs
     });
 
     window.addEventListener('DOMContentLoaded', () => {
