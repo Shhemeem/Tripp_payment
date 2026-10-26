@@ -3571,64 +3571,116 @@
       }
     }
 
-    // Share boarding pass PDF + verification text directly to WhatsApp
+    // Capture the boarding pass as a PNG image blob (used for WhatsApp sharing on mobile)
+    // WhatsApp accepts images via the share sheet but often rejects PDF files
+    async function capturePassAsImageBlob(populateFn) {
+      if (populateFn) populateFn();
+      const clone = await clonePassForCapture();
+      if (!clone) return null;
+      try {
+        const canvas = await html2canvas(clone, {
+          scale: 2.5,
+          useCORS: true,
+          allowTaint: false,
+          logging: false,
+          backgroundColor: '#ffffff',
+          width: 680,
+          windowWidth: 680
+        });
+        return await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      } finally {
+        document.body.removeChild(clone);
+      }
+    }
+
+    // Smart share helper: tries PDF → falls back to image → falls back to text+download
+    async function sharePassToWhatsApp({ studentData, msg, waUrl, cleanName, receiptCode, btnEl }) {
+      const pdfName = `BoardingPass_${cleanName}_${receiptCode}.pdf`;
+      const imgName = `BoardingPass_${cleanName}_${receiptCode}.png`;
+      const title = `Boarding Pass – ${studentData.studentName}`;
+
+      if (btnEl) { btnEl.disabled = true; btnEl._origHtml = btnEl.innerHTML; btnEl.innerHTML = '<span>Preparing...</span>'; }
+
+      try {
+        if (navigator.share && navigator.canShare) {
+
+          // --- Attempt 1: Share as PDF ---
+          try {
+            const pdfBlob = await buildPdfBlobFromPass();
+            if (pdfBlob) {
+              const pdfFile = new File([pdfBlob], pdfName, { type: 'application/pdf' });
+              if (navigator.canShare({ files: [pdfFile] })) {
+                await navigator.share({ files: [pdfFile], title, text: msg });
+                showToast('Boarding pass PDF shared to WhatsApp! ✅');
+                return;
+              }
+            }
+          } catch (pdfErr) {
+            if (pdfErr.name === 'AbortError') return;
+            // PDF rejected by WhatsApp — fall through to image
+          }
+
+          // --- Attempt 2: Share as PNG image (WhatsApp always accepts images) ---
+          try {
+            const imgBlob = await capturePassAsImageBlob();
+            if (imgBlob) {
+              const imgFile = new File([imgBlob], imgName, { type: 'image/png' });
+              if (navigator.canShare({ files: [imgFile] })) {
+                await navigator.share({ files: [imgFile], title, text: msg });
+                showToast('Boarding pass image shared to WhatsApp! ✅');
+                return;
+              }
+            }
+          } catch (imgErr) {
+            if (imgErr.name === 'AbortError') return;
+          }
+        }
+
+        // --- Desktop / final fallback: download PDF + open WhatsApp text ---
+        const pdfBlob = await buildPdfBlobFromPass();
+        if (pdfBlob) {
+          const pdfUrl = URL.createObjectURL(pdfBlob);
+          const a = document.createElement('a');
+          a.href = pdfUrl;
+          a.download = pdfName;
+          a.click();
+          setTimeout(() => URL.revokeObjectURL(pdfUrl), 8000);
+        }
+        setTimeout(() => window.open(waUrl, '_blank'), 700);
+        showToast('PDF downloaded! In WhatsApp → tap 📎 → attach the PDF file.');
+
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.warn('Share failed, text-only fallback:', err);
+          window.open(waUrl, '_blank');
+        }
+      } finally {
+        if (btnEl) { btnEl.disabled = false; btnEl.innerHTML = btnEl._origHtml || ''; lucide.createIcons(); }
+      }
+    }
+
+    // Share boarding pass (PDF→Image→Text cascade) to WhatsApp from the boarding pass modal
     async function shareCurrentBoardingPassWhatsApp() {
       if (!currentBoardingPassData) return;
-
       const st = currentBoardingPassData;
       const msg = buildWhatsAppBoardingPassText(st);
       const phone = normalizePhone(st.phone);
       const waUrl = phone.length === 10
         ? `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`
         : `https://wa.me/?text=${encodeURIComponent(msg)}`;
-
-      const btn = document.getElementById('btnWaSharePdf');
-      const origHtml = btn ? btn.innerHTML : '';
-      if (btn) { btn.disabled = true; btn.innerHTML = '<span>Preparing PDF...</span>'; }
-
       const cleanName = (st.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
-      const fileName = `BoardingPass_${cleanName}_${st.receiptCode || 'Ticket'}.pdf`;
-
-      try {
-        const pdfBlob = await buildPdfBlobFromPass();
-        if (!pdfBlob) throw new Error('PDF blob empty');
-        const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
-
-        // Mobile: native share sheet — user picks WhatsApp → receives PDF + text
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-          try {
-            await navigator.share({
-              files: [pdfFile],
-              title: `Boarding Pass – ${st.studentName}`,
-              text: msg
-            });
-            showToast('Boarding pass PDF shared!');
-            return;
-          } catch (err) {
-            if (err.name === 'AbortError') return;
-          }
-        }
-
-        // Desktop / fallback: download PDF + open WhatsApp with verification text
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-        const a = document.createElement('a');
-        a.href = pdfUrl;
-        a.download = fileName;
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(pdfUrl), 8000);
-        setTimeout(() => window.open(waUrl, '_blank'), 800);
-        showToast('PDF saved! In WhatsApp → tap 📎 → attach the PDF you just downloaded.');
-
-      } catch (err) {
-        console.warn('PDF share failed, sending text only:', err);
-        window.open(waUrl, '_blank');
-        showToast('PDF failed — sending verification text only.');
-      } finally {
-        if (btn) { btn.disabled = false; btn.innerHTML = origHtml; lucide.createIcons(); }
-      }
+      const btn = document.getElementById('btnWaSharePdf');
+      await sharePassToWhatsApp({
+        studentData: st,
+        msg,
+        waUrl,
+        cleanName,
+        receiptCode: st.receiptCode || 'Ticket',
+        btnEl: btn
+      });
     }
 
-    // Admin: share student boarding pass PDF + verification text to WhatsApp
+    // Admin: share student boarding pass (PDF→Image→Text cascade) to WhatsApp
     async function shareStudentBoardingPassWhatsApp(id) {
       const st = payments.find(p => p.id === id);
       if (!st) return;
@@ -3639,48 +3691,21 @@
         ? `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`
         : `https://wa.me/?text=${encodeURIComponent(msg)}`;
       const cleanName = (st.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
-      const fileName = `BoardingPass_${cleanName}_${st.receiptCode || 'Ticket'}.pdf`;
 
-      showToast('Generating pass PDF...');
+      showToast('Preparing boarding pass...');
 
-      try {
-        // Silently populate the boarding pass printable area with this student's data
-        populateBoardingPassDataSilent(st);
+      // Silently populate the boarding pass printable area
+      populateBoardingPassDataSilent(st);
+      await new Promise(r => setTimeout(r, 350)); // wait for QR to start rendering
 
-        // Wait for QR image to start loading
-        await new Promise(r => setTimeout(r, 300));
-
-        const pdfBlob = await buildPdfBlobFromPass();
-        if (!pdfBlob) throw new Error('PDF blob empty');
-        const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
-
-        // Mobile: native share sheet — user picks WhatsApp → receives PDF + text
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-          await navigator.share({
-            files: [pdfFile],
-            title: `Boarding Pass – ${st.studentName}`,
-            text: msg
-          });
-          showToast(`Boarding pass PDF sent to ${st.studentName}!`);
-          return;
-        }
-
-        // Desktop fallback: download PDF + open WhatsApp web with text
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-        const a = document.createElement('a');
-        a.href = pdfUrl;
-        a.download = fileName;
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(pdfUrl), 8000);
-        setTimeout(() => window.open(waUrl, '_blank'), 800);
-        showToast(`PDF saved! Open WhatsApp for ${st.studentName} → tap 📎 → attach the PDF.`);
-
-      } catch (err) {
-        if (err.name === 'AbortError') return;
-        console.warn('Student PDF share failed, text-only fallback:', err);
-        window.open(waUrl, '_blank');
-        showToast('PDF failed — verification text sent instead.');
-      }
+      await sharePassToWhatsApp({
+        studentData: st,
+        msg,
+        waUrl,
+        cleanName,
+        receiptCode: st.receiptCode || 'Ticket',
+        btnEl: null
+      });
     }
 
     // =========================================================================
