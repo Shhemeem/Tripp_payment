@@ -1819,7 +1819,7 @@
           class="py-3.5 px-3 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] active:bg-[#1ca34d] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg transition active:scale-95"
         >
           <i data-lucide="message-circle" class="w-4 h-4"></i>
-          <span>WhatsApp Text</span>
+          <span>WhatsApp + Image</span>
         </button>
         <button
           type="button"
@@ -3510,14 +3510,76 @@
         `Present this Boarding Pass at the bus gate for QR scan check-in.`;
     }
 
-    function shareCurrentBoardingPassWhatsApp() {
+    // Share boarding pass image + verification text directly to WhatsApp
+    async function shareCurrentBoardingPassWhatsApp() {
       if (!currentBoardingPassData) return;
-      const msg = buildWhatsAppBoardingPassText(currentBoardingPassData);
-      const phone = normalizePhone(currentBoardingPassData.phone);
-      const url = phone.length === 10
+
+      const st = currentBoardingPassData;
+      const totalFee = Number(tripConfig.tripAmount) || 1500;
+      const paid = Number(st.amountPaid) || 0;
+      const due = Math.max(0, totalFee - paid);
+      const msg = buildWhatsAppBoardingPassText(st);
+      const phone = normalizePhone(st.phone);
+      const waUrl = phone.length === 10
         ? `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`
         : `https://wa.me/?text=${encodeURIComponent(msg)}`;
-      window.open(url, '_blank');
+
+      // Try to capture the pass as image and share via native share API
+      if (typeof html2canvas !== 'undefined') {
+        const btn = document.querySelector('[onclick="shareCurrentBoardingPassWhatsApp()"]');
+        const origHtml = btn ? btn.innerHTML : '';
+        if (btn) { btn.disabled = true; btn.innerHTML = '<span>Preparing...</span>'; }
+
+        try {
+          const element = document.getElementById('boardingPassPrintableArea');
+          const canvas = await html2canvas(element, {
+            scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff'
+          });
+
+          const cleanName = (st.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
+          const fileName = `BoardingPass_${cleanName}_${st.receiptCode || 'Ticket'}.png`;
+
+          canvas.toBlob(async (blob) => {
+            if (!blob) { window.open(waUrl, '_blank'); return; }
+            const file = new File([blob], fileName, { type: 'image/png' });
+
+            // Mobile: native share sheet with image + text → user picks WhatsApp
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+              try {
+                await navigator.share({
+                  files: [file],
+                  title: `Boarding Pass – ${st.studentName}`,
+                  text: msg
+                });
+                showToast('Boarding pass shared to WhatsApp!');
+                return;
+              } catch (err) {
+                if (err.name === 'AbortError') return; // user cancelled
+              }
+            }
+
+            // Desktop / fallback: save image + open WhatsApp with text
+            const imgUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = imgUrl;
+            a.download = fileName;
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(imgUrl), 5000);
+
+            setTimeout(() => window.open(waUrl, '_blank'), 700);
+            showToast('Pass image saved! Open the WhatsApp chat → tap 📎 → attach the image you just downloaded.');
+          }, 'image/png');
+
+        } catch (err) {
+          console.warn('Image capture failed, falling back to text-only:', err);
+          window.open(waUrl, '_blank');
+        } finally {
+          if (btn) { btn.disabled = false; btn.innerHTML = origHtml; lucide.createIcons(); }
+        }
+      } else {
+        // html2canvas not loaded — send text only
+        window.open(waUrl, '_blank');
+      }
     }
 
     function shareStudentBoardingPassWhatsApp(id) {
