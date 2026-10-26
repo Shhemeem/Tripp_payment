@@ -3525,16 +3525,33 @@
         'left:-9999px',
         'top:0',
         'width:680px',
-        'z-index:-1',
+        'z-index:9999',
         'background:#ffffff',
         'border-radius:28px',
         'overflow:visible',
         'visibility:visible',
+        'opacity:1',
         'pointer-events:none'
       ].join(';');
       document.body.appendChild(clone);
-      // Small delay to let browser paint the clone before capturing
-      await new Promise(r => setTimeout(r, 80));
+
+      // Wait for ALL images in the clone to load (QR code, logo, etc.)
+      const imgs = Array.from(clone.querySelectorAll('img'));
+      await Promise.all(imgs.map(img => {
+        if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+        // Force reload if src already set
+        const src = img.src;
+        img.src = '';
+        img.src = src;
+        return new Promise(resolve => {
+          img.onload = resolve;
+          img.onerror = resolve;
+          setTimeout(resolve, 4000); // max 4s wait per image
+        });
+      }));
+
+      // Extra paint frame
+      await new Promise(r => setTimeout(r, 120));
       return clone;
     }
 
@@ -3593,67 +3610,47 @@
       }
     }
 
-    // Smart share helper: tries PDF → falls back to image → falls back to text+download
+    // Smart share helper: always shares as PNG image to WhatsApp (most compatible)
+    // Falls back to PDF download + WhatsApp text on desktop
     async function sharePassToWhatsApp({ studentData, msg, waUrl, cleanName, receiptCode, btnEl }) {
-      const pdfName = `BoardingPass_${cleanName}_${receiptCode}.pdf`;
       const imgName = `BoardingPass_${cleanName}_${receiptCode}.png`;
       const title = `Boarding Pass – ${studentData.studentName}`;
 
-      if (btnEl) { btnEl.disabled = true; btnEl._origHtml = btnEl.innerHTML; btnEl.innerHTML = '<span>Preparing...</span>'; }
+      if (btnEl) { btnEl.disabled = true; btnEl._origHtml = btnEl.innerHTML; btnEl.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin inline"></i> <span>Preparing...</span>'; lucide.createIcons(); }
 
       try {
-        if (navigator.share && navigator.canShare) {
+        // Capture the boarding pass as a PNG image
+        const imgBlob = await capturePassAsImageBlob();
 
-          // --- Attempt 1: Share as PDF ---
-          try {
-            const pdfBlob = await buildPdfBlobFromPass();
-            if (pdfBlob) {
-              const pdfFile = new File([pdfBlob], pdfName, { type: 'application/pdf' });
-              if (navigator.canShare({ files: [pdfFile] })) {
-                await navigator.share({ files: [pdfFile], title, text: msg });
-                showToast('Boarding pass PDF shared to WhatsApp! ✅');
-                return;
-              }
-            }
-          } catch (pdfErr) {
-            if (pdfErr.name === 'AbortError') return;
-            // PDF rejected by WhatsApp — fall through to image
-          }
-
-          // --- Attempt 2: Share as PNG image (WhatsApp always accepts images) ---
-          try {
-            const imgBlob = await capturePassAsImageBlob();
-            if (imgBlob) {
-              const imgFile = new File([imgBlob], imgName, { type: 'image/png' });
-              if (navigator.canShare({ files: [imgFile] })) {
-                await navigator.share({ files: [imgFile], title, text: msg });
-                showToast('Boarding pass image shared to WhatsApp! ✅');
-                return;
-              }
-            }
-          } catch (imgErr) {
-            if (imgErr.name === 'AbortError') return;
+        if (imgBlob && navigator.share && navigator.canShare) {
+          const imgFile = new File([imgBlob], imgName, { type: 'image/png' });
+          if (navigator.canShare({ files: [imgFile] })) {
+            // Share sheet opens — user picks WhatsApp → image + text arrives together
+            await navigator.share({ files: [imgFile], title, text: msg });
+            showToast('Boarding pass shared to WhatsApp! ✅');
+            return;
           }
         }
 
-        // --- Desktop / final fallback: download PDF + open WhatsApp text ---
-        const pdfBlob = await buildPdfBlobFromPass();
-        if (pdfBlob) {
-          const pdfUrl = URL.createObjectURL(pdfBlob);
+        // Desktop / no-share-API fallback: download image + open WhatsApp with text
+        if (imgBlob) {
+          const imgUrl = URL.createObjectURL(imgBlob);
           const a = document.createElement('a');
-          a.href = pdfUrl;
-          a.download = pdfName;
+          a.href = imgUrl;
+          a.download = imgName;
           a.click();
-          setTimeout(() => URL.revokeObjectURL(pdfUrl), 8000);
-        }
-        setTimeout(() => window.open(waUrl, '_blank'), 700);
-        showToast('PDF downloaded! In WhatsApp → tap 📎 → attach the PDF file.');
-
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          console.warn('Share failed, text-only fallback:', err);
+          setTimeout(() => URL.revokeObjectURL(imgUrl), 8000);
+          setTimeout(() => window.open(waUrl, '_blank'), 700);
+          showToast('Pass image saved! In WhatsApp → tap 📎 → attach the image.');
+        } else {
           window.open(waUrl, '_blank');
         }
+
+      } catch (err) {
+        if (err.name === 'AbortError') return; // user cancelled share sheet
+        console.warn('Share failed, text-only fallback:', err);
+        window.open(waUrl, '_blank');
+        showToast('Image failed — verification text sent to WhatsApp.');
       } finally {
         if (btnEl) { btnEl.disabled = false; btnEl.innerHTML = btnEl._origHtml || ''; lucide.createIcons(); }
       }
@@ -3680,7 +3677,7 @@
       });
     }
 
-    // Admin: share student boarding pass (PDF→Image→Text cascade) to WhatsApp
+    // Admin: share student boarding pass image + text to WhatsApp
     async function shareStudentBoardingPassWhatsApp(id) {
       const st = payments.find(p => p.id === id);
       if (!st) return;
@@ -3694,9 +3691,20 @@
 
       showToast('Preparing boarding pass...');
 
-      // Silently populate the boarding pass printable area
-      populateBoardingPassDataSilent(st);
-      await new Promise(r => setTimeout(r, 350)); // wait for QR to start rendering
+      // Open the boarding pass modal visibly so all elements (QR, logo) render properly
+      openBoardingPassModal(st);
+
+      // Wait for QR image and logo to fully load
+      const qrEl = document.getElementById('bpQrImage');
+      const logoEl = document.getElementById('bpLogoImg');
+      await Promise.all([qrEl, logoEl].filter(Boolean).map(img => {
+        if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+        return new Promise(resolve => {
+          img.onload = resolve;
+          img.onerror = resolve;
+          setTimeout(resolve, 4000);
+        });
+      }));
 
       await sharePassToWhatsApp({
         studentData: st,
