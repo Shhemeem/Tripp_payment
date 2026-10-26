@@ -3455,29 +3455,53 @@
         return;
       }
 
-      const origHtml = btn.innerHTML;
-      btn.disabled = true;
-      btn.innerHTML = '<span>Generating PDF...</span>';
+      const origHtml = btn ? btn.innerHTML : '';
+      if (btn) { btn.disabled = true; btn.innerHTML = '<span>Generating PDF...</span>'; }
 
       const cleanName = (currentBoardingPassData?.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
       const code = currentBoardingPassData?.receiptCode || 'Ticket';
 
+      // Clone the pass element to the body (off-screen, unconstrained) so
+      // html2canvas captures the FULL boarding pass, not just the scrollable viewport
+      const clone = element.cloneNode(true);
+      clone.style.cssText = [
+        'position:fixed',
+        'top:-9999px',
+        'left:0',
+        'width:680px',       // fixed ticket width — matches max-w-2xl on desktop
+        'z-index:-1',
+        'background:#ffffff',
+        'border-radius:28px',
+        'overflow:hidden',
+        'visibility:visible',
+        'pointer-events:none'
+      ].join(';');
+      document.body.appendChild(clone);
+
       const opt = {
-        margin: [8, 8, 8, 8],
+        margin: [10, 10, 10, 10],
         filename: `BoardingPass_${cleanName}_${code}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+          width: 680,
+          windowWidth: 680
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
       try {
-        await html2pdf().set(opt).from(element).save();
+        await html2pdf().set(opt).from(clone).save();
         showToast('Official Boarding Pass PDF downloaded!');
       } catch (e) {
+        console.error('PDF generation error:', e);
         window.print();
       } finally {
-        btn.disabled = false;
-        btn.innerHTML = origHtml;
+        document.body.removeChild(clone);
+        if (btn) { btn.disabled = false; btn.innerHTML = origHtml; }
         lucide.createIcons();
       }
     }
@@ -3510,6 +3534,28 @@
         `Present this Boarding Pass at the bus gate for QR scan check-in.`;
     }
 
+    // Shared helper: clones the boarding pass to body (off-screen, unconstrained)
+    // so html2canvas captures the FULL pass — not just what's visible in the scrollable area
+    function clonePassForCapture() {
+      const el = document.getElementById('boardingPassPrintableArea');
+      if (!el) return null;
+      const clone = el.cloneNode(true);
+      clone.style.cssText = [
+        'position:fixed',
+        'top:-9999px',
+        'left:0',
+        'width:680px',
+        'z-index:-1',
+        'background:#ffffff',
+        'border-radius:28px',
+        'overflow:visible',
+        'visibility:visible',
+        'pointer-events:none'
+      ].join(';');
+      document.body.appendChild(clone);
+      return clone;
+    }
+
     // Share boarding pass image + verification text directly to WhatsApp
     async function shareCurrentBoardingPassWhatsApp() {
       if (!currentBoardingPassData) return;
@@ -3531,10 +3577,13 @@
         if (btn) { btn.disabled = true; btn.innerHTML = '<span>Preparing...</span>'; }
 
         try {
-          const element = document.getElementById('boardingPassPrintableArea');
-          const canvas = await html2canvas(element, {
-            scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff'
+          const clone = clonePassForCapture();
+          if (!clone) { window.open(waUrl, '_blank'); return; }
+          const canvas = await html2canvas(clone, {
+            scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff',
+            width: 680, windowWidth: 680
           });
+          document.body.removeChild(clone);
 
           const cleanName = (st.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
           const fileName = `BoardingPass_${cleanName}_${st.receiptCode || 'Ticket'}.png`;
@@ -3609,13 +3658,20 @@
           return;
         }
 
-        const element = document.getElementById('boardingPassPrintableArea');
-        const canvas = await html2canvas(element, {
+        const clone = clonePassForCapture();
+        if (!clone) {
+          showToast('Could not capture pass. Try PDF download instead.', 'error');
+          return;
+        }
+        const canvas = await html2canvas(clone, {
           scale: 2,
           useCORS: true,
           logging: false,
-          backgroundColor: '#ffffff'
+          backgroundColor: '#ffffff',
+          width: 680,
+          windowWidth: 680
         });
+        document.body.removeChild(clone);
 
         const st = currentBoardingPassData;
         const totalFee = Number(tripConfig.tripAmount) || 1500;
