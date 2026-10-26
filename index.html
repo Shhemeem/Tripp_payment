@@ -3408,6 +3408,12 @@
       lucide.createIcons();
     }
 
+    // Same as openBoardingPassModal but keeps the modal hidden (used for PDF generation without UI)
+    function populateBoardingPassDataSilent(student) {
+      openBoardingPassModal(student);
+      document.getElementById('boardingPassModal').classList.add('hidden');
+    }
+
     function openBoardingPassByStudentId(id) {
       const st = payments.find(p => p.id === id);
       if (!st) {
@@ -3622,13 +3628,59 @@
       }
     }
 
-    function shareStudentBoardingPassWhatsApp(id) {
+    // Admin: share student boarding pass PDF + verification text to WhatsApp
+    async function shareStudentBoardingPassWhatsApp(id) {
       const st = payments.find(p => p.id === id);
       if (!st) return;
+
       const msg = buildWhatsAppBoardingPassText(st);
       const phone = normalizePhone(st.phone);
-      const url = `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`;
-      window.open(url, '_blank');
+      const waUrl = phone.length === 10
+        ? `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`
+        : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      const cleanName = (st.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
+      const fileName = `BoardingPass_${cleanName}_${st.receiptCode || 'Ticket'}.pdf`;
+
+      showToast('Generating pass PDF...');
+
+      try {
+        // Silently populate the boarding pass printable area with this student's data
+        populateBoardingPassDataSilent(st);
+
+        // Wait for QR image to start loading
+        await new Promise(r => setTimeout(r, 300));
+
+        const pdfBlob = await buildPdfBlobFromPass();
+        if (!pdfBlob) throw new Error('PDF blob empty');
+        const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+        // Mobile: native share sheet — user picks WhatsApp → receives PDF + text
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+          await navigator.share({
+            files: [pdfFile],
+            title: `Boarding Pass – ${st.studentName}`,
+            text: msg
+          });
+          showToast(`Boarding pass PDF sent to ${st.studentName}!`);
+          return;
+        }
+
+        // Desktop fallback: download PDF + open WhatsApp web with text
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        const a = document.createElement('a');
+        a.href = pdfUrl;
+        a.download = fileName;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(pdfUrl), 8000);
+        setTimeout(() => window.open(waUrl, '_blank'), 800);
+        showToast(`PDF saved! Open WhatsApp for ${st.studentName} → tap 📎 → attach the PDF.`);
+
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        console.warn('Student PDF share failed, text-only fallback:', err);
+        window.open(waUrl, '_blank');
+        showToast('PDF failed — verification text sent instead.');
+      }
     }
 
     // =========================================================================
