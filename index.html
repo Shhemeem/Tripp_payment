@@ -23,6 +23,8 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- html2pdf.js CDN for Direct PDF Boarding Pass Generation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- html2canvas CDN for Pass Image Capture & Share -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <!-- html5-qrcode CDN for Admin Boarding Pass QR Scanner -->
   <script src="https://unpkg.com/html5-qrcode"></script>
 
@@ -1591,55 +1593,30 @@
   <!-- ========================================================================= -->
   <!-- MODAL: EXPRESSIVE OFFICIAL BOARDING PASS TICKET & PDF PRINT ENGINE        -->
   <!-- ========================================================================= -->
-  <div id="boardingPassModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-    <div class="max-w-2xl w-full my-6 space-y-4">
-      <!-- Top Action Toolbar (Hidden when printing) -->
-      <div class="no-print flex flex-wrap items-center justify-between gap-3 bg-slate-900/95 border border-slate-700/80 px-4 py-3.5 rounded-2xl text-white shadow-xl">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-300">
-            <i data-lucide="ticket" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <h4 class="font-display text-xs sm:text-sm font-extrabold">Official Trip Boarding Pass</h4>
-            <p class="text-[10px] text-slate-400">Expressive PDF Ticket • Ready for WhatsApp, Download or Print</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-2 flex-wrap">
-          <button
-            type="button"
-            onclick="shareCurrentBoardingPassWhatsApp()"
-            class="px-3.5 py-2 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition"
-          >
-            <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-            <span>Share to WhatsApp</span>
-          </button>
-          <button
-            type="button"
-            id="btnDownloadTicketPdf"
-            onclick="downloadBoardingPassPDF()"
-            class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs flex items-center gap-1.5 shadow-md transition"
-          >
-            <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
-            <span>Download PDF</span>
-          </button>
-          <button
-            type="button"
-            onclick="printBoardingPassTicket()"
-            class="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-xs flex items-center gap-1.5 transition"
-          >
-            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
-            <span>Print / Save PDF</span>
-          </button>
-          <button
-            type="button"
-            onclick="closeBoardingPassModal()"
-            class="p-2 rounded-xl bg-white/10 hover:bg-rose-500/30 text-slate-300 hover:text-white transition"
-            title="Close Preview"
-          >
-            <i data-lucide="x" class="w-4 h-4"></i>
-          </button>
-        </div>
+  <div id="boardingPassModal" class="fixed inset-0 z-50 hidden flex flex-col" style="background:rgba(15,23,42,0.88);backdrop-filter:blur(8px);">
+
+    <!-- Top minimal close bar (no-print) -->
+    <div class="no-print flex items-center gap-3 px-4 py-3 bg-slate-900/95 border-b border-slate-700/60 shrink-0">
+      <button
+        type="button"
+        onclick="closeBoardingPassModal()"
+        class="w-9 h-9 rounded-xl bg-white/10 hover:bg-rose-500/30 text-slate-300 hover:text-white transition flex items-center justify-center shrink-0"
+        title="Back / Close"
+      >
+        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+      </button>
+      <div class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-300 shrink-0">
+        <i data-lucide="ticket" class="w-4 h-4"></i>
       </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-display text-xs font-extrabold text-white truncate">Official Trip Boarding Pass</p>
+        <p class="text-[10px] text-slate-400 truncate">Share as Image • WhatsApp • PDF • Print</p>
+      </div>
+    </div>
+
+    <!-- Scrollable pass area -->
+    <div class="flex-1 overflow-y-auto py-4 px-3 sm:px-6">
+      <div class="max-w-2xl mx-auto">
 
       <!-- PRINTABLE BOARDING PASS ARTIFACT -->
       <div id="boardingPassPrintableArea" class="boarding-pass-wrapper border border-slate-200 text-slate-900">
@@ -1820,9 +1797,51 @@
             <span class="text-[10px] font-mono font-bold text-slate-500 mt-1">SCAN TO VERIFY</span>
           </div>
         </div>
+      </div><!-- boardingPassPrintableArea wrapper -->
+      </div><!-- max-w-2xl -->
+    </div><!-- scrollable area -->
+
+    <!-- Sticky bottom action bar (no-print) — always visible above browser chrome -->
+    <div class="no-print shrink-0 bg-slate-900/98 border-t border-slate-700/60 px-3 pt-3 pb-safe" style="padding-bottom: max(12px, env(safe-area-inset-bottom));">
+      <div class="max-w-2xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <button
+          type="button"
+          id="btnSharePassImage"
+          onclick="sharePassAsImage()"
+          class="col-span-2 sm:col-span-1 py-3.5 px-3 rounded-2xl bg-violet-600 hover:bg-violet-500 active:bg-violet-700 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg transition active:scale-95"
+        >
+          <i data-lucide="image" class="w-4 h-4"></i>
+          <span>Share as Image</span>
+        </button>
+        <button
+          type="button"
+          onclick="shareCurrentBoardingPassWhatsApp()"
+          class="py-3.5 px-3 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] active:bg-[#1ca34d] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg transition active:scale-95"
+        >
+          <i data-lucide="message-circle" class="w-4 h-4"></i>
+          <span>WhatsApp Text</span>
+        </button>
+        <button
+          type="button"
+          id="btnDownloadTicketPdf"
+          onclick="downloadBoardingPassPDF()"
+          class="py-3.5 px-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg transition active:scale-95"
+        >
+          <i data-lucide="file-down" class="w-4 h-4"></i>
+          <span>Download PDF</span>
+        </button>
+        <button
+          type="button"
+          onclick="printBoardingPassTicket()"
+          class="py-3.5 px-3 rounded-2xl bg-white/15 hover:bg-white/25 active:bg-white/30 text-white font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95"
+        >
+          <i data-lucide="printer" class="w-4 h-4"></i>
+          <span>Print / Save</span>
+        </button>
       </div>
     </div>
-  </div>
+
+  </div><!-- /boardingPassModal -->
 
   <!-- MODAL: ADMIN LOGIN -->
   <div id="adminLoginModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
@@ -2960,6 +2979,21 @@
           renderAccessCodesSuite();
           renderCheckinRoster();
         }
+        // Restore participant session after payments load
+        if (window._pendingParticipantPhone && !loggedInParticipant) {
+          const restoredPhone = window._pendingParticipantPhone;
+          const match = payments.find(p => normalizePhone(p.phone) === restoredPhone);
+          if (match && match.status === 'Verified' && match.accessStatus !== 'Disabled') {
+            loggedInParticipant = match;
+            window._pendingParticipantPhone = null;
+            updateParticipantDashboardUI();
+            // If the user was on the participant tab, stay there
+            if (!isAdminLoggedIn) switchTab('participant');
+          } else {
+            window._pendingParticipantPhone = null;
+            localStorage.removeItem('trippay_participant_session');
+          }
+        }
         if (loggedInParticipant) {
           const fresh = payments.find(p => p.id === loggedInParticipant.id);
           if (fresh) {
@@ -3493,6 +3527,115 @@
       const phone = normalizePhone(st.phone);
       const url = `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`;
       window.open(url, '_blank');
+    }
+
+    // =========================================================================
+    // SHARE PASS AS IMAGE (with verification message)
+    // =========================================================================
+    async function sharePassAsImage() {
+      if (!currentBoardingPassData) return;
+      const btn = document.getElementById('btnSharePassImage');
+      const origHtml = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>Capturing...</span>';
+      }
+
+      try {
+        if (typeof html2canvas === 'undefined') {
+          showToast('Image capture library not loaded. Please refresh and try again.', 'error');
+          return;
+        }
+
+        const element = document.getElementById('boardingPassPrintableArea');
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff'
+        });
+
+        const st = currentBoardingPassData;
+        const totalFee = Number(tripConfig.tripAmount) || 1500;
+        const paid = Number(st.amountPaid) || 0;
+        const due = Math.max(0, totalFee - paid);
+        const verificationMsg =
+          `🎫 *OFFICIAL TRIP BOARDING PASS*\n` +
+          `*${tripConfig.tripTitle}*\n` +
+          `━━━━━━━━━━━━━━━━━━━━━━━\n` +
+          `👤 *Passenger:* ${st.studentName}\n` +
+          `🎓 *Dept:* ${st.department} | 📱 +91 ${normalizePhone(st.phone)}\n` +
+          `🧾 *Ticket:* ${st.receiptCode}\n` +
+          `🔑 *Access Code:* ${st.accessCode || 'Pending Verification'}\n` +
+          `📍 *Route:* College Campus ➔ ${tripConfig.destination}\n` +
+          `📅 *Date:* ${tripConfig.tripDate}\n` +
+          `━━━━━━━━━━━━━━━━━━━━━━━\n` +
+          `💰 *Paid:* ${formatINR(paid)} / ${formatINR(totalFee)}${due > 0 ? ' | ⚠️ Due: ' + formatINR(due) : ' ✅ Full Paid'}\n` +
+          `✅ *Status:* ${st.status === 'Verified' ? 'VERIFIED PASS ✅' : 'Pending Verification ⏳'}\n` +
+          `━━━━━━━━━━━━━━━━━━━━━━━\n` +
+          `📸 Boarding pass image attached below. Present at bus gate for QR scan check-in.`;
+
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            showToast('Failed to generate image. Please try PDF download instead.', 'error');
+            return;
+          }
+
+          const cleanName = (st.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
+          const fileName = `BoardingPass_${cleanName}_${st.receiptCode || 'Ticket'}.png`;
+
+          // Try Web Share API (mobile native share sheet) first
+          if (navigator.share && navigator.canShare) {
+            const file = new File([blob], fileName, { type: 'image/png' });
+            try {
+              if (navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                  files: [file],
+                  title: `Boarding Pass - ${st.studentName}`,
+                  text: verificationMsg
+                });
+                showToast('Boarding pass shared successfully!');
+                return;
+              }
+            } catch (shareErr) {
+              if (shareErr.name !== 'AbortError') {
+                console.warn('Native share failed, falling back:', shareErr);
+              } else {
+                return; // User cancelled
+              }
+            }
+          }
+
+          // Fallback: download image + open WhatsApp with verification text
+          const imgUrl = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = imgUrl;
+          a.download = fileName;
+          a.click();
+          setTimeout(() => URL.revokeObjectURL(imgUrl), 5000);
+
+          const phone = normalizePhone(st.phone);
+          const waUrl = phone.length === 10
+            ? `https://wa.me/91${phone}?text=${encodeURIComponent(verificationMsg)}`
+            : `https://wa.me/?text=${encodeURIComponent(verificationMsg)}`;
+
+          setTimeout(() => {
+            window.open(waUrl, '_blank');
+          }, 800);
+
+          showToast('Pass image saved! Opening WhatsApp with verification message...');
+        }, 'image/png');
+
+      } catch (err) {
+        console.error('sharePassAsImage error:', err);
+        showToast('Could not capture pass image. Try PDF download instead.', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = origHtml;
+          lucide.createIcons();
+        }
+      }
     }
 
     // =========================================================================
@@ -4360,6 +4503,7 @@
 
       delete participantFailedAttempts[cleanPhone];
       loggedInParticipant = match;
+      localStorage.setItem('trippay_participant_session', JSON.stringify({ phone: cleanPhone, ts: Date.now() }));
       logSecurityEvent('LOGIN_SUCCESS', cleanPhone, `Participant ${match.studentName} authenticated`);
       showToast(`Welcome, ${match.studentName}!`);
       updateParticipantDashboardUI();
@@ -4443,6 +4587,7 @@
         logSecurityEvent('LOGOUT_PARTICIPANT', loggedInParticipant.phone, 'User ended portal session');
       }
       loggedInParticipant = null;
+      localStorage.removeItem('trippay_participant_session');
       updateParticipantDashboardUI();
       showToast('Logged out of participant pass.');
     }
@@ -4716,6 +4861,7 @@
 
       if (isAdminLoggedIn) {
         document.getElementById('adminLoggedEmail').textContent = mail;
+        localStorage.setItem('trippay_admin_session', JSON.stringify({ email: mail, ts: Date.now() }));
         closeAdminLoginModal();
         updateAdminUIState();
         switchTab('manager');
@@ -4726,6 +4872,7 @@
 
     function logoutAdmin() {
       isAdminLoggedIn = false;
+      localStorage.removeItem('trippay_admin_session');
       updateAdminUIState();
       switchTab('pay');
       showToast('Logged out of Admin mode.');
@@ -5796,11 +5943,48 @@
       stopCameraQrScanner,
       handleManualScannerLookup,
       markParticipantBoardingStatus,
-      copyBoardingAttendanceWhatsApp
+      copyBoardingAttendanceWhatsApp,
+      sharePassAsImage
     });
+
+    // Restore sessions from localStorage on load
+    function restoreSessionsFromStorage() {
+      // Restore admin session
+      try {
+        const adminSess = localStorage.getItem('trippay_admin_session');
+        if (adminSess) {
+          const { email, ts } = JSON.parse(adminSess);
+          // Session valid for 12 hours
+          if (Date.now() - ts < 12 * 60 * 60 * 1000) {
+            isAdminLoggedIn = true;
+            const emailEl = document.getElementById('adminLoggedEmail');
+            if (emailEl) emailEl.textContent = email;
+            updateAdminUIState();
+          } else {
+            localStorage.removeItem('trippay_admin_session');
+          }
+        }
+      } catch (e) {}
+
+      // Restore participant session
+      try {
+        const partSess = localStorage.getItem('trippay_participant_session');
+        if (partSess) {
+          const { phone, ts } = JSON.parse(partSess);
+          // Session valid for 24 hours
+          if (Date.now() - ts < 24 * 60 * 60 * 1000) {
+            // Will be fully restored once payments load from Firestore
+            window._pendingParticipantPhone = phone;
+          } else {
+            localStorage.removeItem('trippay_participant_session');
+          }
+        }
+      } catch (e) {}
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
       applyTripConfigToUI();
+      restoreSessionsFromStorage();
       updateAdminUIState();
       lucide.createIcons();
       initFirebaseAndListeners();
