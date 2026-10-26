@@ -15,12 +15,16 @@
   <!-- Fonts: Plus Jakarta Sans, Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- html2pdf.js CDN for Direct PDF Boarding Pass Generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- html5-qrcode CDN for Admin Boarding Pass QR Scanner -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
 
   <script>
     tailwind.config = {
@@ -58,6 +62,80 @@
       background-size: 12px 1.5px;
       background-repeat: repeat-x;
     }
+
+    /* Expressive Official Boarding Pass Styling */
+    .boarding-pass-wrapper {
+      background: #ffffff;
+      border-radius: 28px;
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+      position: relative;
+      overflow: hidden;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .boarding-pass-header {
+      background: linear-gradient(135deg, #064e3b 0%, #047857 48%, #0f766e 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .boarding-pass-header::before {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 9999px;
+      background: radial-gradient(circle, rgba(251, 191, 36, 0.22) 0%, transparent 70%);
+      top: -90px;
+      right: -60px;
+      pointer-events: none;
+    }
+    .boarding-pass-header::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+      background-size: 16px 16px;
+      pointer-events: none;
+    }
+    .ticket-notch-left,
+    .ticket-notch-right {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      background-color: #0f172a;
+      border-radius: 9999px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
+    }
+    .ticket-notch-left {
+      left: -14px;
+    }
+    .ticket-notch-right {
+      right: -14px;
+    }
+    .barcode-bars {
+      background: repeating-linear-gradient(
+        90deg,
+        #0f172a,
+        #0f172a 2px,
+        transparent 2px,
+        transparent 5px,
+        #0f172a 5px,
+        #0f172a 6px,
+        transparent 6px,
+        transparent 9px,
+        #0f172a 9px,
+        #0f172a 13px,
+        transparent 13px,
+        transparent 15px
+      );
+    }
+    .holo-strip {
+      background: linear-gradient(90deg, #10b981, #f59e0b, #0ea5e9, #6366f1, #10b981);
+      background-size: 200% 100%;
+    }
+
     @media screen and (max-width: 768px) {
       input, select, textarea {
         font-size: 16px !important;
@@ -70,13 +148,51 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
+
+    /* Native Print Media Rules for Official Boarding Pass PDF */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 10mm;
+      }
+      body {
+        background: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      body > *:not(#boardingPassModal) {
+        display: none !important;
+      }
+      #boardingPassModal {
+        position: static !important;
+        display: block !important;
+        background: transparent !important;
+        padding: 0 !important;
+        overflow: visible !important;
+      }
+      #boardingPassModal .no-print {
+        display: none !important;
+      }
+      #boardingPassPrintableArea {
+        box-shadow: none !important;
+        border: 2px solid #cbd5e1 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+      }
+      .ticket-notch-left,
+      .ticket-notch-right {
+        background-color: #ffffff !important;
+        border: 2px solid #cbd5e1 !important;
+      }
+    }
   </style>
 </head>
 
 <body class="text-slate-800 antialiased selection:bg-emerald-500 selection:text-white min-h-screen pb-20">
 
   <!-- Toast Notification Container -->
-  <div id="toastContainer" class="fixed bottom-5 right-4 left-4 sm:left-auto z-50 hidden transition-all duration-300">
+  <div id="toastContainer" class="fixed bottom-5 right-4 left-4 sm:left-auto z-50 hidden transition-all duration-300 no-print">
     <div id="toastBox" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-xl border bg-white border-emerald-200 text-slate-800 max-w-md">
       <div id="toastIconWrap" class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
         <i data-lucide="check-circle-2" class="w-5 h-5"></i>
@@ -93,17 +209,26 @@
   </div>
 
   <!-- Header -->
-  <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-sm">
+  <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-sm no-print">
     <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-      <!-- Brand Logo -->
+      <!-- Brand Logo with Added Official Image -->
       <div class="flex items-center gap-2.5 min-w-0">
-        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-amber-400 p-0.5 shadow-md shadow-emerald-500/20 shrink-0">
-          <div class="w-full h-full rounded-[14px] bg-gradient-to-tr from-emerald-600 via-teal-500 to-amber-400 flex items-center justify-center text-white relative">
-            <i data-lucide="compass" class="w-5 h-5 sm:w-6 sm:h-6"></i>
-            <span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center">
-              <i data-lucide="check" class="w-2.5 h-2.5 text-white stroke-[3]"></i>
-            </span>
+        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-amber-400 p-0.5 shadow-md shadow-emerald-500/20 shrink-0 relative">
+          <div class="w-full h-full rounded-[14px] bg-white flex items-center justify-center overflow-hidden relative">
+            <img
+              id="headerLogoImg"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFi3ISGVLtcfjKcyZ1e0JtiIJHb4P1OTjldSIj3H5zNg&s=10"
+              alt="TripPay Logo"
+              class="w-full h-full object-cover"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            />
+            <div class="hidden w-full h-full bg-gradient-to-tr from-emerald-600 to-teal-500 items-center justify-center text-white">
+              <i data-lucide="compass" class="w-5 h-5"></i>
+            </div>
           </div>
+          <span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center shadow">
+            <i data-lucide="check" class="w-2.5 h-2.5 text-white stroke-[3]"></i>
+          </span>
         </div>
         <div class="min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
@@ -138,7 +263,7 @@
             <span>Helpline</span>
           </button>
           <button onclick="handleParticipantPortalClick()" id="userTabBtn-portal" class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-indigo-700 hover:text-indigo-900 bg-indigo-50/70 border border-indigo-200/60 ml-0.5">
-            <i data-lucide="key" class="w-3.5 h-3.5"></i>
+            <i data-lucide="ticket" class="w-3.5 h-3.5"></i>
             <span id="portalNavText">My Pass</span>
           </button>
         </nav>
@@ -173,14 +298,14 @@
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-3 sm:px-4 pt-4 sm:pt-6">
+  <main class="max-w-6xl mx-auto px-3 sm:px-4 pt-4 sm:pt-6 no-print">
     <!-- Expressive Trip Header Card -->
     <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-50 via-white to-amber-50 border border-emerald-200/80 p-5 sm:p-7 mb-6 shadow-sm">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative z-10">
         <div class="space-y-2">
           <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100/90 border border-amber-300/60 text-amber-900 text-[11px] sm:text-xs font-bold">
             <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-600"></i>
-            <span>Official Trip Management Portal • Access Code Protected</span>
+            <span>Official Trip Management Portal • PDF Boarding Pass Ready</span>
           </div>
           <h2 id="heroTripTitle" class="font-display text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">
             Annual College Industrial & Leisure Trip
@@ -240,7 +365,7 @@
             </div>
           </div>
           <div class="text-right shrink-0">
-            <span class="text-[10px] text-slate-400 font-medium block">Receipt</span>
+            <span class="text-[10px] text-slate-400 font-medium block">Ticket No</span>
             <span id="recCode" class="font-mono font-bold text-xs sm:text-sm text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200">
               TRP-000000
             </span>
@@ -252,7 +377,7 @@
             <i id="recStatusIcon" data-lucide="clock" class="w-4 h-4 text-amber-600 shrink-0"></i>
             <span id="recStatusText">Status: Pending Admin Verification</span>
           </div>
-          <span class="text-[10px] font-mono font-semibold text-slate-500">Live Status</span>
+          <span class="text-[10px] font-mono font-semibold text-slate-500">Live Pass</span>
         </div>
 
         <!-- Participant Access Code Note in Receipt -->
@@ -293,24 +418,33 @@
           </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-2.5">
+        <!-- Receipt Actions with Expressive PDF Boarding Pass Trigger -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-2.5">
+          <button
+            type="button"
+            onclick="openBoardingPassFromLastReceipt()"
+            class="py-3 px-4 rounded-2xl bg-gradient-to-r from-emerald-700 via-teal-600 to-emerald-600 hover:from-emerald-600 hover:to-teal-500 text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2"
+          >
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            <span>Boarding Pass / PDF Ticket</span>
+          </button>
           <button
             type="button"
             onclick="shareReceiptToUserWhatsApp()"
-            class="flex-1 py-3 px-4 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2"
+            class="py-3 px-4 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2"
           >
             <i data-lucide="message-circle" class="w-4 h-4"></i>
-            <span>Send Receipt to My WhatsApp</span>
-          </button>
-          <button
-            type="button"
-            onclick="resetReceiptView()"
-            class="py-3 px-5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5"
-          >
-            <i data-lucide="check" class="w-4 h-4"></i>
-            <span>Done</span>
+            <span>Send Receipt to WhatsApp</span>
           </button>
         </div>
+        <button
+          type="button"
+          onclick="resetReceiptView()"
+          class="w-full py-2.5 px-5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5"
+        >
+          <i data-lucide="check" class="w-4 h-4"></i>
+          <span>Done & Back to Portal</span>
+        </button>
       </div>
 
       <!-- Payment & Form Split Layout -->
@@ -406,8 +540,8 @@
               onclick="switchPaymentMode('balance')"
               class="py-2 px-2 rounded-xl text-xs sm:text-sm font-extrabold transition-all text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5"
             >
-              <i data-lucide="wallet" class="w-4 h-4"></i>
-              <span>Pay Balance / Status</span>
+              <i data-lucide="printer" class="w-4 h-4"></i>
+              <span>Pay Balance / Get Ticket</span>
             </button>
           </div>
 
@@ -529,7 +663,7 @@
             </button>
           </form>
 
-          <!-- Balance Lookup View -->
+          <!-- Balance Lookup & Instant Boarding Pass Ticket View -->
           <div id="balancePaySection" class="hidden space-y-4">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Enter 10-Digit Mobile Number *</label>
@@ -626,11 +760,11 @@
       <div id="participantAuthPrompt" class="max-w-md mx-auto expressive-card border border-indigo-200 rounded-3xl p-6 sm:p-7 space-y-4">
         <div class="text-center space-y-2">
           <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center mx-auto shadow-sm">
-            <i data-lucide="lock" class="w-6 h-6"></i>
+            <i data-lucide="ticket" class="w-6 h-6"></i>
           </div>
           <h3 class="font-display font-extrabold text-xl text-slate-900">Participant Pass Portal</h3>
           <p class="text-xs text-slate-500">
-            Sign in with your registered phone number and 6-digit access code to view your verified seat, ticket pass, and balance.
+            Sign in with your registered phone number and 6-digit access code to view and download your official PDF Boarding Pass.
           </p>
         </div>
 
@@ -683,7 +817,7 @@
             class="w-full py-3 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-md transition flex items-center justify-center gap-2"
           >
             <i data-lucide="log-in" class="w-4 h-4"></i>
-            <span>Unlock My Participant Pass</span>
+            <span>Unlock My Boarding Pass</span>
           </button>
         </form>
 
@@ -700,8 +834,13 @@
         <div class="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-5 sm:p-7 shadow-lg border border-indigo-800/40">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-              <div class="w-12 h-12 rounded-2xl bg-indigo-600/60 border border-indigo-400/40 flex items-center justify-center text-white shrink-0">
-                <i data-lucide="user-check" class="w-6 h-6"></i>
+              <div class="w-12 h-12 rounded-2xl bg-white p-0.5 shadow-md shrink-0 overflow-hidden">
+                <img
+                  id="pDashLogoImg"
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFi3ISGVLtcfjKcyZ1e0JtiIJHb4P1OTjldSIj3H5zNg&s=10"
+                  alt="TripPay Logo"
+                  class="w-full h-full object-cover rounded-[14px]"
+                />
               </div>
               <div>
                 <span class="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 mb-0.5">
@@ -713,10 +852,17 @@
                 </p>
               </div>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <button
+                onclick="openBoardingPassModalForLoggedParticipant()"
+                class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition"
+              >
+                <i data-lucide="printer" class="w-4 h-4"></i>
+                <span>Official Boarding Pass PDF</span>
+              </button>
               <button
                 onclick="logoutParticipant()"
-                class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center gap-1.5 transition"
+                class="px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center gap-1.5 transition"
               >
                 <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
                 <span>Logout</span>
@@ -746,7 +892,7 @@
 
         <!-- Personal Access Pass Card -->
         <div class="expressive-card border border-indigo-200 rounded-3xl p-5 sm:p-7 space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
             <div class="flex items-center gap-2">
               <i data-lucide="ticket" class="w-5 h-5 text-indigo-600"></i>
               <h4 class="font-display font-extrabold text-lg text-slate-900">Your Official Trip Boarding Pass</h4>
@@ -772,38 +918,38 @@
                 <span id="pDashCodeDisplay" class="font-mono text-base font-extrabold text-indigo-700 tracking-wider bg-white px-2.5 py-1 rounded-lg border border-indigo-200">******</span>
               </div>
               <p class="text-[11px] text-slate-500 leading-relaxed">
-                Keep this code confidential. You can present this screen to the bus coordinator when boarding.
+                Keep this code confidential. Click "Download / Print Boarding Pass (PDF)" below to get your official ticket with QR verification.
               </p>
             </div>
           </div>
 
           <div class="flex flex-wrap items-center gap-2.5 pt-2">
-          <button
-            onclick="shareMyParticipantPassWhatsApp()"
-            class="px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
-          >
-            <i data-lucide="message-circle" class="w-4 h-4"></i>
-            <span>Save Pass to WhatsApp</span>
-          </button>
-          <button
-            onclick="openPrintableBoardingPassModal()"
-            class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
-          >
-            <i data-lucide="printer" class="w-4 h-4"></i>
-            <span>Print Official Ticket / Pass</span>
-          </button>
-          <button
-            id="pDashPayBalBtn"
-            onclick="initiateBalancePaymentFromPortal()"
-            class="hidden px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
-          >
-            <i data-lucide="credit-card" class="w-4 h-4"></i>
-            <span>Pay Remaining Balance</span>
-          </button>
+            <button
+              onclick="openBoardingPassModalForLoggedParticipant()"
+              class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+            >
+              <i data-lucide="file-down" class="w-4 h-4 text-emerald-400"></i>
+              <span>Download / Print Boarding Pass (PDF)</span>
+            </button>
+            <button
+              onclick="shareMyParticipantPassWhatsApp()"
+              class="px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+            >
+              <i data-lucide="message-circle" class="w-4 h-4"></i>
+              <span>Save Pass to WhatsApp</span>
+            </button>
+            <button
+              id="pDashPayBalBtn"
+              onclick="initiateBalancePaymentFromPortal()"
+              class="hidden px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+            >
+              <i data-lucide="credit-card" class="w-4 h-4"></i>
+              <span>Pay Remaining Balance</span>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
     <!-- TAB 1.5: PUBLIC STUDENT ITINERARY VIEW -->
     <section id="tabSection-user-itinerary" class="hidden space-y-4">
@@ -863,13 +1009,20 @@
               </p>
             </div>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
+            <button
+              onclick="openQrScannerModal()"
+              class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-extrabold text-xs flex items-center gap-1.5 shadow-md transition"
+            >
+              <i data-lucide="scan-line" class="w-4 h-4"></i>
+              <span>Scan Boarding Pass QR</span>
+            </button>
             <button
               onclick="openSettingsModal()"
               class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center gap-1.5 transition"
             >
               <i data-lucide="settings" class="w-3.5 h-3.5"></i>
-              <span>Config</span>
+              <span>Config & Logo</span>
             </button>
             <button
               onclick="logoutAdmin()"
@@ -953,6 +1106,16 @@
           <i data-lucide="users" class="w-4 h-4"></i>
           <span>Students & Payments</span>
           <span id="subTabBadgeStudents" class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-white text-emerald-800 font-extrabold">0</span>
+        </button>
+
+        <button
+          onclick="switchManagerSubTab('checkin')"
+          id="subTabBtn-checkin"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900"
+        >
+          <i data-lucide="scan-line" class="w-4 h-4 text-emerald-600"></i>
+          <span>QR Check-In & Participation</span>
+          <span id="subTabBadgeCheckin" class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-extrabold">0/0</span>
         </button>
 
         <button
@@ -1135,11 +1298,94 @@
                   <th class="py-3 px-4">Department</th>
                   <th class="py-3 px-4">WhatsApp / Phone</th>
                   <th class="py-3 px-4">Paid & Dues</th>
-                  <th class="py-3 px-4">Status & Access</th>
+                  <th class="py-3 px-4">Status & Boarding</th>
                   <th class="py-3 px-4 text-right">Admin Actions</th>
                 </tr>
               </thead>
               <tbody id="studentsTableBody" class="divide-y divide-slate-200/70 text-sm"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB 1.2: QR CHECK-IN & PARTICIPATION TRACKER -->
+      <div id="managerSection-checkin" class="hidden space-y-5">
+        <div class="expressive-card border border-slate-200 rounded-3xl p-5 sm:p-6 space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-bold border border-emerald-200 mb-1">
+                <i data-lucide="scan-line" class="w-3.5 h-3.5"></i>
+                <span>Live Boarding & Attendance Verification</span>
+              </div>
+              <h3 class="font-display font-extrabold text-lg text-slate-900">Participant Boarding & QR Check-In Roster</h3>
+              <p class="text-xs text-slate-500">
+                Scan student Boarding Pass QR codes or mark attendance manually during bus boarding.
+              </p>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onclick="openQrScannerModal()"
+                class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center gap-2 shadow-md transition"
+              >
+                <i data-lucide="camera" class="w-4 h-4"></i>
+                <span>Launch Camera QR Scanner</span>
+              </button>
+              <button
+                type="button"
+                onclick="copyBoardingAttendanceWhatsApp()"
+                class="px-3.5 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+              >
+                <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+                <span>Share Attendance</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Participation Progress KPI Strip -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 flex items-center justify-between">
+              <div>
+                <p class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700">Checked-In / Boarded</p>
+                <p id="checkinCountBoarded" class="font-display text-2xl font-extrabold text-emerald-800 mt-0.5">0</p>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
+                <i data-lucide="user-check" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <div class="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 flex items-center justify-between">
+              <div>
+                <p class="text-[10px] font-extrabold uppercase tracking-wider text-amber-700">Awaiting Boarding</p>
+                <p id="checkinCountWaiting" class="font-display text-2xl font-extrabold text-amber-800 mt-0.5">0</p>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center">
+                <i data-lucide="clock" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+              <div>
+                <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Total Participants</p>
+                <p id="checkinCountTotal" class="font-display text-2xl font-extrabold text-slate-900 mt-0.5">0</p>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-slate-800 text-white flex items-center justify-center">
+                <i data-lucide="bus" class="w-5 h-5"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Participation Roster Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-200 bg-slate-50/90 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                  <th class="py-3 px-4">Participant</th>
+                  <th class="py-3 px-4">Ticket / Pass</th>
+                  <th class="py-3 px-4">Fee Status</th>
+                  <th class="py-3 px-4">Participation Status</th>
+                  <th class="py-3 px-4 text-right">Check-In Action</th>
+                </tr>
+              </thead>
+              <tbody id="checkinRosterTableBody" class="divide-y divide-slate-200/70 text-sm"></tbody>
             </table>
           </div>
         </div>
@@ -1156,7 +1402,7 @@
               </div>
               <h3 class="font-display font-extrabold text-lg text-slate-900">Participant Access Codes Manager</h3>
               <p class="text-xs text-slate-500">
-                Generate, reset, enable/disable access passes, and send confidential access links to students.
+                Generate, reset, enable/disable access passes, and print official PDF boarding tickets.
               </p>
             </div>
             <div class="flex items-center gap-2">
@@ -1342,8 +1588,244 @@
     </section>
   </main>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL: EXPRESSIVE OFFICIAL BOARDING PASS TICKET & PDF PRINT ENGINE        -->
+  <!-- ========================================================================= -->
+  <div id="boardingPassModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="max-w-2xl w-full my-6 space-y-4">
+      <!-- Top Action Toolbar (Hidden when printing) -->
+      <div class="no-print flex flex-wrap items-center justify-between gap-3 bg-slate-900/95 border border-slate-700/80 px-4 py-3.5 rounded-2xl text-white shadow-xl">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-300">
+            <i data-lucide="ticket" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h4 class="font-display text-xs sm:text-sm font-extrabold">Official Trip Boarding Pass</h4>
+            <p class="text-[10px] text-slate-400">Expressive PDF Ticket • Ready for WhatsApp, Download or Print</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button
+            type="button"
+            onclick="shareCurrentBoardingPassWhatsApp()"
+            class="px-3.5 py-2 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition"
+          >
+            <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+            <span>Share to WhatsApp</span>
+          </button>
+          <button
+            type="button"
+            id="btnDownloadTicketPdf"
+            onclick="downloadBoardingPassPDF()"
+            class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs flex items-center gap-1.5 shadow-md transition"
+          >
+            <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
+            <span>Download PDF</span>
+          </button>
+          <button
+            type="button"
+            onclick="printBoardingPassTicket()"
+            class="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-xs flex items-center gap-1.5 transition"
+          >
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+            <span>Print / Save PDF</span>
+          </button>
+          <button
+            type="button"
+            onclick="closeBoardingPassModal()"
+            class="p-2 rounded-xl bg-white/10 hover:bg-rose-500/30 text-slate-300 hover:text-white transition"
+            title="Close Preview"
+          >
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- PRINTABLE BOARDING PASS ARTIFACT -->
+      <div id="boardingPassPrintableArea" class="boarding-pass-wrapper border border-slate-200 text-slate-900">
+        <!-- Top Holographic Security Accent Bar -->
+        <div class="holo-strip h-2 w-full"></div>
+
+        <!-- 1. Expressive Top Airline/Expedition Banner with Official Logo -->
+        <div class="boarding-pass-header text-white p-5 sm:p-6">
+          <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5">
+              <!-- Official Added Logo Container -->
+              <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white p-1 shadow-xl shrink-0 flex items-center justify-center overflow-hidden border-2 border-emerald-300/70">
+                <img
+                  id="bpLogoImg"
+                  crossorigin="anonymous"
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFi3ISGVLtcfjKcyZ1e0JtiIJHb4P1OTjldSIj3H5zNg&s=10"
+                  alt="TripPay Official Logo"
+                  class="w-full h-full object-cover rounded-xl"
+                  onerror="this.style.display='none'; document.getElementById('bpFallbackLogo').style.display='flex';"
+                />
+                <div id="bpFallbackLogo" class="hidden w-full h-full rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 items-center justify-center text-white font-display font-extrabold text-lg">
+                  TP
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-[10px] font-mono uppercase tracking-[0.2em] px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-extrabold shadow-sm">
+                    BOARDING PASS
+                  </span>
+                  <span class="text-[10px] font-mono uppercase tracking-widest text-emerald-200 font-bold">
+                    • TRIPPAY OFFICIAL CHARTER
+                  </span>
+                </div>
+                <h2 id="bpTripTitle" class="font-display text-lg sm:text-xl font-extrabold tracking-tight text-white mt-1">
+                  Annual College Industrial & Leisure Trip
+                </h2>
+                <p class="text-xs text-emerald-100/90 font-medium flex items-center gap-1.5 mt-0.5 flex-wrap">
+                  <span>Coordinator: <strong id="bpCoordinatorName">Mohd Shemeem KP</strong></span>
+                  <span>•</span>
+                  <span id="bpUpiId" class="font-mono text-[11px]">mohdshemeemkp@oksbi</span>
+                </p>
+              </div>
+            </div>
+
+            <!-- Right Ticket Number & Verification Badge -->
+            <div class="sm:text-right flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 border-white/15 pt-3 sm:pt-0">
+              <div>
+                <span class="text-[10px] uppercase tracking-widest text-emerald-200 font-bold block">Ticket / Receipt No</span>
+                <span id="bpReceiptCode" class="font-mono text-base sm:text-lg font-extrabold text-amber-300 tracking-wider">
+                  TRP-000000
+                </span>
+              </div>
+              <div id="bpStatusStamp" class="mt-1.5 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-400/20 text-emerald-200 border border-emerald-300/40">
+                VERIFIED PASS
+              </div>
+            </div>
+          </div>
+
+          <!-- Route & Schedule Ribbon -->
+          <div class="relative z-10 mt-5 pt-4 border-t border-white/15 grid grid-cols-1 sm:grid-cols-3 gap-3 items-center bg-black/25 rounded-2xl p-3.5 border border-white/10">
+            <div>
+              <p class="text-[10px] font-mono uppercase tracking-widest text-emerald-300 font-bold">ORIGIN / ASSEMBLY</p>
+              <p class="font-display text-sm sm:text-base font-extrabold text-white truncate">COLLEGE CAMPUS</p>
+              <p id="bpBoardingNote" class="text-[11px] text-emerald-200/80 truncate">Main Gate Boarding</p>
+            </div>
+
+            <div class="flex flex-col items-center justify-center py-1">
+              <div class="flex items-center gap-2 w-full justify-center">
+                <span class="h-[1.5px] flex-1 bg-gradient-to-r from-transparent to-amber-300"></span>
+                <span class="px-2.5 py-1 rounded-full bg-amber-400/20 border border-amber-300/50 text-amber-300 text-[10px] font-mono font-extrabold uppercase tracking-widest">
+                  EXPEDITION
+                </span>
+                <span class="h-[1.5px] flex-1 bg-gradient-to-l from-transparent to-amber-300"></span>
+              </div>
+              <p id="bpTripDate" class="text-[11px] font-mono font-bold text-white mt-1">2026-11-15</p>
+            </div>
+
+            <div class="sm:text-right">
+              <p class="text-[10px] font-mono uppercase tracking-widest text-amber-300 font-bold">DESTINATION ROUTE</p>
+              <p id="bpDestination" class="font-display text-sm sm:text-base font-extrabold text-white truncate">
+                Munnar, Vagamon & Kochi
+              </p>
+              <p class="text-[11px] text-emerald-200/80">Official Tour Charter</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Passenger & Payment Details Body -->
+        <div class="p-5 sm:p-6 bg-white space-y-5">
+          <!-- Passenger Primary Row -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 items-center">
+            <div class="col-span-2 sm:col-span-1">
+              <p class="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">Passenger Name</p>
+              <p id="bpStudentName" class="font-display text-base sm:text-lg font-extrabold text-slate-900 mt-0.5 break-words">
+                Muhammed Sinan
+              </p>
+            </div>
+            <div>
+              <p class="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">Department</p>
+              <p id="bpDepartment" class="font-display text-sm sm:text-base font-extrabold text-emerald-700 mt-0.5">
+                BCA
+              </p>
+            </div>
+            <div>
+              <p class="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">WhatsApp / Mobile</p>
+              <p id="bpPhone" class="font-mono text-sm sm:text-base font-bold text-slate-800 mt-0.5">
+                +91 9876543210
+              </p>
+            </div>
+            <div class="col-span-2 sm:col-span-1 bg-indigo-50/90 border border-indigo-200 rounded-2xl p-2.5 text-center">
+              <p class="text-[9px] font-mono uppercase tracking-widest text-indigo-600 font-extrabold">6-Digit Access Pass</p>
+              <p id="bpAccessCode" class="font-mono text-lg font-extrabold text-indigo-800 tracking-widest mt-0.5">
+                748291
+              </p>
+            </div>
+          </div>
+
+          <!-- Financial Summary Strip -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 bg-slate-50 rounded-2xl p-3.5 border border-slate-200/90">
+            <div>
+              <p class="text-[10px] font-bold uppercase text-slate-400">Total Trip Fee</p>
+              <p id="bpTotalFee" class="font-display text-sm sm:text-base font-extrabold text-slate-800">₹1,500</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold uppercase text-emerald-700">Total Paid</p>
+              <p id="bpAmountPaid" class="font-display text-sm sm:text-base font-extrabold text-emerald-600">₹1,500</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold uppercase text-amber-700">Balance Due</p>
+              <p id="bpBalanceDue" class="font-display text-sm sm:text-base font-extrabold text-amber-600">₹0</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold uppercase text-slate-400">Payment Mode</p>
+              <p id="bpPaymentApp" class="font-sans text-xs sm:text-sm font-bold text-slate-800 truncate">Google Pay</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Perforated Tear-Off Divider with Side Notches -->
+        <div class="relative py-2 bg-white flex items-center">
+          <div class="ticket-notch-left"></div>
+          <div class="w-full border-t-2 border-dashed border-slate-300 mx-4"></div>
+          <div class="ticket-notch-right"></div>
+        </div>
+
+        <!-- 3. Tear-Off Boarding Stub with QR Code & Barcode -->
+        <div class="p-5 sm:p-6 bg-gradient-to-br from-slate-50 via-white to-emerald-50/40 flex flex-col sm:flex-row items-center justify-between gap-5">
+          <div class="space-y-2 text-center sm:text-left flex-1">
+            <div class="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-100/90 px-2.5 py-1 rounded-lg border border-emerald-200">
+              <span>Official Boarding Verification Stub</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Present this boarding pass (digital PDF or printed copy) along with your College ID Card to the bus coordinator during boarding.
+            </p>
+            <div class="pt-1 flex flex-wrap items-center justify-center sm:justify-start gap-4 text-[11px] text-slate-500 font-mono">
+              <span>ISSUED: <strong id="bpIssuedDate" class="text-slate-800">-</strong></span>
+              <span>GATE: <strong class="text-emerald-700">MAIN CAMPUS</strong></span>
+              <span>BOARDING: <strong id="bpParticipationStamp" class="text-indigo-700">READY TO BOARD</strong></span>
+            </div>
+            <!-- Expressive Barcode Visual -->
+            <div class="pt-2">
+              <div class="barcode-bars h-8 w-full max-w-xs mx-auto sm:mx-0 rounded opacity-85"></div>
+              <p id="bpBarcodeSub" class="font-mono text-[10px] tracking-[0.28em] text-slate-400 mt-1">
+                *TRP-000000-PASS*
+              </p>
+            </div>
+          </div>
+
+          <!-- Dynamic Verification QR Code Box -->
+          <div class="bg-white p-3 rounded-2xl border-2 border-emerald-200 shadow-sm flex flex-col items-center shrink-0">
+            <img
+              id="bpQrImage"
+              crossorigin="anonymous"
+              src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&margin=6&data=TRIPPAY-TICKET"
+              alt="Ticket Verification QR"
+              class="w-28 h-28 object-contain rounded-lg"
+            />
+            <span class="text-[10px] font-mono font-bold text-slate-500 mt-1">SCAN TO VERIFY</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: ADMIN LOGIN -->
-  <div id="adminLoginModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="adminLoginModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
     <div class="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-6 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
         <div class="flex items-center gap-2.5">
@@ -1399,7 +1881,7 @@
   </div>
 
   <!-- MODAL: PARTICIPANT CODE RECOVERY -->
-  <div id="recoveryModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="recoveryModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
     <div class="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <div class="flex items-center gap-2">
@@ -1451,7 +1933,7 @@
       <div id="recoveryStep2" class="hidden space-y-3">
         <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs text-emerald-900">
           <p class="font-bold">Identity Confirmed!</p>
-          <p class="text-[11px] mt-0.5">A secure single-use WhatsApp verification dispatch was configured.</p>
+          <p class="text-[11px] mt-0.5">Your personal access pass is ready below.</p>
         </div>
         <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-center">
           <p class="text-[10px] uppercase font-bold text-slate-400">Your Personal Access Code</p>
@@ -1470,7 +1952,7 @@
   </div>
 
   <!-- MODAL: ADMIN ACCESS CODE CONTROLLER -->
-  <div id="adminAccessCodeModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="adminAccessCodeModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
     <div class="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-5 sm:p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <div>
@@ -1538,7 +2020,7 @@
   </div>
 
   <!-- MODAL: ADD / EDIT EXPENSE -->
-  <div id="expenseModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="expenseModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
     <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
         <div>
@@ -1569,7 +2051,7 @@
               <label class="block text-xs font-bold text-slate-700">Category *</label>
               <button
                 type="button"
-                onclick="promptAddNewExpenseCategory()"
+                onclick="toggleInlineCustomCategoryBox()"
                 class="text-[10px] font-extrabold text-emerald-700 hover:underline"
               >
                 + Custom
@@ -1588,6 +2070,23 @@
               class="w-full px-3.5 py-2.5 rounded-xl bg-rose-50 border border-rose-200 text-sm font-extrabold text-rose-700 focus:outline-none"
             />
           </div>
+        </div>
+
+        <!-- Inline Custom Category Creator -->
+        <div id="inlineCustomCatBox" class="hidden p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-2">
+          <input
+            type="text"
+            id="inlineCustomCatInput"
+            placeholder="New category name..."
+            class="flex-1 px-2.5 py-1.5 rounded-lg bg-white border border-emerald-300 text-xs font-semibold text-slate-800 focus:outline-none"
+          />
+          <button
+            type="button"
+            onclick="saveInlineCustomCategory()"
+            class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold"
+          >
+            Add
+          </button>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
@@ -1632,8 +2131,100 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL: ADMIN BOARDING PASS QR SCANNER & PARTICIPANT CHECK-IN              -->
+  <!-- ========================================================================= -->
+  <div id="qrScannerModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl my-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+            <i data-lucide="scan-line" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display text-base sm:text-lg font-extrabold text-slate-900">Boarding Pass QR Scanner</h3>
+            <p class="text-[11px] text-slate-500">Scan student pass QR or verify ticket number for participation check-in</p>
+          </div>
+        </div>
+        <button onclick="closeQrScannerModal()" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Auto Check-In Option Bar -->
+      <div class="flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
+        <label class="flex items-center gap-2 cursor-pointer font-bold text-slate-700">
+          <input type="checkbox" id="autoCheckInToggle" checked class="w-4 h-4 accent-emerald-600 rounded" />
+          <span>Auto Mark "Boarded" on Valid QR Scan</span>
+        </label>
+        <span id="scannerLiveCountBadge" class="font-mono text-[11px] font-extrabold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full">
+          0 Boarded
+        </span>
+      </div>
+
+      <!-- Camera Viewport Box -->
+      <div class="relative rounded-2xl overflow-hidden bg-slate-900 border-2 border-emerald-500/40 min-h-[230px] flex flex-col items-center justify-center">
+        <div id="qrReaderViewport" class="w-full"></div>
+        <div id="qrCameraPlaceholder" class="p-6 text-center space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-white/10 text-emerald-400 flex items-center justify-center mx-auto">
+            <i data-lucide="camera" class="w-6 h-6"></i>
+          </div>
+          <div class="space-y-1">
+            <p class="text-xs font-bold text-white">Camera QR Scanner Ready</p>
+            <p class="text-[11px] text-slate-400 max-w-xs mx-auto">
+              Point your camera at the student's Boarding Pass QR code (printed or on phone screen).
+            </p>
+          </div>
+          <button
+            type="button"
+            id="btnStartCameraScan"
+            onclick="startCameraQrScanner()"
+            class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs inline-flex items-center gap-1.5 shadow-md transition"
+          >
+            <i data-lucide="play" class="w-3.5 h-3.5"></i>
+            <span>Start Camera Scanner</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="qrCameraStopBar" class="hidden flex items-center justify-between bg-slate-100 px-3.5 py-2 rounded-xl text-xs">
+        <span class="font-bold text-emerald-700 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+          <span>Camera Active — Scanning QR...</span>
+        </span>
+        <button
+          type="button"
+          onclick="stopCameraQrScanner()"
+          class="px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold text-[11px]"
+        >
+          Stop Camera
+        </button>
+      </div>
+
+      <!-- Manual Ticket / Access Code / Phone Lookup -->
+      <form onsubmit="handleManualScannerLookup(event)" class="flex gap-2">
+        <input
+          type="text"
+          id="manualScanInput"
+          placeholder="Or enter Ticket (TRP-...), Access Code, or Phone..."
+          class="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-xs font-mono font-bold text-slate-900"
+        />
+        <button
+          type="submit"
+          class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shrink-0 flex items-center gap-1.5"
+        >
+          <i data-lucide="search" class="w-3.5 h-3.5"></i>
+          <span>Verify</span>
+        </button>
+      </form>
+
+      <!-- Scanned Participant Result Card -->
+      <div id="scannedResultContainer" class="hidden rounded-2xl border-2 p-4 space-y-3 transition-all"></div>
+    </div>
+  </div>
+
   <!-- MODAL: ADD / EDIT ITINERARY -->
-  <div id="itineraryModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="itineraryModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
     <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
         <div>
@@ -1714,7 +2305,7 @@
   </div>
 
   <!-- MODAL: ADD / EDIT HELPLINE CONTACT -->
-  <div id="contactModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="contactModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
     <div class="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-5 sm:p-6 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
         <div>
@@ -1785,12 +2376,12 @@
   </div>
 
   <!-- MODAL: ADMIN ADD / EDIT STUDENT PAYMENT -->
-  <div id="adminEditPaymentModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+  <div id="adminEditPaymentModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto no-print">
     <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl my-8">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
         <div>
           <h3 id="adminEditModalTitle" class="font-display text-base sm:text-lg font-extrabold text-slate-900">Edit Student Payment</h3>
-          <p class="text-xs text-slate-500">Admin payment control</p>
+          <p class="text-xs text-slate-500">Admin payment & boarding control</p>
         </div>
         <button onclick="closeAdminEditModal()" class="p-1 text-slate-400 hover:text-slate-700">
           <i data-lucide="x" class="w-5 h-5"></i>
@@ -1875,109 +2466,13 @@
     </div>
   </div>
 
-  <!-- MODAL: PRINTABLE OFFICIAL BOARDING PASS / TICKET -->
-  <div id="printableTicketModal" class="fixed inset-0 z-50 hidden bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto print:p-0 print:bg-white print:fixed print:inset-0">
-    <div class="bg-white border-2 border-emerald-300 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative my-auto print:shadow-none print:border-none print:rounded-none print:w-full print:max-w-none print:p-4">
-      
-      <!-- Close button (Hidden on print) -->
-      <button onclick="closePrintableTicketModal()" class="print:hidden absolute top-5 right-5 p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600">
-        <i data-lucide="x" class="w-5 h-5"></i>
-      </button>
-
-      <!-- Printable Ticket Content -->
-      <div id="ticketPrintArea" class="space-y-6">
-        <!-- Header with College Logo / Brand -->
-        <div class="flex items-center justify-between border-b-2 border-dashed border-slate-200 pb-5">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-md">
-              <i data-lucide="compass" class="w-7 h-7"></i>
-            </div>
-            <div>
-              <span class="text-[10px] uppercase font-extrabold tracking-widest text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Official Boarding Pass</span>
-              <h3 id="ticketTripTitle" class="font-display font-extrabold text-lg sm:text-xl text-slate-900 mt-0.5">Annual College Trip</h3>
-            </div>
-          </div>
-          <div class="text-right">
-            <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Pass Code</p>
-            <p id="ticketAccessCode" class="font-mono text-base font-extrabold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-xl border border-indigo-200">------</p>
-          </div>
-        </div>
-
-        <!-- Main Ticket Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 p-5 rounded-2xl border border-slate-200">
-          <div>
-            <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Participant Name</p>
-            <p id="ticketStudentName" class="font-display font-extrabold text-base text-slate-900 mt-0.5">-</p>
-          </div>
-          <div>
-            <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Department</p>
-            <p id="ticketDepartment" class="font-bold text-slate-800 text-sm mt-0.5">-</p>
-          </div>
-          <div>
-            <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Mobile / WhatsApp</p>
-            <p id="ticketPhone" class="font-mono font-bold text-slate-800 text-sm mt-0.5">-</p>
-          </div>
-        </div>
-
-        <!-- Logistics Row -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-emerald-900 text-white p-4 rounded-2xl shadow-sm">
-          <div>
-            <p class="text-[10px] uppercase tracking-wider text-emerald-300 font-bold">Destination</p>
-            <p id="ticketDestination" class="font-bold text-xs sm:text-sm truncate mt-0.5">-</p>
-          </div>
-          <div>
-            <p class="text-[10px] uppercase tracking-wider text-emerald-300 font-bold">Departure Date</p>
-            <p id="ticketDate" class="font-bold text-xs sm:text-sm mt-0.5">-</p>
-          </div>
-          <div>
-            <p class="text-[10px] uppercase tracking-wider text-emerald-300 font-bold">Receipt ID</p>
-            <p id="ticketReceipt" class="font-mono font-bold text-xs sm:text-sm mt-0.5">-</p>
-          </div>
-          <div>
-            <p class="text-[10px] uppercase tracking-wider text-emerald-300 font-bold">Clearance Status</p>
-            <p id="ticketStatus" class="font-bold text-xs sm:text-sm text-emerald-300 mt-0.5">Verified Seat ✅</p>
-          </div>
-        </div>
-
-        <!-- QR and Verification Footer -->
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100">
-          <div class="flex items-center gap-3">
-            <div class="p-2 bg-white rounded-xl border border-slate-200 shadow-sm">
-              <img id="ticketQrImage" src="" alt="Verification QR" class="w-20 h-20 object-contain" />
-            </div>
-            <div class="space-y-1 text-xs">
-              <p class="font-bold text-slate-800">Verified Boarding Credential</p>
-              <p class="text-[11px] text-slate-500 leading-tight">Present this physical ticket or digital QR badge to the tour coordinator upon boarding the bus.</p>
-            </div>
-          </div>
-          <div class="text-right text-[10px] text-slate-400 font-mono">
-            TripPay Secure Pass v2.6<br/>
-            Issued by Admin Control
-          </div>
-        </div>
-      </div>
-
-      <!-- Print Action Buttons (Hidden on print) -->
-      <div class="print:hidden flex items-center justify-end gap-3 pt-6 mt-6 border-t border-slate-100">
-        <button onclick="closePrintableTicketModal()" class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
-          Close
-        </button>
-        <button onclick="window.print()" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md transition flex items-center gap-2">
-          <i data-lucide="printer" class="w-4 h-4"></i>
-          <span>Print / Save as PDF</span>
-        </button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- MODAL: SETTINGS -->
-  <div id="settingsModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+  <!-- MODAL: SETTINGS (WITH ADMIN CUSTOM LOGO MANAGER) -->
+  <div id="settingsModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto no-print">
     <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
         <div>
-          <h3 class="font-display text-base sm:text-lg font-extrabold text-slate-900">Trip & System Settings</h3>
-          <p class="text-xs text-slate-500">Changes reflect instantly for all users</p>
+          <h3 class="font-display text-base sm:text-lg font-extrabold text-slate-900">Trip, Logo & System Settings</h3>
+          <p class="text-xs text-slate-500">Changes reflect instantly on Boarding Passes & Portals</p>
         </div>
         <button onclick="closeSettingsModal()" class="p-1 text-slate-400 hover:text-slate-700">
           <i data-lucide="x" class="w-5 h-5"></i>
@@ -1985,6 +2480,53 @@
       </div>
 
       <form onsubmit="saveTripSettings(event)" class="space-y-4">
+        <!-- Custom Brand / Boarding Pass Logo Manager -->
+        <div class="p-4 rounded-2xl bg-gradient-to-br from-emerald-50/90 via-white to-teal-50/70 border border-emerald-200 space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i data-lucide="image" class="w-4 h-4 text-emerald-700"></i>
+              <label class="block text-xs font-extrabold uppercase tracking-wider text-emerald-950">
+                Custom Trip / College Logo
+              </label>
+            </div>
+            <button
+              type="button"
+              onclick="resetCustomLogoToDefault()"
+              class="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 underline"
+            >
+              Reset Default
+            </button>
+          </div>
+
+          <div class="flex items-center gap-3.5">
+            <div class="w-16 h-16 rounded-2xl bg-white border-2 border-emerald-300 shadow-sm p-1 shrink-0 flex items-center justify-center overflow-hidden">
+              <img
+                id="setLogoPreviewImg"
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFi3ISGVLtcfjKcyZ1e0JtiIJHb4P1OTjldSIj3H5zNg&s=10"
+                alt="Logo Preview"
+                class="w-full h-full object-cover rounded-xl"
+              />
+            </div>
+            <div class="flex-1 space-y-2">
+              <input
+                type="text"
+                id="setCustomLogoUrl"
+                oninput="previewCustomLogoUrl(this.value)"
+                placeholder="Paste Logo Image URL (https://...)"
+                class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
+              />
+              <div class="flex items-center gap-2">
+                <label class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold cursor-pointer inline-flex items-center gap-1.5 shadow-sm transition">
+                  <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                  <span>Upload Logo File</span>
+                  <input type="file" id="setCustomLogoFile" accept="image/*" onchange="handleLogoFileUpload(event)" class="hidden" />
+                </label>
+                <span class="text-[10px] text-slate-500">Appears on Header & PDF Boarding Pass</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Trip Name</label>
           <input type="text" id="setTripTitle" required class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900" />
@@ -2122,7 +2664,7 @@
   </div>
 
   <!-- MODAL: CONFIRM DELETE -->
-  <div id="deleteModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="deleteModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
     <div class="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl space-y-4">
       <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
         <i data-lucide="trash-2" class="w-6 h-6"></i>
@@ -2162,6 +2704,8 @@
       onSnapshot,
       collection
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const DEFAULT_LOGO_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFi3ISGVLtcfjKcyZ1e0JtiIJHb4P1OTjldSIj3H5zNg&s=10";
 
     const userProvidedFirebaseConfig = {
       apiKey: "AIzaSyA0idKaF_-LQwEw3FtP9iYtGIklsHoxQT4",
@@ -2209,6 +2753,7 @@
       receiverName: 'Mohd Shemeem KP',
       adminEmail: 'admin@trippay.com',
       adminPassword: 'admin123',
+      customLogoUrl: DEFAULT_LOGO_URL,
       departments: ['BCA', 'B.Sc Computer Science', 'B.Com', 'BBA', 'BA English', 'B.Sc Psychology'],
       expenseCategories: ['Transportation', 'Resort / Stay', 'Food & Snacks', 'Entry & Permits', 'Toll & Fuel', 'Medical & First Aid', 'Campfire & DJ', 'Misc / Other'],
       showItineraryToUsers: true,
@@ -2221,9 +2766,9 @@
     let contacts = [];
     let auditLogs = [];
 
-    // Session State (In-Memory per requirements)
-    let loggedInParticipant = null; // { id, studentName, phone, accessCode, ... }
-    let participantFailedAttempts = {}; // phone -> { count, lockedUntil }
+    // Session State
+    let loggedInParticipant = null;
+    let participantFailedAttempts = {};
 
     let isAdminLoggedIn = false;
     let currentPaymentMode = 'new';
@@ -2231,11 +2776,18 @@
     let draftDepartments = [];
     let draftExpenseCategories = [];
     let lastReceiptData = null;
+    let currentBoardingPassData = null;
     let selectedUpiApp = 'Google Pay';
 
+    // QR Scanner Instance
+    let html5QrScanner = null;
+    let isCameraScanning = false;
+    let lastScannedCode = '';
+    let lastScanTimestamp = 0;
+
     // Filters for Admin Student View
-    let activePillFilter = 'All'; // 'All' | 'Pending' | 'Full'
-    let deleteTarget = null; // { type: 'payment'|'expense'|'itinerary'|'contact', id: string }
+    let activePillFilter = 'All';
+    let deleteTarget = null;
 
     function normalizePhone(str) {
       return String(str || '').replace(/\D/g, '').slice(-10);
@@ -2264,12 +2816,26 @@
       return Math.max(0, total - paid);
     }
 
-    // Cryptographically Strong 6-Digit Code Generator
     function generateSecureAccessCode() {
       const array = new Uint32Array(1);
       window.crypto.getRandomValues(array);
-      const code = (array[0] % 900000 + 100000).toString();
-      return code;
+      return (array[0] % 900000 + 100000).toString();
+    }
+
+    // Play subtle audio feedback beep when QR is scanned
+    function playScanBeep(success = true) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = success ? 'sine' : 'sawtooth';
+        osc.frequency.setValueAtTime(success ? 880 : 280, ctx.currentTime);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + (success ? 0.14 : 0.25));
+      } catch (e) {}
     }
 
     function copyText(text, msg = 'Copied to clipboard!') {
@@ -2371,7 +2937,6 @@
     function startFirestoreListeners() {
       if (!currentUser) currentUser = { uid: 'public-session' };
 
-      // Config Listener
       const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
       unsubConfig = onSnapshot(configDocRef, (snap) => {
         if (snap.exists()) {
@@ -2383,7 +2948,6 @@
         }
       }, (err) => console.error(err));
 
-      // Payments Listener
       const paymentsCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_payments');
       unsubPayments = onSnapshot(paymentsCol, (snap) => {
         payments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -2394,6 +2958,7 @@
         if (isAdminLoggedIn) {
           renderDashboard();
           renderAccessCodesSuite();
+          renderCheckinRoster();
         }
         if (loggedInParticipant) {
           const fresh = payments.find(p => p.id === loggedInParticipant.id);
@@ -2404,7 +2969,6 @@
         }
       }, (err) => setCloudBadgeState('error', 'Error'));
 
-      // Expenses Listener
       const expCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_expenses');
       unsubExpenses = onSnapshot(expCol, (snap) => {
         expenses = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -2413,7 +2977,6 @@
         if (isAdminLoggedIn) renderKPIs();
       }, (err) => console.error(err));
 
-      // Itinerary Listener
       const itinCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_itinerary');
       unsubItinerary = onSnapshot(itinCol, (snap) => {
         itineraries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -2421,7 +2984,6 @@
         renderItinerary();
       }, (err) => console.error(err));
 
-      // Contacts Listener
       const contactCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_contacts');
       unsubContacts = onSnapshot(contactCol, (snap) => {
         contacts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -2429,7 +2991,6 @@
         renderContacts();
       }, (err) => console.error(err));
 
-      // Audit Logs Listener
       const auditCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_audit_logs');
       unsubAudit = onSnapshot(auditCol, (snap) => {
         auditLogs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -2438,7 +2999,6 @@
       }, (err) => console.error(err));
     }
 
-    // AUDIT LOG HELPER
     async function logSecurityEvent(action, target, details) {
       try {
         const payload = {
@@ -2468,7 +3028,7 @@
 
       container.innerHTML = auditLogs.map(l => `
         <div class="p-2.5 rounded-xl border border-slate-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
             <span class="px-2 py-0.5 rounded text-[10px] font-bold ${l.action.includes('FAIL') || l.action.includes('LOCKOUT') ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'}">
               ${escapeHtml(l.action)}
             </span>
@@ -2482,7 +3042,6 @@
 
     async function clearAuditLogs() {
       if (!isAdminLoggedIn) return;
-      if (!window.confirm("Clear all audit records?")) return;
       try {
         for (const log of auditLogs) {
           await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_audit_logs', log.id));
@@ -2491,6 +3050,73 @@
       } catch (e) {
         showToast('Failed to clear logs.', 'error');
       }
+    }
+
+    // =========================================================================
+    // CUSTOM LOGO & UI APPLICATION
+    // =========================================================================
+    function getActiveLogoUrl() {
+      return (tripConfig.customLogoUrl && tripConfig.customLogoUrl.trim())
+        ? tripConfig.customLogoUrl.trim()
+        : DEFAULT_LOGO_URL;
+    }
+
+    function applyLogoAcrossApp() {
+      const logoUrl = getActiveLogoUrl();
+      ['headerLogoImg', 'pDashLogoImg', 'bpLogoImg', 'setLogoPreviewImg'].forEach(id => {
+        const imgEl = document.getElementById(id);
+        if (imgEl) {
+          imgEl.style.display = 'block';
+          imgEl.src = logoUrl;
+        }
+      });
+      const bpFallback = document.getElementById('bpFallbackLogo');
+      if (bpFallback) bpFallback.style.display = 'none';
+    }
+
+    function previewCustomLogoUrl(url) {
+      const preview = document.getElementById('setLogoPreviewImg');
+      if (preview) {
+        preview.src = (url && url.trim()) ? url.trim() : DEFAULT_LOGO_URL;
+      }
+    }
+
+    function resetCustomLogoToDefault() {
+      const inp = document.getElementById('setCustomLogoUrl');
+      if (inp) inp.value = DEFAULT_LOGO_URL;
+      previewCustomLogoUrl(DEFAULT_LOGO_URL);
+      showToast('Logo reset to default. Click Save All Settings to apply.');
+    }
+
+    function handleLogoFileUpload(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
+          const maxDim = 160;
+          let w = img.width;
+          let h = img.height;
+          if (w > h) {
+            if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+          } else {
+            if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+          }
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const compressedDataUrl = canvas.toDataURL('image/png', 0.85);
+          const urlInp = document.getElementById('setCustomLogoUrl');
+          if (urlInp) urlInp.value = compressedDataUrl;
+          previewCustomLogoUrl(compressedDataUrl);
+          showToast('Custom logo loaded! Save settings to update all passes.');
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
     }
 
     function applyTripConfigToUI() {
@@ -2506,6 +3132,7 @@
       document.getElementById('cardUpiIdText').textContent = tripConfig.upiId;
       document.getElementById('qrReceiverName').textContent = tripConfig.receiverName;
 
+      applyLogoAcrossApp();
       renderDepartmentDropdowns();
       renderExpenseCategoryDropdown();
       updateUserTabsVisibility();
@@ -2627,8 +3254,8 @@
 
       updateUserTabsVisibility();
 
+      const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
       try {
-        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
         await updateDoc(ref, updatedState);
       } catch (err) {
         try {
@@ -2655,6 +3282,584 @@
       select.innerHTML = cats.map(c => `<option value="${escapeHtml(c)}" ${c === selectedVal ? 'selected' : ''}>${escapeHtml(c)}</option>`).join('');
     }
 
+    // Inline Custom Expense Category Box (no window.prompt)
+    function toggleInlineCustomCategoryBox() {
+      const box = document.getElementById('inlineCustomCatBox');
+      if (box) box.classList.toggle('hidden');
+    }
+
+    function saveInlineCustomCategory() {
+      const inp = document.getElementById('inlineCustomCatInput');
+      const clean = (inp?.value || '').trim();
+      if (!clean) return;
+      if (!tripConfig.expenseCategories.includes(clean)) {
+        tripConfig.expenseCategories.push(clean);
+        if (isAdminLoggedIn) {
+          const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
+          updateDoc(ref, { expenseCategories: tripConfig.expenseCategories }).catch(() => {});
+        }
+      }
+      renderExpenseCategoryDropdown(clean);
+      inp.value = '';
+      document.getElementById('inlineCustomCatBox')?.classList.add('hidden');
+      showToast(`Category "${clean}" added!`);
+    }
+
+    // =========================================================================
+    // OFFICIAL BOARDING PASS TICKET MODAL, PDF & WHATSAPP SHARE ENGINE
+    // =========================================================================
+    function buildBoardingQrPayload(student) {
+      return `TRIPPAY|${student.receiptCode || 'TRP-000000'}|${normalizePhone(student.phone)}|${student.accessCode || 'PENDING'}`;
+    }
+
+    function openBoardingPassModal(student) {
+      if (!student) return;
+      currentBoardingPassData = student;
+
+      const totalFee = Number(tripConfig.tripAmount) || 1500;
+      const paid = Number(student.amountPaid) || 0;
+      const due = Math.max(0, totalFee - paid);
+      const isVer = student.status === 'Verified';
+
+      applyLogoAcrossApp();
+
+      document.getElementById('bpTripTitle').textContent = tripConfig.tripTitle;
+      document.getElementById('bpCoordinatorName').textContent = tripConfig.receiverName;
+      document.getElementById('bpUpiId').textContent = tripConfig.upiId;
+      document.getElementById('bpReceiptCode').textContent = student.receiptCode || 'TRP-000000';
+
+      const stampEl = document.getElementById('bpStatusStamp');
+      if (isVer) {
+        stampEl.className = 'mt-1.5 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-400/20 text-emerald-200 border border-emerald-300/40';
+        stampEl.textContent = student.boarded ? 'BOARDED & VERIFIED ✅' : 'VERIFIED PASS ✓';
+      } else {
+        stampEl.className = 'mt-1.5 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-400/20 text-amber-200 border border-amber-300/40';
+        stampEl.textContent = 'PENDING VERIFICATION';
+      }
+
+      document.getElementById('bpBoardingNote').textContent = student.remarks || 'Main Campus Gate Boarding';
+      document.getElementById('bpTripDate').textContent = tripConfig.tripDate || 'TBA';
+      document.getElementById('bpDestination').textContent = tripConfig.destination || '-';
+
+      document.getElementById('bpStudentName').textContent = student.studentName || '-';
+      document.getElementById('bpDepartment').textContent = student.department || '-';
+      document.getElementById('bpPhone').textContent = `+91 ${normalizePhone(student.phone)}`;
+      document.getElementById('bpAccessCode').textContent = student.accessCode || 'PENDING';
+
+      document.getElementById('bpTotalFee').textContent = formatINR(totalFee);
+      document.getElementById('bpAmountPaid').textContent = formatINR(paid);
+      document.getElementById('bpBalanceDue').textContent = formatINR(due);
+      document.getElementById('bpPaymentApp').textContent = student.paymentApp || 'UPI';
+
+      document.getElementById('bpIssuedDate').textContent = student.createdDateStr || new Date().toLocaleDateString('en-IN');
+      document.getElementById('bpBarcodeSub').textContent = `*${student.receiptCode || 'TRP-000000'}-${student.accessCode || 'PASS'}*`;
+
+      const partStamp = document.getElementById('bpParticipationStamp');
+      if (partStamp) {
+        partStamp.textContent = student.boarded
+          ? `CHECKED-IN (${student.boardedAtStr || 'Confirmed'})`
+          : (isVer ? 'READY TO BOARD' : 'AWAITING VERIFICATION');
+      }
+
+      const qrPayload = buildBoardingQrPayload(student);
+      const qrEl = document.getElementById('bpQrImage');
+      if (qrEl) {
+        qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=6&data=${encodeURIComponent(qrPayload)}`;
+      }
+
+      document.getElementById('boardingPassModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function openBoardingPassByStudentId(id) {
+      const st = payments.find(p => p.id === id);
+      if (!st) {
+        showToast('Participant record not found.', 'error');
+        return;
+      }
+      openBoardingPassModal(st);
+    }
+
+    function openBoardingPassFromLastReceipt() {
+      if (!lastReceiptData) return;
+      const match = payments.find(p => p.receiptCode === lastReceiptData.receiptCode || normalizePhone(p.phone) === normalizePhone(lastReceiptData.phone));
+      if (match) {
+        openBoardingPassModal(match);
+      } else {
+        openBoardingPassModal({
+          receiptCode: lastReceiptData.receiptCode,
+          studentName: lastReceiptData.studentName,
+          department: lastReceiptData.department,
+          phone: lastReceiptData.phone,
+          amountPaid: lastReceiptData.totalPaid,
+          paymentApp: lastReceiptData.paymentApp,
+          status: lastReceiptData.status,
+          accessCode: lastReceiptData.accessCode,
+          remarks: 'Official Pass'
+        });
+      }
+    }
+
+    function openBoardingPassModalForLoggedParticipant() {
+      if (!loggedInParticipant) return;
+      openBoardingPassModal(loggedInParticipant);
+    }
+
+    function closeBoardingPassModal() {
+      document.getElementById('boardingPassModal').classList.add('hidden');
+    }
+
+    function printBoardingPassTicket() {
+      window.print();
+    }
+
+    async function downloadBoardingPassPDF() {
+      const element = document.getElementById('boardingPassPrintableArea');
+      const btn = document.getElementById('btnDownloadTicketPdf');
+      if (!element || typeof html2pdf === 'undefined') {
+        window.print();
+        return;
+      }
+
+      const origHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span>Generating PDF...</span>';
+
+      const cleanName = (currentBoardingPassData?.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
+      const code = currentBoardingPassData?.receiptCode || 'Ticket';
+
+      const opt = {
+        margin: [8, 8, 8, 8],
+        filename: `BoardingPass_${cleanName}_${code}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      try {
+        await html2pdf().set(opt).from(element).save();
+        showToast('Official Boarding Pass PDF downloaded!');
+      } catch (e) {
+        window.print();
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+        lucide.createIcons();
+      }
+    }
+
+    function buildWhatsAppBoardingPassText(st) {
+      const totalFee = Number(tripConfig.tripAmount) || 1500;
+      const paid = Number(st.amountPaid) || 0;
+      const due = Math.max(0, totalFee - paid);
+      const qrVerifyString = buildBoardingQrPayload(st);
+
+      return `*🎫 OFFICIAL TRIP BOARDING PASS*\n` +
+        `*${tripConfig.tripTitle}*\n` +
+        `================================\n` +
+        `👤 *Passenger:* ${st.studentName}\n` +
+        `🎓 *Department:* ${st.department}\n` +
+        `📱 *Mobile:* +91 ${normalizePhone(st.phone)}\n` +
+        `🧾 *Ticket No:* *${st.receiptCode}*\n` +
+        `🔑 *6-Digit Access Pass:* *${st.accessCode || 'Pending Admin Verification'}*\n` +
+        `--------------------------------\n` +
+        `📍 *Route:* College Campus ➔ ${tripConfig.destination}\n` +
+        `📅 *Departure Date:* ${tripConfig.tripDate}\n` +
+        `🚌 *Boarding Note:* ${st.remarks || 'Main Campus Gate'}\n` +
+        `--------------------------------\n` +
+        `💰 *Paid Amount:* ${formatINR(paid)} / ${formatINR(totalFee)}\n` +
+        `⚖️ *Balance Due:* ${due > 0 ? formatINR(due) : '₹0 (Full Fee Cleared 🎉)'}\n` +
+        `📌 *Pass Status:* ${st.status === 'Verified' ? 'VERIFIED PASS ✅' : 'Pending Verification ⏳'}\n` +
+        `🚏 *Boarding Check-In:* ${st.boarded ? `BOARDED ✅ (${st.boardedAtStr || ''})` : 'Ready for Boarding'}\n` +
+        `🔎 *QR Code ID:* \`${qrVerifyString}\`\n` +
+        `================================\n` +
+        `Present this Boarding Pass at the bus gate for QR scan check-in.`;
+    }
+
+    function shareCurrentBoardingPassWhatsApp() {
+      if (!currentBoardingPassData) return;
+      const msg = buildWhatsAppBoardingPassText(currentBoardingPassData);
+      const phone = normalizePhone(currentBoardingPassData.phone);
+      const url = phone.length === 10
+        ? `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`
+        : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
+
+    function shareStudentBoardingPassWhatsApp(id) {
+      const st = payments.find(p => p.id === id);
+      if (!st) return;
+      const msg = buildWhatsAppBoardingPassText(st);
+      const phone = normalizePhone(st.phone);
+      const url = `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
+
+    // =========================================================================
+    // ADMIN QR SCANNER & PARTICIPANT CHECK-IN / BOARDING SYSTEM
+    // =========================================================================
+    function openQrScannerModal() {
+      if (!isAdminLoggedIn) {
+        handleAdminAccessClick();
+        return;
+      }
+      updateScannerModalCounters();
+      document.getElementById('qrScannerModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeQrScannerModal() {
+      stopCameraQrScanner();
+      document.getElementById('qrScannerModal').classList.add('hidden');
+    }
+
+    function updateScannerModalCounters() {
+      const boardedCount = payments.filter(p => p.boarded).length;
+      const badge = document.getElementById('scannerLiveCountBadge');
+      if (badge) badge.textContent = `${boardedCount} / ${payments.length} Boarded`;
+    }
+
+    async function startCameraQrScanner() {
+      if (typeof Html5Qrcode === 'undefined') {
+        showToast('QR Scanner library loading. Use manual lookup or retry.', 'error');
+        return;
+      }
+      if (isCameraScanning) return;
+
+      const placeholder = document.getElementById('qrCameraPlaceholder');
+      const stopBar = document.getElementById('qrCameraStopBar');
+      if (placeholder) placeholder.classList.add('hidden');
+      if (stopBar) stopBar.classList.remove('hidden');
+
+      try {
+        html5QrScanner = new Html5Qrcode('qrReaderViewport');
+        isCameraScanning = true;
+        await html5QrScanner.start(
+          { facingMode: 'environment' },
+          { fps: 10, qrbox: { width: 220, height: 220 } },
+          (decodedText) => {
+            const now = Date.now();
+            if (decodedText === lastScannedCode && now - lastScanTimestamp < 3500) {
+              return;
+            }
+            lastScannedCode = decodedText;
+            lastScanTimestamp = now;
+            processScannedBoardingPassPayload(decodedText);
+          },
+          () => {}
+        );
+      } catch (err) {
+        isCameraScanning = false;
+        if (placeholder) placeholder.classList.remove('hidden');
+        if (stopBar) stopBar.classList.add('hidden');
+        showToast('Camera permission denied or unavailable. Use manual lookup below.', 'error');
+      }
+    }
+
+    async function stopCameraQrScanner() {
+      if (html5QrScanner && isCameraScanning) {
+        try {
+          await html5QrScanner.stop();
+          await html5QrScanner.clear();
+        } catch (e) {}
+      }
+      isCameraScanning = false;
+      const placeholder = document.getElementById('qrCameraPlaceholder');
+      const stopBar = document.getElementById('qrCameraStopBar');
+      if (placeholder) placeholder.classList.remove('hidden');
+      if (stopBar) stopBar.classList.add('hidden');
+    }
+
+    function handleManualScannerLookup(e) {
+      e.preventDefault();
+      const raw = (document.getElementById('manualScanInput')?.value || '').trim();
+      if (!raw) return;
+      processScannedBoardingPassPayload(raw);
+    }
+
+    async function processScannedBoardingPassPayload(rawText) {
+      const clean = String(rawText || '').trim();
+      let matchedStudent = null;
+
+      if (clean.startsWith('TRIPPAY|')) {
+        const parts = clean.split('|');
+        const rCode = (parts[1] || '').trim();
+        const rPhone = normalizePhone(parts[2] || '');
+        const rAccess = (parts[3] || '').trim();
+        matchedStudent = payments.find(p =>
+          (rCode && p.receiptCode === rCode) ||
+          (rPhone && normalizePhone(p.phone) === rPhone) ||
+          (rAccess && rAccess !== 'PENDING' && p.accessCode === rAccess)
+        );
+      } else {
+        const upper = clean.toUpperCase();
+        const normP = normalizePhone(clean);
+        matchedStudent = payments.find(p =>
+          (p.receiptCode && p.receiptCode.toUpperCase() === upper) ||
+          (p.accessCode && p.accessCode === clean) ||
+          (normP.length === 10 && normalizePhone(p.phone) === normP)
+        );
+      }
+
+      const resultBox = document.getElementById('scannedResultContainer');
+      if (!resultBox) return;
+      resultBox.classList.remove('hidden');
+
+      if (!matchedStudent) {
+        playScanBeep(false);
+        resultBox.className = 'rounded-2xl border-2 border-rose-300 bg-rose-50 p-4 space-y-2';
+        resultBox.innerHTML = `
+          <div class="flex items-center gap-2 text-rose-800 font-extrabold text-sm">
+            <i data-lucide="x-circle" class="w-5 h-5 text-rose-600 shrink-0"></i>
+            <span>Invalid or Unregistered Boarding Pass QR</span>
+          </div>
+          <p class="text-xs text-rose-700 font-mono break-all">Scanned: ${escapeHtml(clean)}</p>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      playScanBeep(true);
+
+      const autoCheckIn = document.getElementById('autoCheckInToggle')?.checked;
+      if (autoCheckIn && !matchedStudent.boarded) {
+        await markParticipantBoardingStatus(matchedStudent.id, true, true);
+        const refreshed = payments.find(p => p.id === matchedStudent.id);
+        if (refreshed) matchedStudent = refreshed;
+      }
+
+      renderScannedStudentCard(matchedStudent);
+    }
+
+    function renderScannedStudentCard(st) {
+      const resultBox = document.getElementById('scannedResultContainer');
+      if (!resultBox || !st) return;
+
+      const bal = getBalanceDue(st);
+      const isVer = st.status === 'Verified';
+      const isBoarded = Boolean(st.boarded);
+
+      resultBox.className = `rounded-2xl border-2 p-4 space-y-3 ${isBoarded ? 'border-emerald-400 bg-emerald-50/70' : 'border-indigo-300 bg-indigo-50/50'}`;
+      resultBox.innerHTML = `
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${isBoarded ? 'bg-emerald-600 text-white' : 'bg-amber-100 text-amber-800'}">
+                ${isBoarded ? '✅ BOARDED / PARTICIPATING' : '⏳ NOT CHECKED-IN YET'}
+              </span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isVer ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                ${escapeHtml(st.status)}
+              </span>
+            </div>
+            <h4 class="font-display font-extrabold text-base sm:text-lg text-slate-900 mt-1">${escapeHtml(st.studentName)}</h4>
+            <p class="text-xs text-slate-600 font-medium">${escapeHtml(st.department)} • +91 ${escapeHtml(st.phone)}</p>
+          </div>
+          <span class="font-mono text-xs font-extrabold bg-white px-2.5 py-1 rounded-lg border border-slate-200 text-slate-800">
+            ${escapeHtml(st.receiptCode)}
+          </span>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 bg-white p-2.5 rounded-xl border border-slate-200 text-xs text-center">
+          <div>
+            <span class="text-[10px] text-slate-400 block font-bold uppercase">Paid</span>
+            <strong class="text-emerald-700 font-display">${formatINR(st.amountPaid)}</strong>
+          </div>
+          <div class="border-x border-slate-100">
+            <span class="text-[10px] text-slate-400 block font-bold uppercase">Balance Due</span>
+            <strong class="${bal > 0 ? 'text-rose-600' : 'text-emerald-700'} font-display">${formatINR(bal)}</strong>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400 block font-bold uppercase">Access Pass</span>
+            <strong class="text-indigo-700 font-mono">${escapeHtml(st.accessCode || 'None')}</strong>
+          </div>
+        </div>
+
+        ${isBoarded && st.boardedAtStr ? `
+          <p class="text-[11px] font-semibold text-emerald-800 flex items-center gap-1">
+            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+            <span>Checked-in at: ${escapeHtml(st.boardedAtStr)}</span>
+          </p>
+        ` : ''}
+
+        <div class="flex flex-wrap items-center gap-2 pt-1">
+          <button
+            type="button"
+            onclick="markParticipantBoardingStatus('${st.id}', ${!isBoarded})"
+            class="flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm transition ${isBoarded ? 'bg-slate-200 hover:bg-slate-300 text-slate-800' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}"
+          >
+            <i data-lucide="${isBoarded ? 'rotate-ccw' : 'user-check'}" class="w-4 h-4"></i>
+            <span>${isBoarded ? 'Undo Boarding Check-In' : 'Confirm Check-In (Mark Boarded)'}</span>
+          </button>
+          <button
+            type="button"
+            onclick="shareStudentBoardingPassWhatsApp('${st.id}')"
+            class="py-2.5 px-3 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition"
+          >
+            <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+            <span>WhatsApp Pass</span>
+          </button>
+        </div>
+      `;
+      updateScannerModalCounters();
+      lucide.createIcons();
+    }
+
+    async function markParticipantBoardingStatus(studentId, boardedState, silentFromScanner = false) {
+      const st = payments.find(p => p.id === studentId);
+      if (!st) return;
+
+      const timeStr = boardedState
+        ? new Date().toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })
+        : '';
+
+      const payload = {
+        boarded: Boolean(boardedState),
+        boardedAt: boardedState ? Date.now() : 0,
+        boardedAtStr: timeStr
+      };
+
+      // Also auto-verify & generate access code if Admin checks them in at boarding
+      if (boardedState && st.status !== 'Verified') {
+        payload.status = 'Verified';
+        if (!st.accessCode) payload.accessCode = generateSecureAccessCode();
+      }
+
+      try {
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', studentId);
+        await updateDoc(ref, payload);
+        st.boarded = payload.boarded;
+        st.boardedAtStr = payload.boardedAtStr;
+        if (payload.status) st.status = payload.status;
+        if (payload.accessCode) st.accessCode = payload.accessCode;
+
+        logSecurityEvent(
+          boardedState ? 'BOARDING_CHECKIN' : 'BOARDING_UNDO',
+          st.phone,
+          `${st.studentName} (${st.receiptCode}) marked as ${boardedState ? 'Boarded' : 'Not Boarded'}`
+        );
+
+        showToast(boardedState ? `✅ ${st.studentName} checked-in & boarded!` : `Boarding check-in removed for ${st.studentName}.`);
+        if (!silentFromScanner) {
+          const resultBox = document.getElementById('scannedResultContainer');
+          if (resultBox && !resultBox.classList.contains('hidden')) {
+            renderScannedStudentCard(st);
+          }
+        }
+        renderCheckinRoster();
+        updateScannerModalCounters();
+      } catch (e) {
+        showToast('Failed to update participation record.', 'error');
+      }
+    }
+
+    function renderCheckinRoster() {
+      const tbody = document.getElementById('checkinRosterTableBody');
+      const badge = document.getElementById('subTabBadgeCheckin');
+      const boardedCount = payments.filter(p => p.boarded).length;
+      const waitingCount = Math.max(0, payments.length - boardedCount);
+
+      if (badge) badge.textContent = `${boardedCount}/${payments.length}`;
+
+      const elBoarded = document.getElementById('checkinCountBoarded');
+      const elWaiting = document.getElementById('checkinCountWaiting');
+      const elTotal = document.getElementById('checkinCountTotal');
+      if (elBoarded) elBoarded.textContent = boardedCount;
+      if (elWaiting) elWaiting.textContent = waitingCount;
+      if (elTotal) elTotal.textContent = payments.length;
+
+      if (!tbody) return;
+
+      if (payments.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-xs text-slate-400">No participants registered yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = payments.map(p => {
+        const due = getBalanceDue(p);
+        const isBoarded = Boolean(p.boarded);
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3 px-4">
+              <span class="font-bold text-slate-900 block">${escapeHtml(p.studentName)}</span>
+              <span class="text-xs text-slate-500">${escapeHtml(p.department)} • ${escapeHtml(p.phone)}</span>
+            </td>
+            <td class="py-3 px-4 font-mono text-xs">
+              <span class="font-bold text-slate-800 block">${escapeHtml(p.receiptCode)}</span>
+              <span class="text-[11px] text-indigo-700 font-bold">Code: ${escapeHtml(p.accessCode || 'Pending')}</span>
+            </td>
+            <td class="py-3 px-4">
+              <span class="font-display font-extrabold text-emerald-700">${formatINR(p.amountPaid)}</span>
+              <span class="ml-1 text-[10px] font-bold px-1.5 py-0.5 rounded ${due > 0 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">
+                ${due > 0 ? `Due: ${formatINR(due)}` : 'Full Paid'}
+              </span>
+            </td>
+            <td class="py-3 px-4">
+              ${isBoarded ? `
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i>
+                  <span>Boarded (${escapeHtml(p.boardedAtStr || 'Yes')})</span>
+                </span>
+              ` : `
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600">
+                  <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                  <span>Awaiting Check-In</span>
+                </span>
+              `}
+            </td>
+            <td class="py-3 px-4 text-right">
+              <div class="inline-flex items-center gap-1.5">
+                <button
+                  onclick="markParticipantBoardingStatus('${p.id}', ${!isBoarded})"
+                  class="px-3 py-1.5 rounded-xl text-xs font-extrabold transition shadow-sm ${isBoarded ? 'bg-slate-200 text-slate-700 hover:bg-slate-300' : 'bg-emerald-600 text-white hover:bg-emerald-500'}"
+                >
+                  ${isBoarded ? 'Undo' : 'Mark Boarded'}
+                </button>
+                <button
+                  onclick="openBoardingPassByStudentId('${p.id}')"
+                  class="p-1.5 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200"
+                  title="View / Print Boarding Pass"
+                >
+                  <i data-lucide="ticket" class="w-4 h-4"></i>
+                </button>
+                <button
+                  onclick="shareStudentBoardingPassWhatsApp('${p.id}')"
+                  class="p-1.5 rounded-xl bg-[#25D366]/15 text-[#25D366] hover:bg-[#25D366]/25"
+                  title="Share Boarding Pass on WhatsApp"
+                >
+                  <i data-lucide="message-circle" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function copyBoardingAttendanceWhatsApp() {
+      const boardedList = payments.filter(p => p.boarded);
+      const waitingList = payments.filter(p => !p.boarded);
+      const lines = [
+        `*🚌 LIVE TRIP BOARDING & PARTICIPATION REPORT*`,
+        `Trip: *${tripConfig.tripTitle}*`,
+        `Checked-In: *${boardedList.length} / ${payments.length}*`,
+        `--------------------------------`,
+        `*✅ BOARDED PARTICIPANTS (${boardedList.length}):*`,
+        ...(boardedList.length > 0
+          ? boardedList.map((p, i) => `${i + 1}. *${p.studentName}* (${p.department}) — ${p.boardedAtStr || 'Boarded'}`)
+          : ['None yet']),
+        `--------------------------------`,
+        `*⏳ AWAITING BOARDING (${waitingList.length}):*`,
+        ...(waitingList.length > 0
+          ? waitingList.map((p, i) => `${i + 1}. ${p.studentName} (${p.department}) - ${p.phone}`)
+          : ['All students have boarded! 🎉'])
+      ];
+      copyText(lines.join('\n'), 'Boarding participation report copied for WhatsApp!');
+    }
+
+    // =========================================================================
+    // PAYMENT & REGISTRATION WORKFLOW
+    // =========================================================================
     function switchPaymentMode(mode) {
       currentPaymentMode = mode;
       const btnNew = document.getElementById('modeBtn-new');
@@ -2856,7 +4061,7 @@
             status: 'Pending Verification',
             accessCode: existingRecord.accessCode
           });
-          showToast('Updated existing payment record!', 'success', 'Send to WhatsApp', () => shareReceiptToUserWhatsApp());
+          showToast('Updated existing payment record!', 'success', 'Get Boarding Pass', () => openBoardingPassFromLastReceipt());
         } else {
           const balanceDue = Math.max(0, totalFee - amountPaid);
           const newEntry = {
@@ -2868,8 +4073,11 @@
             paymentApp,
             remarks: userRemarks || (balanceDue > 0 ? `Advance Paid (${formatINR(amountPaid)})` : 'Full Fee Paid'),
             status: 'Pending Verification',
-            accessCode: '', // Generated once Admin verifies
+            accessCode: '',
             accessStatus: 'Active',
+            boarded: false,
+            boardedAt: 0,
+            boardedAtStr: '',
             failedLoginAttempts: 0,
             createdAt: Date.now(),
             createdDateStr: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
@@ -2893,7 +4101,7 @@
             status: 'Pending Verification',
             accessCode: ''
           });
-          showToast('Payment submitted successfully!', 'success', 'Send to WhatsApp', () => shareReceiptToUserWhatsApp());
+          showToast('Payment submitted successfully!', 'success', 'Boarding Pass', () => openBoardingPassFromLastReceipt());
         }
 
         document.getElementById('studentPayForm').reset();
@@ -2909,23 +4117,6 @@
       }
     }
 
-    function promptAddNewExpenseCategory() {
-      const cat = window.prompt("Enter new custom expense category (e.g. 'Boat Cruise', 'Audio Gear', 'Trekking Guide'):");
-      if (cat && cat.trim()) {
-        const clean = cat.trim();
-        if (!tripConfig.expenseCategories.includes(clean)) {
-          tripConfig.expenseCategories.push(clean);
-          renderExpenseCategoryDropdown(clean);
-          if (isAdminLoggedIn) {
-            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
-            updateDoc(ref, { expenseCategories: tripConfig.expenseCategories }).catch(() => {});
-          }
-        } else {
-          renderExpenseCategoryDropdown(clean);
-        }
-      }
-    }
-
     function renderBalanceLookupResults() {
       const raw = document.getElementById('balanceSearchInput')?.value || '';
       const clean = normalizePhone(raw);
@@ -2933,7 +4124,7 @@
       if (!list) return;
 
       if (clean.length < 10) {
-        list.innerHTML = `<div class="p-3 text-center text-xs text-slate-400">Enter your 10-digit mobile number to check balance.</div>`;
+        list.innerHTML = `<div class="p-3 text-center text-xs text-slate-400">Enter your 10-digit mobile number to check balance or download your Boarding Pass.</div>`;
         return;
       }
 
@@ -2949,7 +4140,7 @@
         return `
           <div class="p-3.5 rounded-2xl border border-slate-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
             <div>
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-2 flex-wrap">
                 <span class="font-bold text-slate-900 text-sm">${escapeHtml(st.studentName)}</span>
                 <span class="text-[10px] px-2 py-0.5 rounded font-mono bg-slate-100">${escapeHtml(st.receiptCode)}</span>
                 <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isVer ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
@@ -2961,10 +4152,14 @@
                 ${bal > 0 ? `Balance Due: ${formatINR(bal)}` : 'Full Fee Cleared (₹0 Due)'}
               </p>
             </div>
-            <div class="flex items-center gap-2">
-              <button onclick="sendStudentWhatsAppReceipt('${st.id}')" class="px-3 py-1.5 rounded-xl bg-[#25D366] text-white text-xs font-bold flex items-center gap-1">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <button onclick="openBoardingPassByStudentId('${st.id}')" class="px-3 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold flex items-center gap-1">
+                <i data-lucide="ticket" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span>Pass PDF</span>
+              </button>
+              <button onclick="shareStudentBoardingPassWhatsApp('${st.id}')" class="px-3 py-1.5 rounded-xl bg-[#25D366] text-white text-xs font-bold flex items-center gap-1">
                 <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-                <span>Receipt</span>
+                <span>WhatsApp</span>
               </button>
               ${bal > 0 ? `
                 <button onclick="selectStudentForBalance('${st.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-bold">
@@ -3070,45 +4265,24 @@
 
     function shareReceiptToUserWhatsApp() {
       if (!lastReceiptData) return;
-      const codeLine = lastReceiptData.accessCode ? `🔑 *Access Pass Code:* ${lastReceiptData.accessCode}\n` : '';
-      const msg = `*🧾 TRIP RECEIPT — ${tripConfig.tripTitle}*\n` +
-        `--------------------------------\n` +
-        `👤 *Student:* ${lastReceiptData.studentName}\n` +
-        `🎓 *Department:* ${lastReceiptData.department}\n` +
-        `🧾 *Receipt No:* ${lastReceiptData.receiptCode}\n` +
-        `💵 *Paid Now:* ${formatINR(lastReceiptData.paidNow)}\n` +
-        `💰 *Total Paid:* ${formatINR(lastReceiptData.totalPaid)}\n` +
-        `⚖️ *Balance Due:* ${lastReceiptData.balanceDue > 0 ? formatINR(lastReceiptData.balanceDue) : '₹0 (Full Paid 🎉)'}\n` +
-        codeLine +
-        `📱 *App:* ${lastReceiptData.paymentApp}\n` +
-        `📌 *Status:* ${lastReceiptData.status}\n` +
-        `--------------------------------\n` +
-        `Destination: ${tripConfig.destination}`;
+      const msg = buildWhatsAppBoardingPassText({
+        studentName: lastReceiptData.studentName,
+        department: lastReceiptData.department,
+        phone: lastReceiptData.phone,
+        receiptCode: lastReceiptData.receiptCode,
+        amountPaid: lastReceiptData.totalPaid,
+        status: lastReceiptData.status,
+        accessCode: lastReceiptData.accessCode,
+        remarks: `Paid ${formatINR(lastReceiptData.paidNow)} via ${lastReceiptData.paymentApp}`
+      });
       const url = `https://wa.me/91${normalizePhone(lastReceiptData.phone)}?text=${encodeURIComponent(msg)}`;
       window.open(url, '_blank');
     }
 
     function sendStudentWhatsAppReceipt(id) {
-      const st = payments.find(p => p.id === id);
-      if (!st) return;
-      const bal = getBalanceDue(st);
-      const codeNotice = st.accessCode ? `\n🔑 *Personal Access Code:* *${st.accessCode}*\n_(Use this code with your phone number on My Pass portal)_` : '';
-      const msg = `*${st.status === 'Verified' ? '✅ PAYMENT VERIFIED & PASS ISSUED' : '🧾 TRIP PAYMENT RECEIPT'}*\n` +
-        `--------------------------------\n` +
-        `Trip: *${tripConfig.tripTitle}*\n` +
-        `👤 Student: *${st.studentName}*\n` +
-        `🎓 Department: ${st.department}\n` +
-        `💰 Paid Amount: *${formatINR(st.amountPaid)}*\n` +
-        `⚖️ Balance Due: *${bal > 0 ? formatINR(bal) : '₹0 (Completed 🎉)'}*\n` +
-        `📌 Status: *${st.status}*\n` +
-        `🧾 Receipt: ${st.receiptCode}\n` +
-        codeNotice +
-        `\n--------------------------------\n` +
-        `Official payment confirmation.`;
-      window.open(`https://wa.me/91${normalizePhone(st.phone)}?text=${encodeURIComponent(msg)}`, '_blank');
+      shareStudentBoardingPassWhatsApp(id);
     }
 
-    // Broadcast Reminder for all pending students
     function broadcastBalanceAlertsWhatsApp() {
       const pendingList = payments.filter(p => getBalanceDue(p) > 0);
       if (pendingList.length === 0) {
@@ -3129,9 +4303,9 @@
       copyText(lines.join('\n'), 'Pending balance announcement copied to clipboard!');
     }
 
-    // ==========================================
+    // =========================================================================
     // PARTICIPANT ACCESS PASS & LOGIN ENGINE
-    // ==========================================
+    // =========================================================================
     function handleParticipantPortalClick() {
       switchTab('participant');
     }
@@ -3149,7 +4323,6 @@
         return;
       }
 
-      // Check lockout state
       const now = Date.now();
       const lockout = participantFailedAttempts[cleanPhone];
       if (lockout && lockout.lockedUntil && now < lockout.lockedUntil) {
@@ -3185,7 +4358,6 @@
         return;
       }
 
-      // Success Login
       delete participantFailedAttempts[cleanPhone];
       loggedInParticipant = match;
       logSecurityEvent('LOGIN_SUCCESS', cleanPhone, `Participant ${match.studentName} authenticated`);
@@ -3201,14 +4373,13 @@
       participantFailedAttempts[phone].count += 1;
 
       if (participantFailedAttempts[phone].count >= 4) {
-        participantFailedAttempts[phone].lockedUntil = now + (60 * 1000); // 1 minute lock
+        participantFailedAttempts[phone].lockedUntil = now + (60 * 1000);
         const limitBox = document.getElementById('participantRateLimitMsg');
         limitBox.textContent = 'Too many failed login attempts. Portal locked for 60 seconds.';
         limitBox.classList.remove('hidden');
         logSecurityEvent('RATE_LIMIT_LOCKOUT', phone, 'Exceeded 4 failed attempts');
       }
 
-      // Increment in database for admin visibility
       if (docId) {
         const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', docId);
         const match = payments.find(p => p.id === docId);
@@ -3233,6 +4404,8 @@
       dashBox.classList.remove('hidden');
       navText.textContent = loggedInParticipant.studentName.split(' ')[0] + ' (Pass)';
 
+      applyLogoAcrossApp();
+
       document.getElementById('pDashName').textContent = loggedInParticipant.studentName;
       document.getElementById('pDashDept').textContent = loggedInParticipant.department;
       document.getElementById('pDashPhone').textContent = loggedInParticipant.phone;
@@ -3243,9 +4416,9 @@
       document.getElementById('pDashTotalFee').textContent = formatINR(totalFee);
       document.getElementById('pDashPaid').textContent = formatINR(loggedInParticipant.amountPaid);
       document.getElementById('pDashDue').textContent = formatINR(due);
-      document.getElementById('pDashStatus').innerHTML = loggedInParticipant.status === 'Verified'
-        ? `<span class="text-emerald-400 font-extrabold flex items-center gap-1"><i data-lucide="check-circle" class="w-4 h-4"></i> Verified Pass</span>`
-        : `<span class="text-amber-400 font-extrabold flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> Pending Admin</span>`;
+      document.getElementById('pDashStatus').innerHTML = loggedInParticipant.boarded
+        ? `<span class="text-emerald-300 font-extrabold flex items-center gap-1"><i data-lucide="check-circle-2" class="w-4 h-4"></i> Boarded ✅</span>`
+        : `<span class="text-emerald-400 font-extrabold flex items-center gap-1"><i data-lucide="check-circle" class="w-4 h-4"></i> Verified Pass</span>`;
 
       document.getElementById('pDashReceiptCode').textContent = loggedInParticipant.receiptCode;
       document.getElementById('pDashTripTitle').textContent = tripConfig.tripTitle;
@@ -3288,56 +4461,14 @@
 
     function shareMyParticipantPassWhatsApp() {
       if (!loggedInParticipant) return;
-      const bal = getBalanceDue(loggedInParticipant);
-      const msg = `*🎫 OFFICIAL TRIP PARTICIPANT PASS*\n` +
-        `Trip: *${tripConfig.tripTitle}*\n` +
-        `Destination: ${tripConfig.destination} (${tripConfig.tripDate})\n` +
-        `--------------------------------\n` +
-        `👤 *Name:* ${loggedInParticipant.studentName}\n` +
-        `🎓 *Department:* ${loggedInParticipant.department}\n` +
-        `🔑 *Access Code:* *${loggedInParticipant.accessCode}*\n` +
-        `🧾 *Receipt:* ${loggedInParticipant.receiptCode}\n` +
-        `💰 *Fee Cleared:* ${formatINR(loggedInParticipant.amountPaid)} / ${formatINR(tripConfig.tripAmount)}\n` +
-        `⚖️ *Remaining Due:* ${bal > 0 ? formatINR(bal) : '₹0 (Fully Paid)'}\n` +
-        `📌 *Verification:* Verified Student Seat ✅\n` +
-        `--------------------------------\n` +
-        `Present this verification pass at boarding.`;
+      const msg = buildWhatsAppBoardingPassText(loggedInParticipant);
       const url = `https://wa.me/91${normalizePhone(loggedInParticipant.phone)}?text=${encodeURIComponent(msg)}`;
       window.open(url, '_blank');
     }
 
-    function openPrintableBoardingPassModal() {
-      if (!loggedInParticipant) {
-        showToast('Please sign in to your Participant Pass first.', 'error');
-        return;
-      }
-      const p = loggedInParticipant;
-      document.getElementById('ticketTripTitle').textContent = tripConfig.tripTitle;
-      document.getElementById('ticketAccessCode').textContent = p.accessCode || 'PENDING';
-      document.getElementById('ticketStudentName').textContent = p.studentName;
-      document.getElementById('ticketDepartment').textContent = p.department;
-      document.getElementById('ticketPhone').textContent = p.phone;
-      document.getElementById('ticketDestination').textContent = tripConfig.destination;
-      document.getElementById('ticketDate').textContent = tripConfig.tripDate;
-      document.getElementById('ticketReceipt').textContent = p.receiptCode;
-      
-      const due = getBalanceDue(p);
-      document.getElementById('ticketStatus').textContent = due === 0 ? 'Full Paid & Verified ✅' : `Advance Paid (Due: ${formatINR(due)})`;
-
-      const qrData = encodeURIComponent(`TRIP PASS: ${p.studentName} | Code: ${p.accessCode} | Receipt: ${p.receiptCode}`);
-      document.getElementById('ticketQrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
-
-      document.getElementById('printableTicketModal').classList.remove('hidden');
-      lucide.createIcons();
-    }
-
-    function closePrintableTicketModal() {
-      document.getElementById('printableTicketModal').classList.add('hidden');
-    }
-
-    // ==========================================
+    // =========================================================================
     // RECOVERY WORKFLOW
-    // ==========================================
+    // =========================================================================
     function openRecoveryModal() {
       document.getElementById('recoveryStep1').classList.remove('hidden');
       document.getElementById('recoveryStep2').classList.add('hidden');
@@ -3365,7 +4496,6 @@
         return;
       }
 
-      // Verify name similarity
       const storedName = match.studentName.toLowerCase();
       if (!storedName.includes(name) && !name.includes(storedName)) {
         showToast('The provided name does not match the registered records for this number.', 'error');
@@ -3390,7 +4520,6 @@
       document.getElementById('recoveryStep1').classList.add('hidden');
       document.getElementById('recoveryStep2').classList.remove('hidden');
 
-      // Auto prefill login form
       document.getElementById('portalLoginPhone').value = phone;
       document.getElementById('portalLoginCode').value = activeCode;
     }
@@ -3400,19 +4529,18 @@
       handleParticipantLoginSubmit(new Event('submit'));
     }
 
-    // ==========================================
+    // =========================================================================
     // ADMIN ACCESS CODES MANAGEMENT SUITE
-    // ==========================================
+    // =========================================================================
     function renderAccessCodesSuite() {
       const tbody = document.getElementById('accessCodesTableBody');
       const badge = document.getElementById('subTabBadgeCodes');
       if (badge) badge.textContent = payments.length;
       if (!tbody) return;
 
-      tbody.innerHTML = payments.map((p, idx) => {
+      tbody.innerHTML = payments.map((p) => {
         const hasCode = Boolean(p.accessCode);
         const isActive = p.accessStatus !== 'Disabled';
-        const isVer = p.status === 'Verified';
 
         return `
           <tr class="hover:bg-slate-50 transition">
@@ -3451,15 +4579,23 @@
             <td class="py-3 px-4 text-right">
               <div class="inline-flex items-center gap-1">
                 <button
+                  onclick="openBoardingPassByStudentId('${p.id}')"
+                  class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1"
+                  title="Open PDF Boarding Pass"
+                >
+                  <i data-lucide="ticket" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span>Pass</span>
+                </button>
+                <button
                   onclick="openAdminCodeControllerModal('${p.id}')"
                   class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold"
                 >
-                  Edit / Pass
+                  Edit
                 </button>
                 <button
-                  onclick="sendAccessPassWhatsApp('${p.id}')"
-                  class="p-1.5 rounded-lg bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20"
-                  title="Send Access Code via WhatsApp"
+                  onclick="shareStudentBoardingPassWhatsApp('${p.id}')"
+                  class="p-1.5 rounded-lg bg-[#25D366]/15 text-[#25D366] hover:bg-[#25D366]/25"
+                  title="Share Boarding Pass & Access Code via WhatsApp"
                 >
                   <i data-lucide="send" class="w-3.5 h-3.5"></i>
                 </button>
@@ -3540,26 +4676,12 @@
     }
 
     function sendAccessPassWhatsApp(id) {
-      const p = payments.find(x => x.id === id);
-      if (!p || !p.accessCode) {
-        showToast('Generate an access code first.', 'error');
-        return;
-      }
-      const msg = `*🔐 TRIP PORTAL ACCESS PASS*\n` +
-        `Trip: *${tripConfig.tripTitle}*\n` +
-        `Student: *${p.studentName}*\n` +
-        `--------------------------------\n` +
-        `📱 Registered Phone: *${p.phone}*\n` +
-        `🔑 Your 6-Digit Access Code: *${p.accessCode}*\n` +
-        `--------------------------------\n` +
-        `You can log in to the My Pass tab at any time to view your verified seat, ticket, itinerary, and remaining dues.`;
-      const url = `https://wa.me/91${normalizePhone(p.phone)}?text=${encodeURIComponent(msg)}`;
-      window.open(url, '_blank');
+      shareStudentBoardingPassWhatsApp(id);
     }
 
-    // ==========================================
+    // =========================================================================
     // ADMIN SYSTEM & SUB-TABS
-    // ==========================================
+    // =========================================================================
     function handleAdminAccessClick() {
       if (isAdminLoggedIn) {
         switchTab('manager');
@@ -3640,7 +4762,6 @@
         else sec.classList.add('hidden');
       });
 
-      // Update public user navbar styles
       ['pay', 'itinerary', 'contacts', 'portal'].forEach(sub => {
         const btn = document.getElementById(`userTabBtn-${sub}`);
         if (!btn) return;
@@ -3652,7 +4773,6 @@
         }
       });
 
-      // Update admin navbar styles
       ['pay', 'manager'].forEach(tab => {
         const btn = document.getElementById(`tabBtn-${tab}`);
         if (!btn) return;
@@ -3663,7 +4783,10 @@
         }
       });
 
-      if (t === 'manager') renderDashboard();
+      if (t === 'manager') {
+        renderDashboard();
+        renderCheckinRoster();
+      }
       if (t === 'participant') updateParticipantDashboardUI();
       if (t === 'user-itinerary') renderItinerary();
       if (t === 'user-contacts') renderContacts();
@@ -3671,9 +4794,10 @@
     }
 
     function switchManagerSubTab(sub) {
-      ['students', 'access-codes', 'audit-logs', 'expenses', 'itinerary', 'contacts'].forEach(s => {
+      ['students', 'checkin', 'access-codes', 'audit-logs', 'expenses', 'itinerary', 'contacts'].forEach(s => {
         const sec = document.getElementById(`managerSection-${s}`);
         const btn = document.getElementById(`subTabBtn-${s}`);
+        if (!sec || !btn) return;
         if (s === sub) {
           sec.classList.remove('hidden');
           btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-emerald-600 text-white shadow-sm';
@@ -3682,6 +4806,7 @@
           btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900';
         }
       });
+      if (sub === 'checkin') renderCheckinRoster();
       if (sub === 'access-codes') renderAccessCodesSuite();
       if (sub === 'audit-logs') renderAuditLogs();
       lucide.createIcons();
@@ -3701,9 +4826,12 @@
     }
 
     function updateNavBadge() {
+      const boardedCount = payments.filter(p => p.boarded).length;
       document.getElementById('navPaidCount').textContent = payments.length;
       document.getElementById('subTabBadgeStudents').textContent = payments.length;
       document.getElementById('subTabBadgeCodes').textContent = payments.length;
+      const checkinBadge = document.getElementById('subTabBadgeCheckin');
+      if (checkinBadge) checkinBadge.textContent = `${boardedCount}/${payments.length}`;
     }
 
     function renderKPIs() {
@@ -3776,10 +4904,11 @@
       }
       empty.classList.add('hidden');
 
-      // Table View
+      // Desktop Table View
       tbody.innerHTML = filtered.map((s, idx) => {
         const bal = getBalanceDue(s);
         const isVer = s.status === 'Verified';
+        const isBoarded = Boolean(s.boarded);
         return `
           <tr class="hover:bg-slate-50 transition">
             <td class="py-3 px-4 font-mono text-xs text-slate-400 font-bold">${idx + 1}</td>
@@ -3791,7 +4920,7 @@
               <span class="px-2 py-0.5 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">${escapeHtml(s.department)}</span>
             </td>
             <td class="py-3 px-4">
-              <button onclick="sendStudentWhatsAppReceipt('${s.id}')" class="text-xs font-bold text-emerald-700 hover:underline flex items-center gap-1">
+              <button onclick="shareStudentBoardingPassWhatsApp('${s.id}')" class="text-xs font-bold text-emerald-700 hover:underline flex items-center gap-1" title="Share Boarding Pass on WhatsApp">
                 <i data-lucide="message-circle" class="w-3.5 h-3.5 text-[#25D366]"></i>
                 <span>${escapeHtml(s.phone)}</span>
               </button>
@@ -3804,10 +4933,17 @@
             </td>
             <td class="py-3 px-4">
               <div class="space-y-1">
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${isVer ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                  <i data-lucide="${isVer ? 'check' : 'clock'}" class="w-3 h-3"></i>
-                  <span>${escapeHtml(s.status)}</span>
-                </span>
+                <div class="flex items-center gap-1 flex-wrap">
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold ${isVer ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                    <i data-lucide="${isVer ? 'check' : 'clock'}" class="w-3 h-3"></i>
+                    <span>${escapeHtml(s.status)}</span>
+                  </span>
+                  ${isBoarded ? `
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-100 text-indigo-800">
+                      Boarded ✅
+                    </span>
+                  ` : ''}
+                </div>
                 ${s.accessCode ? `
                   <p class="font-mono text-[11px] font-extrabold text-indigo-700">Pass: ${escapeHtml(s.accessCode)}</p>
                 ` : ''}
@@ -3815,6 +4951,13 @@
             </td>
             <td class="py-3 px-4 text-right">
               <div class="inline-flex items-center gap-1">
+                <button onclick="openBoardingPassByStudentId('${s.id}')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1" title="View / Print Boarding Pass PDF">
+                  <i data-lucide="ticket" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span>Pass</span>
+                </button>
+                <button onclick="markParticipantBoardingStatus('${s.id}', ${!isBoarded})" class="px-2 py-1 rounded-lg text-xs font-bold ${isBoarded ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700'}" title="Toggle Boarding Participation">
+                  ${isBoarded ? 'Boarded ✓' : 'Check-In'}
+                </button>
                 <button onclick="toggleVerifyStudent('${s.id}')" class="px-2 py-1 rounded-lg text-xs font-bold ${isVer ? 'bg-slate-100 text-slate-600' : 'bg-emerald-600 text-white'}">
                   ${isVer ? 'Unverify' : 'Verify'}
                 </button>
@@ -3830,10 +4973,11 @@
         `;
       }).join('');
 
-      // Mobile Cards
+      // Mobile Cards View
       mContainer.innerHTML = filtered.map(s => {
         const bal = getBalanceDue(s);
         const isVer = s.status === 'Verified';
+        const isBoarded = Boolean(s.boarded);
         return `
           <div class="bg-white border border-slate-200 rounded-2xl p-3.5 space-y-2.5 shadow-sm">
             <div class="flex items-start justify-between">
@@ -3841,9 +4985,12 @@
                 <h4 class="font-bold text-slate-900 text-sm">${escapeHtml(s.studentName)}</h4>
                 <p class="text-xs text-slate-500">${escapeHtml(s.department)} • ${escapeHtml(s.phone)}</p>
               </div>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isVer ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                ${escapeHtml(s.status)}
-              </span>
+              <div class="flex flex-col items-end gap-1">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isVer ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                  ${escapeHtml(s.status)}
+                </span>
+                ${isBoarded ? `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">Boarded ✅</span>` : ''}
+              </div>
             </div>
             <div class="flex justify-between items-center text-xs bg-slate-50 p-2 rounded-xl">
               <div>
@@ -3854,13 +5001,26 @@
                 <span class="text-slate-400 block text-[10px]">Balance Due</span>
                 <strong class="${bal > 0 ? 'text-amber-600' : 'text-emerald-600'}">${formatINR(bal)}</strong>
               </div>
+              <div>
+                <span class="text-slate-400 block text-[10px]">Pass Code</span>
+                <strong class="font-mono text-indigo-700">${escapeHtml(s.accessCode || '-')}</strong>
+              </div>
             </div>
-            <div class="flex items-center justify-between pt-1 border-t border-slate-100 text-xs">
-              <button onclick="sendStudentWhatsAppReceipt('${s.id}')" class="text-emerald-700 font-bold flex items-center gap-1">
-                <i data-lucide="message-circle" class="w-3.5 h-3.5 text-[#25D366]"></i>
-                <span>WA Receipt</span>
-              </button>
+            <div class="flex items-center justify-between pt-1 border-t border-slate-100 text-xs flex-wrap gap-1.5">
+              <div class="flex items-center gap-1.5">
+                <button onclick="openBoardingPassByStudentId('${s.id}')" class="px-2.5 py-1 rounded-lg bg-slate-900 text-white font-bold flex items-center gap-1">
+                  <i data-lucide="ticket" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span>Pass</span>
+                </button>
+                <button onclick="shareStudentBoardingPassWhatsApp('${s.id}')" class="px-2.5 py-1 rounded-lg bg-[#25D366] text-white font-bold flex items-center gap-1">
+                  <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                  <span>WA Pass</span>
+                </button>
+              </div>
               <div class="flex gap-1">
+                <button onclick="markParticipantBoardingStatus('${s.id}', ${!isBoarded})" class="px-2 py-1 rounded-lg font-bold ${isBoarded ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-700'}">
+                  ${isBoarded ? 'Boarded ✓' : 'Check-In'}
+                </button>
                 <button onclick="toggleVerifyStudent('${s.id}')" class="px-2 py-1 rounded-lg font-bold ${isVer ? 'bg-slate-100 text-slate-700' : 'bg-emerald-600 text-white'}">
                   ${isVer ? 'Unverify' : 'Verify'}
                 </button>
@@ -3877,7 +5037,6 @@
       lucide.createIcons();
     }
 
-    // Automatically generate access code when marking student verified
     async function toggleVerifyStudent(id) {
       const p = payments.find(x => x.id === id);
       if (!p) return;
@@ -3895,7 +5054,12 @@
         const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', id);
         await updateDoc(ref, updatePayload);
         logSecurityEvent(isNextVerified ? 'VERIFY_STUDENT' : 'UNVERIFY_STUDENT', p.phone, `Status updated to ${nextStatus}`);
-        showToast(isNextVerified ? `Verified ${p.studentName} and generated Pass!` : `Marked ${p.studentName} as Pending.`);
+        showToast(
+          isNextVerified ? `Verified ${p.studentName} and generated Boarding Pass!` : `Marked ${p.studentName} as Pending.`,
+          'success',
+          isNextVerified ? 'Send Pass on WA' : null,
+          isNextVerified ? () => shareStudentBoardingPassWhatsApp(id) : null
+        );
       } catch (e) {
         showToast('Status update failed.', 'error');
       }
@@ -4283,10 +5447,11 @@
         ...list.map((p, i) => {
           const bal = getBalanceDue(p);
           const tag = bal > 0 ? `(Advance: ₹${p.amountPaid}, Due: ₹${bal})` : `(Full: ₹${p.amountPaid})`;
-          return `${i + 1}. *${p.studentName}* (${p.department}) - ${tag} ${p.status === 'Verified' ? '✅' : '⏳'}`;
+          const boardedTag = p.boarded ? ' [Boarded 🚌]' : '';
+          return `${i + 1}. *${p.studentName}* (${p.department}) - ${tag} ${p.status === 'Verified' ? '✅' : '⏳'}${boardedTag}`;
         }),
         `--------------------------------`,
-        `*Total Students:* ${list.length}`,
+         `*Total Students:* ${list.length}`,
         `*Total Collected:* ${formatINR(sum)}`
       ];
       copyText(lines.join('\n'), 'Master WhatsApp list copied!');
@@ -4294,7 +5459,7 @@
 
     function exportStudentsCSV() {
       const list = payments;
-      const headers = ['Receipt Code', 'Student Name', 'Department', 'Phone', 'Paid', 'Due', 'Status', 'Access Code'];
+      const headers = ['Receipt Code', 'Student Name', 'Department', 'Phone', 'Paid', 'Due', 'Status', 'Access Code', 'Boarded', 'Boarded Time'];
       const rows = list.map(p => [
         `"${p.receiptCode}"`,
         `"${p.studentName}"`,
@@ -4303,7 +5468,9 @@
         p.amountPaid,
         getBalanceDue(p),
         `"${p.status}"`,
-        `"${p.accessCode || ''}"`
+        `"${p.accessCode || ''}"`,
+        `"${p.boarded ? 'Yes' : 'No'}"`,
+        `"${p.boardedAtStr || ''}"`
       ]);
       const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
@@ -4393,6 +5560,9 @@
           showToast(`Updated ${data.studentName}!`);
         } else {
           data.receiptCode = 'TRP-' + Date.now().toString().slice(-6);
+          data.boarded = false;
+          data.boardedAt = 0;
+          data.boardedAtStr = '';
           data.createdAt = Date.now();
           data.createdDateStr = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
           await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'trip_payments'), data);
@@ -4410,6 +5580,9 @@
         handleAdminAccessClick();
         return;
       }
+      document.getElementById('setCustomLogoUrl').value = tripConfig.customLogoUrl || DEFAULT_LOGO_URL;
+      previewCustomLogoUrl(tripConfig.customLogoUrl || DEFAULT_LOGO_URL);
+
       document.getElementById('setTripTitle').value = tripConfig.tripTitle;
       document.getElementById('setDestination').value = tripConfig.destination;
       document.getElementById('setTripDate').value = tripConfig.tripDate;
@@ -4429,6 +5602,7 @@
       renderDraftDeptTags();
       renderDraftExpenseCategoryTags();
       document.getElementById('settingsModal').classList.remove('hidden');
+      lucide.createIcons();
     }
 
     function closeSettingsModal() {
@@ -4496,7 +5670,9 @@
 
     async function saveTripSettings(e) {
       e.preventDefault();
+      const customLogoInput = (document.getElementById('setCustomLogoUrl')?.value || '').trim();
       const updated = {
+        customLogoUrl: customLogoInput || DEFAULT_LOGO_URL,
         tripTitle: document.getElementById('setTripTitle').value.trim(),
         destination: document.getElementById('setDestination').value.trim(),
         tripDate: document.getElementById('setTripDate').value,
@@ -4518,7 +5694,7 @@
         tripConfig = updated;
         applyTripConfigToUI();
         closeSettingsModal();
-        showToast('Settings saved to cloud!');
+        showToast('Settings & Custom Logo saved to cloud!');
       } catch (err) {
         showToast('Settings save failed.', 'error');
       }
@@ -4535,6 +5711,9 @@
       openSettingsModal,
       closeSettingsModal,
       saveTripSettings,
+      previewCustomLogoUrl,
+      resetCustomLogoToDefault,
+      handleLogoFileUpload,
       toggleStudentFeatureVisibility,
       handleAdminAccessClick,
       closeAdminLoginModal,
@@ -4567,6 +5746,8 @@
       openEditExpenseModal,
       closeExpenseModal,
       handleSaveExpenseSubmit,
+      toggleInlineCustomCategoryBox,
+      saveInlineCustomCategory,
       openAddItineraryModal,
       openEditItineraryModal,
       closeItineraryModal,
@@ -4582,7 +5763,6 @@
       removeDraftDept,
       addExpenseCategoryOption,
       removeDraftExpenseCategory,
-      promptAddNewExpenseCategory,
       handleParticipantPortalClick,
       handleParticipantLoginSubmit,
       logoutParticipant,
@@ -4592,8 +5772,6 @@
       autoLoginWithRecoveredCode,
       shareMyParticipantPassWhatsApp,
       initiateBalancePaymentFromPortal,
-      openPrintableBoardingPassModal,
-      closePrintableTicketModal,
       renderAccessCodesSuite,
       generateMissingAccessCodesForVerified,
       openAdminCodeControllerModal,
@@ -4602,7 +5780,23 @@
       adminResetFailedAttempts,
       saveAdminAccessCode,
       sendAccessPassWhatsApp,
-      clearAuditLogs
+      clearAuditLogs,
+      openBoardingPassModal,
+      openBoardingPassByStudentId,
+      openBoardingPassFromLastReceipt,
+      openBoardingPassModalForLoggedParticipant,
+      closeBoardingPassModal,
+      printBoardingPassTicket,
+      downloadBoardingPassPDF,
+      shareCurrentBoardingPassWhatsApp,
+      shareStudentBoardingPassWhatsApp,
+      openQrScannerModal,
+      closeQrScannerModal,
+      startCameraQrScanner,
+      stopCameraQrScanner,
+      handleManualScannerLookup,
+      markParticipantBoardingStatus,
+      copyBoardingAttendanceWhatsApp
     });
 
     window.addEventListener('DOMContentLoaded', () => {
