@@ -23,6 +23,8 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- html2pdf.js CDN for Direct PDF Boarding Pass Generation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- jsPDF standalone (for reliable PDF blob generation) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <!-- html2canvas CDN for Pass Image Capture & Share -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <!-- html5-qrcode CDN for Admin Boarding Pass QR Scanner -->
@@ -3449,12 +3451,8 @@
     }
 
     async function downloadBoardingPassPDF() {
-      const element = document.getElementById('boardingPassPrintableArea');
       const btn = document.getElementById('btnDownloadTicketPdf');
-      if (!element || typeof html2pdf === 'undefined') {
-        window.print();
-        return;
-      }
+      if (typeof html2canvas === 'undefined') { window.print(); return; }
 
       const origHtml = btn ? btn.innerHTML : '';
       if (btn) { btn.disabled = true; btn.innerHTML = '<span>Generating PDF...</span>'; }
@@ -3462,46 +3460,21 @@
       const cleanName = (currentBoardingPassData?.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
       const code = currentBoardingPassData?.receiptCode || 'Ticket';
 
-      // Clone the pass element to the body (off-screen, unconstrained) so
-      // html2canvas captures the FULL boarding pass, not just the scrollable viewport
-      const clone = element.cloneNode(true);
-      clone.style.cssText = [
-        'position:fixed',
-        'top:-9999px',
-        'left:0',
-        'width:680px',       // fixed ticket width — matches max-w-2xl on desktop
-        'z-index:-1',
-        'background:#ffffff',
-        'border-radius:28px',
-        'overflow:hidden',
-        'visibility:visible',
-        'pointer-events:none'
-      ].join(';');
-      document.body.appendChild(clone);
-
-      const opt = {
-        margin: [10, 10, 10, 10],
-        filename: `BoardingPass_${cleanName}_${code}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff',
-          width: 680,
-          windowWidth: 680
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-
       try {
-        await html2pdf().set(opt).from(clone).save();
+        const pdfBlob = await buildPdfBlobFromPass();
+        if (!pdfBlob) throw new Error('PDF blob empty');
+        const url = URL.createObjectURL(pdfBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `BoardingPass_${cleanName}_${code}.pdf`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 8000);
         showToast('Official Boarding Pass PDF downloaded!');
       } catch (e) {
         console.error('PDF generation error:', e);
+        showToast('PDF failed. Falling back to print...', 'error');
         window.print();
       } finally {
-        document.body.removeChild(clone);
         if (btn) { btn.disabled = false; btn.innerHTML = origHtml; }
         lucide.createIcons();
       }
@@ -3535,16 +3508,16 @@
         `Present this Boarding Pass at the bus gate for QR scan check-in.`;
     }
 
-    // Shared helper: clones the boarding pass to body (off-screen, unconstrained)
-    // so html2canvas captures the FULL pass — not just what's visible in the scrollable area
-    function clonePassForCapture() {
+    // Shared helper: clones the boarding pass to body off-screen (position:absolute, not fixed)
+    // position:fixed off-screen causes browsers to skip rendering — position:absolute is reliable
+    async function clonePassForCapture() {
       const el = document.getElementById('boardingPassPrintableArea');
       if (!el) return null;
       const clone = el.cloneNode(true);
       clone.style.cssText = [
-        'position:fixed',
-        'top:-9999px',
-        'left:0',
+        'position:absolute',
+        'left:-9999px',
+        'top:0',
         'width:680px',
         'z-index:-1',
         'background:#ffffff',
@@ -3554,7 +3527,42 @@
         'pointer-events:none'
       ].join(';');
       document.body.appendChild(clone);
+      // Small delay to let browser paint the clone before capturing
+      await new Promise(r => setTimeout(r, 80));
       return clone;
+    }
+
+    // Build PDF blob from a canvas element using html2canvas + jsPDF (most reliable approach)
+    async function buildPdfBlobFromPass() {
+      const clone = await clonePassForCapture();
+      if (!clone) return null;
+      try {
+        const canvas = await html2canvas(clone, {
+          scale: 2.5,
+          useCORS: true,
+          allowTaint: false,
+          logging: false,
+          backgroundColor: '#ffffff',
+          width: 680,
+          windowWidth: 680
+        });
+        const imgData = canvas.toDataURL('image/jpeg', 0.97);
+        // A4 page: 210 x 297 mm, margins 10mm each side
+        const margin = 10;
+        const usableW = 210 - margin * 2;
+        const usableH = (canvas.height / canvas.width) * usableW;
+        // Detect jsPDF from all known globals (standalone UMD, html2pdf bundle, or legacy)
+        const jsPDFClass =
+          (window.jspdf && window.jspdf.jsPDF) ||
+          (window.jsPDF) ||
+          (typeof jsPDF !== 'undefined' ? jsPDF : null);
+        if (!jsPDFClass) throw new Error('jsPDF not available — reload the page');
+        const pdf = new jsPDFClass({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+        pdf.addImage(imgData, 'JPEG', margin, margin, usableW, Math.min(usableH, 277));
+        return pdf.output('blob');
+      } finally {
+        document.body.removeChild(clone);
+      }
     }
 
     // Share boarding pass PDF + verification text directly to WhatsApp
@@ -3576,26 +3584,8 @@
       const fileName = `BoardingPass_${cleanName}_${st.receiptCode || 'Ticket'}.pdf`;
 
       try {
-        if (typeof html2pdf === 'undefined') throw new Error('html2pdf not loaded');
-
-        const clone = clonePassForCapture();
-        if (!clone) throw new Error('Clone failed');
-
-        const opt = {
-          margin: [10, 10, 10, 10],
-          filename: fileName,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: {
-            scale: 2, useCORS: true, logging: false,
-            backgroundColor: '#ffffff', width: 680, windowWidth: 680
-          },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        // Generate PDF as blob (don't save yet)
-        const pdfBlob = await html2pdf().set(opt).from(clone).output('blob');
-        document.body.removeChild(clone);
-
+        const pdfBlob = await buildPdfBlobFromPass();
+        if (!pdfBlob) throw new Error('PDF blob empty');
         const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
 
         // Mobile: native share sheet — user picks WhatsApp → receives PDF + text
@@ -3606,11 +3596,10 @@
               title: `Boarding Pass – ${st.studentName}`,
               text: msg
             });
-            showToast('Boarding pass PDF shared to WhatsApp!');
+            showToast('Boarding pass PDF shared!');
             return;
           } catch (err) {
-            if (err.name === 'AbortError') return; // user cancelled
-            // fall through to desktop fallback
+            if (err.name === 'AbortError') return;
           }
         }
 
@@ -3621,14 +3610,13 @@
         a.download = fileName;
         a.click();
         setTimeout(() => URL.revokeObjectURL(pdfUrl), 8000);
-
         setTimeout(() => window.open(waUrl, '_blank'), 800);
         showToast('PDF saved! In WhatsApp → tap 📎 → attach the PDF you just downloaded.');
 
       } catch (err) {
         console.warn('PDF share failed, sending text only:', err);
         window.open(waUrl, '_blank');
-        showToast('Sharing text-only (PDF generation failed). Try Download PDF instead.');
+        showToast('PDF failed — sending verification text only.');
       } finally {
         if (btn) { btn.disabled = false; btn.innerHTML = origHtml; lucide.createIcons(); }
       }
