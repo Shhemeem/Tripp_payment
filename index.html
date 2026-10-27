@@ -3716,6 +3716,157 @@
       });
     }
 
+    function buildWhatsAppPaymentVerificationText(st) {
+      const totalFee = Number(tripConfig.tripAmount) || 1500;
+      const paid = Number(st.amountPaid) || 0;
+      const due = Math.max(0, totalFee - paid);
+
+      return `*✅ PAYMENT VERIFIED*\n` +
+        `*${tripConfig.tripTitle}*\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `👤 *Student:* ${st.studentName}\n` +
+        `🎓 *Department:* ${st.department}\n` +
+        `📱 *Mobile:* +91 ${normalizePhone(st.phone)}\n` +
+        `🧾 *Receipt No:* ${st.receiptCode}\n` +
+        `💳 *Paid:* ${formatINR(paid)} / ${formatINR(totalFee)}\n` +
+        `⚖️ *Balance Due:* ${due > 0 ? formatINR(due) : '₹0 (Full Fee Paid)'}\n` +
+        `🏦 *Paid Via:* ${st.paymentApp || 'UPI'}\n` +
+        `🔑 *Access Code:* ${st.accessCode || 'Pending'}\n` +
+        `✅ *Status:* Payment verified by the trip administrator.\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `The attached image is your verified payment receipt.`;
+    }
+
+    function createVerifiedPaymentImageBlob(st) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1000;
+      canvas.height = 760;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas is unavailable');
+
+      const totalFee = Number(tripConfig.tripAmount) || 1500;
+      const paid = Number(st.amountPaid) || 0;
+      const due = Math.max(0, totalFee - paid);
+      const left = 64;
+      const right = canvas.width - 64;
+
+      ctx.fillStyle = '#f1f5f9';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#047857';
+      ctx.fillRect(0, 0, canvas.width, 212);
+
+      ctx.fillStyle = '#d1fae5';
+      ctx.font = 'bold 24px Arial, sans-serif';
+      ctx.fillText('TRIPPAY  /  PAYMENT RECEIPT', left, 58);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 48px Arial, sans-serif';
+      ctx.fillText('PAYMENT VERIFIED', left, 126);
+      ctx.font = '24px Arial, sans-serif';
+      ctx.fillText(tripConfig.tripTitle || 'Trip Payment', left, 172, canvas.width - 128);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.roundRect(48, 240, canvas.width - 96, 460, 28);
+      ctx.fill();
+
+      ctx.fillStyle = '#047857';
+      ctx.beginPath();
+      ctx.arc(right - 78, 296, 34, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 7;
+      ctx.beginPath();
+      ctx.moveTo(right - 94, 296);
+      ctx.lineTo(right - 82, 308);
+      ctx.lineTo(right - 60, 282);
+      ctx.stroke();
+
+      ctx.fillStyle = '#64748b';
+      ctx.font = 'bold 20px Arial, sans-serif';
+      ctx.fillText('RECEIPT NUMBER', left, 294);
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 28px Arial, sans-serif';
+      ctx.fillText(String(st.receiptCode || 'TRP'), left, 332);
+
+      const rows = [
+        ['STUDENT', st.studentName || '-'],
+        ['DEPARTMENT', st.department || '-'],
+        ['MOBILE', `+91 ${normalizePhone(st.phone)}`],
+        ['PAYMENT METHOD', st.paymentApp || 'UPI'],
+        ['AMOUNT PAID', formatINR(paid)],
+        ['BALANCE DUE', due > 0 ? formatINR(due) : '₹0 - FULL FEE PAID'],
+        ['ACCESS CODE', st.accessCode || 'Pending']
+      ];
+      let y = 388;
+      rows.forEach(([label, value]) => {
+        ctx.fillStyle = '#64748b';
+        ctx.font = 'bold 16px Arial, sans-serif';
+        ctx.fillText(label, left, y);
+        ctx.fillStyle = label === 'AMOUNT PAID' ? '#047857' : '#0f172a';
+        ctx.font = 'bold 22px Arial, sans-serif';
+        ctx.fillText(String(value), 350, y, right - 350);
+        y += 42;
+      });
+
+      ctx.fillStyle = '#64748b';
+      ctx.font = '16px Arial, sans-serif';
+      ctx.fillText(`Verified ${new Date().toLocaleString('en-IN')}`, left, 674);
+
+      return new Promise((resolve, reject) => {
+        canvas.toBlob(blob => {
+          if (blob) resolve(blob);
+          else reject(new Error('Could not generate payment receipt image'));
+        }, 'image/png');
+      });
+    }
+
+    async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
+      const payment = payments.find(p => p.id === id);
+      if (!payment) {
+        showToast('Participant record not found.', 'error');
+        return;
+      }
+      const st = { ...payment, ...verificationUpdates };
+
+      const msg = buildWhatsAppPaymentVerificationText(st);
+      const phone = normalizePhone(st.phone);
+      const waUrl = phone.length === 10
+        ? `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`
+        : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      const cleanName = (st.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
+      const fileName = `VerifiedPayment_${cleanName}_${st.receiptCode || 'Receipt'}.png`;
+
+      try {
+        const blob = await createVerifiedPaymentImageBlob(st);
+        if (navigator.share && navigator.canShare) {
+          const file = new File([blob], fileName, { type: 'image/png' });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: `Verified Payment - ${st.studentName}`,
+              text: msg
+            });
+            showToast('Verified payment receipt shared successfully!');
+            return;
+          }
+        }
+
+        const imageUrl = URL.createObjectURL(blob);
+        const download = document.createElement('a');
+        download.href = imageUrl;
+        download.download = fileName;
+        download.click();
+        setTimeout(() => URL.revokeObjectURL(imageUrl), 8000);
+        setTimeout(() => window.open(waUrl, '_blank'), 700);
+        showToast('Verified payment receipt saved. Attach the image in WhatsApp.');
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        console.error('Verified payment receipt sharing failed:', err);
+        window.open(waUrl, '_blank');
+        showToast('Could not generate receipt image. WhatsApp opened with the verification message.', 'error');
+      }
+    }
+
     // =========================================================================
     // SHARE PASS AS IMAGE (with verification message)
     // =========================================================================
@@ -5396,10 +5547,10 @@
         await updateDoc(ref, updatePayload);
         logSecurityEvent(isNextVerified ? 'VERIFY_STUDENT' : 'UNVERIFY_STUDENT', p.phone, `Status updated to ${nextStatus}`);
         showToast(
-          isNextVerified ? `Verified ${p.studentName} and generated Boarding Pass!` : `Marked ${p.studentName} as Pending.`,
+          isNextVerified ? `Verified payment for ${p.studentName}.` : `Marked ${p.studentName} as Pending.`,
           'success',
-          isNextVerified ? 'Send Pass on WA' : null,
-          isNextVerified ? () => shareStudentBoardingPassWhatsApp(id) : null
+          isNextVerified ? 'Send Receipt on WA' : null,
+          isNextVerified ? () => shareVerifiedPaymentWhatsApp(id, updatePayload) : null
         );
       } catch (e) {
         showToast('Status update failed.', 'error');
