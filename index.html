@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -352,104 +352,9 @@
 
     <!-- TAB 1: USER / STUDENT PAYMENT VIEW -->
     <section id="tabSection-pay">
-      <!-- Digital Receipt Card -->
-      <div id="receiptCardContainer" class="hidden max-w-xl mx-auto expressive-card border-2 border-emerald-300 rounded-3xl p-5 sm:p-7 mb-6">
-        <div class="flex items-center justify-between ticket-divider pb-4 mb-4">
-          <div class="flex items-center gap-3 min-w-0">
-            <div class="w-11 h-11 rounded-2xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-600 shrink-0">
-              <i data-lucide="check-circle-2" class="w-6 h-6"></i>
-            </div>
-            <div class="min-w-0">
-              <span id="recBadgeText" class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-600">
-                Payment Recorded
-              </span>
-              <h3 id="recStudentName" class="font-display text-lg sm:text-xl font-extrabold text-slate-900 truncate">
-                Student Name
-              </h3>
-            </div>
-          </div>
-          <div class="text-right shrink-0">
-            <span class="text-[10px] text-slate-400 font-medium block">Ticket No</span>
-            <span id="recCode" class="font-mono font-bold text-xs sm:text-sm text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200">
-              TRP-000000
-            </span>
-          </div>
-        </div>
-
-        <div id="recStatusBanner" class="mb-4 px-3.5 py-2.5 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2 text-xs font-bold text-amber-800">
-            <i id="recStatusIcon" data-lucide="clock" class="w-4 h-4 text-amber-600 shrink-0"></i>
-            <span id="recStatusText">Status: Pending Admin Verification</span>
-          </div>
-          <span class="text-[10px] font-mono font-semibold text-slate-500">Live Pass</span>
-        </div>
-
-        <!-- Participant Access Code Note in Receipt -->
-        <div id="recAccessCodeNote" class="mb-4 p-3.5 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs text-indigo-950 flex items-center gap-2.5">
-          <i data-lucide="key" class="w-4 h-4 text-indigo-600 shrink-0"></i>
-          <div>
-            <p class="font-bold">Personal Access Pass</p>
-            <p class="text-[11px] text-indigo-900/80" id="recAccessCodeSubtext">
-              Your 6-digit access code will be unlocked upon Admin verification.
-            </p>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3 bg-slate-50/90 rounded-2xl p-3.5 border border-slate-200/80 text-xs sm:text-sm mb-5">
-          <div>
-            <p class="text-[11px] text-slate-400 font-medium">Department</p>
-            <p id="recDept" class="font-bold text-slate-800 truncate">-</p>
-          </div>
-          <div>
-            <p class="text-[11px] text-slate-400 font-medium">Mobile Number</p>
-            <p id="recPhone" class="font-bold text-slate-800">-</p>
-          </div>
-          <div>
-            <p class="text-[11px] text-slate-400 font-medium">Paid Now</p>
-            <p id="recPaidNow" class="font-display font-extrabold text-emerald-600 text-sm sm:text-base">₹1,500</p>
-          </div>
-          <div>
-            <p class="text-[11px] text-slate-400 font-medium">Total Paid So Far</p>
-            <p id="recTotalPaid" class="font-display font-extrabold text-slate-900 text-sm sm:text-base">₹1,500</p>
-          </div>
-          <div>
-            <p class="text-[11px] text-slate-400 font-medium">Remaining Balance</p>
-            <p id="recBalanceDue" class="font-display font-extrabold text-amber-600 text-sm sm:text-base">₹0</p>
-          </div>
-          <div>
-            <p class="text-[11px] text-slate-400 font-medium">Paid Via App</p>
-            <p id="recApp" class="font-bold text-slate-800 truncate">-</p>
-          </div>
-        </div>
-
-        <!-- Receipt Actions with Expressive PDF Boarding Pass Trigger -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-2.5">
-          <button
-            type="button"
-            onclick="openBoardingPassFromLastReceipt()"
-            class="py-3 px-4 rounded-2xl bg-gradient-to-r from-emerald-700 via-teal-600 to-emerald-600 hover:from-emerald-600 hover:to-teal-500 text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2"
-          >
-            <i data-lucide="printer" class="w-4 h-4"></i>
-            <span>Boarding Pass / PDF Ticket</span>
-          </button>
-          <button
-            type="button"
-            onclick="shareReceiptToUserWhatsApp()"
-            class="py-3 px-4 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2"
-          >
-            <i data-lucide="message-circle" class="w-4 h-4"></i>
-            <span>Send Receipt to WhatsApp</span>
-          </button>
-        </div>
-        <button
-          type="button"
-          onclick="resetReceiptView()"
-          class="w-full py-2.5 px-5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5"
-        >
-          <i data-lucide="check" class="w-4 h-4"></i>
-          <span>Done & Back to Portal</span>
-        </button>
-      </div>
+      <!-- Payment Receipt Modal is now a full-screen modal (see #paymentReceiptModal below) -->
+      <!-- This container is kept as a hidden placeholder so the tab section renders correctly -->
+      <div id="receiptCardContainer" class="hidden"></div>
 
       <!-- Payment & Form Split Layout -->
       <div id="paymentFormGrid" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -1845,6 +1750,261 @@
     </div>
 
   </div><!-- /boardingPassModal -->
+
+    <!-- =====================================================================
+       PAYMENT RECEIPT MODAL — Modern Fintech Digital Voucher Interface
+       ===================================================================== -->
+  <div id="paymentReceiptModal" class="fixed inset-0 z-50 hidden flex flex-col no-print" style="background:rgba(9,14,26,0.94);backdrop-filter:blur(12px);">
+
+    <!-- Top bar -->
+    <div class="flex items-center gap-3 px-4 py-3 bg-slate-950/95 border-b border-slate-800/80 shrink-0">
+      <button
+        type="button"
+        onclick="closePaymentReceiptModal()"
+        class="w-9 h-9 rounded-xl bg-white/10 hover:bg-rose-500/30 text-slate-300 hover:text-white transition flex items-center justify-center shrink-0"
+        title="Close"
+      >
+        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+      </button>
+      <div class="w-8 h-8 rounded-xl bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-300 shrink-0">
+        <i data-lucide="receipt" class="w-4 h-4"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-display text-xs font-extrabold text-white truncate">Official Payment Receipt Voucher</p>
+        <p class="text-[10px] text-slate-400 truncate">Save Image • WhatsApp PDF • Download PDF • Print</p>
+      </div>
+    </div>
+
+    <!-- Scrollable receipt area -->
+    <div class="flex-1 overflow-y-auto py-6 px-3 sm:px-6">
+      <div class="max-w-md mx-auto">
+
+        <!-- ══ PRINTABLE RECEIPT ARTIFACT (Modern Dark Fintech Interface) ══ -->
+        <div id="receiptPrintableArea" style="background:#18181b; border:1px solid #27272a; border-radius:24px; overflow:hidden; box-shadow:0 25px 60px -15px rgba(0,0,0,0.65); font-family:'Inter',sans-serif; color:#f4f4f5; position:relative;">
+
+          <!-- Top Electric Blue/Cyan Gradient Accent Line -->
+          <div style="height:5px; width:100%; background:linear-gradient(90deg, #3b82f6, #06b6d4, #6366f1, #3b82f6); background-size:200% 100%;"></div>
+
+          <!-- Header: Brand & Voucher Details -->
+          <div style="padding:22px 24px 18px; border-bottom:1px solid #27272a; background:linear-gradient(180deg, rgba(39,39,42,0.4) 0%, rgba(24,24,27,0) 100%);">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:44px; height:44px; border-radius:12px; background:#27272a; padding:3px; flex-shrink:0; display:flex; align-items:center; justify-content:center; overflow:hidden; border:1px solid #3f3f46;">
+                  <img id="rcptLogoImg" crossorigin="anonymous"
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFi3ISGVLtcfjKcyZ1e0JtiIJHb4P1OTjldSIj3H5zNg&s=10"
+                    alt="Logo" style="width:100%; height:100%; object-fit:cover; border-radius:9px;"
+                    onerror="this.style.display='none';"
+                  />
+                </div>
+                <div>
+                  <div style="display:inline-flex; align-items:center; gap:6px;">
+                    <span style="font-size:9px; font-family:monospace; text-transform:uppercase; letter-spacing:0.18em; padding:2px 7px; border-radius:6px; background:#0284c7; color:#fff; font-weight:800;">
+                      RECEIPT
+                    </span>
+                    <span style="font-size:9px; font-family:monospace; color:#38bdf8; font-weight:700;">• TRIPPAY</span>
+                  </div>
+                  <h2 id="rcptTripTitle" style="font-size:15px; font-weight:800; color:#ffffff; margin:3px 0 0; line-height:1.2; word-break:break-word;">
+                    Annual College Trip
+                  </h2>
+                </div>
+              </div>
+
+              <!-- Top Right Status -->
+              <div style="text-align:right;">
+                <span id="rcptStatusBadge" style="display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:9999px; font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3);">
+                  ✅ VERIFIED
+                </span>
+                <span id="rcptDate" style="display:block; font-size:10px; font-family:monospace; color:#71717a; margin-top:4px;">-</span>
+              </div>
+            </div>
+
+            <!-- Coordinator & UPI strip -->
+            <div style="background:rgba(39,39,42,0.6); border-radius:10px; padding:7px 12px; display:flex; align-items:center; justify-content:space-between; gap:8px; border:1px solid rgba(63,63,70,0.5);">
+              <span style="font-size:10px; color:#a1a1aa;">Coordinator: <strong id="rcptCoordName" style="color:#f4f4f5;">-</strong></span>
+              <span id="rcptUpiId" style="font-family:monospace; font-size:10px; color:#38bdf8;">-</span>
+            </div>
+          </div>
+
+          <!-- Hero Paid Amount Card -->
+          <div style="padding:18px 24px 14px;">
+            <div style="background:linear-gradient(135deg, rgba(14,165,233,0.12) 0%, rgba(99,102,241,0.08) 100%); border:1px solid rgba(56,189,248,0.3); border-radius:16px; padding:16px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+              <div>
+                <p style="font-size:9px; font-family:monospace; text-transform:uppercase; letter-spacing:0.15em; color:#38bdf8; font-weight:800; margin:0 0 3px;">
+                  AMOUNT CONFIRMED
+                </p>
+                <p id="rcptPaidNow" style="font-size:32px; font-weight:900; color:#ffffff; letter-spacing:-0.03em; line-height:1; margin:0;">
+                  ₹0
+                </p>
+              </div>
+              <div style="text-align:right;">
+                <span style="display:inline-block; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:#34d399; background:rgba(16,185,129,0.15); padding:3px 10px; border-radius:8px; border:1px solid rgba(16,185,129,0.3); margin-bottom:4px;">
+                  SUCCESSFUL
+                </span>
+                <p style="font-size:10px; color:#a1a1aa; margin:0;">via <span id="rcptApp" style="color:#e4e4e7; font-weight:700;">UPI</span></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3-Column Financial Summary Breakdown -->
+          <div style="padding:0 24px 14px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; background:#27272a; border-radius:12px; padding:10px 14px; border:1px solid #3f3f46;">
+              <div>
+                <p style="font-size:8px; font-family:monospace; text-transform:uppercase; letter-spacing:0.1em; color:#a1a1aa; font-weight:700; margin:0 0 2px;">
+                  TRIP FEE
+                </p>
+                <p id="rcptTotalFee" style="font-size:13px; font-weight:800; color:#ffffff; margin:0;">
+                  ₹0
+                </p>
+              </div>
+              <div style="border-left:1px solid #3f3f46; padding-left:10px;">
+                <p style="font-size:8px; font-family:monospace; text-transform:uppercase; letter-spacing:0.1em; color:#a1a1aa; font-weight:700; margin:0 0 2px;">
+                  TOTAL PAID
+                </p>
+                <p id="rcptTotalPaid" style="font-size:13px; font-weight:800; color:#34d399; margin:0;">
+                  ₹0
+                </p>
+              </div>
+              <div style="border-left:1px solid #3f3f46; padding-left:10px;">
+                <p style="font-size:8px; font-family:monospace; text-transform:uppercase; letter-spacing:0.1em; color:#a1a1aa; font-weight:700; margin:0 0 2px;">
+                  BALANCE DUE
+                </p>
+                <p id="rcptBalanceDue" style="font-size:13px; font-weight:800; color:#fbbf24; margin:0;">
+                  ₹0
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Participant Information Card -->
+          <div style="padding:0 24px 14px;">
+            <div style="background:#27272a; border-radius:14px; padding:14px 18px; border:1px solid #3f3f46;">
+              <p style="font-size:8px; font-family:monospace; text-transform:uppercase; letter-spacing:0.15em; color:#71717a; font-weight:800; margin:0 0 10px; border-bottom:1px solid #3f3f46; padding-bottom:6px;">
+                PARTICIPANT DETAILS
+              </p>
+              
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px 14px;">
+                <div>
+                  <p style="font-size:9px; color:#a1a1aa; margin:0 0 1px;">Participant Name</p>
+                  <p id="rcptStudentName" style="font-size:14px; font-weight:800; color:#ffffff; margin:0; word-break:break-word;">-</p>
+                </div>
+                <div>
+                  <p style="font-size:9px; color:#a1a1aa; margin:0 0 1px;">Department</p>
+                  <p id="rcptDepartment" style="font-size:12px; font-weight:700; color:#38bdf8; margin:0;">-</p>
+                </div>
+                <div>
+                  <p style="font-size:9px; color:#a1a1aa; margin:0 0 1px;">Mobile / WhatsApp</p>
+                  <p id="rcptPhone" style="font-size:11px; font-family:monospace; font-weight:700; color:#e4e4e7; margin:0;">-</p>
+                </div>
+                <div>
+                  <p style="font-size:9px; color:#a1a1aa; margin:0 0 1px;">Receipt Number</p>
+                  <p id="rcptCode" style="font-size:11px; font-family:monospace; font-weight:800; color:#38bdf8; margin:0;">TRP-000000</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- High-Tech Access Pass Card (Cyan Glowing Box) -->
+          <div style="padding:0 24px 16px;">
+            <div style="background:linear-gradient(135deg, rgba(6,182,212,0.12) 0%, rgba(59,130,246,0.1) 100%); border:1px solid rgba(6,182,212,0.4); border-radius:14px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+              <div>
+                <div style="display:flex; align-items:center; gap:5px; margin-bottom:2px;">
+                  <span style="font-size:13px;">🔑</span>
+                  <p style="font-size:9px; font-family:monospace; text-transform:uppercase; letter-spacing:0.15em; color:#22d3ee; font-weight:800; margin:0;">
+                    6-DIGIT ACCESS PASS
+                  </p>
+                </div>
+                <p id="rcptAccessCode" style="font-size:22px; font-weight:900; font-family:monospace; color:#38bdf8; letter-spacing:0.25em; margin:0; line-height:1.2;">
+                  ------
+                </p>
+              </div>
+              <div style="max-width:180px; text-align:right;">
+                <p id="rcptNote" style="font-size:9px; color:#cbd5e1; margin:0; line-height:1.4;">
+                  Save this pass to login to portal and view your boarding ticket.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Footer Strip with Security Seal (NO ticket notches, NO flight ribbons) -->
+          <div style="padding:12px 24px 14px; background:#18181b; border-top:1px solid #27272a; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <div style="width:6px; height:6px; border-radius:9999px; background:#10b981;"></div>
+              <p style="font-size:9px; font-family:monospace; color:#71717a; margin:0;">
+                SECURE TRANSACTION SEAL • <span id="rcptBarcode" style="letter-spacing:0.05em;">TRP-PAY</span>
+              </p>
+            </div>
+            <div>
+              <p style="font-size:8px; font-family:monospace; color:#52525b; margin:0;">
+                <span id="rcptGenDate">-</span>
+              </p>
+            </div>
+          </div>
+
+        </div><!-- /receiptPrintableArea -->
+      </div>
+    </div>
+
+    <!-- Sticky bottom action bar -->
+    <div class="shrink-0 bg-slate-950/98 border-t border-slate-800/80 px-3 pt-3" style="padding-bottom:max(12px,env(safe-area-inset-bottom));">
+      <div class="max-w-md mx-auto grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <button
+          type="button"
+          id="btnReceiptSaveImage"
+          onclick="shareReceiptAsImage()"
+          class="col-span-1 py-3 px-2 rounded-xl bg-violet-600 hover:bg-violet-500 active:bg-violet-700 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-lg transition active:scale-95"
+        >
+          <i data-lucide="image" class="w-4 h-4"></i>
+          <span>Save Image</span>
+        </button>
+        <button
+          type="button"
+          id="btnReceiptWaPdf"
+          onclick="shareReceiptPDFWhatsApp()"
+          class="col-span-1 py-3 px-2 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] active:bg-[#1ca34d] text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-lg transition active:scale-95"
+        >
+          <i data-lucide="message-circle" class="w-4 h-4"></i>
+          <span>WhatsApp PDF</span>
+        </button>
+        <button
+          type="button"
+          id="btnReceiptDownloadPdf"
+          onclick="downloadReceiptPDF()"
+          class="col-span-1 py-3 px-2 rounded-xl bg-sky-500 hover:bg-sky-400 active:bg-sky-600 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-lg transition active:scale-95"
+        >
+          <i data-lucide="file-down" class="w-4 h-4"></i>
+          <span>Download PDF</span>
+        </button>
+        <button
+          type="button"
+          onclick="printReceiptPass()"
+          class="col-span-1 py-3 px-2 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/25 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 border border-white/10"
+        >
+          <i data-lucide="printer" class="w-4 h-4"></i>
+          <span>Print / Save</span>
+        </button>
+      </div>
+      <!-- Secondary row: View Boarding Pass & Done -->
+      <div class="max-w-md mx-auto grid grid-cols-2 gap-2 mt-2">
+        <button
+          type="button"
+          onclick="openBoardingPassFromLastReceipt()"
+          class="py-2 px-3 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 font-bold text-xs flex items-center justify-center gap-1.5 transition border border-emerald-500/30"
+        >
+          <i data-lucide="ticket" class="w-4 h-4 text-emerald-400"></i>
+          <span>Open Boarding Pass</span>
+        </button>
+        <button
+          type="button"
+          onclick="closePaymentReceiptModal()"
+          class="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition border border-slate-700"
+        >
+          <i data-lucide="check" class="w-4 h-4"></i>
+          <span>Done</span>
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /paymentReceiptModal -->
 
   <!-- MODAL: ADMIN LOGIN -->
   <div id="adminLoginModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
@@ -3634,7 +3794,7 @@
     // (sharePassToWhatsApp removed — all verification messages are plain text via wa.me links)
 
     // Share boarding pass text directly to student's WhatsApp from the boarding pass modal
-    function shareCurrentBoardingPassWhatsApp() {
+function shareCurrentBoardingPassWhatsApp() {
       if (!currentBoardingPassData) return;
       const st = currentBoardingPassData;
       const msg = buildWhatsAppBoardingPassText(st);
@@ -3647,7 +3807,7 @@
     }
 
     // Admin: share student boarding pass text directly to WhatsApp number
-    function shareStudentBoardingPassWhatsApp(id) {
+function shareStudentBoardingPassWhatsApp(id) {
       const st = payments.find(p => p.id === id);
       if (!st) return;
       const msg = buildWhatsAppBoardingPassText(st);
@@ -3660,33 +3820,26 @@
     }
 
     function buildWhatsAppPaymentVerificationText(st) {
-      const totalFee = Number(tripConfig.tripAmount) || 1500;
-      const paid = Number(st.amountPaid) || 0;
-      const due = Math.max(0, totalFee - paid);
+      const name = st.studentName || 'Student';
+      const amount = Number(st.amountPaid || st.paidNow || 0);
+      const code = st.accessCode || 'Pending';
+      return `Payment Verified ✅\n\nHi ${name},\nYour trip payment of ₹${amount} is confirmed.\n\nYour Access Code: *${code}*\n\nPlease use this code to log in and view your boarding pass.`;
+    }
 
-      return `*✅ PAYMENT VERIFIED*\n` +
-        `*${tripConfig.tripTitle}*\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━━\n` +
-        `👤 *Student:* ${st.studentName}\n` +
-        `🎓 *Department:* ${st.department}\n` +
-        `📱 *Mobile:* +91 ${normalizePhone(st.phone)}\n` +
-        `🧾 *Receipt No:* ${st.receiptCode}\n` +
-        `💳 *Paid:* ${formatINR(paid)} / ${formatINR(totalFee)}\n` +
-        `⚖️ *Balance Due:* ${due > 0 ? formatINR(due) : '₹0 (Full Fee Paid)'}\n` +
-        `🏦 *Paid Via:* ${st.paymentApp || 'UPI'}\n` +
-        `🔑 *Access Code:* ${st.accessCode || 'Pending'}\n` +
-        `✅ *Status:* Payment verified by the trip administrator.\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━━`;
+    function sendVerificationMessage(phone, name, accessCode, amount) {
+      const message = `Payment Verified ✅\n\nHi ${name},\nYour trip payment of ₹${amount} is confirmed.\n\nYour Access Code: *${accessCode}*\n\nPlease use this code to log in and view your boarding pass.`;
+      const p = normalizePhone(phone);
+      const url = p.length === 10
+        ? `https://wa.me/91${p}?text=${encodeURIComponent(message)}`
+        : `https://wa.me/?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank');
     }
 
 
 
-    async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
+async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
       const payment = payments.find(p => p.id === id);
-      if (!payment) {
-        showToast('Participant record not found.', 'error');
-        return;
-      }
+      if (!payment) { showToast('Participant record not found.', 'error'); return; }
       const st = { ...payment, ...verificationUpdates };
       const msg = buildWhatsAppPaymentVerificationText(st);
       const phone = normalizePhone(st.phone);
@@ -4560,47 +4713,270 @@
 
     function showDigitalReceipt(data) {
       lastReceiptData = data;
-      document.getElementById('recBadgeText').textContent = data.badge;
-      document.getElementById('recStudentName').textContent = data.studentName;
-      document.getElementById('recCode').textContent = data.receiptCode;
-      document.getElementById('recDept').textContent = data.department;
-      document.getElementById('recPhone').textContent = data.phone;
-      document.getElementById('recPaidNow').textContent = formatINR(data.paidNow);
-      document.getElementById('recTotalPaid').textContent = formatINR(data.totalPaid);
-      document.getElementById('recBalanceDue').textContent = formatINR(data.balanceDue);
-      document.getElementById('recApp').textContent = data.paymentApp;
 
-      const accessSub = document.getElementById('recAccessCodeSubtext');
-      if (data.accessCode) {
-        accessSub.innerHTML = `Your Access Code is active: <strong class="font-mono text-indigo-700 font-extrabold text-sm">${escapeHtml(data.accessCode)}</strong> (Save this for login).`;
-      } else {
-        accessSub.textContent = 'Your 6-digit access code will be unlocked upon Admin verification.';
+      // Populate the new modal receipt fields
+      const totalFee = Number(tripConfig.tripAmount) || 0;
+      const now = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+      const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val ?? '-'; };
+
+      set('rcptTripTitle', tripConfig.tripTitle);
+      set('rcptCoordName', tripConfig.receiverName);
+      set('rcptUpiId', tripConfig.upiId);
+      set('rcptCode', data.receiptCode);
+      set('rcptStudentName', data.studentName);
+      set('rcptDepartment', data.department);
+      set('rcptPhone', `+91 ${normalizePhone(data.phone)}`);
+      set('rcptDate', now);
+      set('rcptPaidNow', formatINR(data.paidNow));
+      set('rcptTotalPaid', formatINR(data.totalPaid));
+      set('rcptBalanceDue', data.balanceDue > 0 ? formatINR(data.balanceDue) : '₹0 ✓');
+      set('rcptTotalFee', formatINR(totalFee));
+      set('rcptApp', data.paymentApp || 'UPI');
+      set('rcptAccessCode', data.accessCode || 'PENDING');
+      set('rcptBarcode', `*${data.receiptCode}-TRIPPAY*`);
+      set('rcptGenDate', now);
+      set('rcptNote', data.accessCode
+        ? `Access Code active: ${data.accessCode} — Present at bus gate with College ID.`
+        : 'Access code will be activated after admin verification. Keep this receipt safe.');
+
+      // Status badge
+      const badge = document.getElementById('rcptStatusBadge');
+      if (badge) {
+        if (data.status === 'Verified') {
+          badge.textContent = '✅ VERIFIED';
+          badge.style.background = 'rgba(52,211,153,0.2)';
+          badge.style.color = '#6ee7b7';
+          badge.style.border = '1px solid rgba(110,231,183,0.4)';
+        } else {
+          badge.textContent = '⏳ PENDING VERIFICATION';
+          badge.style.background = 'rgba(251,191,36,0.2)';
+          badge.style.color = '#fde68a';
+          badge.style.border = '1px solid rgba(253,211,77,0.4)';
+        }
       }
 
+      // Balance due color
+      const balEl = document.getElementById('rcptBalanceDue');
+      if (balEl) balEl.style.color = data.balanceDue > 0 ? '#d97706' : '#059669';
+
+      // Apply logo if configured
+      applyLogoAcrossApp();
+
+      // Show modal, hide payment form
+      document.getElementById('paymentReceiptModal').classList.remove('hidden');
       document.getElementById('paymentFormGrid').classList.add('hidden');
-      document.getElementById('receiptCardContainer').classList.remove('hidden');
       lucide.createIcons();
     }
 
     function resetReceiptView() {
-      document.getElementById('receiptCardContainer').classList.add('hidden');
+      document.getElementById('paymentReceiptModal').classList.add('hidden');
       document.getElementById('paymentFormGrid').classList.remove('hidden');
     }
 
-    function shareReceiptToUserWhatsApp() {
+    function closePaymentReceiptModal() {
+      document.getElementById('paymentReceiptModal').classList.add('hidden');
+      document.getElementById('paymentFormGrid').classList.remove('hidden');
+    }
+
+    // =========================================================================
+    // RECEIPT CAPTURE HELPERS
+    // =========================================================================
+    async function cloneReceiptForCapture() {
+      const el = document.getElementById('receiptPrintableArea');
+      if (!el) return null;
+      const clone = el.cloneNode(true);
+      clone.style.cssText = [
+        'position:absolute', 'left:-9999px', 'top:0',
+        'width:480px', 'min-width:480px', 'max-width:480px',
+        'box-sizing:border-box', 'margin:0', 'z-index:9999',
+        'background:#18181b', 'border-radius:24px',
+        'overflow:visible', 'visibility:visible', 'opacity:1',
+        'pointer-events:none'
+      ].join(';');
+      document.body.appendChild(clone);
+      // Wait for images
+      const imgs = Array.from(clone.querySelectorAll('img'));
+      await Promise.all(imgs.map(img => {
+        if (img.complete) return Promise.resolve();
+        return new Promise(resolve => {
+          const t = setTimeout(resolve, 3000);
+          img.addEventListener('load', () => { clearTimeout(t); resolve(); }, { once: true });
+          img.addEventListener('error', () => { clearTimeout(t); resolve(); }, { once: true });
+        });
+      }));
+      if (document.fonts?.ready) await document.fonts.ready;
+      await new Promise(r => setTimeout(r, 150));
+      return clone;
+    }
+
+    async function buildReceiptPDFBlob() {
+      const clone = await cloneReceiptForCapture();
+      if (!clone) return null;
+      try {
+        const canvas = await html2canvas(clone, {
+          scale: 3, useCORS: true, allowTaint: false, logging: false,
+          backgroundColor: '#18181b', width: 480, windowWidth: 480, x: 0, y: 0
+        });
+        const imgData = canvas.toDataURL('image/jpeg', 0.98);
+        const jsPDFClass =
+          (window.jspdf && window.jspdf.jsPDF) ||
+          (window.jsPDF) ||
+          (typeof jsPDF !== 'undefined' ? jsPDF : null);
+        if (!jsPDFClass) throw new Error('jsPDF not available');
+        const pdf = new jsPDFClass({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pxToMm = 0.2646;
+        const wMm = canvas.width / 3 * pxToMm;
+        const hMm = canvas.height / 3 * pxToMm;
+        const margin = 16;
+        const usableW = pageWidth - margin * 2;
+        const sf = Math.min(usableW / wMm, 1);
+        const finalW = wMm * sf;
+        const finalH = hMm * sf;
+        const x = (pageWidth - finalW) / 2;
+        pdf.addImage(imgData, 'JPEG', x, margin, finalW, finalH);
+        return pdf.output('blob');
+      } finally {
+        document.body.removeChild(clone);
+      }
+    }
+
+    async function shareReceiptAsImage() {
+      if (!lastReceiptData) { showToast('No receipt loaded.', 'error'); return; }
+      if (typeof html2canvas === 'undefined') { showToast('Library not loaded. Refresh.', 'error'); return; }
+      const btn = document.getElementById('btnReceiptSaveImage');
+      const orig = btn ? btn.innerHTML : '';
+      if (btn) { btn.disabled = true; btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin inline"></i> <span>Capturing...</span>'; lucide.createIcons(); }
+      try {
+        const clone = await cloneReceiptForCapture();
+        if (!clone) { showToast('Could not capture receipt.', 'error'); return; }
+        const canvas = await html2canvas(clone, {
+          scale: 3, useCORS: true, allowTaint: false, logging: false,
+          backgroundColor: '#18181b', width: 480, windowWidth: 480
+        });
+        document.body.removeChild(clone);
+        const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+        if (!blob) { showToast('Image generation failed.', 'error'); return; }
+        const cleanName = (lastReceiptData.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
+        const fileName = `Receipt_${cleanName}_${lastReceiptData.receiptCode}.png`;
+        if (navigator.share && navigator.canShare) {
+          const file = new File([blob], fileName, { type: 'image/png' });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: `Payment Receipt – ${lastReceiptData.studentName}` });
+            showToast('Receipt image shared! ✅');
+            return;
+          }
+        }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = fileName;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 8000);
+        showToast('Receipt image saved! ✅');
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        console.error('shareReceiptAsImage:', err);
+        showToast('Could not save image.', 'error');
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = orig; lucide.createIcons(); }
+      }
+    }
+
+    async function shareReceiptPDFWhatsApp() {
+      if (!lastReceiptData) { showToast('No receipt loaded.', 'error'); return; }
+      if (typeof html2canvas === 'undefined') { showToast('Libraries not loaded. Refresh.', 'error'); return; }
+      const btn = document.getElementById('btnReceiptWaPdf');
+      const orig = btn ? btn.innerHTML : '';
+      if (btn) { btn.disabled = true; btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin inline"></i> <span>Preparing...</span>'; lucide.createIcons(); }
+      try {
+        const cleanName = (lastReceiptData.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
+        const fileName = `Receipt_${cleanName}_${lastReceiptData.receiptCode}.pdf`;
+        const pdfBlob = await buildReceiptPDFBlob();
+        if (!pdfBlob) { showToast('PDF generation failed.', 'error'); return; }
+        if (navigator.share && navigator.canShare) {
+          const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: `Payment Receipt – ${lastReceiptData.studentName}` });
+            showToast('Receipt PDF shared! ✅');
+            return;
+          }
+        }
+        const url = URL.createObjectURL(pdfBlob);
+        const a = document.createElement('a');
+        a.href = url; a.download = fileName;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+        const msg = buildWhatsAppPaymentVerificationText({
+          studentName: lastReceiptData.studentName,
+          department: lastReceiptData.department,
+          phone: lastReceiptData.phone,
+          receiptCode: lastReceiptData.receiptCode,
+          amountPaid: lastReceiptData.totalPaid,
+          accessCode: lastReceiptData.accessCode,
+          paymentApp: lastReceiptData.paymentApp,
+          status: lastReceiptData.status
+        });
+        const phone = normalizePhone(lastReceiptData.phone);
+        const waUrl = phone.length === 10
+          ? `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`
+          : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+        setTimeout(() => window.open(waUrl, '_blank'), 800);
+        showToast('PDF saved! Attach it in WhatsApp. 📎');
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        console.error('shareReceiptPDFWhatsApp:', err);
+        showToast('Could not share PDF.', 'error');
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = orig; lucide.createIcons(); }
+      }
+    }
+
+    async function downloadReceiptPDF() {
+      if (!lastReceiptData) { showToast('No receipt loaded.', 'error'); return; }
+      const btn = document.getElementById('btnReceiptDownloadPdf');
+      const orig = btn ? btn.innerHTML : '';
+      if (btn) { btn.disabled = true; btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin inline"></i> <span>Generating...</span>'; lucide.createIcons(); }
+      try {
+        const pdfBlob = await buildReceiptPDFBlob();
+        if (!pdfBlob) { showToast('PDF generation failed.', 'error'); return; }
+        const cleanName = (lastReceiptData.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
+        const url = URL.createObjectURL(pdfBlob);
+        const a = document.createElement('a');
+        a.href = url; a.download = `Receipt_${cleanName}_${lastReceiptData.receiptCode}.pdf`;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+        showToast('Payment receipt PDF downloaded! ✅');
+      } catch (err) {
+        console.error('downloadReceiptPDF:', err);
+        showToast('PDF failed. Try print instead.', 'error');
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = orig; lucide.createIcons(); }
+      }
+    }
+
+    function printReceiptPass() {
+      window.print();
+    }
+
+function shareReceiptToUserWhatsApp() {
       if (!lastReceiptData) return;
-      const msg = buildWhatsAppBoardingPassText({
+      const msg = buildWhatsAppPaymentVerificationText({
         studentName: lastReceiptData.studentName,
         department: lastReceiptData.department,
         phone: lastReceiptData.phone,
         receiptCode: lastReceiptData.receiptCode,
         amountPaid: lastReceiptData.totalPaid,
-        status: lastReceiptData.status,
         accessCode: lastReceiptData.accessCode,
-        remarks: `Paid ${formatINR(lastReceiptData.paidNow)} via ${lastReceiptData.paymentApp}`
+        paymentApp: lastReceiptData.paymentApp,
+        status: lastReceiptData.status
       });
-      const url = `https://wa.me/91${normalizePhone(lastReceiptData.phone)}?text=${encodeURIComponent(msg)}`;
+      const phone = normalizePhone(lastReceiptData.phone);
+      const url = phone.length === 10
+        ? `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`
+        : `https://wa.me/?text=${encodeURIComponent(msg)}`;
       window.open(url, '_blank');
+      showToast('Opening WhatsApp with receipt details...');
     }
 
     function sendStudentWhatsAppReceipt(id) {
@@ -4785,10 +5161,13 @@
       }
     }
 
-    function shareMyParticipantPassWhatsApp() {
+function shareMyParticipantPassWhatsApp() {
       if (!loggedInParticipant) return;
       const msg = buildWhatsAppBoardingPassText(loggedInParticipant);
-      const url = `https://wa.me/91${normalizePhone(loggedInParticipant.phone)}?text=${encodeURIComponent(msg)}`;
+      const phone = normalizePhone(loggedInParticipant.phone);
+      const url = phone.length === 10
+        ? `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`
+        : `https://wa.me/?text=${encodeURIComponent(msg)}`;
       window.open(url, '_blank');
     }
 
@@ -6094,6 +6473,7 @@
       resetReceiptView,
       shareReceiptToUserWhatsApp,
       sendStudentWhatsAppReceipt,
+      sendVerificationMessage,
       broadcastBalanceAlertsWhatsApp,
       toggleVerifyStudent,
       openManualAddModal,
