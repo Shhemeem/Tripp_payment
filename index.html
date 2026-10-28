@@ -1818,11 +1818,11 @@
         <button
           type="button"
           id="btnWaSharePdf"
-          onclick="shareCurrentBoardingPassWhatsApp()"
+          onclick="sharePassPDFWhatsApp()"
           class="py-3.5 px-3 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] active:bg-[#1ca34d] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg transition active:scale-95"
         >
           <i data-lucide="message-circle" class="w-4 h-4"></i>
-          <span>WhatsApp + PDF</span>
+          <span>WhatsApp PDF</span>
         </button>
         <button
           type="button"
@@ -3573,18 +3573,17 @@
       if (!clone) return null;
       try {
         const canvas = await html2canvas(clone, {
-          scale: 2.5,
+          scale: 3,
           useCORS: true,
           allowTaint: false,
           logging: false,
           backgroundColor: '#ffffff',
           width: 800,
-          windowWidth: 800
+          windowWidth: 800,
+          x: 0,
+          y: 0
         });
-        const imgData = canvas.toDataURL('image/jpeg', 0.97);
-        // Fit and center the pass on one A4 page without distorting its aspect ratio.
-        const margin = 10;
-        // Detect jsPDF from all known globals (standalone UMD, html2pdf bundle, or legacy)
+        const imgData = canvas.toDataURL('image/jpeg', 0.98);
         const jsPDFClass =
           (window.jspdf && window.jspdf.jsPDF) ||
           (window.jsPDF) ||
@@ -3592,15 +3591,18 @@
         if (!jsPDFClass) throw new Error('jsPDF not available — reload the page');
         const pdf = new jsPDFClass({ unit: 'mm', format: 'a4', orientation: 'portrait' });
         const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
+        // Convert canvas px → mm (canvas rendered at 96dpi, 1px = 0.2646mm)
+        const pxToMm = 0.2646;
+        const passWidthMm = canvas.width / 3 * pxToMm;   // divide by scale(3)
+        const passHeightMm = canvas.height / 3 * pxToMm;
+        const margin = 14;
         const usableW = pageWidth - margin * 2;
-        const usableH = pageHeight - margin * 2;
-        const scale = Math.min(usableW / canvas.width, usableH / canvas.height);
-        const imageWidth = canvas.width * scale;
-        const imageHeight = canvas.height * scale;
-        const x = (pageWidth - imageWidth) / 2;
-        const y = (pageHeight - imageHeight) / 2;
-        pdf.addImage(imgData, 'JPEG', x, y, imageWidth, imageHeight);
+        const scaleFactor = Math.min(usableW / passWidthMm, 1);
+        const finalW = passWidthMm * scaleFactor;
+        const finalH = passHeightMm * scaleFactor;
+        const x = (pageWidth - finalW) / 2;
+        const y = margin;
+        pdf.addImage(imgData, 'JPEG', x, y, finalW, finalH);
         return pdf.output('blob');
       } finally {
         document.body.removeChild(clone);
@@ -3629,51 +3631,7 @@
       }
     }
 
-    // Smart share helper: always shares as PNG image to WhatsApp (most compatible)
-    // Falls back to PDF download + WhatsApp text on desktop
-    async function sharePassToWhatsApp({ studentData, msg, waUrl, cleanName, receiptCode, btnEl }) {
-      const imgName = `BoardingPass_${cleanName}_${receiptCode}.png`;
-      const title = `Boarding Pass – ${studentData.studentName}`;
-
-      if (btnEl) { btnEl.disabled = true; btnEl._origHtml = btnEl.innerHTML; btnEl.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin inline"></i> <span>Preparing...</span>'; lucide.createIcons(); }
-
-      try {
-        // Capture the boarding pass as a PNG image
-        const imgBlob = await capturePassAsImageBlob();
-
-        if (imgBlob && navigator.share && navigator.canShare) {
-          const imgFile = new File([imgBlob], imgName, { type: 'image/png' });
-          if (navigator.canShare({ files: [imgFile] })) {
-            // Share sheet opens — user picks WhatsApp → image + text arrives together
-            await navigator.share({ files: [imgFile], title, text: msg });
-            showToast('Boarding pass shared to WhatsApp! ✅');
-            return;
-          }
-        }
-
-        // Desktop / no-share-API fallback: download image + open WhatsApp with text
-        if (imgBlob) {
-          const imgUrl = URL.createObjectURL(imgBlob);
-          const a = document.createElement('a');
-          a.href = imgUrl;
-          a.download = imgName;
-          a.click();
-          setTimeout(() => URL.revokeObjectURL(imgUrl), 8000);
-          setTimeout(() => window.open(waUrl, '_blank'), 700);
-          showToast('Pass image saved! In WhatsApp → tap 📎 → attach the image.');
-        } else {
-          window.open(waUrl, '_blank');
-        }
-
-      } catch (err) {
-        if (err.name === 'AbortError') return; // user cancelled share sheet
-        console.warn('Share failed, text-only fallback:', err);
-        window.open(waUrl, '_blank');
-        showToast('Image failed — verification text sent to WhatsApp.');
-      } finally {
-        if (btnEl) { btnEl.disabled = false; btnEl.innerHTML = btnEl._origHtml || ''; lucide.createIcons(); }
-      }
-    }
+    // (sharePassToWhatsApp removed — all verification messages are plain text via wa.me links)
 
     // Share boarding pass text directly to student's WhatsApp from the boarding pass modal
     function shareCurrentBoardingPassWhatsApp() {
@@ -3740,52 +3698,125 @@
     }
 
     // =========================================================================
-    // SHARE PASS AS IMAGE (with verification message)
+    // SHARE PASS AS IMAGE — downloads boarding pass as PNG
     // =========================================================================
     async function sharePassAsImage() {
-      if (!currentBoardingPassData) return;
+      if (!currentBoardingPassData) { showToast('No boarding pass open.', 'error'); return; }
+      if (typeof html2canvas === 'undefined') { showToast('Image library not loaded. Please refresh.', 'error'); return; }
       const btn = document.getElementById('btnSharePassImage');
       const origHtml = btn ? btn.innerHTML : '';
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '<span>Capturing...</span>';
-      }
-
+      if (btn) { btn.disabled = true; btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin inline"></i> <span>Capturing...</span>'; lucide.createIcons(); }
       try {
-        if (typeof html2canvas === 'undefined') {
-          showToast('Image capture library not loaded. Please refresh and try again.', 'error');
-          return;
-        }
-
         const blob = await capturePassAsImageBlob();
-        if (!blob) {
-          showToast('Could not capture pass. Try PDF download instead.', 'error');
-          return;
-        }
-
+        if (!blob) { showToast('Could not capture pass. Try PDF instead.', 'error'); return; }
         const st = currentBoardingPassData;
         const cleanName = (st.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
         const fileName = `BoardingPass_${cleanName}_${st.receiptCode || 'Ticket'}.png`;
-        const imageUrl = URL.createObjectURL(blob);
-        const download = document.createElement('a');
-        download.href = imageUrl;
-        download.download = fileName;
-        document.body.appendChild(download);
-        download.click();
-        download.remove();
-        setTimeout(() => URL.revokeObjectURL(imageUrl), 8000);
-        showToast('Boarding pass image saved!');
-
-      } catch (err) {
-        console.error('sharePassAsImage error:', err);
-        showToast('Could not save pass image. Please try again or download the PDF.', 'error');
-      } finally {
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = origHtml;
-          lucide.createIcons();
+        // Try native share sheet first (mobile)
+        if (navigator.share && navigator.canShare) {
+          const file = new File([blob], fileName, { type: 'image/png' });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: `Boarding Pass – ${st.studentName}` });
+            showToast('Boarding pass image shared! ✅');
+            return;
+          }
         }
+        // Fallback: direct download
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = fileName;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 8000);
+        showToast('Boarding pass image saved! ✅');
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        console.error('sharePassAsImage error:', err);
+        showToast('Could not save image. Try PDF download instead.', 'error');
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = origHtml; lucide.createIcons(); }
       }
+    }
+
+    // =========================================================================
+    // SHARE PASS AS PDF VIA WHATSAPP
+    // On mobile: generates PDF → navigator.share file sheet → user picks WhatsApp
+    // On desktop: downloads PDF + opens WhatsApp with boarding pass text
+    // =========================================================================
+    async function sharePassPDFWhatsApp() {
+      if (!currentBoardingPassData) { showToast('No boarding pass open.', 'error'); return; }
+      if (typeof html2canvas === 'undefined') { showToast('Libraries not loaded. Refresh and try again.', 'error'); return; }
+      const btn = document.getElementById('btnWaSharePdf');
+      const origHtml = btn ? btn.innerHTML : '';
+      if (btn) { btn.disabled = true; btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin inline"></i> <span>Preparing...</span>'; lucide.createIcons(); }
+      try {
+        const st = currentBoardingPassData;
+        const cleanName = (st.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
+        const pdfFileName = `BoardingPass_${cleanName}_${st.receiptCode || 'Ticket'}.pdf`;
+        const pdfBlob = await buildPdfBlobFromPass();
+        if (!pdfBlob) { showToast('PDF generation failed.', 'error'); return; }
+        // Try native file share sheet (mobile — user picks WhatsApp)
+        if (navigator.share && navigator.canShare) {
+          const file = new File([pdfBlob], pdfFileName, { type: 'application/pdf' });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: `Boarding Pass – ${st.studentName}` });
+            showToast('Boarding pass PDF shared! ✅');
+            return;
+          }
+        }
+        // Desktop fallback: download PDF and open WhatsApp with text
+        const url = URL.createObjectURL(pdfBlob);
+        const a = document.createElement('a');
+        a.href = url; a.download = pdfFileName;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+        const msg = buildWhatsAppBoardingPassText(st);
+        const phone = normalizePhone(st.phone);
+        const waUrl = phone.length === 10
+          ? `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`
+          : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+        setTimeout(() => window.open(waUrl, '_blank'), 800);
+        showToast('PDF saved! In WhatsApp → attach the PDF file. 📎');
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        console.error('sharePassPDFWhatsApp error:', err);
+        showToast('Could not share PDF. Try Download PDF instead.', 'error');
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = origHtml; lucide.createIcons(); }
+      }
+    }
+
+    // =========================================================================
+    // ADMIN: Per-student boarding pass actions (from the payments register)
+    // =========================================================================
+    async function savePassAsImageForStudent(id) {
+      const st = payments.find(p => p.id === id);
+      if (!st) return;
+      populateBoardingPassDataSilent(st);
+      await new Promise(r => setTimeout(r, 300));
+      await sharePassAsImage();
+    }
+
+    async function shareStudentPDFWhatsApp(id) {
+      const st = payments.find(p => p.id === id);
+      if (!st) return;
+      populateBoardingPassDataSilent(st);
+      await new Promise(r => setTimeout(r, 300));
+      await sharePassPDFWhatsApp();
+    }
+
+    async function downloadStudentPassPDF(id) {
+      const st = payments.find(p => p.id === id);
+      if (!st) return;
+      populateBoardingPassDataSilent(st);
+      await new Promise(r => setTimeout(r, 300));
+      await downloadBoardingPassPDF();
+    }
+
+    function printStudentPass(id) {
+      const st = payments.find(p => p.id === id);
+      if (!st) return;
+      openBoardingPassModal(st);
+      setTimeout(() => window.print(), 600);
     }
 
     // =========================================================================
@@ -5207,61 +5238,71 @@
         const isVer = s.status === 'Verified';
         const isBoarded = Boolean(s.boarded);
         return `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="py-3 px-4 font-mono text-xs text-slate-400 font-bold">${idx + 1}</td>
-            <td class="py-3 px-4">
-              <span class="font-bold text-slate-900 block">${escapeHtml(s.studentName)}</span>
+          <tr class="hover:bg-slate-50/80 transition group">
+            <td class="py-3.5 px-4 font-mono text-xs text-slate-400 font-bold">${idx + 1}</td>
+            <td class="py-3.5 px-4">
+              <span class="font-bold text-slate-900 block text-sm">${escapeHtml(s.studentName)}</span>
               <span class="font-mono text-[10px] text-slate-400">${escapeHtml(s.receiptCode)} • ${escapeHtml(s.createdDateStr || '')}</span>
             </td>
-            <td class="py-3 px-4">
-              <span class="px-2 py-0.5 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">${escapeHtml(s.department)}</span>
+            <td class="py-3.5 px-4">
+              <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">${escapeHtml(s.department)}</span>
             </td>
-            <td class="py-3 px-4">
-              <button onclick="shareStudentBoardingPassWhatsApp('${s.id}')" class="text-xs font-bold text-emerald-700 hover:underline flex items-center gap-1" title="Share Boarding Pass on WhatsApp">
+            <td class="py-3.5 px-4">
+              <a href="https://wa.me/91${normalizePhone(s.phone)}" target="_blank" class="text-xs font-bold text-emerald-700 hover:underline flex items-center gap-1">
                 <i data-lucide="message-circle" class="w-3.5 h-3.5 text-[#25D366]"></i>
                 <span>${escapeHtml(s.phone)}</span>
-              </button>
+              </a>
             </td>
-            <td class="py-3 px-4">
-              <span class="font-display font-extrabold text-emerald-700">${formatINR(s.amountPaid)}</span>
-              <span class="ml-1 text-[10px] font-extrabold px-1.5 py-0.5 rounded ${bal > 0 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">
+            <td class="py-3.5 px-4">
+              <span class="font-display font-extrabold text-emerald-700 block">${formatINR(s.amountPaid)}</span>
+              <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded ${bal > 0 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">
                 ${bal > 0 ? `Due: ${formatINR(bal)}` : 'Full Paid'}
               </span>
             </td>
-            <td class="py-3 px-4">
+            <td class="py-3.5 px-4">
               <div class="space-y-1">
                 <div class="flex items-center gap-1 flex-wrap">
                   <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold ${isVer ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
                     <i data-lucide="${isVer ? 'check' : 'clock'}" class="w-3 h-3"></i>
                     <span>${escapeHtml(s.status)}</span>
                   </span>
-                  ${isBoarded ? `
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-100 text-indigo-800">
-                      Boarded ✅
-                    </span>
-                  ` : ''}
+                  ${isBoarded ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-100 text-indigo-800">Boarded ✅</span>` : ''}
                 </div>
-                ${s.accessCode ? `
-                  <p class="font-mono text-[11px] font-extrabold text-indigo-700">Pass: ${escapeHtml(s.accessCode)}</p>
-                ` : ''}
+                ${s.accessCode ? `<p class="font-mono text-[11px] font-extrabold text-indigo-700">Pass: ${escapeHtml(s.accessCode)}</p>` : ''}
               </div>
             </td>
-            <td class="py-3 px-4 text-right">
-              <div class="inline-flex items-center gap-1">
-                <button onclick="openBoardingPassByStudentId('${s.id}')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1" title="View / Print Boarding Pass PDF">
-                  <i data-lucide="ticket" class="w-3.5 h-3.5 text-emerald-400"></i>
-                  <span>Pass</span>
-                </button>
-                <button onclick="markParticipantBoardingStatus('${s.id}', ${!isBoarded})" class="px-2 py-1 rounded-lg text-xs font-bold ${isBoarded ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700'}" title="Toggle Boarding Participation">
+            <td class="py-3.5 px-4 text-right">
+              <div class="inline-flex items-center gap-1 flex-wrap justify-end">
+                <!-- Pass Actions -->
+                <div class="flex items-center gap-0.5 bg-slate-100 rounded-xl p-0.5" title="Boarding Pass Actions">
+                  <button onclick="openBoardingPassByStudentId('${s.id}')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-700 text-white text-xs font-bold flex items-center gap-1 transition" title="Open Boarding Pass">
+                    <i data-lucide="ticket" class="w-3.5 h-3.5 text-emerald-400"></i>
+                    <span>Pass</span>
+                  </button>
+                  <button onclick="savePassAsImageForStudent('${s.id}')" class="p-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white transition" title="Save as Image">
+                    <i data-lucide="image" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <button onclick="shareStudentPDFWhatsApp('${s.id}')" class="p-1.5 rounded-lg bg-[#25D366] hover:bg-[#20bd5a] text-white transition" title="WhatsApp PDF">
+                    <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <button onclick="downloadStudentPassPDF('${s.id}')" class="p-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white transition" title="Download PDF">
+                    <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <button onclick="printStudentPass('${s.id}')" class="p-1.5 rounded-lg bg-slate-600 hover:bg-slate-500 text-white transition" title="Print / Save">
+                    <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+                <!-- Admin Actions -->
+                <button onclick="markParticipantBoardingStatus('${s.id}', ${!isBoarded})" class="px-2 py-1 rounded-lg text-xs font-bold ${isBoarded ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700'} transition" title="Toggle Boarding">
                   ${isBoarded ? 'Boarded ✓' : 'Check-In'}
                 </button>
-                <button onclick="toggleVerifyStudent('${s.id}')" class="px-2 py-1 rounded-lg text-xs font-bold ${isVer ? 'bg-slate-100 text-slate-600' : 'bg-emerald-600 text-white'}">
+                <button onclick="toggleVerifyStudent('${s.id}')" class="px-2 py-1 rounded-lg text-xs font-bold ${isVer ? 'bg-slate-100 text-slate-600' : 'bg-emerald-600 hover:bg-emerald-500 text-white'} transition">
                   ${isVer ? 'Unverify' : 'Verify'}
                 </button>
-                <button onclick="openAdminEditModal('${s.id}')" class="px-2 py-1 rounded-lg bg-sky-50 text-sky-700 border border-sky-200 text-xs font-bold">
+                <button onclick="openAdminEditModal('${s.id}')" class="px-2 py-1 rounded-lg bg-sky-50 text-sky-700 border border-sky-200 text-xs font-bold hover:bg-sky-100 transition">
                   Edit
                 </button>
-                <button onclick="openDeleteDialog('payment', '${s.id}', '${escapeHtml(s.studentName)}')" class="p-1 rounded-lg bg-rose-50 text-rose-600">
+                <button onclick="openDeleteDialog('payment', '${s.id}', '${escapeHtml(s.studentName)}')" class="p-1 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition">
                   <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
@@ -5270,59 +5311,83 @@
         `;
       }).join('');
 
-      // Mobile Cards View
+      // Mobile Cards View — modern premium card with all boarding pass operations
       mContainer.innerHTML = filtered.map(s => {
         const bal = getBalanceDue(s);
         const isVer = s.status === 'Verified';
         const isBoarded = Boolean(s.boarded);
         return `
-          <div class="bg-white border border-slate-200 rounded-2xl p-3.5 space-y-2.5 shadow-sm">
-            <div class="flex items-start justify-between">
-              <div>
-                <h4 class="font-bold text-slate-900 text-sm">${escapeHtml(s.studentName)}</h4>
-                <p class="text-xs text-slate-500">${escapeHtml(s.department)} • ${escapeHtml(s.phone)}</p>
+          <div class="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden transition hover:shadow-md">
+            <!-- Card Header -->
+            <div class="flex items-start justify-between px-4 pt-4 pb-3">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 flex-wrap mb-1">
+                  <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${isVer ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}">
+                    ${isVer ? '✅ Verified' : '⏳ Pending'}
+                  </span>
+                  ${isBoarded ? `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">🚌 Boarded</span>` : ''}
+                </div>
+                <h4 class="font-bold text-slate-900 text-base leading-tight truncate">${escapeHtml(s.studentName)}</h4>
+                <p class="text-xs text-slate-400 mt-0.5">${escapeHtml(s.department)} • <span class="font-mono">${escapeHtml(s.receiptCode)}</span></p>
               </div>
-              <div class="flex flex-col items-end gap-1">
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isVer ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                  ${escapeHtml(s.status)}
-                </span>
-                ${isBoarded ? `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">Boarded ✅</span>` : ''}
-              </div>
-            </div>
-            <div class="flex justify-between items-center text-xs bg-slate-50 p-2 rounded-xl">
-              <div>
-                <span class="text-slate-400 block text-[10px]">Paid</span>
-                <strong class="text-emerald-700">${formatINR(s.amountPaid)}</strong>
-              </div>
-              <div>
-                <span class="text-slate-400 block text-[10px]">Balance Due</span>
-                <strong class="${bal > 0 ? 'text-amber-600' : 'text-emerald-600'}">${formatINR(bal)}</strong>
-              </div>
-              <div>
-                <span class="text-slate-400 block text-[10px]">Pass Code</span>
-                <strong class="font-mono text-indigo-700">${escapeHtml(s.accessCode || '-')}</strong>
+              <div class="text-right ml-3 shrink-0">
+                <p class="font-display font-extrabold text-lg text-emerald-600 leading-tight">${formatINR(s.amountPaid)}</p>
+                <p class="text-[10px] font-bold ${bal > 0 ? 'text-amber-600' : 'text-emerald-500'}">${bal > 0 ? `Due ${formatINR(bal)}` : 'Fully Paid'}</p>
               </div>
             </div>
-            <div class="flex items-center justify-between pt-1 border-t border-slate-100 text-xs flex-wrap gap-1.5">
+
+            <!-- Phone + Access Code Strip -->
+            <div class="mx-4 mb-3 flex items-center justify-between bg-slate-50 rounded-xl px-3 py-2 gap-2">
+              <a href="https://wa.me/91${normalizePhone(s.phone)}" target="_blank" class="flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:underline">
+                <i data-lucide="message-circle" class="w-3.5 h-3.5 text-[#25D366]"></i>
+                <span class="font-mono">${escapeHtml(s.phone)}</span>
+              </a>
+              ${s.accessCode ? `
               <div class="flex items-center gap-1.5">
-                <button onclick="openBoardingPassByStudentId('${s.id}')" class="px-2.5 py-1 rounded-lg bg-slate-900 text-white font-bold flex items-center gap-1">
-                  <i data-lucide="ticket" class="w-3.5 h-3.5 text-emerald-400"></i>
-                  <span>Pass</span>
+                <span class="text-[10px] text-slate-400 font-medium">Access Code</span>
+                <span class="font-mono text-xs font-extrabold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg px-2 py-0.5 tracking-wider">${escapeHtml(s.accessCode)}</span>
+              </div>` : '<span class="text-[10px] text-slate-400 italic">No access code yet</span>'}
+            </div>
+
+            <!-- Boarding Pass Actions -->
+            <div class="mx-4 mb-3">
+              <p class="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 mb-1.5">Boarding Pass</p>
+              <div class="grid grid-cols-4 gap-1.5">
+                <button onclick="openBoardingPassByStudentId('${s.id}')" class="flex flex-col items-center justify-center gap-1 py-2 rounded-xl bg-slate-900 hover:bg-slate-700 text-white transition active:scale-95" title="Open Pass">
+                  <i data-lucide="ticket" class="w-4 h-4 text-emerald-400"></i>
+                  <span class="text-[9px] font-bold">Open</span>
                 </button>
-                <button onclick="shareStudentBoardingPassWhatsApp('${s.id}')" class="px-2.5 py-1 rounded-lg bg-[#25D366] text-white font-bold flex items-center gap-1">
-                  <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-                  <span>WA Pass</span>
+                <button onclick="savePassAsImageForStudent('${s.id}')" class="flex flex-col items-center justify-center gap-1 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white transition active:scale-95" title="Save Image">
+                  <i data-lucide="image" class="w-4 h-4"></i>
+                  <span class="text-[9px] font-bold">Image</span>
+                </button>
+                <button onclick="shareStudentPDFWhatsApp('${s.id}')" class="flex flex-col items-center justify-center gap-1 py-2 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white transition active:scale-95" title="WhatsApp PDF">
+                  <i data-lucide="message-circle" class="w-4 h-4"></i>
+                  <span class="text-[9px] font-bold">WA PDF</span>
+                </button>
+                <button onclick="downloadStudentPassPDF('${s.id}')" class="flex flex-col items-center justify-center gap-1 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white transition active:scale-95" title="Download PDF">
+                  <i data-lucide="file-down" class="w-4 h-4"></i>
+                  <span class="text-[9px] font-bold">PDF</span>
                 </button>
               </div>
-              <div class="flex gap-1">
-                <button onclick="markParticipantBoardingStatus('${s.id}', ${!isBoarded})" class="px-2 py-1 rounded-lg font-bold ${isBoarded ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-700'}">
-                  ${isBoarded ? 'Boarded ✓' : 'Check-In'}
+            </div>
+
+            <!-- Admin Actions -->
+            <div class="border-t border-slate-100 px-4 py-2.5 flex items-center justify-between gap-1.5 flex-wrap bg-slate-50/50">
+              <div class="flex items-center gap-1.5">
+                <button onclick="markParticipantBoardingStatus('${s.id}', ${!isBoarded})" class="px-2.5 py-1.5 rounded-xl text-xs font-bold transition ${isBoarded ? 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200' : 'bg-slate-200 text-slate-700 hover:bg-emerald-100 hover:text-emerald-800'}">
+                  ${isBoarded ? '✓ Boarded' : 'Check-In'}
                 </button>
-                <button onclick="toggleVerifyStudent('${s.id}')" class="px-2 py-1 rounded-lg font-bold ${isVer ? 'bg-slate-100 text-slate-700' : 'bg-emerald-600 text-white'}">
+                <button onclick="toggleVerifyStudent('${s.id}')" class="px-2.5 py-1.5 rounded-xl text-xs font-bold transition ${isVer ? 'bg-slate-200 text-slate-600 hover:bg-slate-300' : 'bg-emerald-600 text-white hover:bg-emerald-500'}">
                   ${isVer ? 'Unverify' : 'Verify'}
                 </button>
-                <button onclick="openAdminEditModal('${s.id}')" class="px-2 py-1 rounded-lg bg-sky-50 text-sky-700">Edit</button>
-                <button onclick="openDeleteDialog('payment', '${s.id}', '${escapeHtml(s.studentName)}')" class="p-1 rounded-lg bg-rose-50 text-rose-600">
+              </div>
+              <div class="flex items-center gap-1">
+                <button onclick="printStudentPass('${s.id}')" class="p-1.5 rounded-lg bg-slate-200 text-slate-600 hover:bg-slate-300 transition" title="Print Pass">
+                  <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="openAdminEditModal('${s.id}')" class="px-2.5 py-1.5 rounded-xl bg-sky-50 text-sky-700 border border-sky-200 text-xs font-bold hover:bg-sky-100 transition">Edit</button>
+                <button onclick="openDeleteDialog('payment', '${s.id}', '${escapeHtml(s.studentName)}')" class="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition">
                   <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
@@ -6087,6 +6152,11 @@
       downloadBoardingPassPDF,
       shareCurrentBoardingPassWhatsApp,
       shareStudentBoardingPassWhatsApp,
+      sharePassPDFWhatsApp,
+      savePassAsImageForStudent,
+      shareStudentPDFWhatsApp,
+      downloadStudentPassPDF,
+      printStudentPass,
       openQrScannerModal,
       closeQrScannerModal,
       startCameraQrScanner,
