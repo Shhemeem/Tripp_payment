@@ -1626,48 +1626,48 @@
         <div class="holo-strip h-2 w-full"></div>
 
         <!-- 1. Expressive Top Airline/Expedition Banner with Official Logo -->
-        <div class="boarding-pass-header text-white p-5 sm:p-6">
-          <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div class="flex items-center gap-3.5">
+        <div class="boarding-pass-header text-white" style="padding:20px 24px;">
+          <div class="relative z-10" style="display:flex; flex-direction:row; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:14px; min-width:0; flex:1;">
               <!-- Official Added Logo Container -->
-              <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white p-1 shadow-xl shrink-0 flex items-center justify-center overflow-hidden border-2 border-emerald-300/70">
+              <div style="width:60px; height:60px; border-radius:16px; background:#fff; padding:4px; box-shadow:0 8px 20px rgba(0,0,0,0.25); flex-shrink:0; display:flex; align-items:center; justify-content:center; overflow:hidden; border:2px solid rgba(167,243,208,0.7);">
                 <img
                   id="bpLogoImg"
                   crossorigin="anonymous"
                   src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFi3ISGVLtcfjKcyZ1e0JtiIJHb4P1OTjldSIj3H5zNg&s=10"
                   alt="TripPay Official Logo"
-                  class="w-full h-full object-cover rounded-xl"
+                  style="width:100%; height:100%; object-fit:cover; border-radius:12px;"
                   onerror="this.style.display='none'; document.getElementById('bpFallbackLogo').style.display='flex';"
                 />
-                <div id="bpFallbackLogo" class="hidden w-full h-full rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 items-center justify-center text-white font-display font-extrabold text-lg">
+                <div id="bpFallbackLogo" class="hidden" style="width:100%; height:100%; border-radius:12px; background:linear-gradient(135deg,#059669,#0d9488); display:none; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:18px;">
                   TP
                 </div>
               </div>
-              <div>
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span class="text-[10px] font-mono uppercase tracking-[0.2em] px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-extrabold shadow-sm">
+              <div style="min-width:0; flex:1;">
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
+                  <span style="font-size:10px; font-family:monospace; text-transform:uppercase; letter-spacing:0.2em; padding:2px 10px; border-radius:9999px; background:#fbbf24; color:#0f172a; font-weight:800;">
                     BOARDING PASS
                   </span>
-                  <span class="text-[10px] font-mono uppercase tracking-widest text-emerald-200 font-bold">
+                  <span style="font-size:10px; font-family:monospace; text-transform:uppercase; letter-spacing:0.1em; color:rgba(167,243,208,0.9); font-weight:700;">
                     • TRIPPAY OFFICIAL CHARTER
                   </span>
                 </div>
-                <h2 id="bpTripTitle" class="font-display text-lg sm:text-xl font-extrabold tracking-tight text-white mt-1">
+                <h2 id="bpTripTitle" style="font-family:'Plus Jakarta Sans',sans-serif; font-size:18px; font-weight:800; letter-spacing:-0.02em; color:#fff; margin:4px 0; word-break:break-word; overflow-wrap:break-word; line-height:1.3;">
                   Annual College Industrial & Leisure Trip
                 </h2>
-                <p class="text-xs text-emerald-100/90 font-medium flex items-center gap-1.5 mt-0.5 flex-wrap">
+                <p style="font-size:11px; color:rgba(236,253,245,0.9); font-weight:500; display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:0;">
                   <span>Coordinator: <strong id="bpCoordinatorName">Mohd Shemeem KP</strong></span>
                   <span>•</span>
-                  <span id="bpUpiId" class="font-mono text-[11px]">mohdshemeemkp@oksbi</span>
+                  <span id="bpUpiId" style="font-family:monospace; font-size:10px;">mohdshemeemkp@oksbi</span>
                 </p>
               </div>
             </div>
 
             <!-- Right Ticket Number & Verification Badge -->
-            <div class="sm:text-right flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 border-white/15 pt-3 sm:pt-0">
+            <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0;">
               <div>
-                <span class="text-[10px] uppercase tracking-widest text-emerald-200 font-bold block">Ticket / Receipt No</span>
-                <span id="bpReceiptCode" class="font-mono text-base sm:text-lg font-extrabold text-amber-300 tracking-wider">
+                <span style="font-size:9px; text-transform:uppercase; letter-spacing:0.12em; color:rgba(167,243,208,0.8); font-weight:700; display:block; margin-bottom:2px;">Ticket / Receipt No</span>
+                <span id="bpReceiptCode" style="font-family:monospace; font-size:18px; font-weight:800; color:#fcd34d; letter-spacing:0.05em;">
                   TRP-000000
                 </span>
               </div>
@@ -1678,25 +1678,25 @@
           </div>
 
           <!-- Route & Schedule Ribbon -->
-          <div class="relative z-10 mt-5 pt-4 border-t border-white/15 grid grid-cols-1 sm:grid-cols-3 gap-3 items-center bg-black/25 rounded-2xl p-3.5 border border-white/10">
+          <div class="relative z-10" style="margin-top:14px; display:grid; grid-template-columns:1fr auto 1fr; gap:12px; align-items:center; background:rgba(0,0,0,0.25); border-radius:16px; padding:12px 14px; border:1px solid rgba(255,255,255,0.1);">
             <div>
-              <p class="text-[10px] font-mono uppercase tracking-widest text-emerald-300 font-bold">ORIGIN / ASSEMBLY</p>
-              <p class="font-display text-sm sm:text-base font-extrabold text-white truncate">COLLEGE CAMPUS</p>
-              <p id="bpBoardingNote" class="text-[11px] text-emerald-200/80 truncate">Main Gate Boarding</p>
+              <p style="font-size:9px; font-family:monospace; text-transform:uppercase; letter-spacing:0.15em; color:#6ee7b7; font-weight:700; margin:0 0 3px;">ORIGIN / ASSEMBLY</p>
+              <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:800; color:#fff; margin:0 0 2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">COLLEGE CAMPUS</p>
+              <p id="bpBoardingNote" style="font-size:11px; color:rgba(167,243,208,0.8); margin:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Main Gate Boarding</p>
             </div>
 
-            <div class="flex flex-col items-center justify-center py-1">
-              <div class="flex items-center gap-2 w-full justify-center">
-                <span class="h-[1.5px] flex-1 bg-gradient-to-r from-transparent to-amber-300"></span>
-                <span class="px-2.5 py-1 rounded-full bg-amber-400/20 border border-amber-300/50 text-amber-300 text-[10px] font-mono font-extrabold uppercase tracking-widest">
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px 8px;">
+              <div style="display:flex; align-items:center; gap:8px; width:100%;">
+                <span style="height:1.5px; flex:1; background:linear-gradient(to right, transparent, #fcd34d);"></span>
+                <span style="padding:4px 10px; border-radius:9999px; background:rgba(251,191,36,0.2); border:1px solid rgba(253,211,77,0.5); color:#fcd34d; font-size:9px; font-family:monospace; font-weight:800; text-transform:uppercase; letter-spacing:0.12em; white-space:nowrap;">
                   EXPEDITION
                 </span>
-                <span class="h-[1.5px] flex-1 bg-gradient-to-l from-transparent to-amber-300"></span>
+                <span style="height:1.5px; flex:1; background:linear-gradient(to left, transparent, #fcd34d);"></span>
               </div>
-              <p id="bpTripDate" class="text-[11px] font-mono font-bold text-white mt-1">2026-11-15</p>
+              <p id="bpTripDate" style="font-size:11px; font-family:monospace; font-weight:700; color:#fff; margin:4px 0 0;">2026-11-15</p>
             </div>
 
-            <div class="sm:text-right">
+            <div style="text-align:right; min-width:0;">
               <p class="text-[10px] font-mono uppercase tracking-widest text-amber-300 font-bold">DESTINATION ROUTE</p>
               <p id="bpDestination" class="font-display text-sm sm:text-base font-extrabold text-white truncate">
                 Munnar, Vagamon & Kochi
@@ -1707,52 +1707,52 @@
         </div>
 
         <!-- 2. Passenger & Payment Details Body -->
-        <div class="p-5 sm:p-6 bg-white space-y-5">
+        <div style="padding: 20px 24px; background:#ffffff; display:flex; flex-direction:column; gap:16px;">
           <!-- Passenger Primary Row -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 items-center">
-            <div class="col-span-2 sm:col-span-1">
-              <p class="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">Passenger Name</p>
-              <p id="bpStudentName" class="font-display text-base sm:text-lg font-extrabold text-slate-900 mt-0.5 break-words">
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; align-items:center;">
+            <div style="grid-column: span 1;">
+              <p style="font-size:9px; font-family:monospace; text-transform:uppercase; letter-spacing:0.1em; color:#94a3b8; font-weight:700; margin:0 0 3px;">Passenger Name</p>
+              <p id="bpStudentName" style="font-family:'Plus Jakarta Sans',sans-serif; font-size:16px; font-weight:800; color:#0f172a; margin:0; word-break:break-word; overflow-wrap:break-word; line-height:1.25;">
                 Muhammed Sinan
               </p>
             </div>
             <div>
-              <p class="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">Department</p>
-              <p id="bpDepartment" class="font-display text-sm sm:text-base font-extrabold text-emerald-700 mt-0.5">
+              <p style="font-size:9px; font-family:monospace; text-transform:uppercase; letter-spacing:0.1em; color:#94a3b8; font-weight:700; margin:0 0 3px;">Department</p>
+              <p id="bpDepartment" style="font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:800; color:#059669; margin:0; overflow-wrap:break-word;">
                 BCA
               </p>
             </div>
             <div>
-              <p class="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">WhatsApp / Mobile</p>
-              <p id="bpPhone" class="font-mono text-sm sm:text-base font-bold text-slate-800 mt-0.5">
+              <p style="font-size:9px; font-family:monospace; text-transform:uppercase; letter-spacing:0.1em; color:#94a3b8; font-weight:700; margin:0 0 3px;">WhatsApp / Mobile</p>
+              <p id="bpPhone" style="font-family:monospace; font-size:13px; font-weight:700; color:#1e293b; margin:0;">
                 +91 9876543210
               </p>
             </div>
-            <div class="col-span-2 sm:col-span-1 bg-indigo-50/90 border border-indigo-200 rounded-2xl p-2.5 text-center">
-              <p class="text-[9px] font-mono uppercase tracking-widest text-indigo-600 font-extrabold">6-Digit Access Pass</p>
-              <p id="bpAccessCode" class="font-mono text-lg font-extrabold text-indigo-800 tracking-widest mt-0.5">
+            <div style="background:rgba(238,242,255,0.9); border:1px solid #c7d2fe; border-radius:16px; padding:8px 10px; text-align:center;">
+              <p style="font-size:8px; font-family:monospace; text-transform:uppercase; letter-spacing:0.15em; color:#4f46e5; font-weight:800; margin:0 0 3px;">6-Digit Access Pass</p>
+              <p id="bpAccessCode" style="font-family:monospace; font-size:20px; font-weight:800; color:#3730a3; letter-spacing:0.15em; margin:0;">
                 748291
               </p>
             </div>
           </div>
 
           <!-- Financial Summary Strip -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 bg-slate-50 rounded-2xl p-3.5 border border-slate-200/90">
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; background:#f8fafc; border-radius:16px; padding:14px; border:1px solid rgba(226,232,240,0.9);">
             <div>
-              <p class="text-[10px] font-bold uppercase text-slate-400">Total Trip Fee</p>
-              <p id="bpTotalFee" class="font-display text-sm sm:text-base font-extrabold text-slate-800">₹1,500</p>
+              <p style="font-size:9px; font-weight:700; text-transform:uppercase; color:#94a3b8; margin:0 0 3px;">Total Trip Fee</p>
+              <p id="bpTotalFee" style="font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:800; color:#1e293b; margin:0;">₹1,500</p>
             </div>
             <div>
-              <p class="text-[10px] font-bold uppercase text-emerald-700">Total Paid</p>
-              <p id="bpAmountPaid" class="font-display text-sm sm:text-base font-extrabold text-emerald-600">₹1,500</p>
+              <p style="font-size:9px; font-weight:700; text-transform:uppercase; color:#047857; margin:0 0 3px;">Total Paid</p>
+              <p id="bpAmountPaid" style="font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:800; color:#059669; margin:0;">₹1,500</p>
             </div>
             <div>
-              <p class="text-[10px] font-bold uppercase text-amber-700">Balance Due</p>
-              <p id="bpBalanceDue" class="font-display text-sm sm:text-base font-extrabold text-amber-600">₹0</p>
+              <p style="font-size:9px; font-weight:700; text-transform:uppercase; color:#b45309; margin:0 0 3px;">Balance Due</p>
+              <p id="bpBalanceDue" style="font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:800; color:#d97706; margin:0;">₹0</p>
             </div>
             <div>
-              <p class="text-[10px] font-bold uppercase text-slate-400">Payment Mode</p>
-              <p id="bpPaymentApp" class="font-sans text-xs sm:text-sm font-bold text-slate-800 truncate">Google Pay</p>
+              <p style="font-size:9px; font-weight:700; text-transform:uppercase; color:#94a3b8; margin:0 0 3px;">Payment Mode</p>
+              <p id="bpPaymentApp" style="font-size:12px; font-weight:700; color:#1e293b; margin:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Google Pay</p>
             </div>
           </div>
         </div>
@@ -1765,38 +1765,38 @@
         </div>
 
         <!-- 3. Tear-Off Boarding Stub with QR Code & Barcode -->
-        <div class="p-5 sm:p-6 bg-gradient-to-br from-slate-50 via-white to-emerald-50/40 flex flex-col sm:flex-row items-center justify-between gap-5">
-          <div class="space-y-2 text-center sm:text-left flex-1">
-            <div class="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-100/90 px-2.5 py-1 rounded-lg border border-emerald-200">
+        <div style="padding:20px 24px; background:linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, rgba(236,253,245,0.4) 100%); display:flex; flex-direction:row; align-items:center; justify-content:space-between; gap:20px;">
+          <div style="flex:1; display:flex; flex-direction:column; gap:8px; min-width:0;">
+            <div style="display:inline-flex; align-items:center; gap:6px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#065f46; background:rgba(209,250,229,0.9); padding:4px 10px; border-radius:8px; border:1px solid #6ee7b7;">
               <span>Official Boarding Verification Stub</span>
             </div>
-            <p class="text-xs text-slate-600 leading-relaxed">
+            <p style="font-size:11px; color:#475569; line-height:1.5; margin:0;">
               Present this boarding pass (digital PDF or printed copy) along with your College ID Card to the bus coordinator during boarding.
             </p>
-            <div class="pt-1 flex flex-wrap items-center justify-center sm:justify-start gap-4 text-[11px] text-slate-500 font-mono">
-              <span>ISSUED: <strong id="bpIssuedDate" class="text-slate-800">-</strong></span>
-              <span>GATE: <strong class="text-emerald-700">MAIN CAMPUS</strong></span>
-              <span>BOARDING: <strong id="bpParticipationStamp" class="text-indigo-700">READY TO BOARD</strong></span>
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px; font-size:10px; color:#64748b; font-family:monospace;">
+              <span>ISSUED: <strong id="bpIssuedDate" style="color:#1e293b;">-</strong></span>
+              <span>GATE: <strong style="color:#059669;">MAIN CAMPUS</strong></span>
+              <span>BOARDING: <strong id="bpParticipationStamp" style="color:#4338ca;">READY TO BOARD</strong></span>
             </div>
             <!-- Expressive Barcode Visual -->
-            <div class="pt-2">
-              <div class="barcode-bars h-8 w-full max-w-xs mx-auto sm:mx-0 rounded opacity-85"></div>
-              <p id="bpBarcodeSub" class="font-mono text-[10px] tracking-[0.28em] text-slate-400 mt-1">
+            <div style="padding-top:6px;">
+              <div class="barcode-bars" style="height:32px; width:100%; max-width:280px; border-radius:4px; opacity:0.85;"></div>
+              <p id="bpBarcodeSub" style="font-family:monospace; font-size:9px; letter-spacing:0.28em; color:#94a3b8; margin:4px 0 0;">
                 *TRP-000000-PASS*
               </p>
             </div>
           </div>
 
           <!-- Dynamic Verification QR Code Box -->
-          <div class="bg-white p-3 rounded-2xl border-2 border-emerald-200 shadow-sm flex flex-col items-center shrink-0">
+          <div style="background:#fff; padding:12px; border-radius:16px; border:2px solid #6ee7b7; box-shadow:0 2px 8px rgba(0,0,0,0.06); display:flex; flex-direction:column; align-items:center; flex-shrink:0;">
             <img
               id="bpQrImage"
               crossorigin="anonymous"
               src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&margin=6&data=TRIPPAY-TICKET"
               alt="Ticket Verification QR"
-              class="w-28 h-28 object-contain rounded-lg"
+              style="width:112px; height:112px; object-fit:contain; border-radius:8px;"
             />
-            <span class="text-[10px] font-mono font-bold text-slate-500 mt-1">SCAN TO VERIFY</span>
+            <span style="font-size:9px; font-family:monospace; font-weight:700; color:#64748b; margin-top:4px;">SCAN TO VERIFY</span>
           </div>
         </div>
       </div><!-- boardingPassPrintableArea wrapper -->
@@ -1813,7 +1813,7 @@
           class="col-span-2 sm:col-span-1 py-3.5 px-3 rounded-2xl bg-violet-600 hover:bg-violet-500 active:bg-violet-700 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg transition active:scale-95"
         >
           <i data-lucide="image" class="w-4 h-4"></i>
-          <span>Share as Image</span>
+          <span>Save as Image</span>
         </button>
         <button
           type="button"
@@ -3520,38 +3520,50 @@
       const el = document.getElementById('boardingPassPrintableArea');
       if (!el) return null;
       const clone = el.cloneNode(true);
+      // Use 800px wide render — ensures sm: (640px+) Tailwind breakpoints fire
+      // and all inline-grid 4-col layouts have enough room to render properly.
       clone.style.cssText = [
         'position:absolute',
         'left:-9999px',
         'top:0',
-        'width:680px',
+        'width:800px',
+        'min-width:800px',
+        'max-width:800px',
+        'box-sizing:border-box',
+        'margin:0',
         'z-index:9999',
         'background:#ffffff',
         'border-radius:28px',
         'overflow:visible',
         'visibility:visible',
         'opacity:1',
-        'pointer-events:none'
+        'pointer-events:none',
+        'word-break:break-word',
+        'overflow-wrap:break-word'
       ].join(';');
       document.body.appendChild(clone);
 
       // Wait for ALL images in the clone to load (QR code, logo, etc.)
       const imgs = Array.from(clone.querySelectorAll('img'));
       await Promise.all(imgs.map(img => {
-        if (img.complete && img.naturalWidth > 0) return Promise.resolve();
-        // Force reload if src already set
-        const src = img.src;
-        img.src = '';
-        img.src = src;
+        if (img.complete) return Promise.resolve();
         return new Promise(resolve => {
-          img.onload = resolve;
-          img.onerror = resolve;
-          setTimeout(resolve, 4000); // max 4s wait per image
+          const timeout = setTimeout(finish, 4000);
+          function finish() {
+            clearTimeout(timeout);
+            img.removeEventListener('load', finish);
+            img.removeEventListener('error', finish);
+            resolve();
+          }
+          img.addEventListener('load', finish, { once: true });
+          img.addEventListener('error', finish, { once: true });
         });
       }));
 
+      if (document.fonts?.ready) await document.fonts.ready;
+
       // Extra paint frame
-      await new Promise(r => setTimeout(r, 120));
+      await new Promise(r => setTimeout(r, 180));
       return clone;
     }
 
@@ -3566,14 +3578,12 @@
           allowTaint: false,
           logging: false,
           backgroundColor: '#ffffff',
-          width: 680,
-          windowWidth: 680
+          width: 800,
+          windowWidth: 800
         });
         const imgData = canvas.toDataURL('image/jpeg', 0.97);
-        // A4 page: 210 x 297 mm, margins 10mm each side
+        // Fit and center the pass on one A4 page without distorting its aspect ratio.
         const margin = 10;
-        const usableW = 210 - margin * 2;
-        const usableH = (canvas.height / canvas.width) * usableW;
         // Detect jsPDF from all known globals (standalone UMD, html2pdf bundle, or legacy)
         const jsPDFClass =
           (window.jspdf && window.jspdf.jsPDF) ||
@@ -3581,7 +3591,16 @@
           (typeof jsPDF !== 'undefined' ? jsPDF : null);
         if (!jsPDFClass) throw new Error('jsPDF not available — reload the page');
         const pdf = new jsPDFClass({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-        pdf.addImage(imgData, 'JPEG', margin, margin, usableW, Math.min(usableH, 277));
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const usableW = pageWidth - margin * 2;
+        const usableH = pageHeight - margin * 2;
+        const scale = Math.min(usableW / canvas.width, usableH / canvas.height);
+        const imageWidth = canvas.width * scale;
+        const imageHeight = canvas.height * scale;
+        const x = (pageWidth - imageWidth) / 2;
+        const y = (pageHeight - imageHeight) / 2;
+        pdf.addImage(imgData, 'JPEG', x, y, imageWidth, imageHeight);
         return pdf.output('blob');
       } finally {
         document.body.removeChild(clone);
@@ -3601,8 +3620,8 @@
           allowTaint: false,
           logging: false,
           backgroundColor: '#ffffff',
-          width: 680,
-          windowWidth: 680
+          width: 800,
+          windowWidth: 800
         });
         return await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
       } finally {
@@ -3656,8 +3675,8 @@
       }
     }
 
-    // Share boarding pass (PDF→Image→Text cascade) to WhatsApp from the boarding pass modal
-    async function shareCurrentBoardingPassWhatsApp() {
+    // Share boarding pass text directly to student's WhatsApp from the boarding pass modal
+    function shareCurrentBoardingPassWhatsApp() {
       if (!currentBoardingPassData) return;
       const st = currentBoardingPassData;
       const msg = buildWhatsAppBoardingPassText(st);
@@ -3665,55 +3684,21 @@
       const waUrl = phone.length === 10
         ? `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`
         : `https://wa.me/?text=${encodeURIComponent(msg)}`;
-      const cleanName = (st.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
-      const btn = document.getElementById('btnWaSharePdf');
-      await sharePassToWhatsApp({
-        studentData: st,
-        msg,
-        waUrl,
-        cleanName,
-        receiptCode: st.receiptCode || 'Ticket',
-        btnEl: btn
-      });
+      window.open(waUrl, '_blank');
+      showToast('Opening WhatsApp with boarding pass details...');
     }
 
-    // Admin: share student boarding pass image + text to WhatsApp
-    async function shareStudentBoardingPassWhatsApp(id) {
+    // Admin: share student boarding pass text directly to WhatsApp number
+    function shareStudentBoardingPassWhatsApp(id) {
       const st = payments.find(p => p.id === id);
       if (!st) return;
-
       const msg = buildWhatsAppBoardingPassText(st);
       const phone = normalizePhone(st.phone);
       const waUrl = phone.length === 10
         ? `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`
         : `https://wa.me/?text=${encodeURIComponent(msg)}`;
-      const cleanName = (st.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
-
-      showToast('Preparing boarding pass...');
-
-      // Open the boarding pass modal visibly so all elements (QR, logo) render properly
-      openBoardingPassModal(st);
-
-      // Wait for QR image and logo to fully load
-      const qrEl = document.getElementById('bpQrImage');
-      const logoEl = document.getElementById('bpLogoImg');
-      await Promise.all([qrEl, logoEl].filter(Boolean).map(img => {
-        if (img.complete && img.naturalWidth > 0) return Promise.resolve();
-        return new Promise(resolve => {
-          img.onload = resolve;
-          img.onerror = resolve;
-          setTimeout(resolve, 4000);
-        });
-      }));
-
-      await sharePassToWhatsApp({
-        studentData: st,
-        msg,
-        waUrl,
-        cleanName,
-        receiptCode: st.receiptCode || 'Ticket',
-        btnEl: null
-      });
+      window.open(waUrl, '_blank');
+      showToast('Opening WhatsApp with boarding pass details...');
     }
 
     function buildWhatsAppPaymentVerificationText(st) {
@@ -3733,92 +3718,10 @@
         `🏦 *Paid Via:* ${st.paymentApp || 'UPI'}\n` +
         `🔑 *Access Code:* ${st.accessCode || 'Pending'}\n` +
         `✅ *Status:* Payment verified by the trip administrator.\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━━\n` +
-        `The attached image is your verified payment receipt.`;
+        `━━━━━━━━━━━━━━━━━━━━━━━`;
     }
 
-    function createVerifiedPaymentImageBlob(st) {
-      const canvas = document.createElement('canvas');
-      canvas.width = 1000;
-      canvas.height = 760;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) throw new Error('Canvas is unavailable');
 
-      const totalFee = Number(tripConfig.tripAmount) || 1500;
-      const paid = Number(st.amountPaid) || 0;
-      const due = Math.max(0, totalFee - paid);
-      const left = 64;
-      const right = canvas.width - 64;
-
-      ctx.fillStyle = '#f1f5f9';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#047857';
-      ctx.fillRect(0, 0, canvas.width, 212);
-
-      ctx.fillStyle = '#d1fae5';
-      ctx.font = 'bold 24px Arial, sans-serif';
-      ctx.fillText('TRIPPAY  /  PAYMENT RECEIPT', left, 58);
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 48px Arial, sans-serif';
-      ctx.fillText('PAYMENT VERIFIED', left, 126);
-      ctx.font = '24px Arial, sans-serif';
-      ctx.fillText(tripConfig.tripTitle || 'Trip Payment', left, 172, canvas.width - 128);
-
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.roundRect(48, 240, canvas.width - 96, 460, 28);
-      ctx.fill();
-
-      ctx.fillStyle = '#047857';
-      ctx.beginPath();
-      ctx.arc(right - 78, 296, 34, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 7;
-      ctx.beginPath();
-      ctx.moveTo(right - 94, 296);
-      ctx.lineTo(right - 82, 308);
-      ctx.lineTo(right - 60, 282);
-      ctx.stroke();
-
-      ctx.fillStyle = '#64748b';
-      ctx.font = 'bold 20px Arial, sans-serif';
-      ctx.fillText('RECEIPT NUMBER', left, 294);
-      ctx.fillStyle = '#0f172a';
-      ctx.font = 'bold 28px Arial, sans-serif';
-      ctx.fillText(String(st.receiptCode || 'TRP'), left, 332);
-
-      const rows = [
-        ['STUDENT', st.studentName || '-'],
-        ['DEPARTMENT', st.department || '-'],
-        ['MOBILE', `+91 ${normalizePhone(st.phone)}`],
-        ['PAYMENT METHOD', st.paymentApp || 'UPI'],
-        ['AMOUNT PAID', formatINR(paid)],
-        ['BALANCE DUE', due > 0 ? formatINR(due) : '₹0 - FULL FEE PAID'],
-        ['ACCESS CODE', st.accessCode || 'Pending']
-      ];
-      let y = 388;
-      rows.forEach(([label, value]) => {
-        ctx.fillStyle = '#64748b';
-        ctx.font = 'bold 16px Arial, sans-serif';
-        ctx.fillText(label, left, y);
-        ctx.fillStyle = label === 'AMOUNT PAID' ? '#047857' : '#0f172a';
-        ctx.font = 'bold 22px Arial, sans-serif';
-        ctx.fillText(String(value), 350, y, right - 350);
-        y += 42;
-      });
-
-      ctx.fillStyle = '#64748b';
-      ctx.font = '16px Arial, sans-serif';
-      ctx.fillText(`Verified ${new Date().toLocaleString('en-IN')}`, left, 674);
-
-      return new Promise((resolve, reject) => {
-        canvas.toBlob(blob => {
-          if (blob) resolve(blob);
-          else reject(new Error('Could not generate payment receipt image'));
-        }, 'image/png');
-      });
-    }
 
     async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
       const payment = payments.find(p => p.id === id);
@@ -3827,44 +3730,13 @@
         return;
       }
       const st = { ...payment, ...verificationUpdates };
-
       const msg = buildWhatsAppPaymentVerificationText(st);
       const phone = normalizePhone(st.phone);
       const waUrl = phone.length === 10
         ? `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`
         : `https://wa.me/?text=${encodeURIComponent(msg)}`;
-      const cleanName = (st.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
-      const fileName = `VerifiedPayment_${cleanName}_${st.receiptCode || 'Receipt'}.png`;
-
-      try {
-        const blob = await createVerifiedPaymentImageBlob(st);
-        if (navigator.share && navigator.canShare) {
-          const file = new File([blob], fileName, { type: 'image/png' });
-          if (navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              files: [file],
-              title: `Verified Payment - ${st.studentName}`,
-              text: msg
-            });
-            showToast('Verified payment receipt shared successfully!');
-            return;
-          }
-        }
-
-        const imageUrl = URL.createObjectURL(blob);
-        const download = document.createElement('a');
-        download.href = imageUrl;
-        download.download = fileName;
-        download.click();
-        setTimeout(() => URL.revokeObjectURL(imageUrl), 8000);
-        setTimeout(() => window.open(waUrl, '_blank'), 700);
-        showToast('Verified payment receipt saved. Attach the image in WhatsApp.');
-      } catch (err) {
-        if (err.name === 'AbortError') return;
-        console.error('Verified payment receipt sharing failed:', err);
-        window.open(waUrl, '_blank');
-        showToast('Could not generate receipt image. WhatsApp opened with the verification message.', 'error');
-      }
+      window.open(waUrl, '_blank');
+      showToast('Sending verification message to student on WhatsApp...');
     }
 
     // =========================================================================
@@ -3885,95 +3757,28 @@
           return;
         }
 
-        const clone = clonePassForCapture();
-        if (!clone) {
+        const blob = await capturePassAsImageBlob();
+        if (!blob) {
           showToast('Could not capture pass. Try PDF download instead.', 'error');
           return;
         }
-        const canvas = await html2canvas(clone, {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff',
-          width: 680,
-          windowWidth: 680
-        });
-        document.body.removeChild(clone);
 
         const st = currentBoardingPassData;
-        const totalFee = Number(tripConfig.tripAmount) || 1500;
-        const paid = Number(st.amountPaid) || 0;
-        const due = Math.max(0, totalFee - paid);
-        const verificationMsg =
-          `🎫 *OFFICIAL TRIP BOARDING PASS*\n` +
-          `*${tripConfig.tripTitle}*\n` +
-          `━━━━━━━━━━━━━━━━━━━━━━━\n` +
-          `👤 *Passenger:* ${st.studentName}\n` +
-          `🎓 *Dept:* ${st.department} | 📱 +91 ${normalizePhone(st.phone)}\n` +
-          `🧾 *Ticket:* ${st.receiptCode}\n` +
-          `🔑 *Access Code:* ${st.accessCode || 'Pending Verification'}\n` +
-          `📍 *Route:* College Campus ➔ ${tripConfig.destination}\n` +
-          `📅 *Date:* ${tripConfig.tripDate}\n` +
-          `━━━━━━━━━━━━━━━━━━━━━━━\n` +
-          `💰 *Paid:* ${formatINR(paid)} / ${formatINR(totalFee)}${due > 0 ? ' | ⚠️ Due: ' + formatINR(due) : ' ✅ Full Paid'}\n` +
-          `✅ *Status:* ${st.status === 'Verified' ? 'VERIFIED PASS ✅' : 'Pending Verification ⏳'}\n` +
-          `━━━━━━━━━━━━━━━━━━━━━━━\n` +
-          `📸 Boarding pass image attached below. Present at bus gate for QR scan check-in.`;
-
-        canvas.toBlob(async (blob) => {
-          if (!blob) {
-            showToast('Failed to generate image. Please try PDF download instead.', 'error');
-            return;
-          }
-
-          const cleanName = (st.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
-          const fileName = `BoardingPass_${cleanName}_${st.receiptCode || 'Ticket'}.png`;
-
-          // Try Web Share API (mobile native share sheet) first
-          if (navigator.share && navigator.canShare) {
-            const file = new File([blob], fileName, { type: 'image/png' });
-            try {
-              if (navigator.canShare({ files: [file] })) {
-                await navigator.share({
-                  files: [file],
-                  title: `Boarding Pass - ${st.studentName}`,
-                  text: verificationMsg
-                });
-                showToast('Boarding pass shared successfully!');
-                return;
-              }
-            } catch (shareErr) {
-              if (shareErr.name !== 'AbortError') {
-                console.warn('Native share failed, falling back:', shareErr);
-              } else {
-                return; // User cancelled
-              }
-            }
-          }
-
-          // Fallback: download image + open WhatsApp with verification text
-          const imgUrl = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = imgUrl;
-          a.download = fileName;
-          a.click();
-          setTimeout(() => URL.revokeObjectURL(imgUrl), 5000);
-
-          const phone = normalizePhone(st.phone);
-          const waUrl = phone.length === 10
-            ? `https://wa.me/91${phone}?text=${encodeURIComponent(verificationMsg)}`
-            : `https://wa.me/?text=${encodeURIComponent(verificationMsg)}`;
-
-          setTimeout(() => {
-            window.open(waUrl, '_blank');
-          }, 800);
-
-          showToast('Pass image saved! Opening WhatsApp with verification message...');
-        }, 'image/png');
+        const cleanName = (st.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
+        const fileName = `BoardingPass_${cleanName}_${st.receiptCode || 'Ticket'}.png`;
+        const imageUrl = URL.createObjectURL(blob);
+        const download = document.createElement('a');
+        download.href = imageUrl;
+        download.download = fileName;
+        document.body.appendChild(download);
+        download.click();
+        download.remove();
+        setTimeout(() => URL.revokeObjectURL(imageUrl), 8000);
+        showToast('Boarding pass image saved!');
 
       } catch (err) {
         console.error('sharePassAsImage error:', err);
-        showToast('Could not capture pass image. Try PDF download instead.', 'error');
+        showToast('Could not save pass image. Please try again or download the PDF.', 'error');
       } finally {
         if (btn) {
           btn.disabled = false;
