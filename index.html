@@ -400,65 +400,35 @@
             </button>
           </div>
 
-          <div class="space-y-2.5">
-            <div class="flex items-center justify-between text-xs font-extrabold text-slate-500 mb-1">
-              <span>Choose Payment App</span>
-              <span class="text-[10px] text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full font-bold">3 Payment Options</span>
-            </div>
-
-            <!-- Option 1: Google Pay (Default) -->
+          <div class="space-y-3">
+            <!-- Sole Primary Universal UPI Button -->
             <button
               type="button"
-              onclick="chooseAndOpenUpiApp('Google Pay')"
-              class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-md flex items-center justify-between transition active:scale-[0.98]"
+              onclick="chooseAndOpenUpiApp()"
+              class="w-full py-4 px-4.5 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-sm sm:text-base shadow-lg hover:shadow-xl flex items-center justify-between transition-all active:scale-[0.98] group"
             >
-              <div class="flex items-center gap-2.5">
-                <span class="w-7 h-7 rounded-xl bg-white text-blue-600 font-display font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm">G</span>
+              <div class="flex items-center gap-3">
+                <span class="w-10 h-10 rounded-xl bg-white/20 text-white flex items-center justify-center shrink-0 shadow-inner">
+                  <i data-lucide="smartphone" class="w-5 h-5 text-white"></i>
+                </span>
                 <div class="text-left">
                   <div class="flex items-center gap-1.5">
-                    <span class="font-bold text-sm">Google Pay</span>
-                    <span class="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-white/20 text-white font-extrabold">Default</span>
+                    <span class="font-display font-extrabold text-sm sm:text-base">Pay via Any UPI App</span>
+                    <span class="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-white/20 text-white font-extrabold">Universal</span>
                   </div>
-                  <p id="gpayDefaultBtnText" class="text-[11px] text-blue-100 font-medium">Pay ₹1,500 with Google Pay</p>
+                  <p class="text-[11px] text-emerald-100 font-medium">Google Pay • PhonePe • Paytm • BHIM • Cred</p>
                 </div>
               </div>
-              <div class="flex items-center gap-1 text-xs font-semibold text-white/90">
-                <span>Pay</span>
+              <div class="flex items-center gap-1.5 bg-white/20 px-3 py-1.5 rounded-xl text-xs font-extrabold shrink-0 group-hover:bg-white group-hover:text-emerald-800 transition">
+                <span id="gpayDefaultBtnText">Pay ₹1,500</span>
                 <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
               </div>
             </button>
 
-            <!-- Option 2 & 3: PhonePe and Paytm respectively -->
-            <div class="grid grid-cols-2 gap-2.5">
-              <button
-                type="button"
-                onclick="chooseAndOpenUpiApp('PhonePe')"
-                class="p-2.5 rounded-2xl border-2 border-slate-200 bg-white hover:border-purple-500 hover:bg-purple-50/40 flex items-center justify-between transition active:scale-95 shadow-sm group"
-              >
-                <div class="flex items-center gap-2">
-                  <span class="w-7 h-7 rounded-xl bg-purple-600 text-white font-display font-extrabold text-xs flex items-center justify-center shrink-0">Pe</span>
-                  <div class="text-left">
-                    <span class="text-xs font-extrabold text-slate-900 group-hover:text-purple-700 block">PhonePe</span>
-                    <span class="text-[10px] text-slate-400 block font-semibold">Option 2</span>
-                  </div>
-                </div>
-                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-slate-400 group-hover:text-purple-600"></i>
-              </button>
-              <button
-                type="button"
-                onclick="chooseAndOpenUpiApp('Paytm')"
-                class="p-2.5 rounded-2xl border-2 border-slate-200 bg-white hover:border-sky-500 hover:bg-sky-50/40 flex items-center justify-between transition active:scale-95 shadow-sm group"
-              >
-                <div class="flex items-center gap-2">
-                  <span class="w-7 h-7 rounded-xl bg-sky-500 text-white font-display font-extrabold text-xs flex items-center justify-center shrink-0">P</span>
-                  <div class="text-left">
-                    <span class="text-xs font-extrabold text-slate-900 group-hover:text-sky-700 block">Paytm</span>
-                    <span class="text-[10px] text-slate-400 block font-semibold">Option 3</span>
-                  </div>
-                </div>
-                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-slate-400 group-hover:text-sky-600"></i>
-              </button>
-            </div>
+            <p class="text-center text-[11px] font-semibold text-slate-400 flex items-center justify-center gap-1">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span>Official 0% Fee NPCI Universal Link • Direct Bank Transfer</span>
+            </p>
           </div>
         </div>
 
@@ -4486,20 +4456,13 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
       }
     }
 
-    function chooseAndOpenUpiApp(appName = 'Google Pay') {
+    function chooseAndOpenUpiApp(appName = 'Universal') {
       const amount = getCurrentPayableAmount();
 
       if (!Number.isFinite(amount) || amount <= 0) {
         showToast('Please enter a valid payment amount.', 'error');
         return;
       }
-
-      // Synchronize input dropdowns to the chosen UPI app
-      const inpApp = document.getElementById('inpApp');
-      if (inpApp) inpApp.value = appName;
-      const balApp = document.getElementById('balAppInput');
-      if (balApp) balApp.value = appName;
-      selectedUpiApp = appName;
 
       const upiId = (tripConfig.upiId || 'mohdshemeemkp@oksbi').trim();
       const receiverName = (
@@ -4516,6 +4479,7 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
         note = `Trip ${name.slice(0, 16)}`;
       }
 
+      // Standard Universal NPCI UPI Parameters
       const params = new URLSearchParams({
         pa: upiId,
         pn: receiverName,
@@ -4524,41 +4488,18 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
         tn: note
       });
 
-      const queryStr = params.toString();
+      const universalUpiUrl = `upi://pay?${params.toString()}`;
 
-      const isAndroid = /Android/i.test(navigator.userAgent || '');
-      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent || '');
-      const isMobile = isAndroid || isIOS;
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
 
       if (!isMobile) {
         copyUpiId();
-        showToast(`Pay using ${appName}: ${upiId}`);
+        showToast(`Pay from your mobile using any UPI app to: ${upiId}`);
         return;
       }
 
-      let paymentUrl = `upi://pay?${queryStr}`;
-
-      if (isAndroid) {
-        // Direct Android Intent with package lock to prevent WhatsApp Pay from intercepting
-        if (appName === 'Google Pay') {
-          paymentUrl = `intent://pay?${queryStr}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end`;
-        } else if (appName === 'PhonePe') {
-          paymentUrl = `intent://pay?${queryStr}#Intent;scheme=upi;package=com.phonepe.app;end`;
-        } else if (appName === 'Paytm') {
-          paymentUrl = `intent://pay?${queryStr}#Intent;scheme=upi;package=net.one97.paytm;end`;
-        }
-      } else if (isIOS) {
-        if (appName === 'Google Pay') {
-          paymentUrl = `gpay://upi/pay?${queryStr}`;
-        } else if (appName === 'PhonePe') {
-          paymentUrl = `phonepe://pay?${queryStr}`;
-        } else if (appName === 'Paytm') {
-          paymentUrl = `paytmmp://pay?${queryStr}`;
-        }
-      }
-
-      showToast(`Opening ${appName}...`);
-      window.location.href = paymentUrl;
+      showToast('Opening UPI apps on your phone...');
+      window.location.href = universalUpiUrl;
     }
 
     async function handleStudentFormSubmit(e) {
