@@ -525,7 +525,7 @@
                 <label class="block text-xs font-bold text-slate-700 mb-1">Amount Paying Now (₹) *</label>
                 <input
                   type="number"
-                  id="inpAmount"
+                  id="inpAmount" onkeyup="updateDynamicUpiLinks()" onchange="updateDynamicUpiLinks()"
                   min="1"
                   required
                   inputmode="numeric"
@@ -628,7 +628,7 @@
                   <label class="block text-xs font-bold text-slate-700 mb-1">Balance Paying Now (₹) *</label>
                   <input
                     type="number"
-                    id="balAmountInput"
+                    id="balAmountInput" onkeyup="updateDynamicUpiLinks()" onchange="updateDynamicUpiLinks()"
                     min="1"
                     required
                     inputmode="numeric"
@@ -4398,9 +4398,10 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
     }
 
     function getCurrentPayableAmount() {
-      if (currentPaymentMode === 'balance' && selectedBalanceStudent) {
+      if (currentPaymentMode === 'balance') {
         const balInp = Number(document.getElementById('balAmountInput')?.value);
-        return balInp > 0 ? balInp : getBalanceDue(selectedBalanceStudent);
+        if (balInp > 0) return balInp;
+        if (selectedBalanceStudent) return getBalanceDue(selectedBalanceStudent);
       }
       const raw = Number(document.getElementById('inpAmount')?.value);
       return raw > 0 ? raw : (Number(tripConfig.tripAmount) || 1500);
@@ -4436,49 +4437,65 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
       if (gpayBtnText) gpayBtnText.textContent = `Pay ${formatINR(currentAmount)} with Google Pay`;
 
       if (qrImg) {
-        const cleanPa = encodeURIComponent((tripConfig.upiId || 'mohdshemeemkp@oksbi').trim());
-        const cleanPn = encodeURIComponent((tripConfig.receiverName || 'Mohd Shemeem KP').trim());
+        const upiId = (tripConfig.upiId || 'mohdshemeemkp@oksbi').trim();
+        const receiverName = (tripConfig.receiverName || 'Mohd Shemeem KP').trim();
         const cleanAm = Number(currentAmount).toFixed(2);
-        const cleanTn = encodeURIComponent(note);
-        const upiUri = `upi://pay?pa=${cleanPa}&pn=${cleanPn}&am=${cleanAm}&cu=INR&tn=${cleanTn}`;
+
+        // Standard NPCI UPI URI Query parameters
+        const params = new URLSearchParams({
+          pa: upiId,
+          pn: receiverName,
+          am: cleanAm,
+          cu: 'INR',
+          tn: note
+        });
+
+        const upiUri = `upi://pay?${params.toString()}`;
         qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=${encodeURIComponent(upiUri)}`;
       }
     }
 
     function chooseAndOpenUpiApp(appName = 'Google Pay') {
-      const currentAmount = getCurrentPayableAmount();
-      let note = 'Trip Payment';
-      if (currentPaymentMode === 'balance' && selectedBalanceStudent) {
-        note = `Bal ${selectedBalanceStudent.studentName.slice(0, 15)}`;
-      } else {
-        const nameVal = document.getElementById('inpName')?.value.trim() || 'Student';
-        note = `Trip ${nameVal.slice(0, 16)}`;
-      }
+      const amount = getCurrentPayableAmount();
 
-      const cleanPa = (tripConfig.upiId || 'mohdshemeemkp@oksbi').trim();
-      const cleanPn = encodeURIComponent((tripConfig.receiverName || 'Mohd Shemeem KP').trim());
-      const cleanAm = Number(currentAmount).toFixed(2);
-      const cleanTn = encodeURIComponent(note);
-      const standardUpi = `pa=${cleanPa}&pn=${cleanPn}&am=${cleanAm}&cu=INR&tn=${cleanTn}`;
-
-      let targetUrl = `upi://pay?${standardUpi}`;
-      if (appName === 'Google Pay') {
-        targetUrl = `tez://upi/pay?${standardUpi}`;
-      } else if (appName === 'PhonePe') {
-        targetUrl = `phonepe://pay?${standardUpi}`;
-      } else if (appName === 'Paytm') {
-        targetUrl = `paytmmp://pay?${standardUpi}`;
-      }
-
-      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
-      if (!isMobile) {
-        copyUpiId();
-        showToast(`Scan the QR code on mobile or pay to: ${cleanPa}`);
+      if (!Number.isFinite(amount) || amount <= 0) {
+        showToast('Please enter a valid payment amount.', 'error');
         return;
       }
 
-      showToast(`Opening ${appName}...`);
-      window.location.href = targetUrl;
+      const upiId = (tripConfig.upiId || 'mohdshemeemkp@oksbi').trim();
+      const receiverName = (
+        tripConfig.receiverName || 'Mohd Shemeem KP'
+      ).trim();
+
+      let note = 'Trip Payment';
+
+      if (currentPaymentMode === 'balance' && selectedBalanceStudent) {
+        note = `Bal ${selectedBalanceStudent.studentName.slice(0, 15)}`;
+      } else {
+        const name =
+          document.getElementById('inpName')?.value.trim() || 'Student';
+        note = `Trip ${name.slice(0, 16)}`;
+      }
+
+      const params = new URLSearchParams({
+        pa: upiId,
+        pn: receiverName,
+        am: amount.toFixed(2),
+        cu: 'INR',
+        tn: note
+      });
+
+      const paymentUrl = `upi://pay?${params.toString()}`;
+
+      if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        copyUpiId();
+        showToast(`Pay using your phone: ${upiId}`);
+        return;
+      }
+
+      showToast(`Opening UPI payment for ${appName}...`);
+      window.location.href = paymentUrl;
     }
 
     async function handleStudentFormSubmit(e) {
