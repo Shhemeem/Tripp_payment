@@ -358,76 +358,98 @@
 
       <!-- Payment & Form Split Layout -->
       <div id="paymentFormGrid" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <!-- Step 1: Scan & UPI Launch -->
-        <div class="lg:col-span-5 expressive-card border border-slate-200/90 rounded-3xl p-5 sm:p-6">
-          <div class="flex items-center justify-between mb-3.5">
-            <span class="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-200">
-              <i data-lucide="zap" class="w-3.5 h-3.5"></i> Step 1: Direct UPI Payment
+        <!-- Step 1: Scan & UPI Launch (Responsive & GPay Default) -->
+        <div class="lg:col-span-5 expressive-card border border-slate-200/90 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
+          <div class="flex items-center justify-between gap-2 mb-3 sm:mb-4">
+            <span class="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-100/90 px-3 py-1 rounded-full border border-emerald-200">
+              <i data-lucide="zap" class="w-3.5 h-3.5 text-emerald-700"></i> Step 1: Payment Portal
             </span>
-            <span class="text-[11px] font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
-              GPay Default
+            <span class="text-[11px] font-extrabold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
+              Google Pay Default
             </span>
           </div>
 
           <!-- Direct Payment Portal Card (Using UPI ID, No QR image required) -->
-          <div class="bg-gradient-to-br from-emerald-50 via-teal-50/50 to-white rounded-3xl p-5 border-2 border-emerald-200 text-center mb-4 shadow-sm relative overflow-hidden">
-            <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center mx-auto mb-2 shadow-md">
-              <i data-lucide="shield-check" class="w-6 h-6"></i>
+          <div class="bg-gradient-to-br from-emerald-50 via-teal-50/40 to-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border-2 border-emerald-200 text-center mb-3.5 shadow-xs relative overflow-hidden">
+            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center mx-auto mb-2 shadow-sm">
+              <i data-lucide="shield-check" class="w-5 h-5 sm:w-6 sm:h-6"></i>
             </div>
-            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Official Trip Receiver</p>
-            <p id="qrReceiverName" class="font-display text-lg sm:text-xl font-extrabold text-slate-900 mb-1">Mohd Shemeem KP</p>
+            <p class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400">Official Trip Receiver</p>
+            <p id="qrReceiverName" class="font-display text-base sm:text-xl font-extrabold text-slate-900 mb-1 truncate">Mohd Shemeem KP</p>
             
-            <div class="inline-flex items-center gap-2 bg-emerald-100/90 text-emerald-900 px-4 py-1.5 rounded-full text-xs font-bold mt-1">
+            <div class="inline-flex items-center gap-1.5 bg-emerald-100/90 text-emerald-900 px-3.5 py-1 rounded-full text-xs font-bold mt-1">
               <span id="qrModeLabel">Payable Now:</span>
-              <span id="qrAmountBadge" class="text-sm font-extrabold text-emerald-700">₹1,500</span>
+              <span id="qrAmountBadge" class="text-xs sm:text-sm font-extrabold text-emerald-700">₹1,500</span>
             </div>
 
             <!-- Hidden img element for script compatibility -->
             <img id="upiQrImage" class="hidden" src="" alt="UPI QR" />
           </div>
-          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mb-4 flex items-center justify-between gap-2">
-            <div class="min-w-0">
+
+          <!-- Receiver UPI ID with Copy Button -->
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-2.5 sm:p-3 mb-3.5 flex items-center justify-between gap-2">
+            <div class="min-w-0 flex-1">
               <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Receiver UPI ID</p>
-              <p id="cardUpiIdText" class="font-mono text-xs sm:text-sm font-bold text-slate-900 truncate">mohdshemeemkp@oksbi</p>
+              <p id="cardUpiIdText" class="font-mono text-xs sm:text-sm font-extrabold text-slate-900 truncate">mohdshemeemkp@oksbi</p>
             </div>
             <button
               type="button"
               onclick="copyUpiId()"
-              class="shrink-0 flex items-center gap-1 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition"
+              class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-bold shadow-sm transition whitespace-nowrap"
             >
               <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-              <span>Copy</span>
+              <span>Copy ID</span>
             </button>
           </div>
 
-          <div class="space-y-3">
-            <!-- Sole Primary Universal UPI Button -->
+          <!-- Payment Action Buttons: Google Pay (Default) + Any Other UPI App -->
+          <div class="space-y-2.5">
+            <!-- 1. Google Pay (Default Primary) -->
             <button
               type="button"
-              onclick="chooseAndOpenUpiApp()"
-              class="w-full py-4 px-4.5 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-sm sm:text-base shadow-lg hover:shadow-xl flex items-center justify-between transition-all active:scale-[0.98] group"
+              onclick="chooseAndOpenUpiApp('Google Pay')"
+              class="w-full p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold shadow-md hover:shadow-lg flex items-center justify-between transition-all active:scale-[0.98] group"
             >
-              <div class="flex items-center gap-3">
-                <span class="w-10 h-10 rounded-xl bg-white/20 text-white flex items-center justify-center shrink-0 shadow-inner">
-                  <i data-lucide="smartphone" class="w-5 h-5 text-white"></i>
-                </span>
-                <div class="text-left">
+              <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <span class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white text-blue-600 font-display font-extrabold text-xs sm:text-sm flex items-center justify-center shrink-0 shadow-sm">G</span>
+                <div class="text-left min-w-0">
                   <div class="flex items-center gap-1.5">
-                    <span class="font-display font-extrabold text-sm sm:text-base">Pay via Any UPI App</span>
-                    <span class="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-white/20 text-white font-extrabold">Universal</span>
+                    <span class="font-display font-extrabold text-xs sm:text-sm truncate">Pay with Google Pay</span>
+                    <span class="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-white/20 text-white font-bold shrink-0">Default</span>
                   </div>
-                  <p class="text-[11px] text-emerald-100 font-medium">Google Pay • PhonePe • Paytm • BHIM • Cred</p>
+                  <p class="text-[11px] text-blue-100 font-medium truncate">Opens directly in GPay app</p>
                 </div>
               </div>
-              <div class="flex items-center gap-1.5 bg-white/20 px-3 py-1.5 rounded-xl text-xs font-extrabold shrink-0 group-hover:bg-white group-hover:text-emerald-800 transition">
+              <div class="flex items-center gap-1 bg-white/20 px-2.5 py-1 rounded-xl text-xs font-bold shrink-0 group-hover:bg-white group-hover:text-blue-700 transition whitespace-nowrap ml-2">
                 <span id="gpayDefaultBtnText">Pay ₹1,500</span>
-                <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
               </div>
             </button>
 
-            <p class="text-center text-[11px] font-semibold text-slate-400 flex items-center justify-center gap-1">
-              <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
-              <span>Official 0% Fee NPCI Universal Link • Direct Bank Transfer</span>
+            <!-- 2. Universal / Other UPI Apps (PhonePe, Paytm, BHIM, Cred) -->
+            <button
+              type="button"
+              onclick="chooseAndOpenUpiApp('Universal')"
+              class="w-full p-2.5 sm:p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-emerald-400 hover:bg-emerald-50/40 text-slate-700 hover:text-emerald-800 flex items-center justify-between transition-all active:scale-[0.98] shadow-xs group"
+            >
+              <div class="flex items-center gap-2.5 min-w-0">
+                <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                  <i data-lucide="smartphone" class="w-4 h-4"></i>
+                </span>
+                <div class="text-left min-w-0">
+                  <span class="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-emerald-900 block truncate">Pay via Other UPI Apps</span>
+                  <span class="text-[10px] text-slate-400 block font-medium truncate">PhonePe • Paytm • BHIM • Cred</span>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-emerald-600 group-hover:text-emerald-700 flex items-center gap-0.5 shrink-0 whitespace-nowrap ml-2">
+                <span>All Apps</span>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+              </span>
+            </button>
+
+            <p class="text-center text-[10px] sm:text-[11px] font-semibold text-slate-400 flex items-center justify-center gap-1 pt-0.5">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600 shrink-0"></i>
+              <span>Official 0% Fee NPCI UPI • Direct Bank Transfer</span>
             </p>
           </div>
         </div>
@@ -4456,13 +4478,20 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
       }
     }
 
-    function chooseAndOpenUpiApp(appName = 'Universal') {
+    function chooseAndOpenUpiApp(appName = 'Google Pay') {
       const amount = getCurrentPayableAmount();
 
       if (!Number.isFinite(amount) || amount <= 0) {
         showToast('Please enter a valid payment amount.', 'error');
         return;
       }
+
+      // Synchronize input dropdowns
+      const inpApp = document.getElementById('inpApp');
+      if (inpApp && appName !== 'Universal') inpApp.value = appName;
+      const balApp = document.getElementById('balAppInput');
+      if (balApp && appName !== 'Universal') balApp.value = appName;
+      selectedUpiApp = appName;
 
       const upiId = (tripConfig.upiId || 'mohdshemeemkp@oksbi').trim();
       const receiverName = (
@@ -4488,18 +4517,35 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
         tn: note
       });
 
-      const universalUpiUrl = `upi://pay?${params.toString()}`;
+      const queryStr = params.toString();
 
-      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+      const isAndroid = /Android/i.test(navigator.userAgent || '');
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+      const isMobile = isAndroid || isIOS;
 
       if (!isMobile) {
         copyUpiId();
-        showToast(`Pay from your mobile using any UPI app to: ${upiId}`);
+        showToast(`Pay from your mobile to: ${upiId}`);
         return;
       }
 
-      showToast('Opening UPI apps on your phone...');
-      window.location.href = universalUpiUrl;
+      let paymentUrl = `upi://pay?${queryStr}`;
+
+      if (appName === 'Google Pay') {
+        if (isAndroid) {
+          // Direct Intent to Google Pay package
+          paymentUrl = `intent://pay?${queryStr}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end`;
+        } else if (isIOS) {
+          paymentUrl = `gpay://upi/pay?${queryStr}`;
+        }
+        showToast('Opening Google Pay...');
+      } else {
+        // Universal link opens the phone's native app drawer for all other apps
+        paymentUrl = `upi://pay?${queryStr}`;
+        showToast('Opening UPI apps on your phone...');
+      }
+
+      window.location.href = paymentUrl;
     }
 
     async function handleStudentFormSubmit(e) {
