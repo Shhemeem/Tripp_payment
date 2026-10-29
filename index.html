@@ -4445,40 +4445,50 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
       }
     }
 
-    function chooseAndOpenUpiApp(appName = 'Google Pay') {
-      const currentAmount = getCurrentPayableAmount();
-      let note = 'Trip Payment';
-      if (currentPaymentMode === 'balance' && selectedBalanceStudent) {
-        note = `Bal ${selectedBalanceStudent.studentName.slice(0, 15)}`;
-      } else {
-        const nameVal = document.getElementById('inpName')?.value.trim() || 'Student';
-        note = `Trip ${nameVal.slice(0, 16)}`;
-      }
-
-      const cleanPa = (tripConfig.upiId || 'mohdshemeemkp@oksbi').trim();
-      const cleanPn = encodeURIComponent((tripConfig.receiverName || 'Mohd Shemeem KP').trim());
-      const cleanAm = Number(currentAmount).toFixed(2);
-      const cleanTn = encodeURIComponent(note);
-      const standardUpi = `pa=${cleanPa}&pn=${cleanPn}&am=${cleanAm}&cu=INR&tn=${cleanTn}`;
-
-      let targetUrl = `upi://pay?${standardUpi}`;
-      if (appName === 'Google Pay') {
-        targetUrl = `tez://upi/pay?${standardUpi}`;
-      } else if (appName === 'PhonePe') {
-        targetUrl = `phonepe://pay?${standardUpi}`;
-      } else if (appName === 'Paytm') {
-        targetUrl = `paytmmp://pay?${standardUpi}`;
-      }
-
-      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
-      if (!isMobile) {
-        copyUpiId();
-        showToast(`Scan the QR code on mobile or pay to: ${cleanPa}`);
+    function chooseAndOpenUpiApp(appName = 'Default') {
+      const currentAmount = Number(getCurrentPayableAmount()) || 0;
+      if (currentAmount <= 0) {
+        showToast('Please enter a valid amount', 'error');
         return;
       }
 
-      showToast(`Opening ${appName}...`);
-      window.location.href = targetUrl;
+      // Sanitize notes: alphanumeric only, max 30 chars
+      let rawNote = 'Trip Fee';
+      if (currentPaymentMode === 'balance' && selectedBalanceStudent) {
+        rawNote = `Bal ${selectedBalanceStudent.studentName || ''}`;
+      } else {
+        const nameVal = document.getElementById('inpName')?.value.trim() || 'Student';
+        rawNote = `Trip ${nameVal}`;
+      }
+      const cleanNote = rawNote.replace(/[^a-zA-Z0-9 ]/g, '').slice(0, 30);
+
+      const cleanPa = (tripConfig.upiId || 'mohdshemeemkp@oksbi').trim();
+      const cleanPn = (tripConfig.receiverName || 'Mohd Shemeem KP').trim();
+      const cleanAm = currentAmount.toFixed(2);
+
+      // Standard NPCI UPI URI Query parameters
+      const params = new URLSearchParams({
+        pa: cleanPa,
+        pn: cleanPn,
+        am: cleanAm,
+        cu: 'INR',
+        tn: cleanNote
+      });
+
+      const standardUpiUrl = `upi://pay?${params.toString()}`;
+
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+
+      if (!isMobile) {
+        copyUpiId();
+        showToast(`Scan the QR code on mobile or pay manually to: ${cleanPa}`);
+        return;
+      }
+
+      showToast(`Redirecting to UPI payment...`);
+
+      // Direct standard deep link handles intent routing reliably across Android & iOS
+      window.location.href = standardUpiUrl;
     }
 
     async function handleStudentFormSubmit(e) {
