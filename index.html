@@ -329,18 +329,7 @@
         <!-- Per Student Fee Card -->
         <div class="flex items-center justify-between lg:justify-start gap-4 bg-white border-2 border-emerald-200 px-4 sm:px-5 py-3 rounded-2xl shadow-sm">
           <div>
-            <div class="flex items-center justify-between gap-2">
-              <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Total Trip Fee</p>
-              <button
-                type="button"
-                onclick="promptQuickUpdateTripAmount()"
-                title="Update Trip Fee in Cloud"
-                class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 hover:text-emerald-800 hover:underline cursor-pointer bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200"
-              >
-                <i data-lucide="edit-3" class="w-3 h-3"></i>
-                <span>Edit Fee</span>
-              </button>
-            </div>
+            <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Total Trip Fee</p>
             <p class="font-display text-2xl font-extrabold text-emerald-600">
               <span id="heroTripAmount">₹1,500</span>
               <span class="text-xs font-medium text-slate-400">/ student</span>
@@ -536,7 +525,7 @@
                 <label class="block text-xs font-bold text-slate-700 mb-1">Amount Paying Now (₹) *</label>
                 <input
                   type="number"
-                  id="inpAmount" onkeyup="this.dataset.userEdited='true'; updateDynamicUpiLinks()" onchange="this.dataset.userEdited='true'; updateDynamicUpiLinks()"
+                  id="inpAmount" onkeyup="updateDynamicUpiLinks()" onchange="updateDynamicUpiLinks()"
                   min="1"
                   required
                   inputmode="numeric"
@@ -3134,15 +3123,10 @@
       unsubConfig = onSnapshot(configDocRef, (snap) => {
         if (snap.exists()) {
           const d = snap.data();
-          if (d.tripAmount !== undefined) d.tripAmount = Number(d.tripAmount) || 1500;
-          if (d.advanceAmount !== undefined) d.advanceAmount = Number(d.advanceAmount) || 500;
           tripConfig = { ...tripConfig, ...d };
           applyTripConfigToUI();
           if (isAdminLoggedIn) renderDashboard();
           if (loggedInParticipant) updateParticipantDashboardUI();
-        } else {
-          // Initialize default cloud config so document exists in Firestore
-          setDoc(configDocRef, tripConfig, { merge: true }).catch(err => console.log('Init cloud config info:', err));
         }
       }, (err) => console.error(err));
 
@@ -3333,66 +3317,17 @@
     }
 
     function applyTripConfigToUI() {
-      if (tripConfig.tripAmount !== undefined) {
-        tripConfig.tripAmount = Number(tripConfig.tripAmount) || 1500;
-      }
-      if (tripConfig.advanceAmount !== undefined) {
-        tripConfig.advanceAmount = Number(tripConfig.advanceAmount) || 500;
-      }
+      document.getElementById('heroTripTitle').textContent = tripConfig.tripTitle;
+      document.getElementById('heroDestination').textContent = tripConfig.destination;
+      document.getElementById('heroTripDate').textContent = tripConfig.tripDate;
+      document.getElementById('heroTripAmount').textContent = formatINR(tripConfig.tripAmount);
+      document.getElementById('heroAdvanceAmount').textContent = formatINR(tripConfig.advanceAmount || 500);
+      document.getElementById('presetFullText').textContent = formatINR(tripConfig.tripAmount);
+      document.getElementById('presetAdvanceText').textContent = formatINR(tripConfig.advanceAmount || 500);
 
-      const heroTripTitle = document.getElementById('heroTripTitle');
-      if (heroTripTitle) heroTripTitle.textContent = tripConfig.tripTitle;
-
-      const heroDestination = document.getElementById('heroDestination');
-      if (heroDestination) heroDestination.textContent = tripConfig.destination;
-
-      const heroTripDate = document.getElementById('heroTripDate');
-      if (heroTripDate) heroTripDate.textContent = tripConfig.tripDate;
-
-      const heroTripAmount = document.getElementById('heroTripAmount');
-      if (heroTripAmount) heroTripAmount.textContent = formatINR(tripConfig.tripAmount);
-
-      const heroAdvanceAmount = document.getElementById('heroAdvanceAmount');
-      if (heroAdvanceAmount) heroAdvanceAmount.textContent = formatINR(tripConfig.advanceAmount);
-
-      const presetFullText = document.getElementById('presetFullText');
-      if (presetFullText) presetFullText.textContent = formatINR(tripConfig.tripAmount);
-
-      const presetAdvanceText = document.getElementById('presetAdvanceText');
-      if (presetAdvanceText) presetAdvanceText.textContent = formatINR(tripConfig.advanceAmount);
-
-      const headerUpiId = document.getElementById('headerUpiId');
-      if (headerUpiId) headerUpiId.textContent = tripConfig.upiId;
-
-      const cardUpiIdText = document.getElementById('cardUpiIdText');
-      if (cardUpiIdText) cardUpiIdText.textContent = tripConfig.upiId;
-
-      const qrReceiverName = document.getElementById('qrReceiverName');
-      if (qrReceiverName) qrReceiverName.textContent = tripConfig.receiverName;
-
-      // Sync payment form amount with cloud config when on full preset or unedited
-      const inpAmount = document.getElementById('inpAmount');
-      const btnFull = document.getElementById('payTypeBtn-full');
-      const isFullActive = !btnFull || btnFull.classList.contains('border-emerald-500') || !inpAmount?.dataset?.userEdited;
-      if (inpAmount && isFullActive) {
-        inpAmount.value = tripConfig.tripAmount;
-      }
-
-      // Sync balance lookup summary total with cloud config
-      const balSummaryTotal = document.getElementById('balSummaryTotal');
-      if (balSummaryTotal) {
-        balSummaryTotal.textContent = formatINR(tripConfig.tripAmount);
-      }
-
-      // Sync admin settings modal inputs with cloud config
-      const setTripAmount = document.getElementById('setTripAmount');
-      if (setTripAmount && document.activeElement !== setTripAmount) {
-        setTripAmount.value = tripConfig.tripAmount;
-      }
-      const setAdvanceAmount = document.getElementById('setAdvanceAmount');
-      if (setAdvanceAmount && document.activeElement !== setAdvanceAmount) {
-        setAdvanceAmount.value = tripConfig.advanceAmount;
-      }
+      document.getElementById('headerUpiId').textContent = tripConfig.upiId;
+      document.getElementById('cardUpiIdText').textContent = tripConfig.upiId;
+      document.getElementById('qrReceiverName').textContent = tripConfig.receiverName;
 
       applyLogoAcrossApp();
       renderDepartmentDropdowns();
@@ -4440,14 +4375,12 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
       if (!inpAmount || !btnFull || !btnAdv) return;
 
       if (type === 'full') {
-        inpAmount.dataset.userEdited = '';
-        inpAmount.value = Number(tripConfig.tripAmount) || 1500;
+        inpAmount.value = tripConfig.tripAmount;
         btnFull.className = 'p-3 rounded-2xl border-2 border-emerald-500 bg-emerald-50/70 text-left transition flex flex-col justify-between';
         btnAdv.className = 'p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-amber-300 text-left transition flex flex-col justify-between';
         if (inpRemarks && inpRemarks.value === 'Advance payment') inpRemarks.value = '';
       } else {
-        inpAmount.dataset.userEdited = 'true';
-        inpAmount.value = Number(tripConfig.advanceAmount) || 500;
+        inpAmount.value = tripConfig.advanceAmount || 500;
         btnAdv.className = 'p-3 rounded-2xl border-2 border-amber-500 bg-amber-50/70 text-left transition flex flex-col justify-between';
         btnFull.className = 'p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-emerald-300 text-left transition flex flex-col justify-between';
         if (inpRemarks && !inpRemarks.value) inpRemarks.value = 'Advance payment';
@@ -4526,58 +4459,42 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
       const amount = getCurrentPayableAmount();
 
       if (!Number.isFinite(amount) || amount <= 0) {
-        showToast('Please enter a valid amount.', 'error');
+        showToast('Please enter a valid payment amount.', 'error');
         return;
       }
 
       const upiId = (tripConfig.upiId || 'mohdshemeemkp@oksbi').trim();
-      const receiverName =
-        (tripConfig.receiverName || 'Mohd Shemeem KP').trim();
+      const receiverName = (
+        tripConfig.receiverName || 'Mohd Shemeem KP'
+      ).trim();
 
       let note = 'Trip Payment';
 
       if (currentPaymentMode === 'balance' && selectedBalanceStudent) {
-        note = 'Bal ' + selectedBalanceStudent.studentName.slice(0, 15);
+        note = `Bal ${selectedBalanceStudent.studentName.slice(0, 15)}`;
       } else {
         const name =
           document.getElementById('inpName')?.value.trim() || 'Student';
-        note = 'Trip ' + name.slice(0, 16);
+        note = `Trip ${name.slice(0, 16)}`;
       }
 
-      const queryObj = {
+      const params = new URLSearchParams({
         pa: upiId,
         pn: receiverName,
+        am: amount.toFixed(2),
         cu: 'INR',
         tn: note
-      };
+      });
 
-      // Bank P2P Intent Protection:
-      // When amount <= 2000, pre-fill 'am'.
-      // When amount > 2000, personal UPI accounts hit bank intent limits if 'am' is forced.
-      // Leaving 'am' open lets Google Pay open directly to the payee where the student enters the amount,
-      // which uses normal bank limits (up to ₹1,00,000) and never gets blocked!
-      if (amount <= 2000) {
-        queryObj.am = amount.toFixed(2);
-      }
-
-      const params = new URLSearchParams(queryObj);
-      const paymentUrl = 'tez://upi/pay?' + params.toString();
+      const paymentUrl = `upi://pay?${params.toString()}`;
 
       if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
         copyUpiId();
-        showToast('Pay using your phone: ' + upiId);
+        showToast(`Pay using your phone: ${upiId}`);
         return;
       }
 
-      if (amount > 2000) {
-        try {
-          navigator.clipboard.writeText(amount.toString());
-        } catch (e) {}
-        showToast('Opening Google Pay: Type ₹' + amount + ' to bypass bank limit.', 5000);
-      } else {
-        showToast('Opening Google Pay for ₹' + amount + '...');
-      }
-
+      showToast(`Opening UPI payment for ${appName}...`);
       window.location.href = paymentUrl;
     }
 
@@ -6509,48 +6426,6 @@ function shareMyParticipantPassWhatsApp() {
       }
     }
 
-    async function updateTripAmountInCloud(newAmount) {
-      const parsed = Number(newAmount);
-      if (!parsed || parsed <= 0) {
-        showToast('Please enter a valid trip amount', 'error');
-        return false;
-      }
-      tripConfig.tripAmount = parsed;
-      if ((tripConfig.advanceAmount || 500) > parsed) {
-        tripConfig.advanceAmount = Math.round(parsed / 2);
-      }
-      applyTripConfigToUI();
-
-      try {
-        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
-        await setDoc(ref, {
-          tripAmount: parsed,
-          advanceAmount: tripConfig.advanceAmount
-        }, { merge: true });
-        showToast(`Trip fee updated to ${formatINR(parsed)} and saved to cloud!`);
-        return true;
-      } catch (err) {
-        console.error('Error saving trip amount to cloud:', err);
-        showToast(`Updated locally to ${formatINR(parsed)}, but cloud sync failed: ${err.message}`, 'warning');
-        return false;
-      }
-    }
-
-    async function promptQuickUpdateTripAmount() {
-      const current = tripConfig.tripAmount || 1500;
-      const input = prompt(
-        `Update Total Trip Fee (₹):\n\nThis will instantly update the fee in the cloud and reflect on all students' payment forms, QR codes, and Google Pay buttons.`,
-        current
-      );
-      if (input === null) return;
-      const val = Number(input.trim());
-      if (!val || val <= 0) {
-        showToast('Please enter a valid amount greater than 0', 'error');
-        return;
-      }
-      await updateTripAmountInCloud(val);
-    }
-
     async function saveTripSettings(e) {
       e.preventDefault();
       const customLogoInput = (document.getElementById('setCustomLogoUrl')?.value || '').trim();
@@ -6594,8 +6469,6 @@ function shareMyParticipantPassWhatsApp() {
       openSettingsModal,
       closeSettingsModal,
       saveTripSettings,
-      updateTripAmountInCloud,
-      promptQuickUpdateTripAmount,
       previewCustomLogoUrl,
       resetCustomLogoToDefault,
       handleLogoFileUpload,
