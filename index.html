@@ -4445,7 +4445,7 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
       }
     }
 
-    function chooseAndOpenUpiApp(appName = 'Default') {
+    function chooseAndOpenUpiApp(appName = 'Google Pay') {
       const currentAmount = Number(getCurrentPayableAmount()) || 0;
       if (currentAmount <= 0) {
         showToast('Please enter a valid amount', 'error');
@@ -4475,7 +4475,27 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
         tn: cleanNote
       });
 
-      const standardUpiUrl = `upi://pay?${params.toString()}`;
+      const queryStr = params.toString();
+      const standardUpiUrl = `upi://pay?${queryStr}`;
+
+      // Direct app scheme routing: default to Google Pay (tez://) to prevent WhatsApp from intercepting
+      let targetUrl = `tez://upi/pay?${queryStr}`;
+      let appLabel = 'Google Pay';
+
+      if (appName === 'PhonePe') {
+        targetUrl = `phonepe://pay?${queryStr}`;
+        appLabel = 'PhonePe';
+      } else if (appName === 'Paytm') {
+        targetUrl = `paytmmp://pay?${queryStr}`;
+        appLabel = 'Paytm';
+      } else if (appName === 'UPI') {
+        targetUrl = standardUpiUrl;
+        appLabel = 'UPI App';
+      } else {
+        // Default / Google Pay
+        targetUrl = `tez://upi/pay?${queryStr}`;
+        appLabel = 'Google Pay';
+      }
 
       const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
 
@@ -4485,10 +4505,19 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
         return;
       }
 
-      showToast(`Redirecting to UPI payment...`);
+      showToast(`Opening ${appLabel}...`);
 
-      // Direct standard deep link handles intent routing reliably across Android & iOS
-      window.location.href = standardUpiUrl;
+      // Direct deep link to Google Pay (tez://) ensures GPay opens directly instead of WhatsApp
+      window.location.href = targetUrl;
+
+      // Fallback to standard UPI if the specific app is not installed
+      if (targetUrl !== standardUpiUrl) {
+        setTimeout(() => {
+          if (document.hasFocus()) {
+            window.location.href = standardUpiUrl;
+          }
+        }, 2000);
+      }
     }
 
     async function handleStudentFormSubmit(e) {
