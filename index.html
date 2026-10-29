@@ -4537,27 +4537,45 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
       let note = 'Trip Payment';
 
       if (currentPaymentMode === 'balance' && selectedBalanceStudent) {
-        note = `Bal ${selectedBalanceStudent.studentName.slice(0, 15)}`;
+        note = 'Bal ' + selectedBalanceStudent.studentName.slice(0, 15);
       } else {
         const name =
           document.getElementById('inpName')?.value.trim() || 'Student';
-        note = `Trip ${name.slice(0, 16)}`;
+        note = 'Trip ' + name.slice(0, 16);
       }
 
-      const params = new URLSearchParams({
+      const queryObj = {
         pa: upiId,
         pn: receiverName,
-        am: amount.toFixed(2),
         cu: 'INR',
         tn: note
-      });
+      };
 
-      const paymentUrl = `tez://upi/pay?${params.toString()}`;
+      // Bank P2P Intent Protection:
+      // When amount <= 2000, pre-fill 'am'.
+      // When amount > 2000, personal UPI accounts hit bank intent limits if 'am' is forced.
+      // Leaving 'am' open lets Google Pay open directly to the payee where the student enters the amount,
+      // which uses normal bank limits (up to ₹1,00,000) and never gets blocked!
+      if (amount <= 2000) {
+        queryObj.am = amount.toFixed(2);
+      }
+
+      const params = new URLSearchParams(queryObj);
+      const paymentUrl = 'tez://upi/pay?' + params.toString();
 
       if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
         copyUpiId();
-        showToast(`Pay using your phone: ${upiId}`);
+        showToast('Pay using your phone: ' + upiId);
         return;
+      }
+
+      if (amount > 2000) {
+        try {
+          navigator.clipboard.writeText(amount.toString());
+        } catch (e) {}
+        showToast('Opening Google Pay: Type ₹' + amount + ' to bypass bank limit.', 5000);
+      } else {
+        showToast('Opening Google Pay for ₹' + amount + '...');
       }
 
       window.location.href = paymentUrl;
