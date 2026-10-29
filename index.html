@@ -643,7 +643,7 @@
                     onchange="syncSelectedAppFromDropdown(this.value)"
                     class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-semibold text-slate-800"
                   >
-                    <option value="Google Pay" selected>Google Pay (GPay) — Default</option>
+                    <option value="Google Pay" selected>Google Pay (GPay)</option>
                     <option value="PhonePe">PhonePe</option>
                     <option value="Paytm">Paytm</option>
                   </select>
@@ -4446,86 +4446,39 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
     }
 
     function chooseAndOpenUpiApp(appName = 'Google Pay') {
-      const currentAmount = Number(getCurrentPayableAmount()) || 0;
-      if (currentAmount <= 0) {
-        showToast('Please enter a valid amount', 'error');
-        return;
-      }
-
-      // Determine effective app from argument or dropdown
-      let effectiveApp = appName;
-      if (!effectiveApp || effectiveApp === 'Default') {
-        effectiveApp = (currentPaymentMode === 'balance'
-          ? document.getElementById('balAppInput')?.value
-          : document.getElementById('inpApp')?.value) || 'Google Pay';
-      }
-
-      // Sanitize notes: alphanumeric only, max 30 chars
-      let rawNote = 'Trip Fee';
+      const currentAmount = getCurrentPayableAmount();
+      let note = 'Trip Payment';
       if (currentPaymentMode === 'balance' && selectedBalanceStudent) {
-        rawNote = `Bal ${selectedBalanceStudent.studentName || ''}`;
+        note = `Bal ${selectedBalanceStudent.studentName.slice(0, 15)}`;
       } else {
         const nameVal = document.getElementById('inpName')?.value.trim() || 'Student';
-        rawNote = `Trip ${nameVal}`;
+        note = `Trip ${nameVal.slice(0, 16)}`;
       }
-      const cleanNote = rawNote.replace(/[^a-zA-Z0-9 ]/g, '').slice(0, 30);
 
       const cleanPa = (tripConfig.upiId || 'mohdshemeemkp@oksbi').trim();
-      const cleanPn = (tripConfig.receiverName || 'Mohd Shemeem KP').trim();
-      const cleanAm = currentAmount.toFixed(2);
+      const cleanPn = encodeURIComponent((tripConfig.receiverName || 'Mohd Shemeem KP').trim());
+      const cleanAm = Number(currentAmount).toFixed(2);
+      const cleanTn = encodeURIComponent(note);
+      const standardUpi = `pa=${cleanPa}&pn=${cleanPn}&am=${cleanAm}&cu=INR&tn=${cleanTn}`;
 
-      // Standard NPCI UPI URI Query parameters
-      const params = new URLSearchParams({
-        pa: cleanPa,
-        pn: cleanPn,
-        am: cleanAm,
-        cu: 'INR',
-        tn: cleanNote
-      });
-
-      const queryStr = params.toString();
-      const standardUpiUrl = `upi://pay?${queryStr}`;
-
-      // Direct app scheme routing: default to Google Pay (tez://) to prevent WhatsApp from intercepting
-      let targetUrl = `tez://upi/pay?${queryStr}`;
-      let appLabel = 'Google Pay';
-
-      if (effectiveApp === 'PhonePe') {
-        targetUrl = `phonepe://pay?${queryStr}`;
-        appLabel = 'PhonePe';
-      } else if (effectiveApp === 'Paytm') {
-        targetUrl = `paytmmp://pay?${queryStr}`;
-        appLabel = 'Paytm';
-      } else if (effectiveApp === 'UPI') {
-        targetUrl = standardUpiUrl;
-        appLabel = 'UPI App';
-      } else {
-        // Default / Google Pay
-        targetUrl = `tez://upi/pay?${queryStr}`;
-        appLabel = 'Google Pay';
+      let targetUrl = `upi://pay?${standardUpi}`;
+      if (appName === 'Google Pay') {
+        targetUrl = `tez://upi/pay?${standardUpi}`;
+      } else if (appName === 'PhonePe') {
+        targetUrl = `phonepe://pay?${standardUpi}`;
+      } else if (appName === 'Paytm') {
+        targetUrl = `paytmmp://pay?${standardUpi}`;
       }
 
       const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
-
       if (!isMobile) {
         copyUpiId();
-        showToast(`Scan the QR code on mobile or pay manually to: ${cleanPa}`);
+        showToast(`Scan the QR code on mobile or pay to: ${cleanPa}`);
         return;
       }
 
-      showToast(`Opening ${appLabel}...`);
-
-      // Direct deep link to Google Pay (tez://) ensures GPay opens directly instead of WhatsApp
+      showToast(`Opening ${appName}...`);
       window.location.href = targetUrl;
-
-      // Fallback to standard UPI if the specific app is not installed
-      if (targetUrl !== standardUpiUrl) {
-        setTimeout(() => {
-          if (document.hasFocus()) {
-            window.location.href = standardUpiUrl;
-          }
-        }, 2000);
-      }
     }
 
     async function handleStudentFormSubmit(e) {
