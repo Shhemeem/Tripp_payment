@@ -408,7 +408,8 @@
           >
             <span class="w-6 h-6 rounded-lg bg-white text-blue-600 font-display font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm">G</span>
             <span id="gpayDefaultBtnText">Pay ₹1,500 with Google Pay</span>
-            <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+            <span class="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/20 text-white font-bold ml-1">Default</span>
+            <i data-lucide="arrow-up-right" class="w-4 h-4 ml-auto"></i>
           </button>
 
           <div class="grid grid-cols-2 gap-2.5">
@@ -643,7 +644,7 @@
                     onchange="syncSelectedAppFromDropdown(this.value)"
                     class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-semibold text-slate-800"
                   >
-                    <option value="Google Pay" selected>Google Pay (GPay)</option>
+                    <option value="Google Pay" selected>Google Pay (GPay) — Default</option>
                     <option value="PhonePe">PhonePe</option>
                     <option value="Paytm">Paytm</option>
                   </select>
@@ -4463,6 +4464,13 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
         return;
       }
 
+      // Synchronize input dropdowns to the chosen UPI app
+      const inpApp = document.getElementById('inpApp');
+      if (inpApp) inpApp.value = appName;
+      const balApp = document.getElementById('balAppInput');
+      if (balApp) balApp.value = appName;
+      selectedUpiApp = appName;
+
       const upiId = (tripConfig.upiId || 'mohdshemeemkp@oksbi').trim();
       const receiverName = (
         tripConfig.receiverName || 'Mohd Shemeem KP'
@@ -4486,15 +4494,25 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
         tn: note
       });
 
-      const paymentUrl = `upi://pay?${params.toString()}`;
+      const queryStr = params.toString();
+
+      // Default: Google Pay, Others: PhonePe and Paytm respectively
+      let paymentUrl = `upi://pay?${queryStr}`;
+      if (appName === 'Google Pay') {
+        paymentUrl = `tez://upi/pay?${queryStr}`;
+      } else if (appName === 'PhonePe') {
+        paymentUrl = `phonepe://pay?${queryStr}`;
+      } else if (appName === 'Paytm') {
+        paymentUrl = `paytmmp://pay?${queryStr}`;
+      }
 
       if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
         copyUpiId();
-        showToast(`Pay using your phone: ${upiId}`);
+        showToast(`Pay using ${appName}: ${upiId}`);
         return;
       }
 
-      showToast(`Opening UPI payment for ${appName}...`);
+      showToast(`Opening ${appName} payment...`);
       window.location.href = paymentUrl;
     }
 
