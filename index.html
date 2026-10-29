@@ -643,7 +643,7 @@
                     onchange="syncSelectedAppFromDropdown(this.value)"
                     class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-semibold text-slate-800"
                   >
-                    <option value="Google Pay" selected>Google Pay (GPay)</option>
+                    <option value="Google Pay" selected>Google Pay (GPay) — Default</option>
                     <option value="PhonePe">PhonePe</option>
                     <option value="Paytm">Paytm</option>
                   </select>
@@ -4452,6 +4452,14 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
         return;
       }
 
+      // Determine effective app from argument or dropdown
+      let effectiveApp = appName;
+      if (!effectiveApp || effectiveApp === 'Default') {
+        effectiveApp = (currentPaymentMode === 'balance'
+          ? document.getElementById('balAppInput')?.value
+          : document.getElementById('inpApp')?.value) || 'Google Pay';
+      }
+
       // Sanitize notes: alphanumeric only, max 30 chars
       let rawNote = 'Trip Fee';
       if (currentPaymentMode === 'balance' && selectedBalanceStudent) {
@@ -4482,13 +4490,13 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
       let targetUrl = `tez://upi/pay?${queryStr}`;
       let appLabel = 'Google Pay';
 
-      if (appName === 'PhonePe') {
+      if (effectiveApp === 'PhonePe') {
         targetUrl = `phonepe://pay?${queryStr}`;
         appLabel = 'PhonePe';
-      } else if (appName === 'Paytm') {
+      } else if (effectiveApp === 'Paytm') {
         targetUrl = `paytmmp://pay?${queryStr}`;
         appLabel = 'Paytm';
-      } else if (appName === 'UPI') {
+      } else if (effectiveApp === 'UPI') {
         targetUrl = standardUpiUrl;
         appLabel = 'UPI App';
       } else {
