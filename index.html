@@ -359,6 +359,38 @@
       <div id="receiptCardContainer" class="hidden"></div>
 
       <!-- Payment & Form Split Layout -->
+      <!-- PUBLIC USER NOTICE: Trip Link Required when no ?trip= parameter is in URL -->
+      <div id="publicNoTripNotice" class="hidden expressive-card border border-slate-200/90 rounded-3xl p-6 sm:p-10 text-center max-w-xl mx-auto shadow-sm my-6 bg-gradient-to-b from-white to-slate-50">
+        <div class="w-16 h-16 rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4 font-bold shadow-sm border border-emerald-100">
+          <i data-lucide="compass" class="w-8 h-8 text-emerald-600"></i>
+        </div>
+        <h3 class="font-display font-extrabold text-xl sm:text-2xl text-slate-900 mb-2">Trip Link Required</h3>
+        <p class="text-sm text-slate-600 mb-6 leading-relaxed">
+          TripPay requires the unique trip link provided by your college trip coordinator or manager (e.g. <span class="font-mono text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded font-bold">?trip=your-trip-id</span>).
+        </p>
+        <div class="p-4 rounded-2xl bg-slate-100/80 border border-slate-200/80 text-xs text-slate-600 text-left mb-6 space-y-2">
+          <div class="font-bold text-slate-800 flex items-center gap-1.5">
+            <i data-lucide="info" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+            <span>How to access your trip:</span>
+          </div>
+          <ul class="list-disc pl-5 space-y-1 text-slate-600 text-[11.5px]">
+            <li>Open the WhatsApp or SMS link shared by your trip coordinator.</li>
+            <li>Scan the official trip poster QR code with your mobile camera.</li>
+            <li>If you are a Trip Admin or Boss, log in below to access the management portal.</li>
+          </ul>
+        </div>
+        <div class="flex items-center justify-center gap-3">
+          <button
+            type="button"
+            onclick="handleAdminAccessClick()"
+            class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs shadow-md transition flex items-center gap-2"
+          >
+            <i data-lucide="lock" class="w-4 h-4"></i>
+            <span>Admin / Manager Login</span>
+          </button>
+        </div>
+      </div>
+
       <div id="paymentFormGrid" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <!-- Step 1: Scan & UPI Launch (Responsive & GPay Default) -->
         <div class="lg:col-span-5 expressive-card border border-slate-200/90 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm">
@@ -1608,80 +1640,269 @@
       </div>
 
       <!-- Boss Admin Only: Manage Admins & Approvals Section -->
+            <!-- ========================================================================= -->
+      <!-- BOSS ADMIN: PROFESSIONAL MASTER COMMAND DASHBOARD                          -->
+      <!-- ========================================================================= -->
       <div id="managerSection-admins" class="hidden space-y-5">
-        <div class="expressive-card border border-purple-200/90 rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-white via-purple-50/20 to-white">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-4 mb-5">
-            <div class="flex items-center gap-3">
-              <div class="w-11 h-11 rounded-2xl bg-purple-600 text-white flex items-center justify-center font-bold shadow-md shadow-purple-200">
+        <div class="expressive-card border border-purple-200/90 rounded-3xl p-5 sm:p-7 bg-gradient-to-br from-white via-purple-50/15 to-white shadow-xl">
+          
+          <!-- Command Center Header -->
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-purple-100 pb-5 mb-6">
+            <div class="flex items-center gap-3.5">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-700 to-indigo-600 text-white flex items-center justify-center font-bold shadow-lg shadow-purple-200 shrink-0">
                 <i data-lucide="crown" class="w-6 h-6"></i>
               </div>
               <div>
-                <div class="flex items-center gap-2">
-                  <h3 class="font-display font-extrabold text-lg text-slate-900">Boss Admin: Trip Managers &amp; Approvals</h3>
-                  <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200">
-                    Supreme Control
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h3 class="font-display font-extrabold text-xl sm:text-2xl text-slate-900 tracking-tight">Boss Master Command Center</h3>
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-900 border border-purple-300">
+                    Supreme Access
                   </span>
                 </div>
-                <p class="text-xs text-slate-500">
-                  Approve registered managers, assign trips to admins, and oversee all trip permissions.
+                <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
+                  Unified multi-admin oversight, master trip management, and global financial ledger.
                 </p>
               </div>
             </div>
+
+            <!-- Header Quick Actions -->
             <div class="flex items-center gap-2 flex-wrap">
               <button
                 type="button"
                 onclick="openBossCredentialsModal()"
-                class="px-3.5 py-2 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-900 border border-purple-300 font-extrabold text-xs flex items-center gap-1.5 shadow-2xs transition"
+                class="px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200/90 font-extrabold text-xs flex items-center gap-1.5 shadow-2xs transition"
                 title="Edit Boss Login Email, Password & Recovery PIN"
               >
                 <i data-lucide="key" class="w-4 h-4 text-purple-700"></i>
-                <span>👑 Edit My Credentials</span>
+                <span>👑 Boss Security</span>
               </button>
               <button
                 type="button"
                 onclick="openBossCreateAdminModal()"
-                class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md shadow-purple-100 transition"
+                class="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md shadow-purple-100 transition"
               >
                 <i data-lucide="user-plus" class="w-4 h-4"></i>
-                <span>Add Pre-Approved Admin</span>
+                <span>+ Add Admin</span>
+              </button>
+              <button
+                type="button"
+                onclick="openCreateTripModal()"
+                class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md shadow-indigo-100 transition"
+              >
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span>+ New Trip</span>
               </button>
             </div>
           </div>
 
-          <!-- KPI Cards for Admins -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-            <div class="p-3.5 rounded-2xl bg-purple-50/80 border border-purple-200/80">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-purple-700 block">Total Admins</span>
-              <p id="bossStatTotalAdmins" class="font-display text-2xl font-black text-purple-900 mt-0.5">0</p>
-              <span class="text-[10px] text-purple-600">Registered in system</span>
+          <!-- Master Executive Global KPI Cards -->
+          <div class="grid grid-cols-2 lg:grid-cols-5 gap-3.5 mb-7">
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-white border border-emerald-200/90 shadow-2xs">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 block">Total Collections</span>
+              <p id="bossStatTotalCollections" class="font-display text-xl sm:text-2xl font-black text-emerald-900 mt-1">₹0</p>
+              <span id="bossStatVerifiedCollections" class="text-[10px] text-emerald-700 font-bold block mt-0.5">Verified: ₹0</span>
             </div>
-            <div class="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200/80">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-amber-700 block">Pending Approvals</span>
-              <p id="bossStatPendingAdmins" class="font-display text-2xl font-black text-amber-900 mt-0.5">0</p>
-              <span class="text-[10px] text-amber-600">Awaiting your review</span>
+
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-white border border-amber-200/90 shadow-2xs">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 block">Pending Dues</span>
+              <p id="bossStatTotalDues" class="font-display text-xl sm:text-2xl font-black text-amber-900 mt-1">₹0</p>
+              <span class="text-[10px] text-amber-700 font-bold block mt-0.5">Across all trips</span>
             </div>
-            <div class="p-3.5 rounded-2xl bg-emerald-50/80 border border-emerald-200/80">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">Active Managers</span>
-              <p id="bossStatActiveAdmins" class="font-display text-2xl font-black text-emerald-900 mt-0.5">0</p>
-              <span class="text-[10px] text-emerald-600">Approved with trips</span>
+
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-purple-50 to-white border border-purple-200/90 shadow-2xs">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-purple-700 block">Trip Managers</span>
+              <p id="bossStatTotalAdmins" class="font-display text-xl sm:text-2xl font-black text-purple-900 mt-1">0</p>
+              <span id="bossStatAdminsSubtext" class="text-[10px] text-purple-700 font-bold block mt-0.5">0 Active / 0 Pending</span>
             </div>
-            <div class="p-3.5 rounded-2xl bg-indigo-50/80 border border-indigo-200/80">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-700 block">Total Trips</span>
-              <p id="bossStatTotalTrips" class="font-display text-2xl font-black text-indigo-900 mt-0.5">0</p>
-              <span class="text-[10px] text-indigo-600">Under administration</span>
+
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-indigo-50 to-white border border-indigo-200/90 shadow-2xs">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-700 block">Total Trips</span>
+              <p id="bossStatTotalTrips" class="font-display text-xl sm:text-2xl font-black text-indigo-900 mt-1">0</p>
+              <span class="text-[10px] text-indigo-700 font-bold block mt-0.5">Managed in system</span>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-sky-50 to-white border border-sky-200/90 shadow-2xs col-span-2 sm:col-span-1">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-sky-700 block">Registered Students</span>
+              <p id="bossStatTotalStudents" class="font-display text-xl sm:text-2xl font-black text-sky-900 mt-1">0</p>
+              <span class="text-[10px] text-sky-700 font-bold block mt-0.5">Total participants</span>
             </div>
           </div>
 
-          <!-- Admin Roster List -->
-          <div class="space-y-3">
-            <h4 class="font-bold text-sm text-slate-800 flex items-center justify-between">
-              <span>Trip Managers &amp; Approval Queue</span>
-              <span id="bossAdminsCountBadge" class="text-xs text-slate-500 font-medium">0 registered</span>
-            </h4>
-            <div id="bossAdminsListContainer" class="space-y-2.5">
+          <!-- Boss Section Navigation Tabs (Admins, All Trips, Master Payments) -->
+          <div class="flex items-center gap-2 overflow-x-auto no-scrollbar border-b border-purple-100 pb-3 mb-5">
+            <button
+              type="button"
+              onclick="switchBossDashboardTab('admins')"
+              id="bossSubTabBtn-admins"
+              class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center gap-1.5 shrink-0 bg-purple-600 text-white shadow-sm"
+            >
+              <i data-lucide="users" class="w-4 h-4"></i>
+              <span>1. Trip Managers &amp; Approvals</span>
+              <span id="bossTabBadgeAdmins" class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-white text-purple-900 font-extrabold">0</span>
+            </button>
+
+            <button
+              type="button"
+              onclick="switchBossDashboardTab('trips')"
+              id="bossSubTabBtn-trips"
+              class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center gap-1.5 shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900"
+            >
+              <i data-lucide="compass" class="w-4 h-4 text-indigo-600"></i>
+              <span>2. Master Trips Hub</span>
+              <span id="bossTabBadgeTrips" class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-indigo-100 text-indigo-800 font-extrabold">0</span>
+            </button>
+
+            <button
+              type="button"
+              onclick="switchBossDashboardTab('payments')"
+              id="bossSubTabBtn-payments"
+              class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center gap-1.5 shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900"
+            >
+              <i data-lucide="credit-card" class="w-4 h-4 text-emerald-600"></i>
+              <span>3. Global Payments Ledger</span>
+              <span id="bossTabBadgePayments" class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-extrabold">0</span>
+            </button>
+          </div>
+
+          <!-- ========================================== -->
+          <!-- PILLAR 1: ADMINS MANAGEMENT & APPROVALS    -->
+          <!-- ========================================== -->
+          <div id="bossPillar-admins" class="space-y-4">
+            <!-- Search & Filters -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="relative flex-1 max-w-sm">
+                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                <input
+                  type="text"
+                  id="bossAdminSearchInput"
+                  oninput="renderBossAdminsList()"
+                  placeholder="Search managers by name, email, phone..."
+                  class="w-full pl-9 pr-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-purple-500 focus:outline-none text-xs text-slate-900 font-medium"
+                />
+              </div>
+
+              <!-- Status Filters -->
+              <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                <button type="button" onclick="setBossAdminStatusFilter('all')" id="bossAdminFilterBtn-all" class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-purple-600 text-white shadow-2xs">All</button>
+                <button type="button" onclick="setBossAdminStatusFilter('pending')" id="bossAdminFilterBtn-pending" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200">Pending</button>
+                <button type="button" onclick="setBossAdminStatusFilter('approved')" id="bossAdminFilterBtn-approved" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200">Approved</button>
+                <button type="button" onclick="setBossAdminStatusFilter('suspended')" id="bossAdminFilterBtn-suspended" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200">Suspended</button>
+              </div>
+            </div>
+
+            <!-- Admin Roster List -->
+            <div id="bossAdminsListContainer" class="space-y-3">
               <!-- Admin cards dynamically rendered -->
             </div>
           </div>
+
+          <!-- ========================================== -->
+          <!-- PILLAR 2: MASTER TRIPS HUB                 -->
+          <!-- ========================================== -->
+          <div id="bossPillar-trips" class="hidden space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="relative flex-1 max-w-sm">
+                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                <input
+                  type="text"
+                  id="bossTripSearchInput"
+                  oninput="renderBossTripsHub()"
+                  placeholder="Search trips by title, ID, destination..."
+                  class="w-full pl-9 pr-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none text-xs text-slate-900 font-medium"
+                />
+              </div>
+
+              <button
+                type="button"
+                onclick="openCreateTripModal()"
+                class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-sm transition shrink-0"
+              >
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span>Create New Trip</span>
+              </button>
+            </div>
+
+            <!-- Trips Grid -->
+            <div id="bossTripsHubContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              <!-- Dynamic Trip Cards for Boss -->
+            </div>
+          </div>
+
+          <!-- ========================================== -->
+          <!-- PILLAR 3: GLOBAL PAYMENTS LEDGER           -->
+          <!-- ========================================== -->
+          <div id="bossPillar-payments" class="hidden space-y-4">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+              <div class="relative flex-1 max-w-sm">
+                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                <input
+                  type="text"
+                  id="bossPaymentSearchInput"
+                  oninput="renderBossGlobalPayments()"
+                  placeholder="Search students across all trips (name, phone, dept)..."
+                  class="w-full pl-9 pr-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-xs text-slate-900 font-medium"
+                />
+              </div>
+
+              <div class="flex items-center gap-2 flex-wrap">
+                <!-- Trip Filter Dropdown -->
+                <select
+                  id="bossPaymentTripFilter"
+                  onchange="renderBossGlobalPayments()"
+                  class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
+                >
+                  <option value="all">🌐 All Trips</option>
+                  <!-- Populated dynamically -->
+                </select>
+
+                <!-- Status Filter Dropdown -->
+                <select
+                  id="bossPaymentStatusFilter"
+                  onchange="renderBossGlobalPayments()"
+                  class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
+                >
+                  <option value="all">All Statuses</option>
+                  <option value="Verified">Verified Only</option>
+                  <option value="Pending Verification">Pending Verification</option>
+                  <option value="due">With Pending Due</option>
+                </select>
+
+                <button
+                  type="button"
+                  onclick="exportBossMasterPaymentsPDF()"
+                  class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-sm transition"
+                >
+                  <i data-lucide="file-text" class="w-4 h-4"></i>
+                  <span>Export Global PDF</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Global Payments Table -->
+            <div class="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-2xs">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                  <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-[10px] font-extrabold tracking-wider">
+                    <tr>
+                      <th class="py-3 px-3.5">Student / Dept</th>
+                      <th class="py-3 px-3.5">Trip</th>
+                      <th class="py-3 px-3.5">Paid / Total</th>
+                      <th class="py-3 px-3.5">App / Mode</th>
+                      <th class="py-3 px-3.5">Status</th>
+                      <th class="py-3 px-3.5 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bossPaymentsTableBody" class="divide-y divide-slate-100">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+              <div id="bossPaymentsEmptyNotice" class="hidden p-8 text-center text-slate-400 text-xs">
+                No matching payments found across trips.
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
@@ -3634,6 +3855,62 @@
     </div>
   </div>
 
+  <!-- MODAL: ASSIGN ADMINS (1, 2, 3...) TO A TRIP -->
+  <div id="tripAdminAssignModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[90vh] overflow-y-auto space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
+            <i data-lucide="users" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-extrabold text-base text-slate-900">Assign Admins to Trip</h3>
+            <p class="text-xs text-slate-500" id="assignTripModalSubtitle">Select which Admins manage this trip</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeTripAdminAssignmentModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <input type="hidden" id="assignTargetTripId" />
+
+      <div class="p-3 bg-purple-50/60 border border-purple-200/80 rounded-2xl text-xs text-purple-800 space-y-1">
+        <div class="font-bold flex items-center gap-1">
+          <i data-lucide="info" class="w-3.5 h-3.5 text-purple-600"></i>
+          <span>Multi-Admin Trip Management</span>
+        </div>
+        <p class="text-[11px] text-purple-700">Check Admin 1, Admin 2, Admin 3... to give them full managerial access to this trip. Unchecked admins will not be able to manage this trip.</p>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-2">Available Admins In-Charge:</label>
+        <div id="assignTripAdminsChecklist" class="space-y-2 max-h-56 overflow-y-auto p-2 rounded-2xl bg-slate-50 border border-slate-200">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+        <button
+          type="button"
+          onclick="closeTripAdminAssignmentModal()"
+          class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          id="btnSaveTripAdminAssignments"
+          onclick="saveTripAdminAssignments()"
+          class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs shadow-md transition flex items-center gap-1.5"
+        >
+          <i data-lucide="check" class="w-4 h-4"></i>
+          <span>Save Assigned Admins</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: CREATE NEW TRIP -->
   <div id="newTripModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
     <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[90vh] overflow-y-auto space-y-4">
@@ -3748,6 +4025,17 @@
               class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-mono text-slate-900 font-bold"
             />
           </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-bold text-slate-700">Assign In-Charge Admins (Admin 1, Admin 2, Admin 3...)</label>
+            <span class="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">Trip Managers</span>
+          </div>
+          <div id="newTripAdminsChecklist" class="p-2.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5 max-h-32 overflow-y-auto">
+            <!-- Dynamic checklist -->
+          </div>
+          <p class="text-[10px] text-slate-400 mt-0.5">Selected admins will have permissions to manage this trip's students &amp; collections</p>
         </div>
 
         <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
@@ -4183,7 +4471,7 @@
           if (ht && ht.trim()) return ht.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
         }
       } catch (e) {}
-      return localStorage.getItem('trippay_active_trip_id') || 'default';
+      return localStorage.getItem('trippay_active_trip_id') || '';
     }
 
     let currentTripId = getTripIdFromUrl();
@@ -4459,6 +4747,12 @@
 
       if (currentPaymentMode === 'balance') renderBalanceLookupResults();
       if (isAdminLoggedIn) {
+        if (currentAdminRole === 'boss') {
+          updateBossGlobalKPIs();
+          if (activeBossDashboardTab === 'trips') renderBossTripsHub();
+          else if (activeBossDashboardTab === 'payments') renderBossGlobalPayments();
+          else renderBossAdminsList();
+        }
         const searchInput = document.getElementById('dashSearchInput');
         const isSearchFocused = document.activeElement === searchInput;
         const selStart = searchInput?.selectionStart;
@@ -4511,28 +4805,14 @@
 
       // 1. Trips Master Listener
       const tripsCol = collection(db, 'artifacts', appId, 'public', 'data', 'trips_master');
-      unsubTrips = onSnapshot(tripsCol, async (snap) => {
+      unsubTrips = onSnapshot(tripsCol, (snap) => {
         allTrips = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        if (allTrips.length === 0 || !allTrips.some(t => t.id === 'default')) {
-          try {
-            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trips_master', 'default'), {
-              id: 'default',
-              tripTitle: tripConfig.tripTitle || 'Annual College Industrial & Leisure Trip',
-              destination: tripConfig.destination || 'Munnar, Vagamon & Kochi',
-              tripDate: tripConfig.tripDate || '2026-11-15',
-              tripAmount: Number(tripConfig.tripAmount) || 1500,
-              advanceAmount: Number(tripConfig.advanceAmount) || 500,
-              upiId: tripConfig.upiId || 'mohdshemeemkp@oksbi',
-              receiverName: tripConfig.receiverName || 'Mohd Shemeem KP',
-              customLogoUrl: tripConfig.customLogoUrl || DEFAULT_LOGO_URL,
-              createdAt: Date.now()
-            }, { merge: true });
-          } catch (e) {
-            console.warn('Could not seed default trip:', e);
-          }
-        }
+        // No default trip auto-seeded. Users only access through specific trip links.
         updateActiveTripUI();
         renderTripsListInModal();
+        if (typeof updateBossGlobalKPIs === 'function') updateBossGlobalKPIs();
+        if (typeof renderBossTripsHub === 'function') renderBossTripsHub();
+        if (typeof renderBossGlobalPayments === 'function') renderBossGlobalPayments();
       }, (err) => console.error('Trips master listener error:', err));
 
       // 2. Active Trip Settings Listener
@@ -7051,7 +7331,10 @@ function shareMyParticipantPassWhatsApp() {
         const bannerBossCredBtn = document.getElementById('bannerBossCredBtn');
         // Configure Boss Admin vs Normal Admin UI elements
         if (currentAdminRole === 'boss') {
-          if (subTabAdmins) subTabAdmins.classList.remove('hidden');
+          if (subTabAdmins) {
+            subTabAdmins.classList.remove('hidden');
+            subTabAdmins.innerHTML = '<i data-lucide="crown" class="w-4 h-4 text-purple-200"></i><span>👑 Boss Master Command Center</span><span id="subTabBadgePendingAdmins" class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-amber-100 text-amber-800 font-extrabold hidden">0 pending</span>';
+          }
           if (bannerBossCredBtn) bannerBossCredBtn.classList.remove('hidden');
           if (roleBadge) {
             roleBadge.textContent = '👑 Boss Admin (Full Control)';
@@ -7134,8 +7417,12 @@ function shareMyParticipantPassWhatsApp() {
       });
 
       if (t === 'manager') {
-        renderDashboard();
-        renderCheckinRoster();
+        if (currentAdminRole === 'boss') {
+          switchManagerSubTab('admins');
+        } else {
+          renderDashboard();
+          renderCheckinRoster();
+        }
       }
       if (t === 'participant') updateParticipantDashboardUI();
       if (t === 'user-itinerary') renderItinerary();
@@ -7163,7 +7450,7 @@ function shareMyParticipantPassWhatsApp() {
       if (sub === 'checkin') renderCheckinRoster();
       if (sub === 'access-codes') renderAccessCodesSuite();
       if (sub === 'audit-logs') renderAuditLogs();
-      if (sub === 'admins') renderBossAdminsList();
+      if (sub === 'admins') { updateBossGlobalKPIs(); switchBossDashboardTab(activeBossDashboardTab || 'admins'); }
       if (window.lucide && typeof lucide.createIcons === 'function') {
         lucide.createIcons();
       }
@@ -8419,27 +8706,43 @@ function shareMyParticipantPassWhatsApp() {
     }
 
     function updateActiveTripUI() {
-      const activeTrip = allTrips.find(t => t.id === currentTripId) || {
-        id: currentTripId,
-        tripTitle: tripConfig.tripTitle || 'Annual College Trip',
-        destination: tripConfig.destination || 'Munnar, Vagamon & Kochi'
-      };
+      const urlTrip = getTripIdFromUrl();
+      const publicNotice = document.getElementById('publicNoTripNotice');
+      const payGrid = document.getElementById('paymentFormGrid');
 
-      const navTitle = document.getElementById('navActiveTripTitle');
-      if (navTitle) navTitle.textContent = activeTrip.tripTitle || tripConfig.tripTitle;
+      // Users access strictly via their unique trip link
+      if (!urlTrip && !isAdminLoggedIn) {
+        if (publicNotice) publicNotice.classList.remove('hidden');
+        if (payGrid) payGrid.classList.add('hidden');
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        return;
+      }
 
-      const navBadge = document.getElementById('navActiveTripIdBadge');
-      if (navBadge) navBadge.textContent = currentTripId === 'default' ? 'default' : currentTripId;
+      if (publicNotice) publicNotice.classList.add('hidden');
+      if (payGrid) payGrid.classList.remove('hidden');
 
-      const modalTitle = document.getElementById('modalActiveTripTitle');
-      if (modalTitle) modalTitle.textContent = activeTrip.tripTitle || tripConfig.tripTitle;
+      if (!currentTripId && allTrips.length > 0) {
+        currentTripId = allTrips[0].id;
+      }
 
-      const modalId = document.getElementById('modalActiveTripId');
-      if (modalId) modalId.textContent = currentTripId;
+      const activeTrip = allTrips.find(t => t.id === currentTripId);
+      if (activeTrip) {
+        const navTitle = document.getElementById('navActiveTripTitle');
+        if (navTitle) navTitle.textContent = activeTrip.tripTitle;
+
+        const navBadge = document.getElementById('navActiveTripIdBadge');
+        if (navBadge) navBadge.textContent = currentTripId;
+
+        const modalTitle = document.getElementById('modalActiveTripTitle');
+        if (modalTitle) modalTitle.textContent = activeTrip.tripTitle;
+
+        const modalId = document.getElementById('modalActiveTripId');
+        if (modalId) modalId.textContent = currentTripId;
+      }
 
       const totalCountBadge = document.getElementById('totalTripsCountBadge');
       if (totalCountBadge) {
-        totalCountBadge.textContent = `${Math.max(1, allTrips.length)} ${allTrips.length === 1 ? 'Trip' : 'Trips'} Active`;
+        totalCountBadge.textContent = `${allTrips.length} ${allTrips.length === 1 ? 'Trip' : 'Trips'} Active`;
       }
 
       if (window.lucide && typeof lucide.createIcons === 'function') {
@@ -8452,27 +8755,29 @@ function shareMyParticipantPassWhatsApp() {
       if (!container) return;
 
       let tripsToDisplay = [...allTrips];
-      if (tripsToDisplay.length === 0 || !tripsToDisplay.some(t => t.id === 'default')) {
-        tripsToDisplay.unshift({
-          id: 'default',
-          tripTitle: tripConfig.tripTitle || 'Annual College Industrial & Leisure Trip',
-          destination: tripConfig.destination || 'Munnar, Vagamon & Kochi',
-          tripAmount: Number(tripConfig.tripAmount) || 1500,
-          advanceAmount: Number(tripConfig.advanceAmount) || 500,
-          receiverName: tripConfig.receiverName || 'Organizer',
-          createdAt: 0
-        });
-      }
-
-      const uniqueMap = new Map();
-      tripsToDisplay.forEach(t => {
-        if (!uniqueMap.has(t.id)) uniqueMap.set(t.id, t);
-      });
-      tripsToDisplay = Array.from(uniqueMap.values());
 
       // Trip Isolation: Normal admins only see trips assigned to them or created by them
       if (isAdminLoggedIn && currentAdminRole === 'admin' && currentAdminUser && Array.isArray(currentAdminUser.assignedTrips) && !currentAdminUser.assignedTrips.includes('*')) {
-        tripsToDisplay = tripsToDisplay.filter(t => currentAdminUser.assignedTrips.includes(t.id) || t.createdBy === currentAdminUser.email);
+        tripsToDisplay = tripsToDisplay.filter(t => 
+          currentAdminUser.assignedTrips.includes(t.id) || 
+          t.createdBy === currentAdminUser.email ||
+          (Array.isArray(t.assignedAdmins) && t.assignedAdmins.includes(currentAdminUser.email))
+        );
+      }
+
+      const countBadge = document.getElementById('tripsCountBadgeText');
+      if (countBadge) countBadge.textContent = tripsToDisplay.length;
+
+      if (tripsToDisplay.length === 0) {
+        container.innerHTML = `
+          <div class="p-6 text-center text-slate-400 text-xs bg-slate-50 border border-slate-200 rounded-2xl">
+            <i data-lucide="compass" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
+            <p class="font-bold text-slate-600">No active trips found.</p>
+            <p class="text-[11px] mt-0.5">Click "Create New Trip" above to add your first trip.</p>
+          </div>
+        `;
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        return;
       }
 
       container.innerHTML = tripsToDisplay.map(t => {
@@ -8557,25 +8862,66 @@ function shareMyParticipantPassWhatsApp() {
     function openCreateTripModal() {
       const titleInput = document.getElementById('newTripTitle');
       const slugInput = document.getElementById('newTripSlug');
-      const destInput = document.getElementById('newTripDest');
+      const destInput = document.getElementById('newTripDestination') || document.getElementById('newTripDest');
       const dateInput = document.getElementById('newTripDate');
       const amountInput = document.getElementById('newTripAmount');
       const advInput = document.getElementById('newTripAdvance');
-      const upiInput = document.getElementById('newTripUpi');
-      const recInput = document.getElementById('newTripReceiver');
+      const upiInput = document.getElementById('newTripUpiId') || document.getElementById('newTripUpi');
+      const recInput = document.getElementById('newTripReceiverName') || document.getElementById('newTripReceiver');
 
       if (titleInput) titleInput.value = '';
-      if (slugInput) slugInput.value = '';
+      if (slugInput) {
+        slugInput.value = '';
+        delete slugInput.dataset.manual;
+      }
       if (destInput) destInput.value = '';
-      if (dateInput) dateInput.value = '';
-      if (amountInput) amountInput.value = '1500';
+      if (dateInput) {
+        const d = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+        dateInput.value = d.toISOString().split('T')[0];
+      }
+      if (amountInput) amountInput.value = '2500';
       if (advInput) advInput.value = '500';
       if (upiInput) upiInput.value = tripConfig.upiId || 'mohdshemeemkp@oksbi';
       if (recInput) recInput.value = tripConfig.receiverName || 'Mohd Shemeem KP';
 
+      // Populate Admin 1, Admin 2, Admin 3... checklist
+      const adminsContainer = document.getElementById('newTripAdminsChecklist');
+      if (adminsContainer) {
+        const nonBossAdmins = allAdminUsers.filter(u => u.role !== 'boss');
+        if (nonBossAdmins.length === 0) {
+          adminsContainer.innerHTML = `
+            <div class="text-center py-2 text-xs text-slate-400">
+              <span>No registered managers yet. Boss will directly manage this trip.</span>
+            </div>
+          `;
+        } else {
+          adminsContainer.innerHTML = nonBossAdmins.map((u, idx) => {
+            const isSelf = currentAdminRole === 'admin' && currentAdminUser && currentAdminUser.id === u.id;
+            return `
+              <label class="flex items-center gap-2 p-1.5 rounded-lg bg-white border border-slate-200 cursor-pointer text-xs hover:border-purple-300 transition">
+                <input
+                  type="checkbox"
+                  name="chkNewTripAdmin"
+                  value="${escapeHtml(u.id)}"
+                  data-email="${escapeHtml(u.email || '')}"
+                  class="w-3.5 h-3.5 text-purple-600 rounded"
+                  ${isSelf ? 'checked' : ''}
+                />
+                <span class="w-4 h-4 rounded-full bg-purple-600 text-white text-[9px] flex items-center justify-center font-black">A${idx + 1}</span>
+                <span class="font-bold text-slate-800">Admin ${idx + 1}: ${escapeHtml(u.name || 'Admin')}</span>
+                <span class="font-mono text-[10px] text-slate-400">(${escapeHtml(u.email || '')})</span>
+              </label>
+            `;
+          }).join('');
+        }
+      }
+
       const modal = document.getElementById('newTripModal');
       if (modal) modal.classList.remove('hidden');
       if (titleInput) titleInput.focus();
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
     }
 
     function closeCreateTripModal() {
@@ -8595,18 +8941,27 @@ function shareMyParticipantPassWhatsApp() {
     }
 
     async function handleCreateTripSubmit(e) {
-      e.preventDefault();
+      if (e && e.preventDefault) e.preventDefault();
+
       const title = (document.getElementById('newTripTitle')?.value || '').trim();
       let slug = (document.getElementById('newTripSlug')?.value || '').trim().toLowerCase();
-      const destination = (document.getElementById('newTripDest')?.value || '').trim();
-      const tripDate = document.getElementById('newTripDate')?.value || '';
-      const tripAmount = Number(document.getElementById('newTripAmount')?.value) || 1500;
+      const destEl = document.getElementById('newTripDestination') || document.getElementById('newTripDest');
+      const destination = (destEl?.value || '').trim();
+      const tripDate = document.getElementById('newTripDate')?.value || new Date().toISOString().split('T')[0];
+      const tripAmount = Number(document.getElementById('newTripAmount')?.value) || 2500;
       const advanceAmount = Number(document.getElementById('newTripAdvance')?.value) || 500;
-      const upiId = (document.getElementById('newTripUpi')?.value || '').trim() || tripConfig.upiId;
-      const receiverName = (document.getElementById('newTripReceiver')?.value || '').trim() || tripConfig.receiverName;
+      const upiEl = document.getElementById('newTripUpiId') || document.getElementById('newTripUpi');
+      const upiId = (upiEl?.value || '').trim() || tripConfig.upiId || 'mohdshemeemkp@oksbi';
+      const receiverEl = document.getElementById('newTripReceiverName') || document.getElementById('newTripReceiver');
+      const receiverName = (receiverEl?.value || '').trim() || tripConfig.receiverName || 'Mohd Shemeem KP';
 
-      if (!title || !destination) {
-        showToast('Please enter trip title and destination.', 'error');
+      if (!title) {
+        showToast('Please enter trip title.', 'error');
+        return;
+      }
+
+      if (!destination) {
+        showToast('Please enter trip destination.', 'error');
         return;
       }
 
@@ -8622,13 +8977,37 @@ function shareMyParticipantPassWhatsApp() {
         return;
       }
 
-      const btn = document.getElementById('btnSubmitNewTrip');
+      const btn = document.getElementById('btnCreateTripSubmit') || document.getElementById('btnSubmitNewTrip');
       if (btn) {
         btn.disabled = true;
         btn.textContent = 'Creating Trip...';
       }
 
       try {
+        const creatorEmail = (currentAdminUser && currentAdminUser.email) 
+          ? currentAdminUser.email 
+          : (currentAdminRole === 'boss' ? (tripConfig.bossEmail || BOSS_DEFAULT_EMAIL) : 'admin');
+
+        // Collect assigned admins (Admin 1, Admin 2, Admin 3...)
+        const selectedAdminCheckboxes = document.querySelectorAll('input[name="chkNewTripAdmin"]:checked');
+        const assignedAdminEmails = [];
+        const assignedAdminIds = [];
+
+        selectedAdminCheckboxes.forEach(cb => {
+          assignedAdminIds.push(cb.value);
+          if (cb.dataset.email) assignedAdminEmails.push(cb.dataset.email);
+        });
+
+        // If creator is normal admin, ensure they are in assignedAdmins
+        if (currentAdminRole === 'admin' && currentAdminUser && currentAdminUser.email) {
+          if (!assignedAdminEmails.includes(currentAdminUser.email)) {
+            assignedAdminEmails.push(currentAdminUser.email);
+          }
+          if (currentAdminUser.id && !assignedAdminIds.includes(currentAdminUser.id)) {
+            assignedAdminIds.push(currentAdminUser.id);
+          }
+        }
+
         const newTripData = {
           id: slug,
           tripTitle: title,
@@ -8638,30 +9017,40 @@ function shareMyParticipantPassWhatsApp() {
           advanceAmount,
           upiId,
           receiverName,
-          createdBy: currentAdminUser?.email || 'admin',
+          createdBy: creatorEmail,
+          assignedAdmins: assignedAdminEmails,
           customLogoUrl: DEFAULT_LOGO_URL,
           departments: ['BCA', 'B.Sc Computer Science', 'B.Com', 'BBA', 'General'],
           expenseCategories: ['Transportation', 'Resort / Stay', 'Food & Snacks', 'Entry & Permits', 'Misc / Other'],
           createdAt: Date.now()
         };
 
-        // If normal admin creates trip, auto-assign this trip to them
-        if (currentAdminRole === 'admin' && currentAdminUser && currentAdminUser.id) {
-          try {
-            const updatedAssigned = [...(currentAdminUser.assignedTrips || []), slug];
-            currentAdminUser.assignedTrips = updatedAssigned;
-            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admin_users', currentAdminUser.id), {
-              assignedTrips: updatedAssigned
-            });
-          } catch (eAssigned) {
-            console.warn('Could not auto-assign new trip to admin:', eAssigned);
+        // Update each assigned admin's assignedTrips in Firestore
+        for (const adminId of assignedAdminIds) {
+          const adminUser = allAdminUsers.find(u => u.id === adminId);
+          if (adminUser) {
+            const updated = Array.isArray(adminUser.assignedTrips) ? [...adminUser.assignedTrips] : [];
+            if (!updated.includes(slug)) updated.push(slug);
+            adminUser.assignedTrips = updated;
+            try {
+              await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admin_users', adminId), {
+                assignedTrips: updated
+              });
+            } catch (eAssigned) {
+              console.warn('Could not auto-assign new trip to admin:', eAssigned);
+            }
           }
         }
 
-        // 1. Add to trips_master
+        // Add to local allTrips cache immediately
+        if (!allTrips.some(t => t.id === slug)) {
+          allTrips.push(newTripData);
+        }
+
+        // 1. Add to trips_master in Firestore
         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trips_master', slug), newTripData);
 
-        // 2. Add config to trip_settings
+        // 2. Add config to trip_settings in Firestore
         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'trip_' + slug), {
           ...newTripData,
           showItineraryToUsers: true,
@@ -8669,12 +9058,17 @@ function shareMyParticipantPassWhatsApp() {
         });
 
         // 3. Log event
-        logSecurityEvent('TRIP_CREATE', slug, `Created trip "${title}"`);
+        logSecurityEvent('TRIP_CREATE', slug, `Created trip "${title}" assigned to ${assignedAdminEmails.length} admin(s)`);
 
         closeCreateTripModal();
         showToast(`Trip "${title}" created successfully!`, 'success');
 
-        // 4. Switch to this new trip automatically
+        // 4. Update UI & switch to this new trip automatically
+        updateActiveTripUI();
+        renderTripsListInModal();
+        if (typeof updateBossGlobalKPIs === 'function') updateBossGlobalKPIs();
+        if (typeof renderBossTripsHub === 'function') renderBossTripsHub();
+
         switchActiveTrip(slug);
       } catch (err) {
         console.error('Error creating trip:', err);
@@ -8682,7 +9076,8 @@ function shareMyParticipantPassWhatsApp() {
       } finally {
         if (btn) {
           btn.disabled = false;
-          btn.textContent = 'Create Trip';
+          btn.innerHTML = '<i data-lucide="check" class="w-4 h-4 inline mr-1"></i> Create &amp; Switch to Trip';
+          if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
         }
       }
     }
@@ -9141,46 +9536,154 @@ function shareMyParticipantPassWhatsApp() {
     // BOSS ADMIN & MULTI-ADMIN MANAGEMENT SYSTEM
     // ==========================================
 
+    // =========================================================================
+    // BOSS MASTER COMMAND SUITE: STATE & MULTI-PILLAR LOGIC
+    // =========================================================================
+    let activeBossDashboardTab = 'admins';
+    let activeBossAdminFilter = 'all';
+
+    function switchBossDashboardTab(tab) {
+      activeBossDashboardTab = tab;
+      const tabs = ['admins', 'trips', 'payments'];
+
+      tabs.forEach(t => {
+        const btn = document.getElementById(`bossSubTabBtn-${t}`);
+        const pillar = document.getElementById(`bossPillar-${t}`);
+        if (!btn || !pillar) return;
+
+        if (t === tab) {
+          btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-2 transition bg-purple-600 text-white shadow-sm';
+          pillar.classList.remove('hidden');
+        } else {
+          btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-white border border-slate-200 text-slate-600 hover:text-purple-600';
+          pillar.classList.add('hidden');
+        }
+      });
+
+      updateBossGlobalKPIs();
+
+      if (tab === 'admins') {
+        renderBossAdminsList();
+      } else if (tab === 'trips') {
+        renderBossTripsHub();
+      } else if (tab === 'payments') {
+        renderBossGlobalPayments();
+      }
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function setBossAdminStatusFilter(status) {
+      activeBossAdminFilter = status;
+      const statuses = ['all', 'pending', 'approved', 'suspended'];
+      statuses.forEach(s => {
+        const btn = document.getElementById(`bossAdminFilterBtn-${s}`);
+        if (!btn) return;
+        if (s === status) {
+          btn.className = 'px-3 py-1.5 rounded-xl bg-purple-600 text-white font-bold text-xs shadow-xs transition';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs transition';
+        }
+      });
+      renderBossAdminsList();
+    }
+
+    function updateBossGlobalKPIs() {
+      // Grand collections across all trips
+      const totalCol = rawPaymentsList.reduce((sum, p) => sum + (Number(p.amountPaid) || 0), 0);
+      const verCol = rawPaymentsList.filter(p => p.status === 'Verified').reduce((sum, p) => sum + (Number(p.amountPaid) || 0), 0);
+      const totalDues = rawPaymentsList.reduce((sum, p) => sum + getBalanceDue(p), 0);
+
+      const totalAdmins = allAdminUsers.length;
+      const pendingAdmins = allAdminUsers.filter(u => u.status === 'Pending Approval').length;
+      const activeAdmins = allAdminUsers.filter(u => u.status === 'Approved').length;
+
+      let uniqueTripsCount = allTrips.length;
+      if (uniqueTripsCount === 0 || !allTrips.some(t => t.id === 'default')) {
+        uniqueTripsCount = Math.max(1, uniqueTripsCount);
+      }
+      const totalStudents = rawPaymentsList.length;
+
+      const elTotCol = document.getElementById('bossStatTotalCollections');
+      const elVerCol = document.getElementById('bossStatVerifiedCollections');
+      const elTotDue = document.getElementById('bossStatTotalDues');
+      const elTotAdm = document.getElementById('bossStatTotalAdmins');
+      const elAdmSub = document.getElementById('bossStatAdminsSubtext');
+      const elTotTrp = document.getElementById('bossStatTotalTrips');
+      const elTotStu = document.getElementById('bossStatTotalStudents');
+
+      if (elTotCol) elTotCol.textContent = formatINR(totalCol);
+      if (elVerCol) elVerCol.textContent = formatINR(verCol);
+      if (elTotDue) elTotDue.textContent = formatINR(totalDues);
+      if (elTotAdm) elTotAdm.textContent = totalAdmins;
+      if (elAdmSub) elAdmSub.textContent = `${activeAdmins} Active • ${pendingAdmins} Pending`;
+      if (elTotTrp) elTotTrp.textContent = uniqueTripsCount;
+      if (elTotStu) elTotStu.textContent = totalStudents;
+
+      // Tab badges
+      const badgeAdm = document.getElementById('bossTabBadgeAdmins');
+      const badgeTrp = document.getElementById('bossTabBadgeTrips');
+      const badgePay = document.getElementById('bossTabBadgePayments');
+
+      if (badgeAdm) badgeAdm.textContent = totalAdmins;
+      if (badgeTrp) badgeTrp.textContent = uniqueTripsCount;
+      if (badgePay) badgePay.textContent = totalStudents;
+    }
+
     function renderBossAdminsList() {
+      updateBossGlobalKPIs();
       const container = document.getElementById('bossAdminsListContainer');
-      const totalStat = document.getElementById('bossStatTotalAdmins');
-      const pendingStat = document.getElementById('bossStatPendingAdmins');
-      const activeStat = document.getElementById('bossStatActiveAdmins');
-      const tripsStat = document.getElementById('bossStatTotalTrips');
-      const countBadge = document.getElementById('bossAdminsCountBadge');
-
-      const total = allAdminUsers.length;
-      const pending = allAdminUsers.filter(u => u.status === 'Pending Approval').length;
-      const approved = allAdminUsers.filter(u => u.status === 'Approved').length;
-
-      if (totalStat) totalStat.textContent = total;
-      if (pendingStat) pendingStat.textContent = pending;
-      if (activeStat) activeStat.textContent = approved;
-      if (tripsStat) tripsStat.textContent = allTrips.length;
-      if (countBadge) countBadge.textContent = `${total} registered`;
-
       if (!container) return;
 
-      if (allAdminUsers.length === 0) {
+      const searchInput = document.getElementById('bossAdminSearchInput');
+      const query = (searchInput?.value || '').toLowerCase().trim();
+
+      let filtered = [...allAdminUsers];
+
+      if (activeBossAdminFilter === 'pending') {
+        filtered = filtered.filter(u => u.status === 'Pending Approval');
+      } else if (activeBossAdminFilter === 'approved') {
+        filtered = filtered.filter(u => u.status === 'Approved');
+      } else if (activeBossAdminFilter === 'suspended') {
+        filtered = filtered.filter(u => u.status === 'Suspended');
+      }
+
+      if (query) {
+        filtered = filtered.filter(u => 
+          (u.name || '').toLowerCase().includes(query) ||
+          (u.email || '').toLowerCase().includes(query) ||
+          (u.phone || '').includes(query) ||
+          (u.requestedTrip || '').toLowerCase().includes(query)
+        );
+      }
+
+      if (filtered.length === 0) {
         container.innerHTML = `
           <div class="p-8 text-center bg-slate-50 border border-slate-200/80 rounded-2xl">
             <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mx-auto mb-2 font-bold">
               <i data-lucide="users" class="w-5 h-5"></i>
             </div>
-            <p class="text-sm font-bold text-slate-700">No registered admins yet</p>
-            <p class="text-xs text-slate-400 mt-0.5">Managers who register via the login form will appear here for your review and approval.</p>
+            <p class="text-sm font-bold text-slate-700">${allAdminUsers.length === 0 ? 'No registered admins yet' : 'No admins match current filter'}</p>
+            <p class="text-xs text-slate-400 mt-0.5">${allAdminUsers.length === 0 ? 'Managers who register via the login form will appear here for your review and approval.' : 'Try selecting another status tab or adjusting your search keyword.'}</p>
           </div>
         `;
         if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
         return;
       }
 
-      container.innerHTML = allAdminUsers.map(u => {
+      const nonBossAdmins = allAdminUsers.filter(u => u.role !== 'boss');
+
+      container.innerHTML = filtered.map((u, idx) => {
         const isPending = u.status === 'Pending Approval';
         const isApproved = u.status === 'Approved';
         const isSuspended = u.status === 'Suspended';
         const assigned = Array.isArray(u.assignedTrips) ? u.assignedTrips : [];
         const isGlobal = assigned.includes('*');
+
+        const adminIndex = nonBossAdmins.findIndex(a => a.id === u.id);
+        const adminBadgeTitle = u.role === 'boss' ? 'Boss Admin 👑' : `Admin ${adminIndex >= 0 ? adminIndex + 1 : idx + 1}`;
 
         // Calculate exact total trips under this admin
         let totalTripsUnderThisAdmin = 0;
@@ -9189,12 +9692,17 @@ function shareMyParticipantPassWhatsApp() {
           totalTripsUnderThisAdmin = allTrips.length;
           matchedTrips = allTrips;
         } else {
-          totalTripsUnderThisAdmin = assigned.length;
-          matchedTrips = allTrips.filter(t => assigned.includes(t.id));
+          matchedTrips = allTrips.filter(t => 
+            assigned.includes(t.id) || 
+            (Array.isArray(t.assignedAdmins) && t.assignedAdmins.includes(u.email)) ||
+            (t.createdBy && t.createdBy === u.email)
+          );
+          totalTripsUnderThisAdmin = matchedTrips.length;
         }
 
         // Calculate total students & total collections under this admin's trips
-        const adminPayments = rawPaymentsList.filter(p => isGlobal || assigned.includes(p.tripId || 'default'));
+        const matchedTripIds = matchedTrips.map(t => t.id);
+        const adminPayments = rawPaymentsList.filter(p => isGlobal || matchedTripIds.includes(p.tripId));
         const totalStudentsUnderAdmin = adminPayments.length;
         const totalCollectedUnderAdmin = adminPayments.filter(p => p.status === 'Verified').reduce((sum, p) => sum + (Number(p.amountPaid) || 0), 0);
 
@@ -9203,12 +9711,14 @@ function shareMyParticipantPassWhatsApp() {
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div class="space-y-2 min-w-0 flex-1">
                 <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${u.role === 'boss' ? 'bg-purple-600 text-white shadow-xs' : 'bg-purple-100 text-purple-900 border border-purple-200'}">
+                    ${adminBadgeTitle}
+                  </span>
                   <h5 class="font-bold text-slate-900 text-sm sm:text-base">${escapeHtml(u.name || 'Unnamed')}</h5>
                   <span class="font-mono text-xs text-slate-500">${escapeHtml(u.email || '')}</span>
                   <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${isPending ? 'bg-amber-100 text-amber-800 border border-amber-300' : (isApproved ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-rose-100 text-rose-800 border border-rose-300')}">
                     ${escapeHtml(u.status || 'Pending Approval')}
                   </span>
-                  ${u.role === 'boss' ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-purple-100 text-purple-800 border border-purple-300">Boss Admin</span>' : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-slate-100 text-slate-600">Trip Manager</span>'}
                 </div>
 
                 <div class="flex items-center gap-3 text-xs text-slate-500 flex-wrap">
@@ -9221,7 +9731,7 @@ function shareMyParticipantPassWhatsApp() {
                 <div class="pt-2 border-t border-slate-100 flex items-center gap-2 flex-wrap">
                   <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
                     <i data-lucide="compass" class="w-3.5 h-3.5 text-purple-600"></i>
-                    <span>Total Trips:</span>
+                    <span>Assigned Trips:</span>
                   </span>
                   <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${totalTripsUnderThisAdmin > 0 ? 'bg-purple-100 text-purple-900 border border-purple-200' : 'bg-slate-100 text-slate-600'}">
                     ${isGlobal ? `All Trips (${totalTripsUnderThisAdmin} Trips Total) 🌐` : `${totalTripsUnderThisAdmin} ${totalTripsUnderThisAdmin === 1 ? 'Trip' : 'Trips'} Assigned`}
@@ -9229,7 +9739,7 @@ function shareMyParticipantPassWhatsApp() {
 
                   <!-- Performance metrics under this admin -->
                   <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                    👥 ${totalStudentsUnderAdmin} Students (₹${totalCollectedUnderAdmin.toLocaleString('en-IN')} Collected)
+                    👥 ${totalStudentsUnderAdmin} Students (${formatINR(totalCollectedUnderAdmin)} Collected)
                   </span>
                 </div>
 
@@ -9307,6 +9817,671 @@ function shareMyParticipantPassWhatsApp() {
 
       if (window.lucide && typeof lucide.createIcons === 'function') {
         lucide.createIcons();
+      }
+    }
+
+    function renderBossTripsHub() {
+      const container = document.getElementById('bossTripsHubContainer');
+      if (!container) return;
+
+      const searchInput = document.getElementById('bossTripSearchInput');
+      const query = (searchInput?.value || '').toLowerCase().trim();
+
+      let tripsList = [...allTrips];
+
+      if (query) {
+        tripsList = tripsList.filter(t => 
+          (t.tripTitle || '').toLowerCase().includes(query) ||
+          (t.destination || '').toLowerCase().includes(query) ||
+          (t.id || '').toLowerCase().includes(query) ||
+          (t.receiverName || '').toLowerCase().includes(query) ||
+          (t.createdBy || '').toLowerCase().includes(query)
+        );
+      }
+
+      if (tripsList.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center bg-slate-50 border border-slate-200/80 rounded-2xl col-span-full">
+            <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mx-auto mb-2 font-bold">
+              <i data-lucide="compass" class="w-5 h-5"></i>
+            </div>
+            <p class="text-sm font-bold text-slate-700">${allTrips.length === 0 ? 'No trips created yet' : 'No matching trips found'}</p>
+            <p class="text-xs text-slate-400 mt-0.5">${allTrips.length === 0 ? 'Click "Create New Trip" to launch your first college trip under Admin 1, 2, 3.' : 'Try adjusting your search query or create a new trip.'}</p>
+          </div>
+        `;
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        return;
+      }
+
+      const nonBossAdmins = allAdminUsers.filter(u => u.role !== 'boss');
+
+      container.innerHTML = tripsList.map(t => {
+        const isActive = t.id === currentTripId;
+        const tripPayments = rawPaymentsList.filter(p => (p.tripId || '') === t.id);
+        const verifiedCount = tripPayments.filter(p => p.status === 'Verified').length;
+        const totalCollected = tripPayments.filter(p => p.status === 'Verified').reduce((sum, p) => sum + (Number(p.amountPaid) || 0), 0);
+        const totalDue = tripPayments.reduce((sum, p) => sum + getBalanceDue(p), 0);
+
+        // Find assigned admins for this trip
+        const assignedAdmins = nonBossAdmins.filter(u => 
+          (Array.isArray(t.assignedAdmins) && (t.assignedAdmins.includes(u.email) || t.assignedAdmins.includes(u.id))) ||
+          (Array.isArray(u.assignedTrips) && (u.assignedTrips.includes('*') || u.assignedTrips.includes(t.id))) ||
+          (t.createdBy && (t.createdBy === u.email || t.createdBy === u.id))
+        );
+
+        return `
+          <div class="p-5 rounded-2xl border transition-all ${isActive ? 'border-purple-400 bg-purple-50/50 shadow-md ring-2 ring-purple-400/20' : 'border-slate-200 bg-white hover:border-purple-200 shadow-sm'}">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 flex-wrap mb-1">
+                  <span class="font-mono text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">#${escapeHtml(t.id)}</span>
+                  ${isActive ? '<span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-600 text-white">Active Trip</span>' : ''}
+                  <span class="text-[10px] font-bold text-slate-400">• ${escapeHtml(t.category || 'College Tour')}</span>
+                </div>
+                <h4 class="font-extrabold text-slate-900 text-base leading-snug truncate" title="${escapeHtml(t.tripTitle || t.id)}">${escapeHtml(t.tripTitle || t.id)}</h4>
+                <p class="text-xs text-slate-500 flex items-center gap-1 mt-0.5 truncate">
+                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-purple-500 shrink-0"></i>
+                  <span>${escapeHtml(t.destination || 'Destination')}</span>
+                </p>
+              </div>
+            </div>
+
+            <!-- In-Charge Admins (Admin 1, Admin 2, Admin 3...) -->
+            <div class="p-2.5 rounded-xl bg-purple-50/70 border border-purple-100 text-xs mb-3 space-y-1.5">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="text-purple-900 font-extrabold flex items-center gap-1">
+                  <i data-lucide="shield-check" class="w-3.5 h-3.5 text-purple-600"></i>
+                  <span>Trip In-Charge Admins:</span>
+                </span>
+                <button
+                  type="button"
+                  onclick="openTripAdminAssignmentModal('${t.id}')"
+                  class="px-2 py-0.5 rounded-md bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-extrabold transition flex items-center gap-1 shadow-2xs"
+                  title="Assign Admin 1, 2, 3 to this trip"
+                >
+                  <i data-lucide="user-plus" class="w-3 h-3"></i>
+                  <span>Assign Admins (1, 2, 3...)</span>
+                </button>
+              </div>
+              <div class="flex items-center gap-1.5 flex-wrap pt-0.5">
+                ${assignedAdmins.length > 0 ? assignedAdmins.map((a, aIdx) => {
+                  const globalIdx = nonBossAdmins.findIndex(u => u.id === a.id);
+                  const adminNum = globalIdx >= 0 ? globalIdx + 1 : aIdx + 1;
+                  return `
+                    <span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-white text-purple-950 border border-purple-200 flex items-center gap-1 shadow-2xs" title="${escapeHtml(a.email || '')}">
+                      <span class="w-4 h-4 rounded-full bg-purple-600 text-white text-[9px] flex items-center justify-center font-black">A${adminNum}</span>
+                      <span>Admin ${adminNum}: ${escapeHtml(a.name || 'Unnamed')}</span>
+                    </span>
+                  `;
+                }).join('') : '<span class="text-amber-700 bg-amber-50 px-2 py-0.5 rounded text-[11px] font-medium border border-amber-200">⚠️ No Admins Assigned — Click Assign Admins</span>'}
+              </div>
+            </div>
+
+            <!-- Fee & Details -->
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100 text-xs mb-3 flex items-center justify-between">
+              <span class="text-slate-500 font-medium">Trip Fee / Advance:</span>
+              <span class="font-bold text-slate-800">${formatINR(t.tripAmount || 1500)} (Adv: ${formatINR(t.advanceAmount || 500)})</span>
+            </div>
+
+            <!-- Financials & Stats Grid -->
+            <div class="grid grid-cols-3 gap-2 text-center mb-4">
+              <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">
+                <p class="text-[10px] font-bold text-slate-500 uppercase">Students</p>
+                <p class="text-sm font-extrabold text-slate-900 mt-0.5">${tripPayments.length}</p>
+                <p class="text-[9px] text-emerald-600 font-bold">${verifiedCount} Verified</p>
+              </div>
+              <div class="p-2 rounded-xl bg-emerald-50/60 border border-emerald-100">
+                <p class="text-[10px] font-bold text-emerald-700 uppercase">Collected</p>
+                <p class="text-sm font-extrabold text-emerald-800 mt-0.5">${formatINR(totalCollected)}</p>
+                <p class="text-[9px] text-emerald-600 font-medium">Verified</p>
+              </div>
+              <div class="p-2 rounded-xl bg-amber-50/60 border border-amber-100">
+                <p class="text-[10px] font-bold text-amber-700 uppercase">Dues</p>
+                <p class="text-sm font-extrabold text-amber-800 mt-0.5">${formatINR(totalDue)}</p>
+                <p class="text-[9px] text-amber-600 font-medium">Pending</p>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-1.5 pt-3 border-t border-slate-100 flex-wrap">
+              ${!isActive ? `
+                <button
+                  type="button"
+                  onclick="switchActiveTrip('${t.id}')"
+                  class="flex-1 min-w-[90px] py-2 px-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition flex items-center justify-center gap-1 shadow-xs"
+                >
+                  <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                  <span>Switch</span>
+                </button>
+              ` : `
+                <div class="flex-1 min-w-[90px] py-2 px-2.5 rounded-xl bg-purple-100 text-purple-800 text-xs font-extrabold text-center flex items-center justify-center gap-1">
+                  <i data-lucide="activity" class="w-3.5 h-3.5"></i>
+                  <span>Current</span>
+                </div>
+              `}
+
+              <button
+                type="button"
+                onclick="openEditTripModal('${t.id}')"
+                class="p-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/90 text-xs font-bold transition shadow-2xs"
+                title="Edit Trip Details & Pricing"
+              >
+                <i data-lucide="edit-3" class="w-4 h-4 text-amber-600"></i>
+              </button>
+
+              <button
+                type="button"
+                onclick="openShareTripModal('${t.id}')"
+                class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition shadow-2xs"
+                title="Share Trip Link & QR"
+              >
+                <i data-lucide="share-2" class="w-4 h-4"></i>
+              </button>
+
+              <button
+                type="button"
+                onclick="promptDeleteTrip('${t.id}')"
+                class="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/90 text-xs font-bold transition shadow-2xs"
+                title="Delete Trip (Requires Unique Key)"
+              >
+                <i data-lucide="trash-2" class="w-4 h-4 text-rose-600"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function openTripAdminAssignmentModal(tripId) {
+      const trip = allTrips.find(t => t.id === tripId);
+      if (!trip) {
+        showToast('Trip not found.', 'error');
+        return;
+      }
+
+      const targetInp = document.getElementById('assignTargetTripId');
+      if (targetInp) targetInp.value = trip.id;
+
+      const subEl = document.getElementById('assignTripModalSubtitle');
+      if (subEl) subEl.textContent = `Managing trip: "${trip.tripTitle || trip.id}" (#${trip.id})`;
+
+      const container = document.getElementById('assignTripAdminsChecklist');
+      if (container) {
+        const managers = allAdminUsers.filter(u => u.role !== 'boss');
+        if (managers.length === 0) {
+          container.innerHTML = `
+            <div class="p-4 text-center text-xs text-slate-500">
+              <p class="font-bold text-slate-700">No managers registered yet.</p>
+              <p class="text-[10px] mt-0.5">Use "Create New Admin" in the Boss Dashboard to register Admin 1, Admin 2, Admin 3.</p>
+            </div>
+          `;
+        } else {
+          container.innerHTML = managers.map((u, idx) => {
+            const isAssigned = (Array.isArray(trip.assignedAdmins) && (trip.assignedAdmins.includes(u.email) || trip.assignedAdmins.includes(u.id))) ||
+                               (Array.isArray(u.assignedTrips) && (u.assignedTrips.includes('*') || u.assignedTrips.includes(trip.id))) ||
+                               (trip.createdBy && (trip.createdBy === u.email || trip.createdBy === u.id));
+
+            return `
+              <label class="flex items-center gap-3 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-purple-300 cursor-pointer transition">
+                <input
+                  type="checkbox"
+                  name="chkAssignTripAdmin"
+                  value="${escapeHtml(u.id)}"
+                  data-email="${escapeHtml(u.email || '')}"
+                  class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500"
+                  ${isAssigned ? 'checked' : ''}
+                />
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2">
+                    <span class="px-1.5 py-0.2 rounded text-[10px] font-black uppercase bg-purple-100 text-purple-800">Admin ${idx + 1}</span>
+                    <strong class="text-xs text-slate-900 truncate">${escapeHtml(u.name || 'Unnamed')}</strong>
+                  </div>
+                  <p class="text-[11px] text-slate-500 font-mono truncate">${escapeHtml(u.email || '')} • 📱 ${escapeHtml(u.phone || 'N/A')}</p>
+                </div>
+              </label>
+            `;
+          }).join('');
+        }
+      }
+
+      const modal = document.getElementById('tripAdminAssignModal');
+      if (modal) modal.classList.remove('hidden');
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function closeTripAdminAssignmentModal() {
+      const modal = document.getElementById('tripAdminAssignModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function saveTripAdminAssignments() {
+      const tripId = document.getElementById('assignTargetTripId')?.value;
+      if (!tripId) return;
+
+      const trip = allTrips.find(t => t.id === tripId);
+      if (!trip) return;
+
+      const btn = document.getElementById('btnSaveTripAdminAssignments');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Saving Assignments...';
+      }
+
+      try {
+        const checkboxes = document.querySelectorAll('input[name="chkAssignTripAdmin"]');
+        const selectedAdminIds = [];
+        const selectedAdminEmails = [];
+
+        checkboxes.forEach(cb => {
+          if (cb.checked) {
+            selectedAdminIds.push(cb.value);
+            if (cb.dataset.email) selectedAdminEmails.push(cb.dataset.email);
+          }
+        });
+
+        // 1. Update trip in trips_master
+        trip.assignedAdmins = selectedAdminEmails;
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trips_master', tripId), {
+          assignedAdmins: selectedAdminEmails
+        }, { merge: true });
+
+        // 2. Update each admin_users doc
+        for (const u of allAdminUsers) {
+          if (u.role === 'boss') continue;
+          let userAssigned = Array.isArray(u.assignedTrips) ? [...u.assignedTrips] : [];
+
+          if (selectedAdminIds.includes(u.id)) {
+            if (!userAssigned.includes(tripId) && !userAssigned.includes('*')) {
+              userAssigned.push(tripId);
+              u.assignedTrips = userAssigned;
+              await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admin_users', u.id), {
+                assignedTrips: userAssigned
+              });
+            }
+          } else {
+            if (userAssigned.includes(tripId)) {
+              userAssigned = userAssigned.filter(id => id !== tripId);
+              u.assignedTrips = userAssigned;
+              await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admin_users', u.id), {
+                assignedTrips: userAssigned
+              });
+            }
+          }
+        }
+
+        logSecurityEvent('TRIP_ADMIN_ASSIGN', tripId, `Assigned ${selectedAdminEmails.length} admin(s) to trip ${trip.tripTitle || tripId}`);
+        closeTripAdminAssignmentModal();
+        showToast(`Admins updated successfully for trip "${trip.tripTitle || tripId}"!`, 'success');
+
+        renderBossTripsHub();
+        renderBossAdminsList();
+        updateBossGlobalKPIs();
+      } catch (err) {
+        console.error('Error saving trip admin assignments:', err);
+        showToast('Failed to save admin assignments.', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i data-lucide="check" class="w-4 h-4 inline mr-1"></i> Save Assigned Admins';
+          if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        }
+      }
+    }
+
+    function renderBossGlobalPayments() {
+      const tbody = document.getElementById('bossPaymentsTableBody');
+      const emptyNotice = document.getElementById('bossPaymentsEmptyNotice');
+      if (!tbody) return;
+
+      const tripFilterEl = document.getElementById('bossPaymentTripFilter');
+      const statusFilterEl = document.getElementById('bossPaymentStatusFilter');
+      const searchEl = document.getElementById('bossPaymentSearchInput');
+
+      // Populate trip filter options if not yet populated or if trip count changed
+      if (tripFilterEl && (tripFilterEl.children.length <= 1 || tripFilterEl.dataset.tripCount !== String(allTrips.length))) {
+        const currentVal = tripFilterEl.value || 'all';
+        let tripsList = [...allTrips];
+        if (tripsList.length === 0 || !tripsList.some(t => t.id === 'default')) {
+          tripsList.unshift({ id: 'default', tripTitle: tripConfig.tripTitle || 'Annual College Trip' });
+        }
+        const uniqueTrips = new Map();
+        tripsList.forEach(t => { if (!uniqueTrips.has(t.id)) uniqueTrips.set(t.id, t); });
+
+        tripFilterEl.innerHTML = '<option value="all">🌐 All Trips (Global View)</option>' + 
+          Array.from(uniqueTrips.values()).map(t => `<option value="${escapeHtml(t.id)}">${escapeHtml(t.tripTitle || t.id)} (#${escapeHtml(t.id)})</option>`).join('');
+        tripFilterEl.value = currentVal;
+        tripFilterEl.dataset.tripCount = String(allTrips.length);
+      }
+
+      const tripFilter = tripFilterEl?.value || 'all';
+      const statusFilter = statusFilterEl?.value || 'all';
+      const query = (searchEl?.value || '').toLowerCase().trim();
+
+      // Trip Title lookup map
+      const tripTitleMap = new Map();
+      allTrips.forEach(t => tripTitleMap.set(t.id, t.tripTitle || t.id));
+      if (!tripTitleMap.has('default')) tripTitleMap.set('default', tripConfig.tripTitle || 'Annual College Trip');
+
+      const filtered = rawPaymentsList.filter(p => {
+        const pTripId = p.tripId || 'default';
+        const matchTrip = tripFilter === 'all' || pTripId === tripFilter;
+        const matchStatus = statusFilter === 'all' || p.status === statusFilter;
+
+        const pTripTitle = (tripTitleMap.get(pTripId) || '').toLowerCase();
+        const matchQuery = !query ||
+          (p.studentName || '').toLowerCase().includes(query) ||
+          (p.phone || '').includes(query) ||
+          (p.department || '').toLowerCase().includes(query) ||
+          (p.rollNumber || '').toLowerCase().includes(query) ||
+          (p.receiptCode || '').toLowerCase().includes(query) ||
+          (p.accessCode || '').toLowerCase().includes(query) ||
+          (p.transactionId || '').toLowerCase().includes(query) ||
+          (p.paymentApp || '').toLowerCase().includes(query) ||
+          pTripTitle.includes(query) ||
+          pTripId.toLowerCase().includes(query);
+
+        return matchTrip && matchStatus && matchQuery;
+      });
+
+      filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        if (emptyNotice) emptyNotice.classList.remove('hidden');
+        return;
+      }
+
+      if (emptyNotice) emptyNotice.classList.add('hidden');
+
+      tbody.innerHTML = filtered.map((p, idx) => {
+        const pTripId = p.tripId || 'default';
+        const pTripTitle = tripTitleMap.get(pTripId) || pTripId;
+        const bal = getBalanceDue(p);
+        const isVerified = p.status === 'Verified';
+        const isRejected = p.status === 'Rejected';
+        const statusClass = isVerified 
+          ? 'bg-emerald-100 text-emerald-800 border-emerald-300' 
+          : (isRejected ? 'bg-rose-100 text-rose-800 border-rose-300' : 'bg-amber-100 text-amber-800 border-amber-300');
+
+        return `
+          <tr class="hover:bg-purple-50/20 transition-colors">
+            <td class="py-3 px-3.5 font-mono text-xs text-slate-400 font-semibold">${idx + 1}</td>
+            <td class="py-3 px-3.5">
+              <div class="font-bold text-slate-900">${escapeHtml(p.studentName || 'Student')}</div>
+              <div class="text-[11px] text-slate-400 font-mono">${escapeHtml(p.rollNumber || 'No Roll')} • ${escapeHtml(p.department || 'N/A')}</div>
+            </td>
+            <td class="py-3 px-3.5">
+              <a href="https://wa.me/91${p.phone}" target="_blank" class="text-xs font-mono font-medium text-slate-700 hover:text-emerald-600 transition flex items-center gap-1">
+                <span>📱 ${escapeHtml(p.phone || '')}</span>
+                <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i>
+              </a>
+            </td>
+            <td class="py-3 px-3.5">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-purple-50 text-purple-900 border border-purple-200">
+                <i data-lucide="compass" class="w-3 h-3 text-purple-600 shrink-0"></i>
+                <span class="truncate max-w-[130px]" title="${escapeHtml(pTripTitle)}">${escapeHtml(pTripTitle)}</span>
+              </span>
+            </td>
+            <td class="py-3 px-3.5">
+              <div class="font-extrabold text-slate-900">${formatINR(p.amountPaid || 0)}</div>
+              <div class="text-[10px] font-bold ${bal > 0 ? 'text-amber-600' : 'text-emerald-600'}">
+                ${bal > 0 ? `Due: ${formatINR(bal)}` : 'Fully Paid ✓'}
+              </div>
+            </td>
+            <td class="py-3 px-3.5">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase border ${statusClass}">
+                ${escapeHtml(p.status || 'Pending')}
+              </span>
+            </td>
+            <td class="py-3 px-3.5">
+              <div class="font-mono text-xs text-slate-700 truncate max-w-[120px]" title="${escapeHtml(p.transactionId || '')}">
+                ${escapeHtml(p.transactionId || 'N/A')}
+              </div>
+              <div class="text-[10px] text-slate-400 font-mono">
+                ${p.paymentApp ? escapeHtml(p.paymentApp) : ''} ${p.receiptCode ? `• #${escapeHtml(p.receiptCode)}` : ''}
+              </div>
+            </td>
+            <td class="py-3 px-3.5 text-right">
+              <div class="flex items-center justify-end gap-1.5">
+                ${!isVerified ? `
+                  <button
+                    type="button"
+                    onclick="toggleVerifyStudent('${p.id}')"
+                    class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-extrabold shadow-2xs transition flex items-center gap-1"
+                    title="Verify Payment"
+                  >
+                    <i data-lucide="check" class="w-3 h-3"></i>
+                    <span>Verify</span>
+                  </button>
+                ` : ''}
+
+                <button
+                  type="button"
+                  onclick="openPaymentReceiptByStudentId('${p.id}')"
+                  class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs transition"
+                  title="View Digital Voucher"
+                >
+                  <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+                </button>
+
+                <button
+                  type="button"
+                  onclick="downloadPaymentDetailsPDF('${p.id}')"
+                  class="p-1.5 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs transition"
+                  title="Download Voucher PDF"
+                >
+                  <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    async function exportBossMasterPaymentsPDF() {
+      const tripFilterEl = document.getElementById('bossPaymentTripFilter');
+      const statusFilterEl = document.getElementById('bossPaymentStatusFilter');
+      const searchEl = document.getElementById('bossPaymentSearchInput');
+
+      const tripFilter = tripFilterEl?.value || 'all';
+      const statusFilter = statusFilterEl?.value || 'all';
+      const query = (searchEl?.value || '').toLowerCase().trim();
+
+      const tripTitleMap = new Map();
+      allTrips.forEach(t => tripTitleMap.set(t.id, t.tripTitle || t.id));
+      if (!tripTitleMap.has('default')) tripTitleMap.set('default', tripConfig.tripTitle || 'Annual College Trip');
+
+      const list = rawPaymentsList.filter(p => {
+        const pTripId = p.tripId || 'default';
+        const matchTrip = tripFilter === 'all' || pTripId === tripFilter;
+        const matchStatus = statusFilter === 'all' || p.status === statusFilter;
+        const pTripTitle = (tripTitleMap.get(pTripId) || '').toLowerCase();
+        const matchQuery = !query ||
+          (p.studentName || '').toLowerCase().includes(query) ||
+          (p.phone || '').includes(query) ||
+          (p.department || '').toLowerCase().includes(query) ||
+          (p.rollNumber || '').toLowerCase().includes(query) ||
+          (p.receiptCode || '').toLowerCase().includes(query) ||
+          (p.accessCode || '').toLowerCase().includes(query) ||
+          (p.transactionId || '').toLowerCase().includes(query) ||
+          pTripTitle.includes(query) ||
+          pTripId.toLowerCase().includes(query);
+
+        return matchTrip && matchStatus && matchQuery;
+      });
+
+      if (list.length === 0) {
+        showToast('No payment records to export in the current filter.', 'error');
+        return;
+      }
+
+      showToast('Generating Boss Master Global Payments Ledger PDF...', 'info');
+
+      const totalCollected = list.reduce((a, b) => a + (Number(b.amountPaid) || 0), 0);
+      const totalDues = list.reduce((a, b) => a + getBalanceDue(b), 0);
+      const verifiedCount = list.filter(p => p.status === 'Verified').length;
+
+      const container = document.createElement('div');
+      container.style.cssText = [
+        'position:fixed',
+        'left:0',
+        'top:0',
+        'z-index:-9999',
+        'width:1150px',
+        'background:#ffffff',
+        'color:#0f172a',
+        'font-family:Inter,system-ui,sans-serif',
+        'padding:36px',
+        'box-sizing:border-box',
+        'pointer-events:none',
+        'visibility:visible',
+        'opacity:1'
+      ].join(';');
+
+      container.innerHTML = `
+        <div style="border-bottom: 2px solid #7c3aed; padding-bottom: 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 11px; font-weight: 900; background: #7c3aed; color: #ffffff; padding: 2px 8px; border-radius: 9999px; text-transform: uppercase;">Boss Command Center</span>
+            </div>
+            <h1 style="font-size: 24px; font-weight: 800; color: #5b21b6; margin: 4px 0 2px 0;">Master Global Payments &amp; Collections Ledger</h1>
+            <p style="font-size: 12px; font-weight: 600; color: #64748b; margin: 0;">Multi-Trip Enterprise Financial Audit &amp; Verification Report</p>
+          </div>
+          <div style="text-align: right; font-size: 11px; color: #64748b; font-family: monospace;">
+            <p style="margin: 0;"><strong>Generated:</strong> ${new Date().toLocaleString('en-IN')}</p>
+            <p style="margin: 2px 0 0 0;"><strong>Trip Filter:</strong> ${escapeHtml(tripFilter)} | <strong>Status:</strong> ${escapeHtml(statusFilter)}</p>
+            <p style="margin: 2px 0 0 0;"><strong>Total Filtered:</strong> ${list.length} Student Transactions</p>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; text-align: center;">
+            <span style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase;">Students</span>
+            <strong style="display: block; font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 2px;">${list.length}</strong>
+          </div>
+          <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 12px; padding: 12px; text-align: center;">
+            <span style="font-size: 10px; font-weight: 700; color: #6d28d9; text-transform: uppercase;">Total Collections</span>
+            <strong style="display: block; font-size: 18px; font-weight: 800; color: #5b21b6; margin-top: 2px;">${formatINR(totalCollected)}</strong>
+          </div>
+          <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; text-align: center;">
+            <span style="font-size: 10px; font-weight: 700; color: #b45309; text-transform: uppercase;">Balance Dues</span>
+            <strong style="display: block; font-size: 18px; font-weight: 800; color: #92400e; margin-top: 2px;">${formatINR(totalDues)}</strong>
+          </div>
+          <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 12px; text-align: center;">
+            <span style="font-size: 10px; font-weight: 700; color: #047857; text-transform: uppercase;">Verified Rate</span>
+            <strong style="display: block; font-size: 18px; font-weight: 800; color: #065f46; margin-top: 2px;">${verifiedCount} / ${list.length} (${list.length > 0 ? Math.round((verifiedCount / list.length) * 100) : 0}%)</strong>
+          </div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 10.5px;">
+          <thead>
+            <tr style="background: #1e1b4b; color: #ffffff; text-align: left;">
+              <th style="padding: 8px 10px; border: 1px solid #312e81;">#</th>
+              <th style="padding: 8px 10px; border: 1px solid #312e81;">Student Name</th>
+              <th style="padding: 8px 10px; border: 1px solid #312e81;">Dept / Roll</th>
+              <th style="padding: 8px 10px; border: 1px solid #312e81;">Trip Name</th>
+              <th style="padding: 8px 10px; border: 1px solid #312e81;">Phone</th>
+              <th style="padding: 8px 10px; border: 1px solid #312e81; text-align: right;">Paid</th>
+              <th style="padding: 8px 10px; border: 1px solid #312e81; text-align: right;">Due</th>
+              <th style="padding: 8px 10px; border: 1px solid #312e81; text-align: center;">Status</th>
+              <th style="padding: 8px 10px; border: 1px solid #312e81;">Txn / Receipt</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.map((p, idx) => {
+              const bal = getBalanceDue(p);
+              const isVer = p.status === 'Verified';
+              const pTripId = p.tripId || 'default';
+              const pTripTitle = tripTitleMap.get(pTripId) || pTripId;
+              const bg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+              return `
+                <tr style="background: ${bg}; border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 6px 8px; border: 1px solid #e2e8f0; font-family: monospace; color: #64748b;">${idx + 1}</td>
+                  <td style="padding: 6px 8px; border: 1px solid #e2e8f0; font-weight: 700; color: #0f172a;">${escapeHtml(p.studentName || 'Student')}</td>
+                  <td style="padding: 6px 8px; border: 1px solid #e2e8f0; color: #334155;">${escapeHtml(p.department || '')} ${p.rollNumber ? '(' + escapeHtml(p.rollNumber) + ')' : ''}</td>
+                  <td style="padding: 6px 8px; border: 1px solid #e2e8f0; font-weight: 600; color: #6d28d9;">${escapeHtml(pTripTitle)}</td>
+                  <td style="padding: 6px 8px; border: 1px solid #e2e8f0; font-family: monospace; color: #334155;">${escapeHtml(p.phone || '')}</td>
+                  <td style="padding: 6px 8px; border: 1px solid #e2e8f0; text-align: right; font-weight: 700; color: #047857;">${formatINR(p.amountPaid || 0)}</td>
+                  <td style="padding: 6px 8px; border: 1px solid #e2e8f0; text-align: right; font-weight: 700; color: ${bal > 0 ? '#b45309' : '#047857'};">${bal > 0 ? formatINR(bal) : '₹0'}</td>
+                  <td style="padding: 6px 8px; border: 1px solid #e2e8f0; text-align: center;">
+                    <span style="display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; background: ${isVer ? '#d1fae5' : '#fef3c7'}; color: ${isVer ? '#065f46' : '#92400e'};">
+                      ${escapeHtml(p.status || 'Pending')}
+                    </span>
+                  </td>
+                  <td style="padding: 6px 8px; border: 1px solid #e2e8f0; font-family: monospace; font-size: 9.5px; color: #475569;">
+                    ${escapeHtml(p.transactionId || p.receiptCode || 'N/A')}
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+
+        <div style="margin-top: 24px; padding-top: 14px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #64748b;">
+          <p style="margin: 0;">Official TripPay Master Record • Supervised &amp; Signed by Boss Master Administrator</p>
+          <p style="margin: 0; font-family: monospace;">Page 1 of 1 • Total Records: ${list.length}</p>
+        </div>
+      `;
+
+      document.body.appendChild(container);
+      await new Promise(r => setTimeout(r, 120));
+
+      try {
+        const canvas = await html2canvas(container, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+          width: 1150,
+          windowWidth: 1150,
+          scrollX: 0,
+          scrollY: 0
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.98);
+        const jsPDFClass =
+          (window.jspdf && window.jspdf.jsPDF) ||
+          (window.jsPDF) ||
+          (typeof jsPDF !== 'undefined' ? jsPDF : null);
+
+        if (!jsPDFClass) throw new Error('jsPDF library not available');
+
+        const pdf = new jsPDFClass({ unit: 'mm', format: 'a4', orientation: 'landscape' });
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const pxToMm = 0.2646;
+        const wMm = (canvas.width / 2) * pxToMm;
+        const hMm = (canvas.height / 2) * pxToMm;
+        const margin = 10;
+        const usableW = pageWidth - margin * 2;
+        const usableH = pageHeight - margin * 2;
+        const sf = Math.min(usableW / wMm, usableH / hMm, 1);
+        const finalW = wMm * sf;
+        const finalH = hMm * sf;
+        const x = (pageWidth - finalW) / 2;
+        const y = Math.max(8, (pageHeight - finalH) / 2);
+
+        pdf.addImage(imgData, 'JPEG', x, y, finalW, finalH, undefined, 'FAST');
+        const filename = `TripPay_Master_Global_Payments_${Date.now()}.pdf`;
+        pdf.save(filename);
+        showToast('Boss Master Payments PDF downloaded successfully!', 'success');
+      } catch (err) {
+        console.error('Master PDF export error:', err);
+        showToast('Failed to generate Master PDF report.', 'error');
+      } finally {
+        if (container.parentNode) {
+          container.parentNode.removeChild(container);
+        }
       }
     }
 
@@ -10061,6 +11236,15 @@ function shareMyParticipantPassWhatsApp() {
 
     // Attach globals to window
     Object.assign(window, {
+      openTripAdminAssignmentModal,
+      closeTripAdminAssignmentModal,
+      saveTripAdminAssignments,
+      switchBossDashboardTab,
+      setBossAdminStatusFilter,
+      updateBossGlobalKPIs,
+      renderBossTripsHub,
+      renderBossGlobalPayments,
+      exportBossMasterPaymentsPDF,
       closeDeleteTripKeyModal,
       executeDeleteTripWithKey,
       setForgotPasswordMode,
@@ -10264,6 +11448,23 @@ function shareMyParticipantPassWhatsApp() {
       updateActiveTripUI();
       restoreSessionsFromStorage();
       updateAdminUIState();
+
+      // Boss Master Command Suite Event Listeners
+      const bossAdmSearch = document.getElementById('bossAdminSearchInput');
+      if (bossAdmSearch) bossAdmSearch.addEventListener('input', () => renderBossAdminsList());
+
+      const bossTrpSearch = document.getElementById('bossTripSearchInput');
+      if (bossTrpSearch) bossTrpSearch.addEventListener('input', () => renderBossTripsHub());
+
+      const bossPaySearch = document.getElementById('bossPaymentSearchInput');
+      if (bossPaySearch) bossPaySearch.addEventListener('input', () => renderBossGlobalPayments());
+
+      const bossPayTrpFilter = document.getElementById('bossPaymentTripFilter');
+      if (bossPayTrpFilter) bossPayTrpFilter.addEventListener('change', () => renderBossGlobalPayments());
+
+      const bossPayStatFilter = document.getElementById('bossPaymentStatusFilter');
+      if (bossPayStatFilter) bossPayStatFilter.addEventListener('change', () => renderBossGlobalPayments());
+
       lucide.createIcons();
       initFirebaseAndListeners();
     }
