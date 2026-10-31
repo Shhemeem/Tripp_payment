@@ -250,8 +250,8 @@
         </div>
       </div>
 
-      <!-- Active Trip Switcher & Share Links Pill -->
-      <div class="flex items-center gap-1.5 bg-slate-100/90 border border-slate-200/90 rounded-2xl p-1 shrink-0">
+      <!-- Active Trip Switcher & Share Links Pill (Visible only to Admin/Organizer) -->
+      <div id="headerTripSwitcherPill" class="hidden items-center gap-1.5 bg-slate-100/90 border border-slate-200/90 rounded-2xl p-1 shrink-0">
         <button
           type="button"
           onclick="openTripManagerModal()"
@@ -996,6 +996,22 @@
             </div>
           </div>
           <div class="flex items-center gap-2 flex-wrap">
+            <button
+              onclick="openTripManagerModal()"
+              class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition"
+              title="Switch or Manage Multiple Trips"
+            >
+              <i data-lucide="compass" class="w-4 h-4"></i>
+              <span>Manage Trips</span>
+            </button>
+            <button
+              onclick="openShareTripModal()"
+              class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition"
+              title="Get Shareable Payment & Login Links"
+            >
+              <i data-lucide="share-2" class="w-4 h-4"></i>
+              <span>Share Links</span>
+            </button>
             <button
               onclick="openQrScannerModal()"
               class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-extrabold text-xs flex items-center gap-1.5 shadow-md transition"
@@ -6086,15 +6102,18 @@ function shareMyParticipantPassWhatsApp() {
       const nav = document.getElementById('adminNavTabs');
       const heroBtn = document.getElementById('heroAdminEditBtn');
       const toggle = document.getElementById('adminToggleBtn');
+      const tripPill = document.getElementById('headerTripSwitcherPill');
 
       if (isAdminLoggedIn) {
         nav.classList.remove('hidden');
         heroBtn.classList.remove('hidden');
         toggle.classList.add('hidden');
+        if (tripPill) tripPill.classList.remove('hidden');
       } else {
         nav.classList.add('hidden');
         heroBtn.classList.add('hidden');
         toggle.classList.remove('hidden');
+        if (tripPill) tripPill.classList.add('hidden');
       }
       lucide.createIcons();
     }
