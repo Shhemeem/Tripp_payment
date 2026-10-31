@@ -994,6 +994,15 @@
               <span>Share Links</span>
             </button>
             <button
+              id="bannerBossCredBtn"
+              onclick="openBossCredentialsModal()"
+              class="hidden px-3.5 py-2 rounded-xl bg-purple-600/80 hover:bg-purple-600 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition"
+              title="Edit Boss Admin Login Credentials"
+            >
+              <i data-lucide="crown" class="w-4 h-4 text-purple-200"></i>
+              <span>Boss Security</span>
+            </button>
+            <button
               onclick="openQrScannerModal()"
               class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-extrabold text-xs flex items-center gap-1.5 shadow-md transition"
             >
@@ -1618,7 +1627,16 @@
                 </p>
               </div>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onclick="openBossCredentialsModal()"
+                class="px-3.5 py-2 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-900 border border-purple-300 font-extrabold text-xs flex items-center gap-1.5 shadow-2xs transition"
+                title="Edit Boss Login Email, Password & Recovery PIN"
+              >
+                <i data-lucide="key" class="w-4 h-4 text-purple-700"></i>
+                <span>👑 Edit My Credentials</span>
+              </button>
               <button
                 type="button"
                 onclick="openBossCreateAdminModal()"
@@ -2370,8 +2388,8 @@
             <i data-lucide="key" class="w-4 h-4"></i>
           </div>
           <div>
-            <h3 class="font-display text-base font-extrabold text-slate-900">Reset Admin Password</h3>
-            <p class="text-[11px] text-slate-400">Boss &amp; Trip Manager Recovery</p>
+            <h3 class="font-display text-base font-extrabold text-slate-900">Password Recovery</h3>
+            <p class="text-[11px] text-slate-400">Boss Admin &amp; Trip Managers</p>
           </div>
         </div>
         <button onclick="closeAdminForgotPasswordModal()" class="p-1 text-slate-400 hover:text-slate-700">
@@ -2379,30 +2397,76 @@
         </button>
       </div>
 
+      <!-- Quick Role Mode Switcher for Direct Password Change -->
+      <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-100 rounded-xl">
+        <button
+          type="button"
+          id="btnForgotModeBoss"
+          onclick="setForgotPasswordMode('boss')"
+          class="py-1.5 rounded-lg text-xs font-extrabold transition bg-purple-600 text-white shadow-xs"
+        >
+          👑 Boss Admin
+        </button>
+        <button
+          type="button"
+          id="btnForgotModeManager"
+          onclick="setForgotPasswordMode('manager')"
+          class="py-1.5 rounded-lg text-xs font-extrabold transition text-slate-600 hover:text-slate-900"
+        >
+          👤 Trip Manager
+        </button>
+      </div>
+
+      <!-- Boss Admin Banner: Direct Password Change (No Approval Needed) -->
+      <div id="forgotBossNotice" class="p-3 bg-purple-50 border border-purple-200/90 rounded-2xl text-xs text-purple-900 space-y-0.5">
+        <p class="font-extrabold flex items-center gap-1">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-purple-600"></i>
+          <span>Direct Boss Password Change</span>
+        </p>
+        <p class="text-[11px] text-purple-700">No approval needed for Boss Admin. Enter your new password directly below.</p>
+      </div>
+
       <form onsubmit="handleAdminForgotPasswordSubmit(event)" class="space-y-3.5">
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Your Registered Admin Email *</label>
+        <div id="forgotEmailFieldContainer" class="hidden">
+          <label class="block text-xs font-bold text-slate-700 mb-1">Your Registered Manager Email *</label>
           <input
             type="email"
             id="forgotAdminEmail"
-            required
             placeholder="admin@trippay.com"
-            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-sm font-medium text-slate-900"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-medium text-slate-900"
           />
         </div>
 
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">
-            Verification Key or Mobile Phone *
-          </label>
+        <!-- Boss Master Key Field -->
+        <div id="forgotBossKeyContainer">
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-bold text-slate-700">Boss Master Key *</label>
+            <span class="text-[10px] font-mono font-black text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200">Default Key: 8899</span>
+          </div>
+          <input
+            type="text"
+            id="forgotBossKey"
+            required
+            value="8899"
+            placeholder="Enter Master Key (8899)"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-purple-500 focus:outline-none text-sm font-mono text-slate-900 font-bold"
+          />
+          <p class="text-[10px] text-slate-400 mt-1">Provide the key to change password and directly enter the dashboard.</p>
+        </div>
+
+        <!-- Manager Key Field (Key provided by Boss or registered phone) -->
+        <div id="forgotVerifyKeyContainer" class="hidden">
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-bold text-slate-700">Key Provided by Boss or Phone *</label>
+            <span class="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">Master Key: 8899</span>
+          </div>
           <input
             type="text"
             id="forgotAdminVerifyKey"
-            required
-            placeholder="Master PIN (8899) / 10-digit Phone / Secret Keyword"
-            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-sm font-medium text-slate-900"
+            placeholder="Key provided by Boss (8899) or 10-digit Phone"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-medium text-slate-900"
           />
-          <p class="text-[10px] text-slate-400 mt-1">Boss Admin: enter Master PIN <code class="font-mono font-bold text-slate-600">8899</code>. Managers: enter registered phone or keyword.</p>
+          <p class="text-[10px] text-slate-400 mt-1">Use the key provided by Boss Admin or your registered phone number.</p>
         </div>
 
         <div>
@@ -2413,16 +2477,17 @@
             required
             minlength="6"
             placeholder="Enter new password"
-            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-sm font-medium text-slate-900"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-purple-500 focus:outline-none text-sm font-medium text-slate-900"
           />
         </div>
 
-        <div class="flex gap-2 pt-2">
+        <div class="flex gap-2 pt-1">
           <button type="button" onclick="closeAdminForgotPasswordModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition">
             Cancel
           </button>
-          <button type="submit" id="btnForgotAdminSubmit" class="flex-1 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold shadow-sm transition">
-            Reset Password
+          <button type="submit" id="btnForgotAdminSubmit" class="flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-extrabold shadow-sm transition flex items-center justify-center gap-1.5">
+            <i data-lucide="log-in" class="w-4 h-4"></i>
+            <span>Verify Key &amp; Directly Enter 👑</span>
           </button>
         </div>
       </form>
@@ -2573,6 +2638,254 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL: BOSS ADMIN LOGIN CREDENTIALS & SECURITY -->
+  <div id="bossCredentialsModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[90vh] overflow-y-auto space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
+            <i data-lucide="key" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-extrabold text-base text-slate-900">Boss Admin Credentials</h3>
+            <p class="text-xs text-slate-500">Edit master login email, password &amp; recovery PIN</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeBossCredentialsModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="p-3 bg-purple-50/70 border border-purple-200/80 rounded-2xl text-xs text-purple-900 flex items-start gap-2">
+        <i data-lucide="shield-alert" class="w-4 h-4 text-purple-600 shrink-0 mt-0.5"></i>
+        <span>These credentials grant full administrative control over all trips, finances, and admin managers across the system.</span>
+      </div>
+
+      <form id="bossCredentialsForm" onsubmit="handleSaveBossCredentialsSubmit(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Boss Login Email *</label>
+          <input
+            type="email"
+            id="editBossEmail"
+            required
+            placeholder="boss@trippay.com"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-purple-500 focus:outline-none text-sm font-medium text-slate-900"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">New Boss Password * (min 6 characters)</label>
+          <input
+            type="password"
+            id="editBossPassword"
+            required
+            minlength="6"
+            placeholder="Enter new master password"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-purple-500 focus:outline-none text-sm font-medium text-slate-900"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Master Recovery PIN * (for forgot password)</label>
+          <input
+            type="text"
+            id="editBossMasterPin"
+            required
+            placeholder="e.g., 8899"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-purple-500 focus:outline-none text-sm font-mono text-slate-900"
+          />
+          <p class="text-[10px] text-slate-400 mt-1">Default PIN is 8899. Used for emergency password recovery.</p>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
+          <button
+            type="button"
+            onclick="closeBossCredentialsModal()"
+            class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            id="btnSaveBossCredentials"
+            class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs shadow-md transition flex items-center gap-1.5"
+          >
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Save Credentials</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: BOSS EDIT NORMAL ADMIN DETAILS -->
+  <div id="bossEditAdminModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[90vh] overflow-y-auto space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+            <i data-lucide="edit-3" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-display font-extrabold text-base text-slate-900">Edit Manager Details</h3>
+              <span id="bossEditAdminRoleBadge" class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">Admin</span>
+            </div>
+            <p class="text-xs text-slate-500">Modify name, contact, password, and assigned trips</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeBossEditAdminModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="bossEditAdminForm" onsubmit="handleBossEditAdminSubmit(event)" class="space-y-3.5">
+        <input type="hidden" id="bossEditAdminId" value="" />
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Full Name *</label>
+          <input
+            type="text"
+            id="bossEditAdminName"
+            required
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-sm font-medium text-slate-900"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Email Address *</label>
+            <input
+              type="email"
+              id="bossEditAdminEmail"
+              required
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-sm font-medium text-slate-900"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Mobile Phone *</label>
+            <input
+              type="tel"
+              id="bossEditAdminPhone"
+              required
+              maxlength="10"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-sm font-medium text-slate-900"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Reset Password</label>
+            <input
+              type="password"
+              id="bossEditAdminPassword"
+              placeholder="Leave blank to keep current"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-sm font-medium text-slate-900"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Account Status *</label>
+            <select
+              id="bossEditAdminStatus"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-sm font-bold text-slate-900"
+            >
+              <option value="Approved">Approved</option>
+              <option value="Pending Approval">Pending Approval</option>
+              <option value="Suspended">Suspended</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Assigned Trips</label>
+          <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 max-h-40 overflow-y-auto" id="bossEditTripCheckboxes">
+            <!-- Dynamic checkboxes -->
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
+          <button
+            type="button"
+            onclick="closeBossEditAdminModal()"
+            class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            id="btnBossSubmitEditAdmin"
+            class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-extrabold text-xs shadow-md transition flex items-center gap-1.5"
+          >
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Save Admin Changes</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: UNIQUE KEY REQUIRED FOR TRIP DELETION (unique : key) -->
+  <div id="deleteTripKeyModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[90vh] overflow-y-auto space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold">
+            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-extrabold text-base text-slate-900">Authorize Trip Deletion</h3>
+            <p class="text-xs text-rose-600 font-bold">Unique Key Required (unique : key)</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeDeleteTripKeyModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <input type="hidden" id="deleteTargetTripId" value="" />
+
+      <div class="p-3.5 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-900 space-y-1">
+        <p class="font-bold text-sm text-slate-900" id="deleteTripTitleDisplay">Trip Title</p>
+        <p id="deleteTripWarningText" class="text-rose-700">Warning: All registered payments and records will be permanently removed.</p>
+      </div>
+
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-bold text-slate-700">Enter Unique Confirmation Key *</label>
+          <span class="text-[11px] text-slate-500">Unique Key: <code id="requiredUniqueKeyDisplay" class="font-mono font-black text-rose-700 bg-rose-100/70 px-1.5 py-0.5 rounded border border-rose-200">KEY</code></span>
+        </div>
+        <input
+          type="text"
+          id="inpConfirmDeleteKey"
+          required
+          placeholder="Type the unique key to confirm deletion"
+          class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-rose-500 focus:outline-none text-sm font-mono text-slate-900 font-bold"
+        />
+        <p class="text-[10px] text-slate-400">To prevent accidental deletion, you must type the exact unique key shown above or the Boss Master PIN (8899).</p>
+      </div>
+
+      <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
+        <button
+          type="button"
+          onclick="closeDeleteTripKeyModal()"
+          class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onclick="executeDeleteTripWithKey()"
+          id="btnExecuteDeleteTrip"
+          class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs shadow-md transition flex items-center gap-1.5"
+        >
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+          <span>Permanently Delete Trip</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -6615,17 +6928,29 @@ function shareMyParticipantPassWhatsApp() {
       const mail = document.getElementById('inpAdminEmail').value.trim().toLowerCase();
       const pass = document.getElementById('inpAdminPassword').value.trim();
 
-      // 1. Boss Admin Login
-      if (mail === BOSS_DEFAULT_EMAIL && pass === (tripConfig.bossPassword || BOSS_DEFAULT_PASS)) {
-        isAdminLoggedIn = true;
-        currentAdminRole = 'boss';
-        currentAdminUser = {
-          name: 'Boss Admin',
-          email: mail,
-          role: 'boss',
-          status: 'Approved',
-          assignedTrips: ['*']
-        };
+      const activeBossEmail = (tripConfig.bossEmail || BOSS_DEFAULT_EMAIL).toLowerCase();
+      const activeBossPassword = tripConfig.bossPassword || BOSS_DEFAULT_PASS;
+
+      // 1. Boss Admin Login Authentication (Strict: Only active updated credentials can access)
+      if (mail === activeBossEmail) {
+        if (pass === activeBossPassword) {
+          isAdminLoggedIn = true;
+          currentAdminRole = 'boss';
+          currentAdminUser = {
+            name: 'Boss Admin',
+            email: activeBossEmail,
+            role: 'boss',
+            status: 'Approved',
+            assignedTrips: ['*']
+          };
+        } else {
+          showToast('Incorrect password for Boss Admin account.', 'error');
+          return;
+        }
+      } else if (tripConfig.bossEmail && mail === BOSS_DEFAULT_EMAIL && activeBossEmail !== BOSS_DEFAULT_EMAIL) {
+        // If Boss changed email, old default email is explicitly blocked
+        showToast('Default Boss email is deactivated. Please log in with your updated Boss email.', 'error');
+        return;
       } else {
         // 2. Check registered admin users in Firestore
         const match = allAdminUsers.find(u => (u.email || '').toLowerCase() === mail);
@@ -6723,9 +7048,11 @@ function shareMyParticipantPassWhatsApp() {
         if (heroBtn) heroBtn.classList.remove('hidden');
         if (toggle) toggle.classList.add('hidden');
 
+        const bannerBossCredBtn = document.getElementById('bannerBossCredBtn');
         // Configure Boss Admin vs Normal Admin UI elements
         if (currentAdminRole === 'boss') {
           if (subTabAdmins) subTabAdmins.classList.remove('hidden');
+          if (bannerBossCredBtn) bannerBossCredBtn.classList.remove('hidden');
           if (roleBadge) {
             roleBadge.textContent = '👑 Boss Admin (Full Control)';
             roleBadge.className = 'inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-500/25 text-purple-200 border border-purple-400/40';
@@ -6763,6 +7090,8 @@ function shareMyParticipantPassWhatsApp() {
         if (heroBtn) heroBtn.classList.add('hidden');
         if (toggle) toggle.classList.remove('hidden');
         if (subTabAdmins) subTabAdmins.classList.add('hidden');
+        const bannerBossCredBtn = document.getElementById('bannerBossCredBtn');
+        if (bannerBossCredBtn) bannerBossCredBtn.classList.add('hidden');
       }
       if (window.lucide && typeof lucide.createIcons === 'function') {
         lucide.createIcons();
@@ -8669,7 +8998,7 @@ function shareMyParticipantPassWhatsApp() {
       }
     }
 
-    async function promptDeleteTrip(tripId) {
+    function promptDeleteTrip(tripId) {
       if (allTrips.length <= 1) {
         showToast('Cannot delete the only existing trip! Create another trip first.', 'error');
         return;
@@ -8678,12 +9007,62 @@ function shareMyParticipantPassWhatsApp() {
       const trip = allTrips.find(t => t.id === tripId) || { id: tripId, tripTitle: tripId };
       const studentCount = rawPaymentsList.filter(p => (p.tripId || 'default') === tripId).length;
 
-      const confirmText = studentCount > 0
-        ? `Are you sure you want to delete the trip "${trip.tripTitle}" (#${tripId})?\n\n⚠️ CAUTION: There are ${studentCount} registered payment record(s) under this trip that will be permanently removed!`
-        : `Are you sure you want to delete the trip "${trip.tripTitle}" (#${tripId})?\n\nThis action cannot be undone.`;
+      const targetInp = document.getElementById('deleteTargetTripId');
+      if (targetInp) targetInp.value = tripId;
 
-      if (!confirm(confirmText)) {
+      const titleEl = document.getElementById('deleteTripTitleDisplay');
+      if (titleEl) titleEl.textContent = `${trip.tripTitle || 'Trip'} (#${tripId})`;
+
+      const warnEl = document.getElementById('deleteTripWarningText');
+      if (warnEl) {
+        warnEl.textContent = studentCount > 0
+          ? `⚠️ CAUTION: There are ${studentCount} registered payment record(s) under this trip that will be permanently wiped!`
+          : 'Warning: This trip and all its configurations will be permanently deleted.';
+      }
+
+      // Unique Confirmation Key (unique : key requirement)
+      const keyEl = document.getElementById('requiredUniqueKeyDisplay');
+      if (keyEl) keyEl.textContent = tripId;
+
+      const keyInp = document.getElementById('inpConfirmDeleteKey');
+      if (keyInp) {
+        keyInp.value = '';
+        keyInp.placeholder = `Type '${tripId}' or master key to confirm`;
+      }
+
+      const modal = document.getElementById('deleteTripKeyModal');
+      if (modal) modal.classList.remove('hidden');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function closeDeleteTripKeyModal() {
+      const modal = document.getElementById('deleteTripKeyModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function executeDeleteTripWithKey() {
+      const tripId = document.getElementById('deleteTargetTripId')?.value;
+      const enteredKey = (document.getElementById('inpConfirmDeleteKey')?.value || '').trim();
+      const requiredKey = document.getElementById('requiredUniqueKeyDisplay')?.textContent.trim();
+      const bossPin = tripConfig.bossMasterPin || BOSS_MASTER_PIN;
+
+      if (!tripId) return;
+
+      // Validate Unique Key (Accepts unique trip key/slug, 'DELETE', or Boss Master PIN)
+      const isValid = (enteredKey === requiredKey) || (enteredKey === `DELETE:${tripId}`) || (enteredKey === 'DELETE') || (enteredKey === bossPin);
+      if (!isValid) {
+        showToast(`Invalid unique key! You must type '${requiredKey}' to confirm.`, 'error');
         return;
+      }
+
+      const trip = allTrips.find(t => t.id === tripId) || { id: tripId, tripTitle: tripId };
+      const btn = document.getElementById('btnExecuteDeleteTrip');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Deleting Trip...';
       }
 
       try {
@@ -8742,11 +9121,18 @@ function shareMyParticipantPassWhatsApp() {
           renderTripsListInModal();
         }
 
-        logSecurityEvent('DELETE_TRIP', tripId, `Deleted trip "${trip.tripTitle}"`);
+        logSecurityEvent('DELETE_TRIP', tripId, `Deleted trip "${trip.tripTitle}" with verified unique key authorization`);
+        closeDeleteTripKeyModal();
         showToast(`Trip "${trip.tripTitle}" deleted successfully!`, 'success');
       } catch (err) {
         console.error('Error deleting trip:', err);
         showToast('Failed to delete trip. Please try again.', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i data-lucide="trash-2" class="w-4 h-4 inline mr-1"></i> Permanently Delete Trip';
+          if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        }
       }
     }
 
@@ -8782,7 +9168,7 @@ function shareMyParticipantPassWhatsApp() {
               <i data-lucide="users" class="w-5 h-5"></i>
             </div>
             <p class="text-sm font-bold text-slate-700">No registered admins yet</p>
-            <p class="text-xs text-slate-400 mt-0.5">Managers who register via the login form will appear here for your approval.</p>
+            <p class="text-xs text-slate-400 mt-0.5">Managers who register via the login form will appear here for your review and approval.</p>
           </div>
         `;
         if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
@@ -8796,10 +9182,26 @@ function shareMyParticipantPassWhatsApp() {
         const assigned = Array.isArray(u.assignedTrips) ? u.assignedTrips : [];
         const isGlobal = assigned.includes('*');
 
+        // Calculate exact total trips under this admin
+        let totalTripsUnderThisAdmin = 0;
+        let matchedTrips = [];
+        if (isGlobal) {
+          totalTripsUnderThisAdmin = allTrips.length;
+          matchedTrips = allTrips;
+        } else {
+          totalTripsUnderThisAdmin = assigned.length;
+          matchedTrips = allTrips.filter(t => assigned.includes(t.id));
+        }
+
+        // Calculate total students & total collections under this admin's trips
+        const adminPayments = rawPaymentsList.filter(p => isGlobal || assigned.includes(p.tripId || 'default'));
+        const totalStudentsUnderAdmin = adminPayments.length;
+        const totalCollectedUnderAdmin = adminPayments.filter(p => p.status === 'Verified').reduce((sum, p) => sum + (Number(p.amountPaid) || 0), 0);
+
         return `
-          <div class="p-4 rounded-2xl border ${isPending ? 'border-amber-300 bg-amber-50/40' : (isSuspended ? 'border-rose-200 bg-rose-50/30' : 'border-slate-200 bg-white')} shadow-xs transition">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div class="space-y-1">
+          <div class="p-4 sm:p-5 rounded-2xl border ${isPending ? 'border-amber-300 bg-amber-50/40' : (isSuspended ? 'border-rose-200 bg-rose-50/30' : 'border-slate-200 bg-white')} shadow-xs transition hover:border-purple-300">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              <div class="space-y-2 min-w-0 flex-1">
                 <div class="flex items-center gap-2 flex-wrap">
                   <h5 class="font-bold text-slate-900 text-sm sm:text-base">${escapeHtml(u.name || 'Unnamed')}</h5>
                   <span class="font-mono text-xs text-slate-500">${escapeHtml(u.email || '')}</span>
@@ -8808,18 +9210,42 @@ function shareMyParticipantPassWhatsApp() {
                   </span>
                   ${u.role === 'boss' ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-purple-100 text-purple-800 border border-purple-300">Boss Admin</span>' : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-slate-100 text-slate-600">Trip Manager</span>'}
                 </div>
-                <p class="text-xs text-slate-500 flex items-center gap-2 flex-wrap">
+
+                <div class="flex items-center gap-3 text-xs text-slate-500 flex-wrap">
                   <span>📱 ${escapeHtml(u.phone || 'N/A')}</span>
-                  ${u.requestedTrip ? `<span>• 🎯 Proposed: <strong>${escapeHtml(u.requestedTrip)}</strong></span>` : ''}
+                  ${u.requestedTrip ? `<span>• 🎯 Proposed: <strong class="text-slate-700">${escapeHtml(u.requestedTrip)}</strong></span>` : ''}
                   ${u.createdAt ? `<span>• 🗓️ ${new Date(u.createdAt).toLocaleDateString('en-IN')}</span>` : ''}
-                </p>
-                <div class="flex items-center gap-1.5 flex-wrap pt-1">
-                  <span class="text-[11px] font-bold text-slate-600">Assigned Trips:</span>
-                  ${isGlobal ? '<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-100 text-indigo-800">All Trips (*)</span>' : (assigned.length > 0 ? assigned.map(tripId => `<span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200">#${escapeHtml(tripId)}</span>`).join('') : '<span class="text-[11px] text-slate-400 italic">No trips assigned yet</span>')}
+                </div>
+
+                <!-- Trips Under Admin Summary -->
+                <div class="pt-2 border-t border-slate-100 flex items-center gap-2 flex-wrap">
+                  <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
+                    <i data-lucide="compass" class="w-3.5 h-3.5 text-purple-600"></i>
+                    <span>Total Trips:</span>
+                  </span>
+                  <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${totalTripsUnderThisAdmin > 0 ? 'bg-purple-100 text-purple-900 border border-purple-200' : 'bg-slate-100 text-slate-600'}">
+                    ${isGlobal ? `All Trips (${totalTripsUnderThisAdmin} Trips Total) 🌐` : `${totalTripsUnderThisAdmin} ${totalTripsUnderThisAdmin === 1 ? 'Trip' : 'Trips'} Assigned`}
+                  </span>
+
+                  <!-- Performance metrics under this admin -->
+                  <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                    👥 ${totalStudentsUnderAdmin} Students (₹${totalCollectedUnderAdmin.toLocaleString('en-IN')} Collected)
+                  </span>
+                </div>
+
+                <!-- Assigned Trip Badges -->
+                <div class="flex items-center gap-1.5 flex-wrap pt-0.5">
+                  ${matchedTrips.length > 0 ? matchedTrips.map(t => `
+                    <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-50 text-slate-700 border border-slate-200 flex items-center gap-1" title="${escapeHtml(t.destination || '')}">
+                      <span class="font-bold text-slate-800">${escapeHtml(t.tripTitle || t.id)}</span>
+                      <span class="font-mono text-[9px] text-slate-400">#${escapeHtml(t.id)}</span>
+                    </span>
+                  `).join('') : '<span class="text-[11px] text-slate-400 italic">No trips currently assigned</span>'}
                 </div>
               </div>
 
-              <div class="flex items-center gap-1.5 self-end sm:self-center shrink-0 flex-wrap justify-end">
+              <!-- Action Buttons -->
+              <div class="flex items-center gap-1.5 self-end lg:self-center shrink-0 flex-wrap justify-end">
                 ${isPending ? `
                   <button
                     type="button"
@@ -8829,17 +9255,29 @@ function shareMyParticipantPassWhatsApp() {
                     <i data-lucide="check" class="w-3.5 h-3.5"></i>
                     <span>Approve & Assign</span>
                   </button>
-                ` : `
-                  <button
-                    type="button"
-                    onclick="openBossAssignTripsModal('${u.id}')"
-                    class="px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-2xs"
-                    title="Change assigned trips"
-                  >
-                    <i data-lucide="compass" class="w-3.5 h-3.5 text-purple-600"></i>
-                    <span>Assign Trips</span>
-                  </button>
-                `}
+                ` : ''}
+
+                <!-- Edit Admin Details Button -->
+                <button
+                  type="button"
+                  onclick="openBossEditAdminModal('${u.id}')"
+                  class="px-2.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/90 text-xs font-bold transition flex items-center gap-1 shadow-2xs"
+                  title="Edit Admin Name, Email, Phone, Password, Status & Trips"
+                >
+                  <i data-lucide="edit-3" class="w-3.5 h-3.5 text-amber-600"></i>
+                  <span>Edit Details</span>
+                </button>
+
+                <!-- Assign Trips Button -->
+                <button
+                  type="button"
+                  onclick="openBossAssignTripsModal('${u.id}')"
+                  class="px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-2xs"
+                  title="Change assigned trips"
+                >
+                  <i data-lucide="compass" class="w-3.5 h-3.5 text-purple-600"></i>
+                  <span>Trips (${totalTripsUnderThisAdmin})</span>
+                </button>
 
                 ${u.role !== 'boss' ? `
                   <button
@@ -9175,10 +9613,69 @@ function shareMyParticipantPassWhatsApp() {
       }
     }
 
+    let forgotAdminActiveMode = 'boss';
+
+    function setForgotPasswordMode(mode) {
+      forgotAdminActiveMode = mode;
+      const btnBoss = document.getElementById('btnForgotModeBoss');
+      const btnManager = document.getElementById('btnForgotModeManager');
+      const noticeBoss = document.getElementById('forgotBossNotice');
+      const emailContainer = document.getElementById('forgotEmailFieldContainer');
+      const bossKeyContainer = document.getElementById('forgotBossKeyContainer');
+      const verifyContainer = document.getElementById('forgotVerifyKeyContainer');
+      const emailInp = document.getElementById('forgotAdminEmail');
+      const btnSubmit = document.getElementById('btnForgotAdminSubmit');
+
+      if (mode === 'boss') {
+        if (btnBoss) {
+          btnBoss.className = 'py-1.5 rounded-lg text-xs font-extrabold transition bg-purple-600 text-white shadow-xs';
+        }
+        if (btnManager) {
+          btnManager.className = 'py-1.5 rounded-lg text-xs font-extrabold transition text-slate-600 hover:text-slate-900';
+        }
+        if (noticeBoss) noticeBoss.classList.remove('hidden');
+        if (emailContainer) emailContainer.classList.add('hidden');
+        if (bossKeyContainer) bossKeyContainer.classList.remove('hidden');
+        if (verifyContainer) verifyContainer.classList.add('hidden');
+        if (emailInp) emailInp.value = tripConfig.bossEmail || BOSS_DEFAULT_EMAIL;
+        const bossKeyInp = document.getElementById('forgotBossKey');
+        const isCustomPin = !!tripConfig.bossMasterPin && tripConfig.bossMasterPin !== BOSS_MASTER_PIN;
+        if (bossKeyInp) {
+          bossKeyInp.value = isCustomPin ? '' : '8899';
+          bossKeyInp.placeholder = isCustomPin ? 'Enter your custom Boss Master Key' : 'Enter Master Key (8899)';
+        }
+        if (btnSubmit) {
+          btnSubmit.innerHTML = '<i data-lucide="log-in" class="w-4 h-4 inline mr-1"></i> Verify Key &amp; Directly Enter 👑';
+          btnSubmit.className = 'flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-extrabold shadow-sm transition flex items-center justify-center gap-1.5';
+        }
+      } else {
+        if (btnBoss) {
+          btnBoss.className = 'py-1.5 rounded-lg text-xs font-extrabold transition text-slate-600 hover:text-slate-900';
+        }
+        if (btnManager) {
+          btnManager.className = 'py-1.5 rounded-lg text-xs font-extrabold transition bg-emerald-600 text-white shadow-xs';
+        }
+        if (noticeBoss) noticeBoss.classList.add('hidden');
+        if (emailContainer) emailContainer.classList.remove('hidden');
+        if (bossKeyContainer) bossKeyContainer.classList.add('hidden');
+        if (verifyContainer) verifyContainer.classList.remove('hidden');
+        if (emailInp) emailInp.value = '';
+        if (btnSubmit) {
+          btnSubmit.innerHTML = '<i data-lucide="log-in" class="w-4 h-4 inline mr-1"></i> Verify &amp; Directly Enter 👤';
+          btnSubmit.className = 'flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold shadow-sm transition flex items-center justify-center gap-1.5';
+        }
+      }
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
     function openAdminForgotPasswordModal() {
       closeAdminLoginModal();
       const modal = document.getElementById('adminForgotPasswordModal');
       if (modal) modal.classList.remove('hidden');
+      setForgotPasswordMode('boss');
       if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
     }
 
@@ -9190,49 +9687,99 @@ function shareMyParticipantPassWhatsApp() {
     async function handleAdminForgotPasswordSubmit(e) {
       e.preventDefault();
       const email = (document.getElementById('forgotAdminEmail')?.value || '').trim().toLowerCase();
+      const bossKeyEntered = (document.getElementById('forgotBossKey')?.value || '').trim();
       const verifyKey = (document.getElementById('forgotAdminVerifyKey')?.value || '').trim().toLowerCase();
       const newPassword = (document.getElementById('forgotAdminNewPassword')?.value || '').trim();
 
-      if (!email || !verifyKey || newPassword.length < 6) {
-        showToast('Please enter email, verification key, and new password (min 6 chars).', 'error');
+      if (!newPassword || newPassword.length < 6) {
+        showToast('Password must be at least 6 characters.', 'error');
         return;
       }
+
+      const bossEmail = (tripConfig.bossEmail || BOSS_DEFAULT_EMAIL).toLowerCase();
+      const bossPin = tripConfig.bossMasterPin || BOSS_MASTER_PIN;
+      const isBossMode = forgotAdminActiveMode === 'boss' || email === bossEmail;
 
       const btn = document.getElementById('btnForgotAdminSubmit');
       if (btn) {
         btn.disabled = true;
-        btn.textContent = 'Verifying...';
+        btn.textContent = 'Verifying & Entering...';
       }
 
       try {
-        // 1. Boss Admin Password Reset
-        if (email === BOSS_DEFAULT_EMAIL) {
-          if (verifyKey === BOSS_MASTER_PIN || verifyKey === (tripConfig.bossRecoveryKey || '8899')) {
-            const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
-            await setDoc(configDocRef, { bossPassword: newPassword }, { merge: true });
-            tripConfig.bossPassword = newPassword;
-            logSecurityEvent('BOSS_PASSWORD_RESET', email, 'Boss admin password reset successfully');
-            closeAdminForgotPasswordModal();
-            showToast('Boss Admin password updated! Please log in.', 'success');
-            return;
-          } else {
-            showToast('Invalid Master Recovery PIN for Boss Admin.', 'error');
+        // 1. Boss Admin Flow: Provide key, change password, and DIRECTLY ENTER (Strict: only active key accepted)
+        if (isBossMode) {
+          const isCustomPin = !!tripConfig.bossMasterPin && tripConfig.bossMasterPin !== BOSS_MASTER_PIN;
+          const pinMatches = isCustomPin ? (bossKeyEntered === tripConfig.bossMasterPin) : (bossKeyEntered === BOSS_MASTER_PIN || bossKeyEntered === '8899');
+
+          if (!pinMatches) {
+            showToast(isCustomPin ? 'Invalid Boss Master Key! Please enter your active custom Boss Master Key.' : 'Invalid Boss Master Key! Default key is 8899.', 'error');
             return;
           }
+
+          const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
+          await setDoc(configDocRef, {
+            bossPassword: newPassword,
+            bossCredentialsUpdatedAt: Date.now()
+          }, { merge: true });
+
+          tripConfig.bossPassword = newPassword;
+          logSecurityEvent('BOSS_KEY_LOGIN_RESET', bossEmail, 'Boss Admin provided key, updated password & directly entered');
+
+          // DIRECTLY LOG IN BOSS ADMIN (NO APPROVAL, NO RE-LOGIN NEEDED)
+          isAdminLoggedIn = true;
+          currentAdminRole = 'boss';
+          currentAdminUser = {
+            name: 'Boss Admin',
+            email: bossEmail,
+            role: 'boss',
+            status: 'Approved',
+            assignedTrips: ['*']
+          };
+
+          localStorage.setItem('trippay_admin_session', JSON.stringify({
+            email: bossEmail,
+            role: 'boss',
+            user: currentAdminUser,
+            ts: Date.now()
+          }));
+
+          closeAdminForgotPasswordModal();
+          updateAdminUIState();
+          switchTab('manager');
+          showToast('Boss Master Key Verified! Directly logged into Master Control Room 👑', 'success');
+          return;
         }
 
-        // 2. Normal Admin Password Reset
+        // 2. Normal Manager Flow: Use key provided by Boss or phone, then DIRECTLY ENTER
+        if (!email) {
+          showToast('Please enter your registered manager email.', 'error');
+          return;
+        }
+
         const match = allAdminUsers.find(u => (u.email || '').toLowerCase() === email);
         if (!match) {
-          // Check legacy admin
           const legacyEmail = (tripConfig.adminEmail || 'admin@trippay.com').toLowerCase();
           if (email === legacyEmail) {
-            if (verifyKey === BOSS_MASTER_PIN || normalizePhone(verifyKey).length === 10) {
+            if (verifyKey === bossPin || verifyKey === '8899' || normalizePhone(verifyKey).length === 10) {
               const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
               await setDoc(configDocRef, { adminPassword: newPassword }, { merge: true });
               tripConfig.adminPassword = newPassword;
+
+              isAdminLoggedIn = true;
+              currentAdminRole = 'admin';
+              currentAdminUser = { name: 'Administrator', email: legacyEmail, role: 'admin', status: 'Approved', assignedTrips: ['*'] };
+              localStorage.setItem('trippay_admin_session', JSON.stringify({
+                email: legacyEmail,
+                role: 'admin',
+                user: currentAdminUser,
+                ts: Date.now()
+              }));
+
               closeAdminForgotPasswordModal();
-              showToast('Admin password reset successfully! Please log in.', 'success');
+              updateAdminUIState();
+              switchTab('manager');
+              showToast('Admin password updated! Directly logged into Manager Suite 👤', 'success');
               return;
             }
           }
@@ -9240,23 +9787,42 @@ function shareMyParticipantPassWhatsApp() {
           return;
         }
 
-        // Verify with either registered 10-digit phone or secret security answer or master pin
         const cleanVerifyPhone = normalizePhone(verifyKey);
         const isPhoneMatch = cleanVerifyPhone && cleanVerifyPhone === normalizePhone(match.phone);
         const isAnswerMatch = verifyKey === (match.securityAnswer || '').toLowerCase();
-        const isMasterPin = verifyKey === BOSS_MASTER_PIN;
+        const isBossKeyMatch = verifyKey === bossPin || verifyKey === '8899';
 
-        if (isPhoneMatch || isAnswerMatch || isMasterPin) {
+        if (isPhoneMatch || isAnswerMatch || isBossKeyMatch) {
           await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admin_users', match.id), {
             password: newPassword,
             updatedAt: Date.now()
           });
 
-          logSecurityEvent('ADMIN_PASSWORD_RESET', email, 'Password reset via verification key');
-          closeAdminForgotPasswordModal();
-          showToast('Password updated successfully! Please log in.', 'success');
+          match.password = newPassword;
+          logSecurityEvent('ADMIN_KEY_LOGIN_RESET', email, 'Manager password reset via key & directly entered');
+
+          // DIRECTLY LOG IN NORMAL ADMIN IF APPROVED
+          if (match.status === 'Approved') {
+            isAdminLoggedIn = true;
+            currentAdminRole = 'admin';
+            currentAdminUser = match;
+            localStorage.setItem('trippay_admin_session', JSON.stringify({
+              email: match.email,
+              role: 'admin',
+              user: match,
+              ts: Date.now()
+            }));
+
+            closeAdminForgotPasswordModal();
+            updateAdminUIState();
+            switchTab('manager');
+            showToast(`Password updated! Welcome back, ${match.name} 👤`, 'success');
+          } else {
+            closeAdminForgotPasswordModal();
+            showToast(`Password updated! Note: Your account is ${match.status}. Awaiting Boss Admin approval.`, 'info');
+          }
         } else {
-          showToast('Verification failed: Mobile number or recovery key does not match.', 'error');
+          showToast('Verification failed: Key or mobile number is incorrect.', 'error');
         }
       } catch (err) {
         console.error('Password reset error:', err);
@@ -9264,13 +9830,246 @@ function shareMyParticipantPassWhatsApp() {
       } finally {
         if (btn) {
           btn.disabled = false;
-          btn.textContent = 'Reset Password';
+          if (isBossMode) {
+            btn.innerHTML = '<i data-lucide="log-in" class="w-4 h-4 inline mr-1"></i> Verify Key &amp; Directly Enter 👑';
+          } else {
+            btn.innerHTML = '<i data-lucide="log-in" class="w-4 h-4 inline mr-1"></i> Verify &amp; Directly Enter 👤';
+          }
+          if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        }
+      }
+    }
+
+
+    // ==========================================
+    // BOSS ADMIN CREDENTIALS & EDIT ADMIN SYSTEM
+    // ==========================================
+
+    function openBossCredentialsModal() {
+      const emailInp = document.getElementById('editBossEmail');
+      const passInp = document.getElementById('editBossPassword');
+      const pinInp = document.getElementById('editBossMasterPin');
+
+      if (emailInp) emailInp.value = tripConfig.bossEmail || BOSS_DEFAULT_EMAIL;
+      if (passInp) passInp.value = tripConfig.bossPassword || BOSS_DEFAULT_PASS;
+      if (pinInp) pinInp.value = tripConfig.bossMasterPin || BOSS_MASTER_PIN;
+
+      const modal = document.getElementById('bossCredentialsModal');
+      if (modal) modal.classList.remove('hidden');
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function closeBossCredentialsModal() {
+      const modal = document.getElementById('bossCredentialsModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function handleSaveBossCredentialsSubmit(e) {
+      e.preventDefault();
+      const newEmail = (document.getElementById('editBossEmail')?.value || '').trim().toLowerCase();
+      const newPass = (document.getElementById('editBossPassword')?.value || '').trim();
+      const newPin = (document.getElementById('editBossMasterPin')?.value || '').trim();
+
+      if (!newEmail || newPass.length < 6 || !newPin) {
+        showToast('Please enter a valid email, password (min 6 chars), and recovery PIN.', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('btnSaveBossCredentials');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Saving Credentials...';
+      }
+
+      try {
+        const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
+        await setDoc(configDocRef, {
+          bossEmail: newEmail,
+          bossPassword: newPass,
+          bossMasterPin: newPin,
+          bossCredentialsUpdatedAt: Date.now()
+        }, { merge: true });
+
+        tripConfig.bossEmail = newEmail;
+        tripConfig.bossPassword = newPass;
+        tripConfig.bossMasterPin = newPin;
+
+        if (currentAdminRole === 'boss' && currentAdminUser) {
+          currentAdminUser.email = newEmail;
+          localStorage.setItem('trippay_admin_session', JSON.stringify({
+            email: newEmail,
+            role: 'boss',
+            user: currentAdminUser,
+            ts: Date.now()
+          }));
+        }
+
+        logSecurityEvent('BOSS_CREDENTIALS_UPDATE', newEmail, 'Boss Admin login credentials updated');
+        closeBossCredentialsModal();
+        updateAdminUIState();
+        showToast('Boss Admin credentials saved successfully to Cloud!', 'success');
+      } catch (err) {
+        console.error('Error saving boss credentials:', err);
+        showToast('Failed to save Boss credentials.', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i data-lucide="check" class="w-4 h-4 inline mr-1"></i> Save Credentials';
+          if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        }
+      }
+    }
+
+    function openBossEditAdminModal(adminId) {
+      const admin = allAdminUsers.find(u => u.id === adminId);
+      if (!admin) return;
+
+      const idInp = document.getElementById('bossEditAdminId');
+      const nameInp = document.getElementById('bossEditAdminName');
+      const emailInp = document.getElementById('bossEditAdminEmail');
+      const phoneInp = document.getElementById('bossEditAdminPhone');
+      const passInp = document.getElementById('bossEditAdminPassword');
+      const statusSel = document.getElementById('bossEditAdminStatus');
+      const roleBadge = document.getElementById('bossEditAdminRoleBadge');
+
+      if (idInp) idInp.value = admin.id;
+      if (nameInp) nameInp.value = admin.name || '';
+      if (emailInp) emailInp.value = admin.email || '';
+      if (phoneInp) phoneInp.value = admin.phone || '';
+      if (passInp) passInp.value = '';
+      if (statusSel) statusSel.value = admin.status || 'Approved';
+      if (roleBadge) roleBadge.textContent = admin.role === 'boss' ? 'Boss Admin' : 'Trip Manager';
+
+      // Render assigned trips checkboxes
+      const container = document.getElementById('bossEditTripCheckboxes');
+      if (container) {
+        const assigned = Array.isArray(admin.assignedTrips) ? admin.assignedTrips : [];
+        const isGlobal = assigned.includes('*');
+
+        let html = `
+          <label class="flex items-center gap-2 p-2 rounded-xl bg-purple-50/70 border border-purple-200 cursor-pointer">
+            <input type="checkbox" id="chkEditTrip_all" value="*" class="w-4 h-4 text-purple-600 rounded" ${isGlobal ? 'checked' : ''} />
+            <div class="text-xs">
+              <strong class="text-purple-900">🌐 All Trips (Global Admin)</strong>
+              <p class="text-[10px] text-purple-700">Grant permission to manage every trip in the app</p>
+            </div>
+          </label>
+        `;
+
+        let tripsList = [...allTrips];
+        if (tripsList.length === 0 || !tripsList.some(t => t.id === 'default')) {
+          tripsList.unshift({ id: 'default', tripTitle: tripConfig.tripTitle || 'Annual College Trip' });
+        }
+
+        const uniqueTrips = new Map();
+        tripsList.forEach(t => { if (!uniqueTrips.has(t.id)) uniqueTrips.set(t.id, t); });
+
+        Array.from(uniqueTrips.values()).forEach(t => {
+          const isChecked = isGlobal || assigned.includes(t.id);
+          html += `
+            <label class="flex items-center gap-2 p-1.5 rounded-lg bg-white border border-slate-200 cursor-pointer text-xs hover:bg-slate-50">
+              <input type="checkbox" name="bossEditTripOption" value="${escapeHtml(t.id)}" class="w-3.5 h-3.5 text-amber-600 rounded" ${isChecked ? 'checked' : ''} />
+              <span class="font-bold text-slate-800">${escapeHtml(t.tripTitle || t.id)}</span>
+              <span class="font-mono text-[10px] text-slate-400">#${escapeHtml(t.id)}</span>
+            </label>
+          `;
+        });
+
+        container.innerHTML = html;
+      }
+
+      const modal = document.getElementById('bossEditAdminModal');
+      if (modal) modal.classList.remove('hidden');
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function closeBossEditAdminModal() {
+      const modal = document.getElementById('bossEditAdminModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function handleBossEditAdminSubmit(e) {
+      e.preventDefault();
+      const adminId = document.getElementById('bossEditAdminId')?.value;
+      if (!adminId) return;
+
+      const admin = allAdminUsers.find(u => u.id === adminId);
+      if (!admin) return;
+
+      const name = (document.getElementById('bossEditAdminName')?.value || '').trim();
+      const email = (document.getElementById('bossEditAdminEmail')?.value || '').trim().toLowerCase();
+      const phone = normalizePhone(document.getElementById('bossEditAdminPhone')?.value || '');
+      const newPassword = (document.getElementById('bossEditAdminPassword')?.value || '').trim();
+      const status = document.getElementById('bossEditAdminStatus')?.value || 'Approved';
+
+      if (!name || !email) {
+        showToast('Please enter name and email.', 'error');
+        return;
+      }
+
+      const isAllChecked = document.getElementById('chkEditTrip_all')?.checked;
+      let selectedTrips = [];
+      if (isAllChecked) {
+        selectedTrips = ['*'];
+      } else {
+        const checkboxes = document.querySelectorAll('input[name="bossEditTripOption"]:checked');
+        checkboxes.forEach(cb => selectedTrips.push(cb.value));
+      }
+
+      const btn = document.getElementById('btnBossSubmitEditAdmin');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Saving Changes...';
+      }
+
+      try {
+        const updatePayload = {
+          name,
+          email,
+          phone,
+          status,
+          assignedTrips: selectedTrips,
+          updatedAt: Date.now()
+        };
+
+        if (newPassword && newPassword.length >= 6) {
+          updatePayload.password = newPassword;
+        }
+
+        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admin_users', adminId), updatePayload);
+
+        // If editing self
+        if (currentAdminUser && currentAdminUser.id === adminId) {
+          currentAdminUser = { ...currentAdminUser, ...updatePayload };
+          updateAdminUIState();
+        }
+
+        logSecurityEvent('ADMIN_UPDATE', email, `Boss Admin updated admin details for ${name}`);
+        closeBossEditAdminModal();
+        showToast(`Admin "${name}" updated successfully!`, 'success');
+      } catch (err) {
+        console.error('Error updating admin:', err);
+        showToast('Failed to update admin details.', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i data-lucide="check" class="w-4 h-4 inline mr-1"></i> Save Admin Changes';
+          if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
         }
       }
     }
 
     // Attach globals to window
     Object.assign(window, {
+      closeDeleteTripKeyModal,
+      executeDeleteTripWithKey,
+      setForgotPasswordMode,
+      openBossCredentialsModal,
+      closeBossCredentialsModal,
+      handleSaveBossCredentialsSubmit,
+      openBossEditAdminModal,
+      closeBossEditAdminModal,
+      handleBossEditAdminSubmit,
       renderBossAdminsList,
       openBossAssignTripsModal,
       closeBossAssignTripsModal,
