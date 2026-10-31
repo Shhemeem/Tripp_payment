@@ -250,6 +250,32 @@
         </div>
       </div>
 
+      <!-- Active Trip Switcher & Share Links Pill -->
+      <div class="flex items-center gap-1.5 bg-slate-100/90 border border-slate-200/90 rounded-2xl p-1 shrink-0">
+        <button
+          type="button"
+          onclick="openTripManagerModal()"
+          class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-white hover:bg-emerald-50 text-slate-800 hover:text-emerald-800 shadow-2xs transition group"
+          title="Switch or Manage Trips"
+        >
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+          <div class="text-left min-w-0 max-w-[130px] sm:max-w-[180px]">
+            <p id="navActiveTripTitle" class="font-display font-extrabold text-xs truncate">Annual College Trip</p>
+          </div>
+          <span id="navActiveTripIdBadge" class="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-bold hidden md:inline shrink-0">default</span>
+          <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600 transition shrink-0"></i>
+        </button>
+        <button
+          type="button"
+          onclick="openShareTripModal()"
+          class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-bold shadow-sm transition shrink-0"
+          title="Get Shareable Payment & Login Links for this Trip"
+        >
+          <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+          <span class="hidden xs:inline">Share Links</span>
+        </button>
+      </div>
+
       <!-- Navigation & Controls -->
       <div class="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
         <!-- Public Student Tabs -->
@@ -369,21 +395,44 @@
             </span>
           </div>
 
-          <!-- Direct Payment Portal Card (Using UPI ID, No QR image required) -->
-          <div class="bg-gradient-to-br from-emerald-50 via-teal-50/40 to-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border-2 border-emerald-200 text-center mb-3.5 shadow-xs relative overflow-hidden">
-            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center mx-auto mb-2 shadow-sm">
-              <i data-lucide="shield-check" class="w-5 h-5 sm:w-6 sm:h-6"></i>
-            </div>
-            <p class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400">Official Trip Receiver</p>
-            <p id="qrReceiverName" class="font-display text-base sm:text-xl font-extrabold text-slate-900 mb-1 truncate">Mohd Shemeem KP</p>
-            
-            <div class="inline-flex items-center gap-1.5 bg-emerald-100/90 text-emerald-900 px-3.5 py-1 rounded-full text-xs font-bold mt-1">
-              <span id="qrModeLabel">Payable Now:</span>
-              <span id="qrAmountBadge" class="text-xs sm:text-sm font-extrabold text-emerald-700">₹1,500</span>
+          <!-- Dynamic UPI QR & Verified Payment Card -->
+          <div class="bg-gradient-to-br from-amber-50/70 via-emerald-50/40 to-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border-2 border-amber-300/80 text-center mb-3.5 shadow-sm relative overflow-hidden">
+            <div class="flex items-center justify-between mb-3 px-1">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-600">Scan &amp; Pay via UPI</span>
+              </div>
+              <div class="inline-flex items-center gap-1 bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full text-xs font-extrabold border border-amber-200">
+                <span id="qrModeLabel">Advance Payable:</span>
+                <span id="qrAmountBadge" class="font-extrabold text-amber-800">₹500</span>
+              </div>
             </div>
 
-            <!-- Hidden img element for script compatibility -->
-            <img id="upiQrImage" class="hidden" src="" alt="UPI QR" />
+            <!-- Dynamic QR Image Frame (Always Live & Clickable) -->
+            <a
+              id="upiQrLink"
+              href="upi://pay?pa=mohdshemeemkp@oksbi&pn=Mohd%20Shemeem%20KP&am=500.00&cu=INR&tn=Trip%20Advance"
+              target="_blank"
+              class="relative inline-block mx-auto p-3 bg-white rounded-2xl border-2 border-amber-400 shadow-md transition-all hover:shadow-lg hover:scale-[1.01] group cursor-pointer"
+              title="Click or scan to pay ₹500 via any UPI app"
+            >
+              <img
+                id="upiQrImage"
+                src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=8&data=upi%3A%2F%2Fpay%3Fpa%3Dmohdshemeemkp%40oksbi%26pn%3DMohd%20Shemeem%20KP%26am%3D500.00%26cu%3DINR%26tn%3DTrip%20Advance"
+                alt="Scan to Pay via UPI"
+                class="w-48 h-48 sm:w-52 sm:h-52 mx-auto rounded-xl object-contain block bg-white"
+              />
+              <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm flex items-center gap-1 whitespace-nowrap group-hover:bg-emerald-700 transition">
+                <i data-lucide="qr-code" class="w-3 h-3 text-emerald-400"></i>
+                <span>Universal UPI QR (Tap or Scan)</span>
+              </div>
+            </a>
+
+            <div class="mt-4 pt-2.5 border-t border-slate-100">
+              <p class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400">Official Trip Receiver</p>
+              <p id="qrReceiverName" class="font-display text-sm sm:text-base font-extrabold text-slate-900 truncate">Mohd Shemeem KP</p>
+              <p class="text-[10px] text-slate-500 mt-0.5">Scan from Google Pay, PhonePe, Paytm, BHIM, Cred or bank app</p>
+            </div>
           </div>
 
           <!-- Receiver UPI ID with Copy Button -->
@@ -421,7 +470,7 @@
                 </div>
               </div>
               <div class="flex items-center gap-1 bg-white/20 px-2.5 py-1 rounded-xl text-xs font-bold shrink-0 group-hover:bg-white group-hover:text-blue-700 transition whitespace-nowrap ml-2">
-                <span id="gpayDefaultBtnText">Pay ₹1,500</span>
+                <span id="gpayDefaultBtnText">Pay ₹500</span>
                 <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
               </div>
             </button>
@@ -482,30 +531,33 @@
             <div class="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                id="payTypeBtn-full"
-                onclick="selectPaymentPreset('full')"
-                class="p-3 rounded-2xl border-2 border-emerald-500 bg-emerald-50/70 text-left transition flex flex-col justify-between"
+                id="payTypeBtn-advance"
+                onclick="selectPaymentPreset('advance')"
+                class="p-3 rounded-2xl border-2 border-amber-500 bg-amber-50/70 text-left transition flex flex-col justify-between shadow-xs ring-1 ring-amber-400/40"
               >
                 <div class="flex items-center justify-between">
-                  <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800">Full Payment</span>
-                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i>
+                  <div class="flex items-center gap-1">
+                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-800">Pay Advance</span>
+                    <span class="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-amber-200/80 text-amber-900">Default</span>
+                  </div>
+                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-amber-600"></i>
                 </div>
-                <p id="presetFullText" class="font-display text-base font-extrabold text-slate-900 mt-1">₹1,500</p>
-                <span class="text-[10px] text-slate-500 font-medium">No balance remaining</span>
+                <p id="presetAdvanceText" class="font-display text-base font-extrabold text-slate-900 mt-1">₹500</p>
+                <span class="text-[10px] text-slate-500 font-medium">Pay balance later</span>
               </button>
 
               <button
                 type="button"
-                id="payTypeBtn-advance"
-                onclick="selectPaymentPreset('advance')"
-                class="p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-amber-300 text-left transition flex flex-col justify-between"
+                id="payTypeBtn-full"
+                onclick="selectPaymentPreset('full')"
+                class="p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-emerald-300 text-left transition flex flex-col justify-between"
               >
                 <div class="flex items-center justify-between">
-                  <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-800">Pay Advance</span>
-                  <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-600"></i>
+                  <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-700">Full Payment</span>
+                  <i data-lucide="circle" class="w-3.5 h-3.5 text-slate-400"></i>
                 </div>
-                <p id="presetAdvanceText" class="font-display text-base font-extrabold text-slate-900 mt-1">₹500</p>
-                <span class="text-[10px] text-slate-500 font-medium">Pay balance later</span>
+                <p id="presetFullText" class="font-display text-base font-extrabold text-slate-900 mt-1">₹1,500</p>
+                <span class="text-[10px] text-slate-500 font-medium">No balance remaining</span>
               </button>
             </div>
 
@@ -548,16 +600,18 @@
                 <label class="block text-xs font-bold text-slate-700 mb-1">Amount Paying Now (₹) *</label>
                 <input
                   type="number"
-                  id="inpAmount" onkeyup="updateDynamicUpiLinks()" onchange="updateDynamicUpiLinks()"
+                  id="inpAmount"
                   min="1"
                   required
                   inputmode="numeric"
-                  value="1500"
+                  value="500"
                   oninput="updateDynamicUpiLinks()"
-                  class="w-full px-3.5 py-2.5 rounded-xl bg-emerald-50/60 border border-emerald-300 focus:bg-white focus:border-emerald-600 focus:outline-none text-sm font-extrabold text-emerald-700"
+                  onkeyup="updateDynamicUpiLinks()"
+                  onchange="updateDynamicUpiLinks()"
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-amber-50/60 border border-amber-300 focus:bg-white focus:border-amber-600 focus:outline-none text-sm font-extrabold text-amber-900"
                 />
                 <p id="liveBalancePreview" class="text-[11px] font-semibold text-slate-500 mt-1">
-                  Remaining Balance: <span class="font-bold text-emerald-700">₹0</span>
+                  Remaining Balance: <span class="font-bold text-amber-700">₹1,000</span>
                 </p>
               </div>
 
@@ -1110,10 +1164,19 @@
               <input
                 type="text"
                 id="dashSearchInput"
-                oninput="renderDashboard()"
-                placeholder="Search by student name, phone, or department..."
-                class="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-xs sm:text-sm text-slate-900"
+                oninput="handleDashSearch(this.value)"
+                placeholder="Search by student name, phone, dept, receipt, UTR..."
+                class="w-full pl-10 pr-9 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-xs sm:text-sm text-slate-900"
               />
+              <button
+                type="button"
+                id="dashSearchClearBtn"
+                onclick="clearDashSearch()"
+                class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center text-xs font-bold transition"
+                title="Clear search"
+              >
+                &times;
+              </button>
             </div>
 
             <!-- List Selector Pills -->
@@ -1184,6 +1247,15 @@
               >
                 <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                 <span>WhatsApp List</span>
+              </button>
+              <button
+                type="button"
+                onclick="exportPaymentsPDF()"
+                class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+                title="Convert & Export Payment Details to PDF Report"
+              >
+                <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                <span>PDF Report</span>
               </button>
               <button
                 type="button"
@@ -2671,6 +2743,302 @@
     </div>
   </div>
 
+  <!-- MODAL: MULTI-TRIP MANAGER & SWITCHER -->
+  <div id="tripManagerModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-xl w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[90vh] overflow-y-auto space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+            <i data-lucide="compass" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-extrabold text-base sm:text-lg text-slate-900">Manage Trips</h3>
+            <p class="text-xs text-slate-500">Switch between trips or create a new trip link</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeTripManagerModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Active Trip Banner -->
+      <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-white border border-emerald-200 rounded-2xl p-3.5 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">Currently Active Trip</span>
+          <p id="modalActiveTripTitle" class="font-display font-extrabold text-sm sm:text-base text-slate-900 truncate">Annual College Trip</p>
+          <span id="modalActiveTripId" class="font-mono text-[10px] text-slate-500">ID: default</span>
+        </div>
+        <button
+          type="button"
+          onclick="openShareTripModal(currentTripId)"
+          class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition"
+        >
+          <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+          <span>Share Links</span>
+        </button>
+      </div>
+
+      <!-- Action Bar: Add New Trip -->
+      <div class="flex items-center justify-between gap-2 pt-1">
+        <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500">Available Trips (<span id="tripsCountText">1</span>)</h4>
+        <button
+          type="button"
+          onclick="openCreateTripModal()"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-sm transition"
+        >
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+          <span>Create New Trip</span>
+        </button>
+      </div>
+
+      <!-- Trips List Container -->
+      <div id="tripsListContainer" class="space-y-2.5 max-h-80 overflow-y-auto pr-0.5">
+        <!-- Rendered via renderTripsListInModal() -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SHARE TRIP LINKS (PAYMENT LINK & LOGIN LINK) -->
+  <div id="shareTripModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[90vh] overflow-y-auto space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-10 h-10 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+            <i data-lucide="share-2" class="w-5 h-5"></i>
+          </div>
+          <div class="min-w-0">
+            <h3 class="font-display font-extrabold text-base text-slate-900 truncate">Share Trip Links</h3>
+            <p id="shareModalTripName" class="text-xs text-slate-500 truncate">Annual College Trip</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeShareTripModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition shrink-0">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Link 1: Student Payment Link -->
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span class="text-xs font-extrabold text-slate-900">Student Payment Link</span>
+          </div>
+          <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">For Paying Fees</span>
+        </div>
+        <p class="text-[11px] text-slate-500">Directs students straight to the payment portal with QR code, Google Pay &amp; advance preset for this trip.</p>
+        <div class="flex items-center gap-2">
+          <input
+            type="text"
+            id="sharePayLinkInput"
+            readonly
+            class="flex-1 px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-mono text-slate-700 select-all focus:outline-none"
+          />
+          <button
+            type="button"
+            onclick="copyShareLink('sharePayLinkInput', 'Payment link copied!')"
+            class="px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center gap-1 shrink-0"
+          >
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span>Copy</span>
+          </button>
+        </div>
+        <button
+          type="button"
+          onclick="shareTripOnWhatsApp('pay')"
+          class="w-full py-2 px-3 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm"
+        >
+          <i data-lucide="message-circle" class="w-4 h-4"></i>
+          <span>Share Payment Link on WhatsApp</span>
+        </button>
+      </div>
+
+      <!-- Link 2: Participant Login & Boarding Pass Link -->
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+            <span class="text-xs font-extrabold text-slate-900">Participant Login &amp; Pass Link</span>
+          </div>
+          <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">For Boarding Tickets</span>
+        </div>
+        <p class="text-[11px] text-slate-500">Directs registered students to log in, view their digital Boarding Pass, check balance, and access schedule.</p>
+        <div class="flex items-center gap-2">
+          <input
+            type="text"
+            id="shareLoginLinkInput"
+            readonly
+            class="flex-1 px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-mono text-slate-700 select-all focus:outline-none"
+          />
+          <button
+            type="button"
+            onclick="copyShareLink('shareLoginLinkInput', 'Login link copied!')"
+            class="px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center gap-1 shrink-0"
+          >
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span>Copy</span>
+          </button>
+        </div>
+        <button
+          type="button"
+          onclick="shareTripOnWhatsApp('login')"
+          class="w-full py-2 px-3 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm"
+        >
+          <i data-lucide="message-circle" class="w-4 h-4"></i>
+          <span>Share Login Link on WhatsApp</span>
+        </button>
+      </div>
+
+      <!-- QR Code for Payment Link -->
+      <div class="border border-slate-200 rounded-2xl p-3 text-center bg-white space-y-2">
+        <p class="text-xs font-bold text-slate-700">Scan to Open Trip Payment Page</p>
+        <img
+          id="shareModalQrImg"
+          src=""
+          alt="Trip Payment QR"
+          class="w-36 h-36 mx-auto rounded-xl border border-slate-200 p-1 bg-white"
+        />
+        <p class="text-[10px] text-slate-400">Organizers can project this QR or share it with participants</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CREATE NEW TRIP -->
+  <div id="newTripModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[90vh] overflow-y-auto space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
+            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-extrabold text-base text-slate-900">Create New Trip</h3>
+            <p class="text-xs text-slate-500">Configure separate trip ID, fee, UPI, and shareable links</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeCreateTripModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="createTripForm" onsubmit="handleCreateTripSubmit(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Trip Title *</label>
+          <input
+            type="text"
+            id="newTripTitle"
+            required
+            oninput="autoGenerateTripSlug(this.value)"
+            placeholder="e.g., Goa Beach &amp; Cultural Tour 2026"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm text-slate-900 font-medium"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Unique Trip ID / Slug *</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-mono text-slate-400 font-bold">?trip=</span>
+            <input
+              type="text"
+              id="newTripSlug"
+              required
+              placeholder="e.g., goa-2026"
+              class="w-full pl-16 pr-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-mono text-slate-900 font-bold"
+            />
+          </div>
+          <p class="text-[10px] text-slate-400 mt-0.5">Use lowercase letters, numbers, and dashes (used in payment &amp; login links)</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Destination *</label>
+            <input
+              type="text"
+              id="newTripDestination"
+              required
+              placeholder="e.g., Goa, India"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm text-slate-900 font-medium"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Trip Date *</label>
+            <input
+              type="date"
+              id="newTripDate"
+              required
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm text-slate-900 font-medium"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Total Fee (₹) *</label>
+            <input
+              type="number"
+              id="newTripAmount"
+              min="1"
+              required
+              value="2500"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm text-slate-900 font-bold"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Default Advance (₹) *</label>
+            <input
+              type="number"
+              id="newTripAdvance"
+              min="1"
+              required
+              value="500"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-amber-50/60 border border-amber-300 focus:bg-white focus:border-amber-600 focus:outline-none text-sm text-amber-900 font-bold"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Receiver Name *</label>
+            <input
+              type="text"
+              id="newTripReceiverName"
+              required
+              placeholder="e.g., Mohd Shemeem KP"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm text-slate-900 font-medium"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Receiver UPI ID *</label>
+            <input
+              type="text"
+              id="newTripUpiId"
+              required
+              placeholder="e.g., mohdshemeemkp@oksbi"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-mono text-slate-900 font-bold"
+            />
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+          <button
+            type="button"
+            onclick="closeCreateTripModal()"
+            class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            id="btnCreateTripSubmit"
+            class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-bold shadow-md transition flex items-center gap-1.5"
+          >
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Create &amp; Switch to Trip</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- MODAL: SETTINGS (WITH ADMIN CUSTOM LOGO MANAGER) -->
   <div id="settingsModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto no-print">
     <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
@@ -2947,6 +3315,25 @@
     let unsubContacts = null;
     let unsubAudit = null;
 
+    // Multi-Trip Identifier helper
+    function getTripIdFromUrl() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const t = params.get('trip');
+        if (t && t.trim()) return t.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+        if (window.location.hash.includes('trip=')) {
+          const hp = new URLSearchParams(window.location.hash.replace('#', '?'));
+          const ht = hp.get('trip');
+          if (ht && ht.trim()) return ht.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+        }
+      } catch (e) {}
+      return localStorage.getItem('trippay_active_trip_id') || 'default';
+    }
+
+    let currentTripId = getTripIdFromUrl();
+    let allTrips = [];
+    let activeShareTargetTripId = currentTripId;
+
     let tripConfig = {
       tripTitle: 'Annual College Industrial & Leisure Trip',
       destination: 'Munnar, Vagamon & Kochi',
@@ -2965,11 +3352,21 @@
       showContactsToUsers: true
     };
 
+    // Raw unfiltered collections from Firestore
+    let rawPaymentsList = [];
+    let rawExpensesList = [];
+    let rawItinList = [];
+    let rawContactsList = [];
+    let rawAuditList = [];
+
+    // Filtered collections for currentTripId
     let payments = [];
     let expenses = [];
     let itineraries = [];
     let contacts = [];
     let auditLogs = [];
+
+    let unsubTrips = null;
 
     // Session State
     let loggedInParticipant = null;
@@ -3139,10 +3536,12 @@
       startFirestoreListeners();
     }
 
-    function startFirestoreListeners() {
-      if (!currentUser) currentUser = { uid: 'public-session' };
-
-      const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
+    function listenToActiveTripConfig() {
+      if (unsubConfig) {
+        try { unsubConfig(); } catch (e) {}
+      }
+      const configDocId = currentTripId === 'default' ? 'main_config' : 'trip_' + currentTripId;
+      const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', configDocId);
       unsubConfig = onSnapshot(configDocRef, (snap) => {
         if (snap.exists()) {
           const d = snap.data();
@@ -3150,70 +3549,172 @@
           applyTripConfigToUI();
           if (isAdminLoggedIn) renderDashboard();
           if (loggedInParticipant) updateParticipantDashboardUI();
+        } else {
+          // If no custom doc yet for this trip, check allTrips metadata
+          const meta = allTrips.find(t => t.id === currentTripId);
+          if (meta) {
+            tripConfig = {
+              ...tripConfig,
+              tripTitle: meta.tripTitle || tripConfig.tripTitle,
+              destination: meta.destination || tripConfig.destination,
+              tripDate: meta.tripDate || tripConfig.tripDate,
+              tripAmount: Number(meta.tripAmount) || tripConfig.tripAmount,
+              advanceAmount: Number(meta.advanceAmount) || tripConfig.advanceAmount,
+              upiId: meta.upiId || tripConfig.upiId,
+              receiverName: meta.receiverName || tripConfig.receiverName,
+              customLogoUrl: meta.customLogoUrl || tripConfig.customLogoUrl
+            };
+            applyTripConfigToUI();
+            if (isAdminLoggedIn) renderDashboard();
+            if (loggedInParticipant) updateParticipantDashboardUI();
+          }
         }
-      }, (err) => console.error(err));
+      }, (err) => console.error('Trip config error:', err));
+    }
 
+    function filterAndRenderAllTripData() {
+      // Filter collections by current trip ID (backward compatible: missing tripId defaults to 'default')
+      payments = rawPaymentsList.filter(p => (p.tripId || 'default') === currentTripId);
+      payments.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+      expenses = rawExpensesList.filter(e => (e.tripId || 'default') === currentTripId);
+      expenses.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+      itineraries = rawItinList.filter(i => (i.tripId || 'default') === currentTripId);
+      itineraries.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+
+      contacts = rawContactsList.filter(c => (c.tripId || 'default') === currentTripId);
+      contacts.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+
+      auditLogs = rawAuditList.filter(a => (a.tripId || 'default') === currentTripId);
+      auditLogs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+      setCloudBadgeState('connected', 'Live Cloud');
+      updateNavBadge();
+      updateActiveTripUI();
+      renderTripsListInModal();
+
+      if (currentPaymentMode === 'balance') renderBalanceLookupResults();
+      if (isAdminLoggedIn) {
+        const searchInput = document.getElementById('dashSearchInput');
+        const isSearchFocused = document.activeElement === searchInput;
+        const selStart = searchInput?.selectionStart;
+        const selEnd = searchInput?.selectionEnd;
+
+        renderDashboard();
+
+        if (isSearchFocused && searchInput) {
+          searchInput.focus();
+          if (typeof selStart === 'number' && typeof selEnd === 'number') {
+            searchInput.setSelectionRange(selStart, selEnd);
+          }
+        }
+
+        renderAccessCodesSuite();
+        renderCheckinRoster();
+        renderExpenses();
+        renderKPIs();
+      }
+      renderItinerary();
+      renderContacts();
+      renderAuditLogs();
+
+      // Restore participant session after payments load
+      if (window._pendingParticipantPhone && !loggedInParticipant) {
+        const restoredPhone = window._pendingParticipantPhone;
+        const match = payments.find(p => normalizePhone(p.phone) === restoredPhone);
+        if (match && match.status === 'Verified' && match.accessStatus !== 'Disabled') {
+          loggedInParticipant = match;
+          window._pendingParticipantPhone = null;
+          updateParticipantDashboardUI();
+          if (!isAdminLoggedIn) switchTab('participant');
+        }
+      }
+      if (loggedInParticipant) {
+        const fresh = payments.find(p => p.id === loggedInParticipant.id);
+        if (fresh) {
+          loggedInParticipant = fresh;
+          updateParticipantDashboardUI();
+        } else {
+          // If not in this trip's roster, keep participant null
+          loggedInParticipant = null;
+          updateParticipantDashboardUI();
+        }
+      }
+    }
+
+    function startFirestoreListeners() {
+      if (!currentUser) currentUser = { uid: 'public-session' };
+
+      // 1. Trips Master Listener
+      const tripsCol = collection(db, 'artifacts', appId, 'public', 'data', 'trips_master');
+      unsubTrips = onSnapshot(tripsCol, async (snap) => {
+        allTrips = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        if (allTrips.length === 0 || !allTrips.some(t => t.id === 'default')) {
+          try {
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trips_master', 'default'), {
+              id: 'default',
+              tripTitle: tripConfig.tripTitle || 'Annual College Industrial & Leisure Trip',
+              destination: tripConfig.destination || 'Munnar, Vagamon & Kochi',
+              tripDate: tripConfig.tripDate || '2026-11-15',
+              tripAmount: Number(tripConfig.tripAmount) || 1500,
+              advanceAmount: Number(tripConfig.advanceAmount) || 500,
+              upiId: tripConfig.upiId || 'mohdshemeemkp@oksbi',
+              receiverName: tripConfig.receiverName || 'Mohd Shemeem KP',
+              customLogoUrl: tripConfig.customLogoUrl || DEFAULT_LOGO_URL,
+              createdAt: Date.now()
+            }, { merge: true });
+          } catch (e) {
+            console.warn('Could not seed default trip:', e);
+          }
+        }
+        updateActiveTripUI();
+        renderTripsListInModal();
+      }, (err) => console.error('Trips master listener error:', err));
+
+      // 2. Active Trip Settings Listener
+      listenToActiveTripConfig();
+
+      // 3. Payments Listener
       const paymentsCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_payments');
       unsubPayments = onSnapshot(paymentsCol, (snap) => {
-        payments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        payments.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-        setCloudBadgeState('connected', 'Live Cloud');
-        updateNavBadge();
-        if (currentPaymentMode === 'balance') renderBalanceLookupResults();
-        if (isAdminLoggedIn) {
-          renderDashboard();
-          renderAccessCodesSuite();
-          renderCheckinRoster();
-        }
-        // Restore participant session after payments load
-        if (window._pendingParticipantPhone && !loggedInParticipant) {
-          const restoredPhone = window._pendingParticipantPhone;
-          const match = payments.find(p => normalizePhone(p.phone) === restoredPhone);
-          if (match && match.status === 'Verified' && match.accessStatus !== 'Disabled') {
-            loggedInParticipant = match;
-            window._pendingParticipantPhone = null;
-            updateParticipantDashboardUI();
-            // If the user was on the participant tab, stay there
-            if (!isAdminLoggedIn) switchTab('participant');
-          } else {
-            window._pendingParticipantPhone = null;
-            localStorage.removeItem('trippay_participant_session');
-          }
-        }
-        if (loggedInParticipant) {
-          const fresh = payments.find(p => p.id === loggedInParticipant.id);
-          if (fresh) {
-            loggedInParticipant = fresh;
-            updateParticipantDashboardUI();
-          }
-        }
+        rawPaymentsList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        filterAndRenderAllTripData();
       }, (err) => setCloudBadgeState('error', 'Error'));
 
+      // 4. Expenses Listener
       const expCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_expenses');
       unsubExpenses = onSnapshot(expCol, (snap) => {
-        expenses = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        rawExpensesList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        expenses = rawExpensesList.filter(e => (e.tripId || 'default') === currentTripId);
         expenses.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
         renderExpenses();
         if (isAdminLoggedIn) renderKPIs();
       }, (err) => console.error(err));
 
+      // 5. Itinerary Listener
       const itinCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_itinerary');
       unsubItinerary = onSnapshot(itinCol, (snap) => {
-        itineraries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        rawItinList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        itineraries = rawItinList.filter(i => (i.tripId || 'default') === currentTripId);
         itineraries.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
         renderItinerary();
       }, (err) => console.error(err));
 
+      // 6. Contacts Listener
       const contactCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_contacts');
       unsubContacts = onSnapshot(contactCol, (snap) => {
-        contacts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        rawContactsList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        contacts = rawContactsList.filter(c => (c.tripId || 'default') === currentTripId);
         contacts.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
         renderContacts();
       }, (err) => console.error(err));
 
+      // 7. Audit Trail Listener
       const auditCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_audit_logs');
       unsubAudit = onSnapshot(auditCol, (snap) => {
-        auditLogs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        rawAuditList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        auditLogs = rawAuditList.filter(a => (a.tripId || 'default') === currentTripId);
         auditLogs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
         renderAuditLogs();
       }, (err) => console.error(err));
@@ -3222,6 +3723,7 @@
     async function logSecurityEvent(action, target, details) {
       try {
         const payload = {
+          tripId: currentTripId,
           action,
           target: target || 'system',
           details: details || '',
@@ -3351,6 +3853,12 @@
       document.getElementById('headerUpiId').textContent = tripConfig.upiId;
       document.getElementById('cardUpiIdText').textContent = tripConfig.upiId;
       document.getElementById('qrReceiverName').textContent = tripConfig.receiverName;
+
+      // Select default preset (advance) if user hasn't typed a custom amount
+      const currentInp = document.getElementById('inpAmount');
+      if (currentInp && (!currentInp.value || currentInp.value === '1500' || currentInp.value === '500' || currentInp.value === String(tripConfig.tripAmount))) {
+        selectPaymentPreset('advance');
+      }
 
       applyLogoAcrossApp();
       renderDepartmentDropdowns();
@@ -3706,15 +4214,15 @@
       // Use 800px wide render — ensures sm: (640px+) Tailwind breakpoints fire
       // and all inline-grid 4-col layouts have enough room to render properly.
       clone.style.cssText = [
-        'position:absolute',
-        'left:-9999px',
+        'position:fixed',
+        'left:0',
         'top:0',
         'width:800px',
         'min-width:800px',
         'max-width:800px',
         'box-sizing:border-box',
         'margin:0',
-        'z-index:9999',
+        'z-index:-9999',
         'background:#ffffff',
         'border-radius:28px',
         'overflow:visible',
@@ -3756,15 +4264,15 @@
       if (!clone) return null;
       try {
         const canvas = await html2canvas(clone, {
-          scale: 3,
+          scale: 2,
           useCORS: true,
-          allowTaint: false,
+          allowTaint: true,
           logging: false,
           backgroundColor: '#ffffff',
           width: 800,
           windowWidth: 800,
-          x: 0,
-          y: 0
+          scrollX: 0,
+          scrollY: 0
         });
         const imgData = canvas.toDataURL('image/jpeg', 0.98);
         const jsPDFClass =
@@ -4399,16 +4907,20 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
 
       if (type === 'full') {
         inpAmount.value = tripConfig.tripAmount;
-        btnFull.className = 'p-3 rounded-2xl border-2 border-emerald-500 bg-emerald-50/70 text-left transition flex flex-col justify-between';
+        inpAmount.className = 'w-full px-3.5 py-2.5 rounded-xl bg-emerald-50/60 border border-emerald-300 focus:bg-white focus:border-emerald-600 focus:outline-none text-sm font-extrabold text-emerald-800';
+        btnFull.className = 'p-3 rounded-2xl border-2 border-emerald-500 bg-emerald-50/70 text-left transition flex flex-col justify-between shadow-xs ring-1 ring-emerald-400/40';
         btnAdv.className = 'p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-amber-300 text-left transition flex flex-col justify-between';
-        if (inpRemarks && inpRemarks.value === 'Advance payment') inpRemarks.value = '';
+        if (inpRemarks && (!inpRemarks.value || inpRemarks.value === 'Advance payment')) inpRemarks.value = 'Full payment';
       } else {
-        inpAmount.value = tripConfig.advanceAmount || 500;
-        btnAdv.className = 'p-3 rounded-2xl border-2 border-amber-500 bg-amber-50/70 text-left transition flex flex-col justify-between';
+        const adv = Number(tripConfig.advanceAmount) || 500;
+        inpAmount.value = adv;
+        inpAmount.className = 'w-full px-3.5 py-2.5 rounded-xl bg-amber-50/60 border border-amber-300 focus:bg-white focus:border-amber-600 focus:outline-none text-sm font-extrabold text-amber-900';
+        btnAdv.className = 'p-3 rounded-2xl border-2 border-amber-500 bg-amber-50/70 text-left transition flex flex-col justify-between shadow-xs ring-1 ring-amber-400/40';
         btnFull.className = 'p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-emerald-300 text-left transition flex flex-col justify-between';
-        if (inpRemarks && !inpRemarks.value) inpRemarks.value = 'Advance payment';
+        if (inpRemarks && (!inpRemarks.value || inpRemarks.value === 'Full payment')) inpRemarks.value = 'Advance payment';
       }
       updateDynamicUpiLinks();
+      lucide.createIcons();
     }
 
     function syncSelectedAppFromDropdown(val) {
@@ -4427,23 +4939,24 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
         if (selectedBalanceStudent) return getBalanceDue(selectedBalanceStudent);
       }
       const raw = Number(document.getElementById('inpAmount')?.value);
-      return raw > 0 ? raw : (Number(tripConfig.tripAmount) || 1500);
+      return raw > 0 ? raw : (Number(tripConfig.advanceAmount) || 500);
     }
 
     function updateDynamicUpiLinks() {
       const currentAmount = getCurrentPayableAmount();
-      let note = 'Trip Payment';
+      const totalFee = Number(tripConfig.tripAmount) || 1500;
+      let note = 'Trip Advance';
 
       if (currentPaymentMode === 'balance' && selectedBalanceStudent) {
         note = `Bal ${selectedBalanceStudent.studentName.slice(0, 15)}`;
       } else {
         const nameVal = document.getElementById('inpName')?.value.trim() || 'Student';
-        note = `Trip ${nameVal.slice(0, 16)}`;
+        const isAdv = currentAmount < totalFee;
+        note = isAdv ? `Adv ${nameVal.slice(0, 15)}` : `Trip ${nameVal.slice(0, 15)}`;
       }
 
       if (currentPaymentMode === 'new') {
-        const total = Number(tripConfig.tripAmount) || 1500;
-        const remBalance = Math.max(0, total - currentAmount);
+        const remBalance = Math.max(0, totalFee - currentAmount);
         const previewEl = document.getElementById('liveBalancePreview');
         if (previewEl) {
           previewEl.innerHTML = remBalance > 0
@@ -4453,28 +4966,49 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
       }
 
       const qrImg = document.getElementById('upiQrImage');
+      const qrLink = document.getElementById('upiQrLink');
       const qrBadge = document.getElementById('qrAmountBadge');
+      const qrModeLabel = document.getElementById('qrModeLabel');
       const gpayBtnText = document.getElementById('gpayDefaultBtnText');
+
+      if (qrModeLabel) {
+        if (currentPaymentMode === 'balance') {
+          qrModeLabel.textContent = 'Balance Payable:';
+        } else {
+          qrModeLabel.textContent = currentAmount < totalFee ? 'Advance Payable:' : 'Payable Now:';
+        }
+      }
 
       if (qrBadge) qrBadge.textContent = formatINR(currentAmount);
       if (gpayBtnText) gpayBtnText.textContent = `Pay ${formatINR(currentAmount)} with Google Pay`;
 
+      const upiId = (tripConfig.upiId || 'mohdshemeemkp@oksbi').trim();
+      const receiverName = (tripConfig.receiverName || 'Mohd Shemeem KP').trim();
+      const cleanAm = Number(currentAmount).toFixed(2);
+
+      // Standard NPCI UPI URI Query parameters
+      const params = new URLSearchParams({
+        pa: upiId,
+        pn: receiverName,
+        am: cleanAm,
+        cu: 'INR',
+        tn: note
+      });
+
+      const upiUri = `upi://pay?${params.toString()}`;
+
+      // Update clickable link for mobile tap
+      if (qrLink) {
+        qrLink.href = upiUri;
+        qrLink.title = `Click or scan to pay ${formatINR(currentAmount)} via any UPI app`;
+      }
+
+      // Update QR Code image for screen scan (always synchronized)
       if (qrImg) {
-        const upiId = (tripConfig.upiId || 'mohdshemeemkp@oksbi').trim();
-        const receiverName = (tripConfig.receiverName || 'Mohd Shemeem KP').trim();
-        const cleanAm = Number(currentAmount).toFixed(2);
-
-        // Standard NPCI UPI URI Query parameters
-        const params = new URLSearchParams({
-          pa: upiId,
-          pn: receiverName,
-          am: cleanAm,
-          cu: 'INR',
-          tn: note
-        });
-
-        const upiUri = `upi://pay?${params.toString()}`;
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=${encodeURIComponent(upiUri)}`;
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=8&data=${encodeURIComponent(upiUri)}`;
+        if (qrImg.src !== qrUrl) {
+          qrImg.src = qrUrl;
+        }
       }
     }
 
@@ -4580,6 +5114,7 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
 
           const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', existingRecord.id);
           await updateDoc(docRef, {
+            tripId: existingRecord.tripId || currentTripId,
             studentName,
             department,
             phone: cleanPhone,
@@ -4609,6 +5144,7 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
         } else {
           const balanceDue = Math.max(0, totalFee - amountPaid);
           const newEntry = {
+            tripId: currentTripId,
             receiptCode: 'TRP-' + Date.now().toString().slice(-6),
             studentName,
             department,
@@ -4650,7 +5186,7 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
 
         document.getElementById('studentPayForm').reset();
         renderDepartmentDropdowns();
-        selectPaymentPreset('full');
+        selectPaymentPreset('advance');
       } catch (err) {
         console.error(err);
         showToast('Payment submission failed. Check database connection.', 'error');
@@ -4662,19 +5198,33 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
     }
 
     function renderBalanceLookupResults() {
-      const raw = document.getElementById('balanceSearchInput')?.value || '';
-      const clean = normalizePhone(raw);
+      const raw = (document.getElementById('balanceSearchInput')?.value || '').trim();
       const list = document.getElementById('balanceLookupList');
       if (!list) return;
 
-      if (clean.length < 10) {
-        list.innerHTML = `<div class="p-3 text-center text-xs text-slate-400">Enter your 10-digit mobile number to check balance or download your Boarding Pass.</div>`;
+      if (raw.length < 2) {
+        list.innerHTML = `<div class="p-3 text-center text-xs text-slate-400">Enter your 10-digit mobile number, student name, or receipt code to check balance or download your Boarding Pass &amp; Receipt.</div>`;
         return;
       }
 
-      const match = payments.filter(p => normalizePhone(p.phone) === clean);
+      const cleanPhone = normalizePhone(raw);
+      const rawLower = raw.toLowerCase();
+
+      const match = payments.filter(p => {
+        const pPhone = normalizePhone(p.phone || '');
+        const pName = (p.studentName || '').toLowerCase();
+        const pReceipt = (p.receiptCode || '').toLowerCase();
+        const pAccess = (p.accessCode || '').toLowerCase();
+        return (
+          (cleanPhone.length >= 3 && pPhone.includes(cleanPhone)) ||
+          pName.includes(rawLower) ||
+          pReceipt.includes(rawLower) ||
+          pAccess.includes(rawLower)
+        );
+      });
+
       if (match.length === 0) {
-        list.innerHTML = `<div class="p-3 text-center text-xs text-amber-700 bg-amber-50 rounded-xl">No record found for this number. If new, register via New Payment.</div>`;
+        list.innerHTML = `<div class="p-3 text-center text-xs text-amber-700 bg-amber-50 rounded-xl">No record found matching "${escapeHtml(raw)}". If new, register via New Payment.</div>`;
         return;
       }
 
@@ -4697,16 +5247,20 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
               </p>
             </div>
             <div class="flex items-center gap-1.5 flex-wrap">
-              <button onclick="openBoardingPassByStudentId('${st.id}')" class="px-3 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold flex items-center gap-1">
+              <button onclick="openBoardingPassByStudentId('${st.id}')" class="px-3 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold flex items-center gap-1 shadow-xs transition hover:bg-slate-800" title="View Boarding Pass">
                 <i data-lucide="ticket" class="w-3.5 h-3.5 text-emerald-400"></i>
                 <span>Pass PDF</span>
               </button>
-              <button onclick="shareStudentBoardingPassWhatsApp('${st.id}')" class="px-3 py-1.5 rounded-xl bg-[#25D366] text-white text-xs font-bold flex items-center gap-1">
+              <button onclick="downloadPaymentDetailsPDF('${st.id}')" class="px-3 py-1.5 rounded-xl bg-sky-600 text-white text-xs font-bold flex items-center gap-1 shadow-xs transition hover:bg-sky-500" title="Convert & Download Payment Details (Receipt PDF)">
+                <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+                <span>Receipt PDF</span>
+              </button>
+              <button onclick="shareStudentBoardingPassWhatsApp('${st.id}')" class="px-3 py-1.5 rounded-xl bg-[#25D366] text-white text-xs font-bold flex items-center gap-1 shadow-xs transition hover:bg-[#20bd5a]">
                 <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
                 <span>WhatsApp</span>
               </button>
               ${bal > 0 ? `
-                <button onclick="selectStudentForBalance('${st.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-bold">
+                <button onclick="selectStudentForBalance('${st.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-xs hover:bg-emerald-500 transition">
                   Pay ${formatINR(bal)}
                 </button>
               ` : ''}
@@ -4853,12 +5407,22 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
       const el = document.getElementById('receiptPrintableArea');
       if (!el) return null;
       const clone = el.cloneNode(true);
+      // Use position: fixed at (0,0) behind page (z-index: -9999) so html2canvas renders exact pixels without negative offset
       clone.style.cssText = [
-        'position:absolute', 'left:-9999px', 'top:0',
-        'width:480px', 'min-width:480px', 'max-width:480px',
-        'box-sizing:border-box', 'margin:0', 'z-index:9999',
-        'background:#18181b', 'border-radius:24px',
-        'overflow:visible', 'visibility:visible', 'opacity:1',
+        'position:fixed',
+        'left:0',
+        'top:0',
+        'width:480px',
+        'min-width:480px',
+        'max-width:480px',
+        'box-sizing:border-box',
+        'margin:0',
+        'z-index:-9999',
+        'background:#18181b',
+        'border-radius:24px',
+        'overflow:visible',
+        'visibility:visible',
+        'opacity:1',
         'pointer-events:none'
       ].join(';');
       document.body.appendChild(clone);
@@ -4867,7 +5431,7 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
       await Promise.all(imgs.map(img => {
         if (img.complete) return Promise.resolve();
         return new Promise(resolve => {
-          const t = setTimeout(resolve, 3000);
+          const t = setTimeout(resolve, 2000);
           img.addEventListener('load', () => { clearTimeout(t); resolve(); }, { once: true });
           img.addEventListener('error', () => { clearTimeout(t); resolve(); }, { once: true });
         });
@@ -4882,8 +5446,15 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
       if (!clone) return null;
       try {
         const canvas = await html2canvas(clone, {
-          scale: 3, useCORS: true, allowTaint: false, logging: false,
-          backgroundColor: '#18181b', width: 480, windowWidth: 480, x: 0, y: 0
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          logging: false,
+          backgroundColor: '#18181b',
+          width: 480,
+          windowWidth: 480,
+          scrollX: 0,
+          scrollY: 0
         });
         const imgData = canvas.toDataURL('image/jpeg', 0.98);
         const jsPDFClass =
@@ -4893,19 +5464,24 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
         if (!jsPDFClass) throw new Error('jsPDF not available');
         const pdf = new jsPDFClass({ unit: 'mm', format: 'a4', orientation: 'portrait' });
         const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
         const pxToMm = 0.2646;
-        const wMm = canvas.width / 3 * pxToMm;
-        const hMm = canvas.height / 3 * pxToMm;
-        const margin = 16;
+        const wMm = (canvas.width / 2) * pxToMm;
+        const hMm = (canvas.height / 2) * pxToMm;
+        const margin = 14;
         const usableW = pageWidth - margin * 2;
-        const sf = Math.min(usableW / wMm, 1);
+        const usableH = pageHeight - margin * 2;
+        const sf = Math.min(usableW / wMm, usableH / hMm, 1);
         const finalW = wMm * sf;
         const finalH = hMm * sf;
         const x = (pageWidth - finalW) / 2;
-        pdf.addImage(imgData, 'JPEG', x, margin, finalW, finalH);
+        const y = Math.max(10, (pageHeight - finalH) / 2);
+        pdf.addImage(imgData, 'JPEG', x, y, finalW, finalH);
         return pdf.output('blob');
       } finally {
-        document.body.removeChild(clone);
+        if (clone && clone.parentNode) {
+          document.body.removeChild(clone);
+        }
       }
     }
 
@@ -4919,8 +5495,9 @@ async function shareVerifiedPaymentWhatsApp(id, verificationUpdates = {}) {
         const clone = await cloneReceiptForCapture();
         if (!clone) { showToast('Could not capture receipt.', 'error'); return; }
         const canvas = await html2canvas(clone, {
-          scale: 3, useCORS: true, allowTaint: false, logging: false,
-          backgroundColor: '#18181b', width: 480, windowWidth: 480
+          scale: 2, useCORS: true, allowTaint: true, logging: false,
+          backgroundColor: '#18181b', width: 480, windowWidth: 480,
+          scrollX: 0, scrollY: 0
         });
         document.body.removeChild(clone);
         const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
@@ -5633,20 +6210,70 @@ function shareMyParticipantPassWhatsApp() {
       document.getElementById('pillCountFull').textContent = payments.length - pendingCount;
     }
 
+    // Search & Filter state variables to keep options live
+    window.activeDashSearch = window.activeDashSearch || '';
+    window.activeStatusFilter = window.activeStatusFilter || 'All';
+    window.activeDeptFilter = window.activeDeptFilter || 'All';
+
+    function handleDashSearch(val) {
+      window.activeDashSearch = (val || '').trim();
+      renderDashboard();
+    }
+
+    function clearDashSearch() {
+      const searchInput = document.getElementById('dashSearchInput');
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      window.activeDashSearch = '';
+      renderDashboard();
+    }
+
+    function updateDeptFilterOptions() {
+      const deptSelect = document.getElementById('dashDeptFilter');
+      if (!deptSelect) return;
+      const curVal = deptSelect.value || window.activeDeptFilter || 'All';
+      const uniqueDepts = Array.from(new Set([...(tripConfig.departments || []), ...payments.map(p => p.department).filter(Boolean)])).sort();
+
+      const newHtml = `<option value="All">All Departments</option>` +
+        uniqueDepts.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+
+      if (deptSelect.innerHTML !== newHtml) {
+        deptSelect.innerHTML = newHtml;
+        if (uniqueDepts.includes(curVal) || curVal === 'All') {
+          deptSelect.value = curVal;
+        }
+      }
+    }
+
     function renderDashboard() {
       updateNavBadge();
       renderKPIs();
+      updateDeptFilterOptions();
 
-      const query = (document.getElementById('dashSearchInput')?.value || '').toLowerCase();
-      const statusF = document.getElementById('dashStatusFilter')?.value || 'All';
-      const deptF = document.getElementById('dashDeptFilter')?.value || 'All';
+      const searchInput = document.getElementById('dashSearchInput');
+      if (searchInput && searchInput.value !== window.activeDashSearch && document.activeElement !== searchInput) {
+        searchInput.value = window.activeDashSearch;
+      }
+
+      const query = (searchInput?.value || window.activeDashSearch || '').toLowerCase().trim();
+      window.activeDashSearch = query;
+
+      const statusSelect = document.getElementById('dashStatusFilter');
+      const statusF = statusSelect?.value || window.activeStatusFilter || 'All';
+      window.activeStatusFilter = statusF;
 
       const deptSelect = document.getElementById('dashDeptFilter');
-      const uniqueDepts = Array.from(new Set([...tripConfig.departments, ...payments.map(p => p.department)]));
-      const curDeptVal = deptSelect.value;
-      deptSelect.innerHTML = `<option value="All">All Departments</option>` +
-        uniqueDepts.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
-      if (uniqueDepts.includes(curDeptVal)) deptSelect.value = curDeptVal;
+      const deptF = deptSelect?.value || window.activeDeptFilter || 'All';
+      window.activeDeptFilter = deptF;
+
+      // Toggle clear button on search input
+      const clearBtn = document.getElementById('dashSearchClearBtn');
+      if (clearBtn) {
+        if (query.length > 0) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
 
       const filtered = payments.filter(p => {
         const bal = getBalanceDue(p);
@@ -5659,9 +6286,14 @@ function shareMyParticipantPassWhatsApp() {
         const matchDept = deptF === 'All' || p.department === deptF;
         const matchSearch =
           !query ||
-          p.studentName.toLowerCase().includes(query) ||
-          p.phone.includes(query) ||
-          p.receiptCode.toLowerCase().includes(query);
+          (p.studentName || '').toLowerCase().includes(query) ||
+          (p.phone || '').includes(query) ||
+          (p.department || '').toLowerCase().includes(query) ||
+          (p.receiptCode || '').toLowerCase().includes(query) ||
+          (p.accessCode || '').toLowerCase().includes(query) ||
+          (p.paymentApp || '').toLowerCase().includes(query) ||
+          (p.remarks || '').toLowerCase().includes(query) ||
+          (p.status || '').toLowerCase().includes(query);
 
         return matchPill && matchStatus && matchDept && matchSearch;
       });
@@ -5720,10 +6352,13 @@ function shareMyParticipantPassWhatsApp() {
             <td class="py-3.5 px-4 text-right">
               <div class="inline-flex items-center gap-1 flex-wrap justify-end">
                 <!-- Pass Actions -->
-                <div class="flex items-center gap-0.5 bg-slate-100 rounded-xl p-0.5" title="Boarding Pass Actions">
+                <div class="flex items-center gap-0.5 bg-slate-100 rounded-xl p-0.5" title="Pass & Payment Details Actions">
                   <button onclick="openBoardingPassByStudentId('${s.id}')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-700 text-white text-xs font-bold flex items-center gap-1 transition" title="Open Boarding Pass">
                     <i data-lucide="ticket" class="w-3.5 h-3.5 text-emerald-400"></i>
                     <span>Pass</span>
+                  </button>
+                  <button onclick="downloadPaymentDetailsPDF('${s.id}')" class="p-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white transition" title="Download Payment Details (Receipt PDF)">
+                    <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
                   </button>
                   <button onclick="savePassAsImageForStudent('${s.id}')" class="p-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white transition" title="Save as Image">
                     <i data-lucide="image" class="w-3.5 h-3.5"></i>
@@ -5798,10 +6433,14 @@ function shareMyParticipantPassWhatsApp() {
             <!-- Boarding Pass Actions -->
             <div class="mx-4 mb-3">
               <p class="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 mb-1.5">Boarding Pass</p>
-              <div class="grid grid-cols-4 gap-1.5">
+              <div class="grid grid-cols-5 gap-1.5">
                 <button onclick="openBoardingPassByStudentId('${s.id}')" class="flex flex-col items-center justify-center gap-1 py-2 rounded-xl bg-slate-900 hover:bg-slate-700 text-white transition active:scale-95" title="Open Pass">
                   <i data-lucide="ticket" class="w-4 h-4 text-emerald-400"></i>
-                  <span class="text-[9px] font-bold">Open</span>
+                  <span class="text-[9px] font-bold">Pass</span>
+                </button>
+                <button onclick="downloadPaymentDetailsPDF('${s.id}')" class="flex flex-col items-center justify-center gap-1 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white transition active:scale-95" title="Payment Details PDF">
+                  <i data-lucide="receipt" class="w-4 h-4"></i>
+                  <span class="text-[9px] font-bold">Receipt</span>
                 </button>
                 <button onclick="savePassAsImageForStudent('${s.id}')" class="flex flex-col items-center justify-center gap-1 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white transition active:scale-95" title="Save Image">
                   <i data-lucide="image" class="w-4 h-4"></i>
@@ -5951,6 +6590,7 @@ function shareMyParticipantPassWhatsApp() {
       e.preventDefault();
       const id = document.getElementById('expId').value;
       const data = {
+        tripId: currentTripId,
         title: document.getElementById('expTitle').value.trim(),
         amount: Number(document.getElementById('expAmount').value) || 0,
         category: document.getElementById('expCategory').value,
@@ -6071,6 +6711,7 @@ function shareMyParticipantPassWhatsApp() {
       e.preventDefault();
       const id = document.getElementById('itinId').value;
       const data = {
+        tripId: currentTripId,
         day: document.getElementById('itinDay').value.trim(),
         time: document.getElementById('itinTime').value.trim(),
         title: document.getElementById('itinTitle').value.trim(),
@@ -6199,6 +6840,7 @@ function shareMyParticipantPassWhatsApp() {
     async function handleSaveContactSubmit(e) {
       e.preventDefault();
       const data = {
+        tripId: currentTripId,
         name: document.getElementById('contactName').value.trim(),
         role: document.getElementById('contactRole').value.trim(),
         phone: normalizePhone(document.getElementById('contactPhone').value),
@@ -6263,6 +6905,224 @@ function shareMyParticipantPassWhatsApp() {
         `*Total Collected:* ${formatINR(sum)}`
       ];
       copyText(lines.join('\n'), 'Master WhatsApp list copied!');
+    }
+
+    
+    // Open payment receipt voucher for any specific student
+    function openPaymentReceiptByStudentId(studentId) {
+      const p = payments.find(x => x.id === studentId);
+      if (!p) {
+        showToast('Payment record not found.', 'error');
+        return;
+      }
+      const bal = getBalanceDue(p);
+      showDigitalReceipt({
+        badge: bal === 0 ? 'Full Payment Completed' : 'Payment Advance / Due',
+        studentName: p.studentName,
+        receiptCode: p.receiptCode,
+        department: p.department,
+        phone: p.phone,
+        paidNow: Number(p.amountPaid) || 0,
+        totalPaid: Number(p.amountPaid) || 0,
+        balanceDue: bal,
+        paymentApp: p.paymentApp || 'UPI',
+        status: p.status || 'Pending Verification',
+        accessCode: p.accessCode || ''
+      });
+    }
+
+    // Convert and download payment details PDF directly for a student
+    async function downloadPaymentDetailsPDF(studentId) {
+      const p = payments.find(x => x.id === studentId);
+      if (!p) {
+        showToast('Payment record not found.', 'error');
+        return;
+      }
+      openPaymentReceiptByStudentId(studentId);
+      await downloadReceiptPDF();
+    }
+
+    // Master payment details export to PDF report
+    async function exportPaymentsPDF() {
+      const query = (window.activeDashSearch || '').toLowerCase().trim();
+      const statusF = window.activeStatusFilter || 'All';
+      const deptF = window.activeDeptFilter || 'All';
+
+      const list = payments.filter(p => {
+        const bal = getBalanceDue(p);
+        const matchPill =
+          activePillFilter === 'All' ||
+          (activePillFilter === 'Pending' && bal > 0) ||
+          (activePillFilter === 'Full' && bal === 0);
+
+        const matchStatus = statusF === 'All' || p.status === statusF;
+        const matchDept = deptF === 'All' || p.department === deptF;
+        const matchSearch =
+          !query ||
+          (p.studentName || '').toLowerCase().includes(query) ||
+          (p.phone || '').includes(query) ||
+          (p.department || '').toLowerCase().includes(query) ||
+          (p.receiptCode || '').toLowerCase().includes(query) ||
+          (p.accessCode || '').toLowerCase().includes(query) ||
+          (p.paymentApp || '').toLowerCase().includes(query) ||
+          (p.remarks || '').toLowerCase().includes(query) ||
+          (p.status || '').toLowerCase().includes(query);
+
+        return matchPill && matchStatus && matchDept && matchSearch;
+      });
+
+      if (list.length === 0) {
+        showToast('No payment records to export.', 'error');
+        return;
+      }
+
+      showToast('Generating Payment Details PDF report...', 'info');
+
+      const totalCollected = list.reduce((a, b) => a + (Number(b.amountPaid) || 0), 0);
+      const totalDues = list.reduce((a, b) => a + getBalanceDue(b), 0);
+      const verifiedCount = list.filter(p => p.status === 'Verified').length;
+
+      const container = document.createElement('div');
+      container.style.cssText = [
+        'position:fixed',
+        'left:0',
+        'top:0',
+        'z-index:-9999',
+        'width:1050px',
+        'background:#ffffff',
+        'color:#0f172a',
+        'font-family:Inter,system-ui,sans-serif',
+        'padding:32px',
+        'box-sizing:border-box',
+        'pointer-events:none',
+        'visibility:visible',
+        'opacity:1'
+      ].join(';');
+
+      container.innerHTML = `
+        <div style="border-bottom: 2px solid #059669; padding-bottom: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <h1 style="font-size: 24px; font-weight: 800; color: #065f46; margin: 0 0 4px 0;">${escapeHtml(tripConfig.tripTitle || 'TripPay Portal')}</h1>
+            <p style="font-size: 13px; font-weight: 600; color: #475569; margin: 0;">Official Student Payment Details &amp; Dues Report</p>
+          </div>
+          <div style="text-align: right; font-size: 11px; color: #64748b; font-family: monospace;">
+            <p style="margin: 0;">Generated: ${new Date().toLocaleString('en-IN')}</p>
+            <p style="margin: 2px 0 0 0;">Filter: ${escapeHtml(activePillFilter)} | Status: ${escapeHtml(statusF)} | Dept: ${escapeHtml(deptF)}</p>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; text-align: center;">
+            <span style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase;">Students</span>
+            <strong style="display: block; font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 2px;">${list.length}</strong>
+          </div>
+          <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 12px; text-align: center;">
+            <span style="font-size: 10px; font-weight: 700; color: #047857; text-transform: uppercase;">Total Collected</span>
+            <strong style="display: block; font-size: 18px; font-weight: 800; color: #065f46; margin-top: 2px;">${formatINR(totalCollected)}</strong>
+          </div>
+          <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; text-align: center;">
+            <span style="font-size: 10px; font-weight: 700; color: #b45309; text-transform: uppercase;">Balance Due</span>
+            <strong style="display: block; font-size: 18px; font-weight: 800; color: #92400e; margin-top: 2px;">${formatINR(totalDues)}</strong>
+          </div>
+          <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 12px; text-align: center;">
+            <span style="font-size: 10px; font-weight: 700; color: #1d4ed8; text-transform: uppercase;">Verified</span>
+            <strong style="display: block; font-size: 18px; font-weight: 800; color: #1e40af; margin-top: 2px;">${verifiedCount} / ${list.length}</strong>
+          </div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+          <thead>
+            <tr style="background: #0f172a; color: #ffffff; text-align: left;">
+              <th style="padding: 8px 10px; border: 1px solid #1e293b;">#</th>
+              <th style="padding: 8px 10px; border: 1px solid #1e293b;">Student Name</th>
+              <th style="padding: 8px 10px; border: 1px solid #1e293b;">Department</th>
+              <th style="padding: 8px 10px; border: 1px solid #1e293b;">Phone</th>
+              <th style="padding: 8px 10px; border: 1px solid #1e293b; text-align: right;">Paid (₹)</th>
+              <th style="padding: 8px 10px; border: 1px solid #1e293b; text-align: right;">Due (₹)</th>
+              <th style="padding: 8px 10px; border: 1px solid #1e293b; text-align: center;">Status</th>
+              <th style="padding: 8px 10px; border: 1px solid #1e293b;">Receipt Code</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.map((p, idx) => {
+              const bal = getBalanceDue(p);
+              const isVer = p.status === 'Verified';
+              const bg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+              return `
+                <tr style="background: ${bg}; border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 7px 10px; border: 1px solid #e2e8f0; font-family: monospace; color: #64748b;">${idx + 1}</td>
+                  <td style="padding: 7px 10px; border: 1px solid #e2e8f0; font-weight: 700; color: #0f172a;">${escapeHtml(p.studentName)}</td>
+                  <td style="padding: 7px 10px; border: 1px solid #e2e8f0; color: #334155;">${escapeHtml(p.department)}</td>
+                  <td style="padding: 7px 10px; border: 1px solid #e2e8f0; font-family: monospace; color: #334155;">${escapeHtml(p.phone)}</td>
+                  <td style="padding: 7px 10px; border: 1px solid #e2e8f0; text-align: right; font-weight: 700; color: #047857;">${formatINR(p.amountPaid)}</td>
+                  <td style="padding: 7px 10px; border: 1px solid #e2e8f0; text-align: right; font-weight: 700; color: ${bal > 0 ? '#b45309' : '#047857'};">${bal > 0 ? formatINR(bal) : '₹0'}</td>
+                  <td style="padding: 7px 10px; border: 1px solid #e2e8f0; text-align: center;">
+                    <span style="display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; background: ${isVer ? '#d1fae5' : '#fef3c7'}; color: ${isVer ? '#065f46' : '#92400e'};">
+                      ${escapeHtml(p.status)}
+                    </span>
+                  </td>
+                  <td style="padding: 7px 10px; border: 1px solid #e2e8f0; font-family: monospace; font-size: 10px; color: #475569;">${escapeHtml(p.receiptCode)}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+
+        <div style="margin-top: 24px; padding-top: 12px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #64748b;">
+          <p style="margin: 0;">Verified by Trip Management Committee • Coordinator: ${escapeHtml(tripConfig.receiverName || 'Trip Coordinator')}</p>
+          <p style="margin: 0; font-family: monospace;">Page 1 of 1 • Total Records: ${list.length}</p>
+        </div>
+      `;
+
+      document.body.appendChild(container);
+      await new Promise(r => setTimeout(r, 120));
+
+      try {
+        const canvas = await html2canvas(container, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+          width: 1050,
+          windowWidth: 1050,
+          scrollX: 0,
+          scrollY: 0
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.98);
+        const jsPDFClass =
+          (window.jspdf && window.jspdf.jsPDF) ||
+          (window.jsPDF) ||
+          (typeof jsPDF !== 'undefined' ? jsPDF : null);
+
+        if (!jsPDFClass) throw new Error('jsPDF not available');
+
+        const pdf = new jsPDFClass({ unit: 'mm', format: 'a4', orientation: 'landscape' });
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const pxToMm = 0.2646;
+        const wMm = (canvas.width / 2) * pxToMm;
+        const hMm = (canvas.height / 2) * pxToMm;
+        const margin = 10;
+        const usableW = pageWidth - margin * 2;
+        const usableH = pageHeight - margin * 2;
+        const sf = Math.min(usableW / wMm, usableH / hMm, 1);
+        const finalW = wMm * sf;
+        const finalH = hMm * sf;
+        const x = (pageWidth - finalW) / 2;
+        const y = Math.max(8, (pageHeight - finalH) / 2);
+
+        pdf.addImage(imgData, 'JPEG', x, y, finalW, finalH);
+        pdf.save(`Trip_Payments_Details_Report_${new Date().toISOString().slice(0, 10)}.pdf`);
+        showToast('Payment Details PDF report downloaded! ✅');
+      } catch (err) {
+        console.error('exportPaymentsPDF error:', err);
+        showToast('Failed to generate PDF. Trying print view...', 'error');
+        window.print();
+      } finally {
+        if (container.parentNode) document.body.removeChild(container);
+      }
     }
 
     function exportStudentsCSV() {
@@ -6351,6 +7211,7 @@ function shareMyParticipantPassWhatsApp() {
       }
 
       const data = {
+        tripId: existing?.tripId || currentTripId,
         studentName: document.getElementById('editName').value.trim(),
         department: document.getElementById('editDept').value,
         phone: normalizePhone(document.getElementById('editPhone').value),
@@ -6497,19 +7358,490 @@ function shareMyParticipantPassWhatsApp() {
       };
 
       try {
-        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
+        const configDocId = currentTripId === 'default' ? 'main_config' : 'trip_' + currentTripId;
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', configDocId);
         await setDoc(ref, updated);
+
+        // Also update master trip record so switcher immediately reflects new title & pricing
+        try {
+          const tripMasterRef = doc(db, 'artifacts', appId, 'public', 'data', 'trips_master', currentTripId);
+          await setDoc(tripMasterRef, {
+            id: currentTripId,
+            tripTitle: updated.tripTitle,
+            destination: updated.destination,
+            tripDate: updated.tripDate,
+            tripAmount: updated.tripAmount,
+            advanceAmount: updated.advanceAmount,
+            upiId: updated.upiId,
+            receiverName: updated.receiverName,
+            customLogoUrl: updated.customLogoUrl,
+            updatedAt: Date.now()
+          }, { merge: true });
+        } catch (eMaster) {
+          console.warn('Could not update trips_master doc:', eMaster);
+        }
+
         tripConfig = updated;
         applyTripConfigToUI();
+        updateActiveTripUI();
         closeSettingsModal();
-        showToast('Settings & Custom Logo saved to cloud!');
+        showToast('Settings saved to cloud for this trip!');
       } catch (err) {
         showToast('Settings save failed.', 'error');
       }
     }
 
+
+    // ==========================================
+    // MULTI-TRIP MANAGEMENT & URL ROUTING ENGINE
+    // ==========================================
+
+    function getBaseAppUrl() {
+      const url = new URL(window.location.href);
+      return url.origin + url.pathname;
+    }
+
+    function getTripShareUrl(tripId, tab = null) {
+      const base = getBaseAppUrl();
+      const params = new URLSearchParams();
+      if (tripId && tripId !== 'default') {
+        params.set('trip', tripId);
+      }
+      if (tab) params.set('tab', tab);
+      const qs = params.toString();
+      return qs ? `${base}?${qs}` : base;
+    }
+
+    function updateActiveTripUI() {
+      const activeTrip = allTrips.find(t => t.id === currentTripId) || {
+        id: currentTripId,
+        tripTitle: tripConfig.tripTitle || 'Annual College Trip',
+        destination: tripConfig.destination || 'Munnar, Vagamon & Kochi'
+      };
+
+      const navTitle = document.getElementById('navActiveTripTitle');
+      if (navTitle) navTitle.textContent = activeTrip.tripTitle || tripConfig.tripTitle;
+
+      const navBadge = document.getElementById('navActiveTripIdBadge');
+      if (navBadge) navBadge.textContent = currentTripId === 'default' ? 'default' : currentTripId;
+
+      const modalTitle = document.getElementById('modalActiveTripTitle');
+      if (modalTitle) modalTitle.textContent = activeTrip.tripTitle || tripConfig.tripTitle;
+
+      const modalId = document.getElementById('modalActiveTripId');
+      if (modalId) modalId.textContent = currentTripId;
+
+      const totalCountBadge = document.getElementById('totalTripsCountBadge');
+      if (totalCountBadge) {
+        totalCountBadge.textContent = `${Math.max(1, allTrips.length)} ${allTrips.length === 1 ? 'Trip' : 'Trips'} Active`;
+      }
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function renderTripsListInModal() {
+      const container = document.getElementById('tripsListContainer');
+      if (!container) return;
+
+      let tripsToDisplay = [...allTrips];
+      if (tripsToDisplay.length === 0 || !tripsToDisplay.some(t => t.id === 'default')) {
+        tripsToDisplay.unshift({
+          id: 'default',
+          tripTitle: tripConfig.tripTitle || 'Annual College Industrial & Leisure Trip',
+          destination: tripConfig.destination || 'Munnar, Vagamon & Kochi',
+          tripAmount: Number(tripConfig.tripAmount) || 1500,
+          advanceAmount: Number(tripConfig.advanceAmount) || 500,
+          receiverName: tripConfig.receiverName || 'Organizer',
+          createdAt: 0
+        });
+      }
+
+      const uniqueMap = new Map();
+      tripsToDisplay.forEach(t => {
+        if (!uniqueMap.has(t.id)) uniqueMap.set(t.id, t);
+      });
+      tripsToDisplay = Array.from(uniqueMap.values());
+
+      container.innerHTML = tripsToDisplay.map(t => {
+        const isActive = t.id === currentTripId;
+        const tripPayments = rawPaymentsList.filter(p => (p.tripId || 'default') === t.id);
+        const verifiedCount = tripPayments.filter(p => p.status === 'Verified').length;
+        const totalCollected = tripPayments.filter(p => p.status === 'Verified').reduce((sum, p) => sum + (Number(p.amountPaid) || 0), 0);
+
+        return `
+          <div class="p-4 rounded-2xl border transition-all ${isActive ? 'border-indigo-400 bg-indigo-50/60 shadow-md ring-2 ring-indigo-500/20' : 'border-slate-200 bg-white hover:border-slate-300 shadow-sm'}">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-xl ${isActive ? 'bg-indigo-600 text-white shadow-indigo-200 shadow-lg' : 'bg-slate-100 text-slate-600'} flex items-center justify-center shrink-0 font-bold text-sm">
+                  ${isActive ? '<i data-lucide="check" class="w-5 h-5"></i>' : '<i data-lucide="compass" class="w-5 h-5"></i>'}
+                </div>
+                <div>
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <h5 class="font-bold text-slate-900 text-base">${escapeHtml(t.tripTitle || 'Trip')}</h5>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold ${isActive ? 'bg-indigo-200 text-indigo-900' : 'bg-slate-100 text-slate-700'}">
+                      #${escapeHtml(t.id)}
+                    </span>
+                    ${isActive ? '<span class="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300">Active Now</span>' : ''}
+                  </div>
+                  <p class="text-xs text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
+                    <span><i data-lucide="map-pin" class="w-3.5 h-3.5 inline text-rose-500"></i> ${escapeHtml(t.destination || 'Custom Destination')}</span>
+                    ${t.tripDate ? `<span>• <i data-lucide="calendar" class="w-3.5 h-3.5 inline text-indigo-500"></i> ${escapeHtml(t.tripDate)}</span>` : ''}
+                    <span>• 💰 ₹${(t.tripAmount || 1500).toLocaleString('en-IN')} (Adv: ₹${(t.advanceAmount || 500).toLocaleString('en-IN')})</span>
+                  </p>
+                  <div class="flex items-center gap-3 text-xs text-slate-600 mt-2">
+                    <span class="font-semibold text-indigo-700 bg-indigo-100/70 px-2 py-0.5 rounded-md">${tripPayments.length} Registered (${verifiedCount} Verified)</span>
+                    <span class="font-semibold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded-md">₹${totalCollected.toLocaleString('en-IN')} Collected</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
+                <button type="button" onclick="openShareTripModal('${t.id}')" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm" title="Get direct shareable payment & login links">
+                  <i data-lucide="share-2" class="w-3.5 h-3.5 text-indigo-600"></i>
+                  <span>Share Links</span>
+                </button>
+                ${!isActive ? `
+                  <button type="button" onclick="switchActiveTrip('${t.id}')" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-indigo-100">
+                    <i data-lucide="arrow-right-left" class="w-3.5 h-3.5"></i>
+                    <span>Switch</span>
+                  </button>
+                ` : `
+                  <span class="text-xs font-bold text-indigo-600 px-3 py-2 bg-indigo-100/50 rounded-xl flex items-center gap-1">
+                    <i data-lucide="radio" class="w-3.5 h-3.5 text-indigo-600 animate-pulse"></i> Selected
+                  </span>
+                `}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function openTripManagerModal() {
+      updateActiveTripUI();
+      renderTripsListInModal();
+      const modal = document.getElementById('tripManagerModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeTripManagerModal() {
+      const modal = document.getElementById('tripManagerModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function openCreateTripModal() {
+      const titleInput = document.getElementById('newTripTitle');
+      const slugInput = document.getElementById('newTripSlug');
+      const destInput = document.getElementById('newTripDest');
+      const dateInput = document.getElementById('newTripDate');
+      const amountInput = document.getElementById('newTripAmount');
+      const advInput = document.getElementById('newTripAdvance');
+      const upiInput = document.getElementById('newTripUpi');
+      const recInput = document.getElementById('newTripReceiver');
+
+      if (titleInput) titleInput.value = '';
+      if (slugInput) slugInput.value = '';
+      if (destInput) destInput.value = '';
+      if (dateInput) dateInput.value = '';
+      if (amountInput) amountInput.value = '1500';
+      if (advInput) advInput.value = '500';
+      if (upiInput) upiInput.value = tripConfig.upiId || 'mohdshemeemkp@oksbi';
+      if (recInput) recInput.value = tripConfig.receiverName || 'Mohd Shemeem KP';
+
+      const modal = document.getElementById('newTripModal');
+      if (modal) modal.classList.remove('hidden');
+      if (titleInput) titleInput.focus();
+    }
+
+    function closeCreateTripModal() {
+      const modal = document.getElementById('newTripModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function autoGenerateTripSlug(title) {
+      if (!title) return;
+      const slugInput = document.getElementById('newTripSlug');
+      if (slugInput && (!slugInput.value || slugInput.dataset.manual !== 'true')) {
+        const clean = title.toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        slugInput.value = clean.slice(0, 32);
+      }
+    }
+
+    async function handleCreateTripSubmit(e) {
+      e.preventDefault();
+      const title = (document.getElementById('newTripTitle')?.value || '').trim();
+      let slug = (document.getElementById('newTripSlug')?.value || '').trim().toLowerCase();
+      const destination = (document.getElementById('newTripDest')?.value || '').trim();
+      const tripDate = document.getElementById('newTripDate')?.value || '';
+      const tripAmount = Number(document.getElementById('newTripAmount')?.value) || 1500;
+      const advanceAmount = Number(document.getElementById('newTripAdvance')?.value) || 500;
+      const upiId = (document.getElementById('newTripUpi')?.value || '').trim() || tripConfig.upiId;
+      const receiverName = (document.getElementById('newTripReceiver')?.value || '').trim() || tripConfig.receiverName;
+
+      if (!title || !destination) {
+        showToast('Please enter trip title and destination.', 'error');
+        return;
+      }
+
+      if (!slug) {
+        slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 32);
+      }
+      slug = slug.replace(/[^a-z0-9-_]/g, '-').replace(/^-+|-+$/g, '');
+
+      if (!slug) slug = 'trip-' + Date.now().toString().slice(-4);
+
+      if (allTrips.some(t => t.id === slug)) {
+        showToast(`Trip ID "${slug}" already exists! Please choose another ID.`, 'error');
+        return;
+      }
+
+      const btn = document.getElementById('btnSubmitNewTrip');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Creating Trip...';
+      }
+
+      try {
+        const newTripData = {
+          id: slug,
+          tripTitle: title,
+          destination,
+          tripDate,
+          tripAmount,
+          advanceAmount,
+          upiId,
+          receiverName,
+          customLogoUrl: DEFAULT_LOGO_URL,
+          departments: ['BCA', 'B.Sc Computer Science', 'B.Com', 'BBA', 'General'],
+          expenseCategories: ['Transportation', 'Resort / Stay', 'Food & Snacks', 'Entry & Permits', 'Misc / Other'],
+          createdAt: Date.now()
+        };
+
+        // 1. Add to trips_master
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trips_master', slug), newTripData);
+
+        // 2. Add config to trip_settings
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'trip_' + slug), {
+          ...newTripData,
+          showItineraryToUsers: true,
+          showContactsToUsers: true
+        });
+
+        // 3. Log event
+        logSecurityEvent('TRIP_CREATE', slug, `Created trip "${title}"`);
+
+        closeCreateTripModal();
+        showToast(`Trip "${title}" created successfully!`, 'success');
+
+        // 4. Switch to this new trip automatically
+        switchActiveTrip(slug);
+      } catch (err) {
+        console.error('Error creating trip:', err);
+        showToast('Failed to create trip. Please try again.', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Create Trip';
+        }
+      }
+    }
+
+    function switchActiveTrip(newTripId) {
+      if (!newTripId) return;
+      currentTripId = newTripId;
+      localStorage.setItem('trippay_active_trip_id', newTripId);
+
+      // Update URL search param cleanly without page reload
+      const currentUrl = new URL(window.location.href);
+      if (newTripId === 'default') {
+        currentUrl.searchParams.delete('trip');
+      } else {
+        currentUrl.searchParams.set('trip', newTripId);
+      }
+      window.history.replaceState(null, '', currentUrl.toString());
+
+      // Re-attach active trip config listener and re-filter data
+      listenToActiveTripConfig();
+      filterAndRenderAllTripData();
+      updateActiveTripUI();
+      renderTripsListInModal();
+
+      const activeTrip = allTrips.find(t => t.id === currentTripId);
+      showToast(`Active Trip: ${activeTrip?.tripTitle || currentTripId}`, 'info');
+    }
+
+    function openShareTripModal(tripId) {
+      const targetId = tripId || currentTripId;
+      activeShareTargetTripId = targetId;
+
+      const targetTrip = allTrips.find(t => t.id === targetId) || {
+        id: targetId,
+        tripTitle: tripConfig.tripTitle || 'College Trip',
+        destination: tripConfig.destination || 'Tour',
+        tripAmount: tripConfig.tripAmount || 1500,
+        advanceAmount: tripConfig.advanceAmount || 500
+      };
+
+      const titleEl = document.getElementById('shareTripTargetTitle');
+      if (titleEl) titleEl.textContent = targetTrip.tripTitle || targetTrip.id;
+
+      const badgeEl = document.getElementById('shareTripTargetBadge');
+      if (badgeEl) badgeEl.textContent = targetTrip.id;
+
+      const payLink = getTripShareUrl(targetId);
+      const loginLink = getTripShareUrl(targetId, 'participant');
+      const adminLink = getTripShareUrl(targetId, 'manager');
+
+      const payInp = document.getElementById('shareTripPayLink');
+      if (payInp) payInp.value = payLink;
+
+      const loginInp = document.getElementById('shareTripLoginLink');
+      if (loginInp) loginInp.value = loginLink;
+
+      const adminInp = document.getElementById('shareTripAdminLink');
+      if (adminInp) adminInp.value = adminLink;
+
+      // Render QR Code for the payment link
+      const qrImg = document.getElementById('shareQrImage');
+      if (qrImg) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=8&data=${encodeURIComponent(payLink)}`;
+      }
+
+      const modal = document.getElementById('shareTripModal');
+      if (modal) modal.classList.remove('hidden');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function closeShareTripModal() {
+      const modal = document.getElementById('shareTripModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function copyShareLink(inputId, label) {
+      const input = document.getElementById(inputId);
+      if (!input || !input.value) return;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(input.value)
+          .then(() => showToast(`${label || 'Link'} copied to clipboard!`, 'success'))
+          .catch(() => copyFallback(input, label));
+      } else {
+        copyFallback(input, label);
+      }
+    }
+
+    function copyFallback(input, label) {
+      try {
+        input.select();
+        input.setSelectionRange(0, 99999);
+        document.execCommand('copy');
+        showToast(`${label || 'Link'} copied!`, 'success');
+      } catch (e) {
+        showToast('Please copy the link manually.', 'error');
+      }
+    }
+
+    function shareTripOnWhatsApp(type) {
+      const targetTrip = allTrips.find(t => t.id === activeShareTargetTripId) || {
+        id: activeShareTargetTripId,
+        tripTitle: tripConfig.tripTitle || 'Trip',
+        destination: tripConfig.destination || 'Destination',
+        tripAmount: tripConfig.tripAmount || 1500,
+        advanceAmount: tripConfig.advanceAmount || 500
+      };
+
+      const payLink = getTripShareUrl(activeShareTargetTripId);
+      const loginLink = getTripShareUrl(activeShareTargetTripId, 'participant');
+
+      let text = '';
+      if (type === 'pay') {
+        text = `🚌 *Trip Registration & Payment - ${targetTrip.tripTitle}*\n\n` +
+          `📍 *Destination:* ${targetTrip.destination}\n` +
+          `💰 *Total Package:* ₹${(targetTrip.tripAmount || 1500).toLocaleString('en-IN')}\n` +
+          `⚡ *Advance Required:* ₹${(targetTrip.advanceAmount || 500).toLocaleString('en-IN')}\n\n` +
+          `👉 *Click here to Pay directly via Google Pay / Any UPI:*\n${payLink}\n\n` +
+          `_Instant digital payment receipt & verified boarding pass generated after payment._`;
+      } else if (type === 'login') {
+        text = `🎫 *Participant Portal & Digital Boarding Pass*\n` +
+          `Trip: *${targetTrip.tripTitle}*\n\n` +
+          `Check your balance amount, download your digital boarding pass, and view live trip itinerary:\n` +
+          `👉 *Participant Login Link:*\n${loginLink}`;
+      } else {
+        text = `🌟 *Trip Portal - ${targetTrip.tripTitle}*\n` +
+          `📍 Destination: ${targetTrip.destination}\n\n` +
+          `💳 *Direct Payment Link:*\n${payLink}\n\n` +
+          `🎫 *Participant Login & Boarding Pass:*\n${loginLink}`;
+      }
+
+      const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+      window.open(waUrl, '_blank');
+    }
+
+    function handleInitialUrlRouting() {
+      try {
+        const url = new URL(window.location.href);
+        const tripParam = url.searchParams.get('trip');
+        const tabParam = url.searchParams.get('tab');
+        const phoneParam = url.searchParams.get('phone');
+        const presetParam = url.searchParams.get('preset');
+
+        if (tripParam && tripParam !== currentTripId) {
+          currentTripId = tripParam;
+          localStorage.setItem('trippay_active_trip_id', tripParam);
+        }
+
+        if (tabParam) {
+          const lowerTab = tabParam.toLowerCase();
+          if (['participant', 'login', 'pass', 'ticket'].includes(lowerTab)) {
+            switchTab('participant');
+          } else if (['manager', 'admin', 'dashboard'].includes(lowerTab)) {
+            switchTab('manager');
+          } else if (lowerTab === 'payment' || lowerTab === 'pay') {
+            switchTab('payment');
+          }
+        }
+
+        if (phoneParam) {
+          const cleanPhone = normalizePhone(phoneParam);
+          const inpPhone = document.getElementById('inpPhone');
+          if (inpPhone) inpPhone.value = cleanPhone;
+          const partPhone = document.getElementById('partPhone');
+          if (partPhone) partPhone.value = cleanPhone;
+        }
+
+        if (presetParam && ['advance', 'full'].includes(presetParam.toLowerCase())) {
+          selectPaymentPreset(presetParam.toLowerCase());
+        }
+      } catch (e) {
+        console.warn('URL routing parse error:', e);
+      }
+    }
+
     // Attach globals to window
     Object.assign(window, {
+      openTripManagerModal,
+      closeTripManagerModal,
+      renderTripsListInModal,
+      openCreateTripModal,
+      closeCreateTripModal,
+      autoGenerateTripSlug,
+      handleCreateTripSubmit,
+      switchActiveTrip,
+      openShareTripModal,
+      closeShareTripModal,
+      copyShareLink,
+      shareTripOnWhatsApp,
       hideToast,
       copyText,
       copyUpiId,
@@ -6611,7 +7943,18 @@ function shareMyParticipantPassWhatsApp() {
       handleManualScannerLookup,
       markParticipantBoardingStatus,
       copyBoardingAttendanceWhatsApp,
-      sharePassAsImage
+      sharePassAsImage,
+      closePaymentReceiptModal,
+      shareReceiptAsImage,
+      shareReceiptPDFWhatsApp,
+      downloadReceiptPDF,
+      printReceiptPass,
+      exportPaymentsPDF,
+      downloadPaymentDetailsPDF,
+      openPaymentReceiptByStudentId,
+      clearDashSearch,
+      handleDashSearch,
+      renderDashboard
     });
 
     // Restore sessions from localStorage on load
@@ -6649,13 +7992,23 @@ function shareMyParticipantPassWhatsApp() {
       } catch (e) {}
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
+    function initApp() {
+      handleInitialUrlRouting();
       applyTripConfigToUI();
+      selectPaymentPreset('advance');
+      updateDynamicUpiLinks();
+      updateActiveTripUI();
       restoreSessionsFromStorage();
       updateAdminUIState();
       lucide.createIcons();
       initFirebaseAndListeners();
-    });
+    }
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', initApp);
+    } else {
+      initApp();
+    }
   </script>
 </body>
 </html>
