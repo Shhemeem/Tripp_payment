@@ -380,6 +380,13 @@
           </ul>
         </div>
         <div class="flex items-center justify-center gap-3">
+          <a
+            href="?trip=default"
+            class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md transition flex items-center gap-2"
+          >
+            <i data-lucide="compass" class="w-4 h-4"></i>
+            <span>Open Default College Trip (#default)</span>
+          </a>
           <button
             type="button"
             onclick="handleAdminAccessClick()"
@@ -3760,12 +3767,40 @@
             <i data-lucide="share-2" class="w-5 h-5"></i>
           </div>
           <div class="min-w-0">
-            <h3 class="font-display font-extrabold text-base text-slate-900 truncate">Share Trip Links</h3>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 class="font-display font-extrabold text-base text-slate-900 truncate">Share Trip Links</h3>
+              <span id="shareTripTargetBadge" class="font-mono text-[11px] font-black px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 border border-purple-200">#default</span>
+            </div>
             <p id="shareModalTripName" class="text-xs text-slate-500 truncate">Annual College Trip</p>
           </div>
         </div>
         <button type="button" onclick="closeShareTripModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition shrink-0">
           <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Unique Trip ID Banner -->
+      <div class="p-3.5 rounded-2xl bg-gradient-to-r from-purple-50 via-indigo-50 to-purple-50 border border-purple-200/90 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+            <i data-lucide="key" class="w-4 h-4"></i>
+          </div>
+          <div class="min-w-0">
+            <span class="text-[10px] font-extrabold uppercase text-purple-700 tracking-wider">Unique Trip Key / ID</span>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <strong id="shareModalTripIdDisplay" class="font-mono font-black text-sm text-purple-900">default</strong>
+              <span class="text-[10px] text-purple-600 font-medium">(Required for link routing &amp; deletion)</span>
+            </div>
+          </div>
+        </div>
+        <button
+          type="button"
+          onclick="copyShareTripId()"
+          class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-purple-100 text-purple-800 border border-purple-200 text-xs font-bold transition flex items-center gap-1 shadow-2xs shrink-0"
+          title="Copy Trip ID"
+        >
+          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+          <span>Copy ID</span>
         </button>
       </div>
 
@@ -4474,8 +4509,20 @@
       return localStorage.getItem('trippay_active_trip_id') || '';
     }
 
-    let currentTripId = getTripIdFromUrl();
-    let allTrips = [];
+    let currentTripId = getTripIdFromUrl() || 'default';
+    let allTrips = [{
+      id: 'default',
+      tripTitle: 'Annual College Industrial & Leisure Trip',
+      destination: 'Munnar, Vagamon & Kochi',
+      tripDate: '2026-11-15',
+      tripAmount: 1500,
+      advanceAmount: 500,
+      upiId: 'mohdshemeemkp@oksbi',
+      receiverName: 'Mohd Shemeem KP',
+      customLogoUrl: DEFAULT_LOGO_URL,
+      category: 'Industrial Tour',
+      createdAt: 0
+    }];
     let allAdminUsers = [];
     let currentAdminRole = 'admin'; // 'boss' or 'admin'
     let currentAdminUser = null;
@@ -4483,6 +4530,40 @@
     const BOSS_DEFAULT_EMAIL = 'boss@trippay.com';
     const BOSS_DEFAULT_PASS = 'boss123';
     const BOSS_MASTER_PIN = '8899';
+
+    // PERMANENT GLOBAL BOSS SECURITY STATE (Persistent across all trips, reloads & Firestore)
+    let globalBossSecurity = {
+      bossEmail: '',
+      bossPassword: '',
+      bossMasterPin: '',
+      updatedAt: 0
+    };
+
+    try {
+      const cachedBoss = localStorage.getItem('trippay_boss_master_security');
+      if (cachedBoss) {
+        const parsed = JSON.parse(cachedBoss);
+        if (parsed && typeof parsed === 'object') {
+          globalBossSecurity = { ...globalBossSecurity, ...parsed };
+        }
+      }
+    } catch (e) {}
+
+    function getActiveBossEmail() {
+      return (globalBossSecurity.bossEmail || tripConfig.bossEmail || BOSS_DEFAULT_EMAIL).toLowerCase().trim();
+    }
+
+    function getActiveBossPassword() {
+      return globalBossSecurity.bossPassword || tripConfig.bossPassword || BOSS_DEFAULT_PASS;
+    }
+
+    function getActiveBossMasterPin() {
+      return globalBossSecurity.bossMasterPin || tripConfig.bossMasterPin || BOSS_MASTER_PIN;
+    }
+
+    function isCustomBossSecurityActive() {
+      return !!(globalBossSecurity.bossEmail || tripConfig.bossEmail || globalBossSecurity.bossMasterPin || tripConfig.bossMasterPin);
+    }
     let activeShareTargetTripId = currentTripId;
 
     let tripConfig = {
@@ -4697,6 +4778,10 @@
         if (snap.exists()) {
           const d = snap.data();
           tripConfig = { ...tripConfig, ...d };
+          // Preserve permanent global boss security invariant across all trips
+          if (globalBossSecurity.bossEmail) tripConfig.bossEmail = globalBossSecurity.bossEmail;
+          if (globalBossSecurity.bossPassword) tripConfig.bossPassword = globalBossSecurity.bossPassword;
+          if (globalBossSecurity.bossMasterPin) tripConfig.bossMasterPin = globalBossSecurity.bossMasterPin;
           applyTripConfigToUI();
           if (isAdminLoggedIn) renderDashboard();
           if (loggedInParticipant) updateParticipantDashboardUI();
@@ -4803,11 +4888,57 @@
     function startFirestoreListeners() {
       if (!currentUser) currentUser = { uid: 'public-session' };
 
+      // 0. Permanent Global Boss Security Listener (Never switches with trips)
+      const bossSecRef = doc(db, 'artifacts', appId, 'public', 'data', 'boss_security', 'master_auth');
+      onSnapshot(bossSecRef, (snap) => {
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.bossEmail) globalBossSecurity.bossEmail = data.bossEmail;
+          if (data.bossPassword) globalBossSecurity.bossPassword = data.bossPassword;
+          if (data.bossMasterPin) globalBossSecurity.bossMasterPin = data.bossMasterPin;
+          globalBossSecurity.updatedAt = data.updatedAt || Date.now();
+
+          // Sync into tripConfig for backward compatibility
+          if (data.bossEmail) tripConfig.bossEmail = data.bossEmail;
+          if (data.bossPassword) tripConfig.bossPassword = data.bossPassword;
+          if (data.bossMasterPin) tripConfig.bossMasterPin = data.bossMasterPin;
+
+          try {
+            localStorage.setItem('trippay_boss_master_security', JSON.stringify(globalBossSecurity));
+          } catch (e) {}
+        }
+      }, (err) => console.error('Boss security sync error:', err));
+
       // 1. Trips Master Listener
       const tripsCol = collection(db, 'artifacts', appId, 'public', 'data', 'trips_master');
-      unsubTrips = onSnapshot(tripsCol, (snap) => {
+      unsubTrips = onSnapshot(tripsCol, async (snap) => {
         allTrips = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        // No default trip auto-seeded. Users only access through specific trip links.
+
+        const defaultTripData = {
+          id: 'default',
+          tripTitle: tripConfig.tripTitle || 'Annual College Industrial & Leisure Trip',
+          destination: tripConfig.destination || 'Munnar, Vagamon & Kochi',
+          tripDate: tripConfig.tripDate || '2026-11-15',
+          tripAmount: Number(tripConfig.tripAmount) || 1500,
+          advanceAmount: Number(tripConfig.advanceAmount) || 500,
+          upiId: tripConfig.upiId || 'mohdshemeemkp@oksbi',
+          receiverName: tripConfig.receiverName || 'Mohd Shemeem KP',
+          customLogoUrl: tripConfig.customLogoUrl || DEFAULT_LOGO_URL,
+          category: 'Industrial Tour',
+          createdAt: 1730000000000
+        };
+
+        if (allTrips.length === 0 || !allTrips.some(t => t.id === 'default')) {
+          try {
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trips_master', 'default'), defaultTripData, { merge: true });
+          } catch (e) {
+            console.warn('Could not auto-seed default trip:', e);
+          }
+          if (!allTrips.some(t => t.id === 'default')) {
+            allTrips.unshift(defaultTripData);
+          }
+        }
+
         updateActiveTripUI();
         renderTripsListInModal();
         if (typeof updateBossGlobalKPIs === 'function') updateBossGlobalKPIs();
@@ -7208,8 +7339,8 @@ function shareMyParticipantPassWhatsApp() {
       const mail = document.getElementById('inpAdminEmail').value.trim().toLowerCase();
       const pass = document.getElementById('inpAdminPassword').value.trim();
 
-      const activeBossEmail = (tripConfig.bossEmail || BOSS_DEFAULT_EMAIL).toLowerCase();
-      const activeBossPassword = tripConfig.bossPassword || BOSS_DEFAULT_PASS;
+      const activeBossEmail = getActiveBossEmail();
+      const activeBossPassword = getActiveBossPassword();
 
       // 1. Boss Admin Login Authentication (Strict: Only active updated credentials can access)
       if (mail === activeBossEmail) {
@@ -7227,7 +7358,7 @@ function shareMyParticipantPassWhatsApp() {
           showToast('Incorrect password for Boss Admin account.', 'error');
           return;
         }
-      } else if (tripConfig.bossEmail && mail === BOSS_DEFAULT_EMAIL && activeBossEmail !== BOSS_DEFAULT_EMAIL) {
+      } else if (isCustomBossSecurityActive() && mail === BOSS_DEFAULT_EMAIL && activeBossEmail !== BOSS_DEFAULT_EMAIL) {
         // If Boss changed email, old default email is explicitly blocked
         showToast('Default Boss email is deactivated. Please log in with your updated Boss email.', 'error');
         return;
@@ -8696,13 +8827,12 @@ function shareMyParticipantPassWhatsApp() {
 
     function getTripShareUrl(tripId, tab = null) {
       const base = getBaseAppUrl();
+      const effectiveTripId = tripId || currentTripId || 'default';
       const params = new URLSearchParams();
-      if (tripId && tripId !== 'default') {
-        params.set('trip', tripId);
-      }
+      params.set('trip', effectiveTripId);
       if (tab) params.set('tab', tab);
       const qs = params.toString();
-      return qs ? `${base}?${qs}` : base;
+      return `${base}?${qs}`;
     }
 
     function updateActiveTripUI() {
@@ -8721,11 +8851,15 @@ function shareMyParticipantPassWhatsApp() {
       if (publicNotice) publicNotice.classList.add('hidden');
       if (payGrid) payGrid.classList.remove('hidden');
 
-      if (!currentTripId && allTrips.length > 0) {
-        currentTripId = allTrips[0].id;
+      if (!currentTripId) {
+        currentTripId = urlTrip || 'default';
       }
 
-      const activeTrip = allTrips.find(t => t.id === currentTripId);
+      const activeTrip = allTrips.find(t => t.id === currentTripId) || allTrips.find(t => t.id === 'default');
+      const adminPill = document.getElementById('adminActiveTripPill');
+      if (adminPill) {
+        adminPill.textContent = `Trip: #${currentTripId || 'default'}`;
+      }
       if (activeTrip) {
         const navTitle = document.getElementById('navActiveTripTitle');
         if (navTitle) navTitle.textContent = activeTrip.tripTitle;
@@ -8755,6 +8889,17 @@ function shareMyParticipantPassWhatsApp() {
       if (!container) return;
 
       let tripsToDisplay = [...allTrips];
+      if (!tripsToDisplay.some(t => t.id === 'default')) {
+        tripsToDisplay.unshift({
+          id: 'default',
+          tripTitle: tripConfig.tripTitle || 'Annual College Industrial & Leisure Trip',
+          destination: tripConfig.destination || 'Munnar, Vagamon & Kochi',
+          tripAmount: Number(tripConfig.tripAmount) || 1500,
+          advanceAmount: Number(tripConfig.advanceAmount) || 500,
+          receiverName: tripConfig.receiverName || 'Organizer',
+          createdAt: 0
+        });
+      }
 
       // Trip Isolation: Normal admins only see trips assigned to them or created by them
       if (isAdminLoggedIn && currentAdminRole === 'admin' && currentAdminUser && Array.isArray(currentAdminUser.assignedTrips) && !currentAdminUser.assignedTrips.includes('*')) {
@@ -9115,41 +9260,53 @@ function shareMyParticipantPassWhatsApp() {
       showToast(`Active Trip: ${activeTrip?.tripTitle || currentTripId}`, 'info');
     }
 
+    function copyShareTripId() {
+      const idDisplay = document.getElementById('shareModalTripIdDisplay');
+      const tripId = idDisplay?.textContent.trim() || activeShareTargetTripId || 'default';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(tripId)
+          .then(() => showToast(`Trip ID "${tripId}" copied to clipboard!`, 'success'))
+          .catch(() => showToast(`Trip ID: ${tripId}`, 'info'));
+      } else {
+        showToast(`Trip ID: ${tripId}`, 'info');
+      }
+    }
+
     function openShareTripModal(tripId) {
-      const targetId = tripId || currentTripId;
+      const targetId = tripId || currentTripId || 'default';
       activeShareTargetTripId = targetId;
 
       const targetTrip = allTrips.find(t => t.id === targetId) || {
         id: targetId,
-        tripTitle: tripConfig.tripTitle || 'College Trip',
-        destination: tripConfig.destination || 'Tour',
+        tripTitle: tripConfig.tripTitle || 'Annual College Industrial & Leisure Trip',
+        destination: tripConfig.destination || 'Munnar, Vagamon & Kochi',
         tripAmount: tripConfig.tripAmount || 1500,
         advanceAmount: tripConfig.advanceAmount || 500
       };
 
-      const titleEl = document.getElementById('shareTripTargetTitle');
+      const titleEl = document.getElementById('shareModalTripName');
       if (titleEl) titleEl.textContent = targetTrip.tripTitle || targetTrip.id;
 
       const badgeEl = document.getElementById('shareTripTargetBadge');
-      if (badgeEl) badgeEl.textContent = targetTrip.id;
+      if (badgeEl) badgeEl.textContent = `#${targetTrip.id}`;
+
+      const idDisplay = document.getElementById('shareModalTripIdDisplay');
+      if (idDisplay) idDisplay.textContent = targetTrip.id;
 
       const payLink = getTripShareUrl(targetId);
       const loginLink = getTripShareUrl(targetId, 'participant');
-      const adminLink = getTripShareUrl(targetId, 'manager');
 
-      const payInp = document.getElementById('shareTripPayLink');
+      // Populate input elements (supporting all IDs)
+      const payInp = document.getElementById('sharePayLinkInput') || document.getElementById('shareTripPayLink');
       if (payInp) payInp.value = payLink;
 
-      const loginInp = document.getElementById('shareTripLoginLink');
+      const loginInp = document.getElementById('shareLoginLinkInput') || document.getElementById('shareTripLoginLink');
       if (loginInp) loginInp.value = loginLink;
 
-      const adminInp = document.getElementById('shareTripAdminLink');
-      if (adminInp) adminInp.value = adminLink;
-
-      // Render QR Code for the payment link
-      const qrImg = document.getElementById('shareQrImage');
+      // Render live QR Code for the payment link
+      const qrImg = document.getElementById('shareModalQrImg') || document.getElementById('shareQrImage');
       if (qrImg) {
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=8&data=${encodeURIComponent(payLink)}`;
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=8&data=${encodeURIComponent(payLink)}`;
       }
 
       const modal = document.getElementById('shareTripModal');
@@ -9442,7 +9599,7 @@ function shareMyParticipantPassWhatsApp() {
       const tripId = document.getElementById('deleteTargetTripId')?.value;
       const enteredKey = (document.getElementById('inpConfirmDeleteKey')?.value || '').trim();
       const requiredKey = document.getElementById('requiredUniqueKeyDisplay')?.textContent.trim();
-      const bossPin = tripConfig.bossMasterPin || BOSS_MASTER_PIN;
+      const bossPin = getActiveBossMasterPin();
 
       if (!tripId) return;
 
@@ -10812,9 +10969,10 @@ function shareMyParticipantPassWhatsApp() {
         if (emailContainer) emailContainer.classList.add('hidden');
         if (bossKeyContainer) bossKeyContainer.classList.remove('hidden');
         if (verifyContainer) verifyContainer.classList.add('hidden');
-        if (emailInp) emailInp.value = tripConfig.bossEmail || BOSS_DEFAULT_EMAIL;
+        if (emailInp) emailInp.value = getActiveBossEmail();
         const bossKeyInp = document.getElementById('forgotBossKey');
-        const isCustomPin = !!tripConfig.bossMasterPin && tripConfig.bossMasterPin !== BOSS_MASTER_PIN;
+        const activePin = getActiveBossMasterPin();
+        const isCustomPin = isCustomBossSecurityActive() && activePin !== BOSS_MASTER_PIN;
         if (bossKeyInp) {
           bossKeyInp.value = isCustomPin ? '' : '8899';
           bossKeyInp.placeholder = isCustomPin ? 'Enter your custom Boss Master Key' : 'Enter Master Key (8899)';
@@ -10871,8 +11029,8 @@ function shareMyParticipantPassWhatsApp() {
         return;
       }
 
-      const bossEmail = (tripConfig.bossEmail || BOSS_DEFAULT_EMAIL).toLowerCase();
-      const bossPin = tripConfig.bossMasterPin || BOSS_MASTER_PIN;
+      const bossEmail = getActiveBossEmail();
+      const bossPin = getActiveBossMasterPin();
       const isBossMode = forgotAdminActiveMode === 'boss' || email === bossEmail;
 
       const btn = document.getElementById('btnForgotAdminSubmit');
@@ -10884,21 +11042,28 @@ function shareMyParticipantPassWhatsApp() {
       try {
         // 1. Boss Admin Flow: Provide key, change password, and DIRECTLY ENTER (Strict: only active key accepted)
         if (isBossMode) {
-          const isCustomPin = !!tripConfig.bossMasterPin && tripConfig.bossMasterPin !== BOSS_MASTER_PIN;
-          const pinMatches = isCustomPin ? (bossKeyEntered === tripConfig.bossMasterPin) : (bossKeyEntered === BOSS_MASTER_PIN || bossKeyEntered === '8899');
+          const isCustomPin = isCustomBossSecurityActive() && bossPin !== BOSS_MASTER_PIN;
+          const pinMatches = isCustomPin ? (bossKeyEntered === bossPin) : (bossKeyEntered === BOSS_MASTER_PIN || bossKeyEntered === '8899');
 
           if (!pinMatches) {
             showToast(isCustomPin ? 'Invalid Boss Master Key! Please enter your active custom Boss Master Key.' : 'Invalid Boss Master Key! Default key is 8899.', 'error');
             return;
           }
 
-          const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
-          await setDoc(configDocRef, {
+          const bossPayload = {
             bossPassword: newPassword,
             bossCredentialsUpdatedAt: Date.now()
-          }, { merge: true });
+          };
 
+          // Update both permanent boss_security doc and main_config
+          await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'boss_security', 'master_auth'), bossPayload, { merge: true });
+          await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config'), bossPayload, { merge: true });
+
+          globalBossSecurity.bossPassword = newPassword;
           tripConfig.bossPassword = newPassword;
+          try {
+            localStorage.setItem('trippay_boss_master_security', JSON.stringify(globalBossSecurity));
+          } catch (e) {}
           logSecurityEvent('BOSS_KEY_LOGIN_RESET', bossEmail, 'Boss Admin provided key, updated password & directly entered');
 
           // DIRECTLY LOG IN BOSS ADMIN (NO APPROVAL, NO RE-LOGIN NEEDED)
@@ -11025,9 +11190,9 @@ function shareMyParticipantPassWhatsApp() {
       const passInp = document.getElementById('editBossPassword');
       const pinInp = document.getElementById('editBossMasterPin');
 
-      if (emailInp) emailInp.value = tripConfig.bossEmail || BOSS_DEFAULT_EMAIL;
-      if (passInp) passInp.value = tripConfig.bossPassword || BOSS_DEFAULT_PASS;
-      if (pinInp) pinInp.value = tripConfig.bossMasterPin || BOSS_MASTER_PIN;
+      if (emailInp) emailInp.value = getActiveBossEmail();
+      if (passInp) passInp.value = getActiveBossPassword();
+      if (pinInp) pinInp.value = getActiveBossMasterPin();
 
       const modal = document.getElementById('bossCredentialsModal');
       if (modal) modal.classList.remove('hidden');
@@ -11057,17 +11222,35 @@ function shareMyParticipantPassWhatsApp() {
       }
 
       try {
-        const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
-        await setDoc(configDocRef, {
+        const bossPayload = {
           bossEmail: newEmail,
           bossPassword: newPass,
           bossMasterPin: newPin,
           bossCredentialsUpdatedAt: Date.now()
-        }, { merge: true });
+        };
+
+        // 1. Save to dedicated permanent global Boss Security document (Invariant across all trips)
+        const bossSecDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'boss_security', 'master_auth');
+        await setDoc(bossSecDocRef, bossPayload, { merge: true });
+
+        // 2. Also save to main_config for backward compatibility
+        const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
+        await setDoc(configDocRef, bossPayload, { merge: true });
+
+        // 3. Update memory state
+        globalBossSecurity.bossEmail = newEmail;
+        globalBossSecurity.bossPassword = newPass;
+        globalBossSecurity.bossMasterPin = newPin;
+        globalBossSecurity.updatedAt = Date.now();
 
         tripConfig.bossEmail = newEmail;
         tripConfig.bossPassword = newPass;
         tripConfig.bossMasterPin = newPin;
+
+        // 4. Update permanent client localStorage
+        try {
+          localStorage.setItem('trippay_boss_master_security', JSON.stringify(globalBossSecurity));
+        } catch (e) {}
 
         if (currentAdminRole === 'boss' && currentAdminUser) {
           currentAdminUser.email = newEmail;
@@ -11283,6 +11466,7 @@ function shareMyParticipantPassWhatsApp() {
       switchActiveTrip,
       openShareTripModal,
       closeShareTripModal,
+      copyShareTripId,
       copyShareLink,
       shareTripOnWhatsApp,
       hideToast,
