@@ -807,27 +807,27 @@ export function getTrainScheduleAndLiveStatus(trainNo, customName = '', fromStat
   // Master Railway Routes Repository
   const masterRoutes = {
     '12617': [
-      { code: 'ERS', name: 'Ernakulam Junction', arr: 'Source', dep: '10:30 AM', dist: 0, pf: '1', status: 'Passed', duration: 'Origin', amenities: 'WiFi • Food • Metro' },
+      { code: 'ERS', name: 'Ernakulam Junction', arr: 'Source', dep: '01:25 PM', day: 1, dist: 0, pf: '1', status: 'Passed', duration: 'Origin', amenities: 'WiFi • Food • Metro' },
       { code: 'AWY', name: 'Aluva', arr: '10:51 AM', dep: '10:53 AM', dist: 19, pf: '3', status: 'Passed', duration: '2 min halt', amenities: 'WiFi • Waiting Hall' },
       { code: 'TCR', name: 'Thrissur', arr: '11:43 AM', dep: '11:45 AM', dist: 74, pf: '2', status: 'Passed', duration: '2 min halt', amenities: 'WiFi • Food Court' },
       { code: 'SRR', name: 'Shoranur Junction', arr: '12:40 PM', dep: '12:45 PM', dist: 107, pf: '5', status: 'Passed', duration: '5 min halt', amenities: 'WiFi • Jan Ahaar' },
-      { code: 'TIR', name: 'Tirur', arr: '01:28 PM', dep: '01:30 PM', dist: 152, pf: '1', status: 'Current Halt', duration: '2 min halt', amenities: 'WiFi • Taxi Stand' },
-      { code: 'CLT', name: 'Kozhikode Main', arr: '02:12 PM', dep: '02:15 PM', dist: 193, pf: '3', status: 'Upcoming', duration: '3 min halt', amenities: 'WiFi • Executive Lounge' },
+      { code: 'TIR', name: 'Tirur', arr: '04:24 PM', dep: '04:25 PM', day: 1, dist: 152, pf: '1', status: 'Current Halt', duration: '1 min halt', amenities: 'WiFi • Taxi Stand • College Group Boarding' },
+      { code: 'CLT', name: 'Kozhikode Main', arr: '05:12 PM', dep: '05:15 PM', day: 1, dist: 193, pf: '3', status: 'Upcoming', duration: '3 min halt', amenities: 'WiFi • Executive Lounge' },
       { code: 'BDJ', name: 'Vadakara', arr: '02:51 PM', dep: '02:53 PM', dist: 240, pf: '2', status: 'Upcoming', duration: '2 min halt', amenities: 'WiFi • Refreshment' },
-      { code: 'CAN', name: 'Kannur', arr: '03:37 PM', dep: '03:40 PM', dist: 282, pf: '1', status: 'Upcoming', duration: '3 min halt', amenities: 'WiFi • Food Stalls' },
+      { code: 'CAN', name: 'Kannur', arr: '06:39 PM', dep: '06:42 PM', day: 1, dist: 283, pf: '1', status: 'Upcoming', duration: '3 min halt', amenities: 'WiFi • Food Stalls' },
       { code: 'PAY', name: 'Payyanur', arr: '04:09 PM', dep: '04:10 PM', dist: 316, pf: '1', status: 'Upcoming', duration: '1 min halt', amenities: 'Waiting Hall' },
       { code: 'KZE', name: 'Kanhangad', arr: '04:34 PM', dep: '04:35 PM', dist: 345, pf: '2', status: 'Upcoming', duration: '1 min halt', amenities: 'WiFi • Auto Stand' },
       { code: 'KGQ', name: 'Kasaragod', arr: '04:49 PM', dep: '04:50 PM', dist: 368, pf: '2', status: 'Upcoming', duration: '1 min halt', amenities: 'WiFi • Tea Stall' },
-      { code: 'MAJN', name: 'Mangaluru Junction', arr: '05:55 PM', dep: '06:00 PM', dist: 415, pf: '1', status: 'Upcoming', duration: '5 min halt', amenities: 'WiFi • Pure Veg Canteen' },
+      { code: 'MAJN', name: 'Mangaluru Junction', arr: '09:25 PM', dep: '09:30 PM', day: 1, dist: 415, pf: '1', status: 'Upcoming', duration: '5 min halt', amenities: 'WiFi • Pure Veg Canteen' },
       { code: 'UD', name: 'Udupi', arr: '07:22 PM', dep: '07:24 PM', dist: 477, pf: '1', status: 'Upcoming', duration: '2 min halt', amenities: 'WiFi • Udupi Food' },
       { code: 'BYNR', name: 'Byndoor Mookambika Rd', arr: '08:28 PM', dep: '08:30 PM', dist: 543, pf: '1', status: 'Upcoming', duration: '2 min halt', amenities: 'Pilgrim Lounge' },
       { code: 'BTJL', name: 'Bhatkal', arr: '08:48 PM', dep: '08:50 PM', dist: 558, pf: '1', status: 'Upcoming', duration: '2 min halt', amenities: 'Waiting Room' },
       { code: 'MRDW', name: 'Murdeshwar', arr: '09:06 PM', dep: '09:08 PM', dist: 573, pf: '1', status: 'Upcoming', duration: '2 min halt', amenities: 'Beach Transit' },
       { code: 'KT', name: 'Kumta', arr: '09:44 PM', dep: '09:46 PM', dist: 613, pf: '1', status: 'Upcoming', duration: '2 min halt', amenities: 'Auto Stand' },
       { code: 'KAWR', name: 'Karwar', arr: '10:46 PM', dep: '10:48 PM', dist: 668, pf: '1', status: 'Upcoming', duration: '2 min halt', amenities: 'WiFi • Rest Room' },
-      { code: 'MAO', name: 'Madgaon Junction (Goa)', arr: '12:30 AM', dep: '12:40 AM', dist: 728, pf: '2', status: 'Upcoming', duration: '10 min halt', amenities: 'WiFi • Tourist Lounge' },
-      { code: 'RN', name: 'Ratnagiri', arr: '05:25 AM', dep: '05:30 AM', dist: 964, pf: '1', status: 'Upcoming', duration: '5 min halt', amenities: 'WiFi • Food Plaza' },
-      { code: 'PNVL', name: 'Panvel (Mumbai)', arr: '12:35 PM', dep: '12:40 PM', dist: 1242, pf: '5', status: 'Upcoming', duration: '5 min halt', amenities: 'WiFi • Suburban Link' },
+      { code: 'MAO', name: 'Madgaon Junction (Goa)', arr: '03:00 AM', dep: '03:10 AM', day: 2, dist: 846, pf: '2', status: 'Upcoming', duration: '10 min halt', amenities: 'WiFi • Tourist Lounge' },
+      { code: 'RN', name: 'Ratnagiri', arr: '07:40 AM', dep: '07:45 AM', day: 2, dist: 1180, pf: '1', status: 'Upcoming', duration: '5 min halt', amenities: 'WiFi • Food Plaza' },
+      { code: 'PNVL', name: 'Panvel (Mumbai)', arr: '12:27 PM', dep: '12:30 PM', day: 2, dist: 1543, pf: '5', status: 'Upcoming', duration: '3 min halt', amenities: 'WiFi • Suburban Link' },
       { code: 'KYN', name: 'Kalyan Junction', arr: '01:27 PM', dep: '01:30 PM', dist: 1276, pf: '4', status: 'Upcoming', duration: '3 min halt', amenities: 'WiFi • Fast Food' },
       { code: 'NK', name: 'Nashik Road', arr: '04:35 PM', dep: '04:40 PM', dist: 1408, pf: '2', status: 'Upcoming', duration: '5 min halt', amenities: 'WiFi • Retiring Room' },
       { code: 'BSL', name: 'Bhusaval Junction', arr: '08:05 PM', dep: '08:10 PM', dist: 1665, pf: '6', status: 'Upcoming', duration: '5 min halt', amenities: 'WiFi • Jan Ahaar' },
@@ -836,7 +836,7 @@ export function getTrainScheduleAndLiveStatus(trainNo, customName = '', fromStat
       { code: 'GWL', name: 'Gwalior Junction', arr: '07:45 AM', dep: '07:47 AM', dist: 2449, pf: '2', status: 'Upcoming', duration: '2 min halt', amenities: 'WiFi • Rest Room' },
       { code: 'AGC', name: 'Agra Cantt', arr: '09:55 AM', dep: '10:00 AM', dist: 2730, pf: '3', status: 'Upcoming', duration: '5 min halt', amenities: 'WiFi • Taj Mahal Tourist Desk' },
       { code: 'MTJ', name: 'Mathura Junction', arr: '10:48 AM', dep: '10:50 AM', dist: 2784, pf: '2', status: 'Upcoming', duration: '2 min halt', amenities: 'WiFi • Refreshment' },
-      { code: 'NZM', name: 'Hazrat Nizamuddin (Delhi)', arr: '01:25 PM', dep: 'Terminus', dist: 2918, pf: '4', status: 'Upcoming', duration: 'Terminus', amenities: 'WiFi • Metro Link' }
+      { code: 'NZM', name: 'Hazrat Nizamuddin (Delhi)', arr: '01:35 PM', dep: 'Terminus', day: 3, dist: 3069, pf: '4', status: 'Upcoming', duration: 'Terminus', amenities: 'WiFi • Metro Link' }
     ],
     '12618': [
       { code: 'NZM', name: 'Hazrat Nizamuddin (Delhi)', arr: 'Source', dep: '09:15 AM', dist: 0, pf: '6', status: 'Passed', duration: 'Origin', amenities: 'WiFi • Metro Link' },
@@ -909,11 +909,16 @@ export function getTrainScheduleAndLiveStatus(trainNo, customName = '', fromStat
     lastUpdated: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' }) + ' IST',
     stations,
     externalTrackers: {
+      whereismytrain: `https://whereismytrain.org.in/?trainNo=${trainNumber}`,
       railyatri: `https://www.railyatri.in/live-train-status/${trainNumber}`,
       ntes: 'https://enquiry.indianrail.gov.in/mntes/',
-      ixigo: `https://www.ixigo.com/trains/${trainNumber}/live-running-status`,
+      ixigo: String(trainNumber).trim() === '12617'
+        ? 'https://www.ixigo.com/trains/12617?orgn=TIR&dstn=AGC&departDate=2027-01-01&quota=GN#schedule'
+        : `https://www.ixigo.com/trains/${trainNumber}?orgn=TIR&dstn=AGC&departDate=2027-01-01&quota=GN#schedule`,
       confirmtkt: `https://www.confirmtkt.com/train-running-status/${trainNumber}`,
-      gmaps: `https://www.google.com/maps/search/Indian+Railways+Train+${trainNumber}+live+location`
+      gmaps: String(trainNumber).trim() === '12617'
+        ? 'https://www.google.com/maps/place/Tirur+Railway+station/@10.9178753,75.9191822,17z/data=!3m1!4b1!4m6!3m5!1s0x3ba7b1005888fc01:0x8c5f18eb69bf0386!8m2!3d10.9178753!4d75.9217571!16s%2Fg%2F11ybtystt1?entry=ttu&g_ep=EgoyMDI2MTAyOC4wIKXMDSoASAFQAw%3D%3D'
+        : `https://www.google.com/maps/search/Indian+Railways+Train+${trainNumber}+live+location`
     }
   };
 }
