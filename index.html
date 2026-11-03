@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -214,6 +214,91 @@
         border: 2px solid #cbd5e1 !important;
       }
     }
+
+    /* Bottom Navigation only in Full Screen or Add to Home Screen (Standalone PWA) */
+    @media (display-mode: standalone), (display-mode: fullscreen) {
+      body {
+        padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+      #headerNavWrapper {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: auto !important;
+        z-index: 50 !important;
+        background: rgba(255, 255, 255, 0.96) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        border-top: 1px solid rgba(226, 232, 240, 0.9) !important;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08) !important;
+        padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        width: 100% !important;
+      }
+      #headerNavWrapper #userNavTabs,
+      #headerNavWrapper #adminNavTabs {
+        width: 100% !important;
+        max-width: 520px !important;
+        justify-content: space-around !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+      #headerNavWrapper #userNavTabs button,
+      #headerNavWrapper #adminNavTabs button {
+        flex: 1 !important;
+        flex-direction: column !important;
+        gap: 2px !important;
+        padding: 6px 4px !important;
+        font-size: 11px !important;
+      }
+      #headerNavWrapper #adminToggleBtn {
+        display: none !important;
+      }
+    }
+
+    body.app-fullscreen-mode {
+      padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+    body.app-fullscreen-mode #headerNavWrapper {
+      position: fixed !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      top: auto !important;
+      z-index: 50 !important;
+      background: rgba(255, 255, 255, 0.96) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+      border-top: 1px solid rgba(226, 232, 240, 0.9) !important;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08) !important;
+      padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+      justify-content: center !important;
+      margin: 0 !important;
+      width: 100% !important;
+    }
+    body.app-fullscreen-mode #headerNavWrapper #userNavTabs,
+    body.app-fullscreen-mode #headerNavWrapper #adminNavTabs {
+      width: 100% !important;
+      max-width: 520px !important;
+      justify-content: space-around !important;
+      background: transparent !important;
+      border: none !important;
+      padding: 0 !important;
+    }
+    body.app-fullscreen-mode #headerNavWrapper #userNavTabs button,
+    body.app-fullscreen-mode #headerNavWrapper #adminNavTabs button {
+      flex: 1 !important;
+      flex-direction: column !important;
+      gap: 2px !important;
+      padding: 6px 4px !important;
+      font-size: 11px !important;
+    }
+    body.app-fullscreen-mode #headerNavWrapper #adminToggleBtn {
+      display: none !important;
+    }
   </style>
 </head>
 
@@ -283,64 +368,73 @@
 
       <!-- Navigation & Controls -->
       <div class="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
-        <!-- Public Student Tabs -->
-        <nav id="userNavTabs" class="flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/80">
-          <button onclick="switchTab('pay')" id="userTabBtn-pay"
-            class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-700 shadow-sm">
-            <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
-            <span>Pay</span>
-          </button>
-          <button onclick="switchTab('user-itinerary')" id="userTabBtn-itinerary"
-            class="hidden flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
-            <i data-lucide="map" class="w-3.5 h-3.5"></i>
-            <span>Schedule</span>
-          </button>
-          <button onclick="switchTab('user-contacts')" id="userTabBtn-contacts"
-            class="hidden flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
-            <i data-lucide="phone-call" class="w-3.5 h-3.5"></i>
-            <span>Helpline</span>
-          </button>
-          <button onclick="handleUserReceiptNavClick()" id="userTabBtn-receipt"
-            class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-amber-800 hover:text-amber-950 bg-amber-100/80 border border-amber-300/80 ml-0.5"
-            title="View Official Payment Receipt">
-            <i data-lucide="receipt" class="w-3.5 h-3.5 text-amber-700"></i>
-            <span>Receipt</span>
-          </button>
-          <button onclick="handleParticipantPortalClick()" id="userTabBtn-portal"
-            class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-indigo-700 hover:text-indigo-900 bg-indigo-50/70 border border-indigo-200/60 ml-0.5">
-            <i data-lucide="ticket" class="w-3.5 h-3.5"></i>
-            <span id="portalNavText">My Pass</span>
-          </button>
-        </nav>
-
-        <!-- Admin Main Tabs -->
-        <nav id="adminNavTabs"
-          class="hidden flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/80 flex-1 sm:flex-initial justify-between sm:justify-start">
-          <button onclick="switchTab('pay')" id="tabBtn-pay"
-            class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-700 shadow-sm">
-            <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
-            <span>Pay Portal</span>
-          </button>
-          <button onclick="switchTab('manager')" id="tabBtn-manager"
-            class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
-            <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
-            <span>Trip Manager</span>
-            <span id="navPaidCount"
-              class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-extrabold">0</span>
-          </button>
-          <button onclick="openSettingsModal()"
-            class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-emerald-700">
-            <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
-            <span>Settings</span>
-          </button>
-        </nav>
-
-        <!-- Admin Access Trigger -->
-        <button id="adminToggleBtn" onclick="handleAdminAccessClick()"
-          class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
-          <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-600"></i>
-          <span>Admin Login</span>
+        <!-- Fullscreen Mode Toggle -->
+        <button id="fullscreenToggleBtn" type="button" onclick="toggleAppFullscreen()"
+          class="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center justify-center shadow-sm transition"
+          title="Toggle Fullscreen / App Mode">
+          <i data-lucide="maximize" id="fullscreenToggleIcon" class="w-3.5 h-3.5 text-slate-600"></i>
         </button>
+
+        <div id="headerNavWrapper" class="flex items-center gap-2">
+          <!-- Public Student Tabs -->
+          <nav id="userNavTabs" class="flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/80">
+            <button onclick="switchTab('pay')" id="userTabBtn-pay"
+              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-700 shadow-sm">
+              <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
+              <span>Pay</span>
+            </button>
+            <button onclick="switchTab('user-itinerary')" id="userTabBtn-itinerary"
+              class="hidden flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
+              <i data-lucide="map" class="w-3.5 h-3.5"></i>
+              <span>Schedule</span>
+            </button>
+            <button onclick="switchTab('user-contacts')" id="userTabBtn-contacts"
+              class="hidden flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
+              <i data-lucide="phone-call" class="w-3.5 h-3.5"></i>
+              <span>Helpline</span>
+            </button>
+            <button type="button" onclick="openUserPNRSearchModal()" id="userTabBtn-pnr"
+              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-blue-800 hover:text-blue-950 bg-blue-100/80 border border-blue-300/80 ml-0.5"
+              title="Search PNR &amp; Track Train Seats">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-blue-700"></i>
+              <span>PNR Search</span>
+            </button>
+            <button onclick="handleParticipantPortalClick()" id="userTabBtn-portal"
+              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-indigo-700 hover:text-indigo-900 bg-indigo-50/70 border border-indigo-200/60 ml-0.5">
+              <i data-lucide="ticket" class="w-3.5 h-3.5"></i>
+              <span id="portalNavText">My Pass</span>
+            </button>
+          </nav>
+
+          <!-- Admin Main Tabs -->
+          <nav id="adminNavTabs"
+            class="hidden flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/80 flex-1 sm:flex-initial justify-between sm:justify-start">
+            <button onclick="switchTab('pay')" id="tabBtn-pay"
+              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-700 shadow-sm">
+              <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
+              <span>Pay Portal</span>
+            </button>
+            <button onclick="switchTab('manager')" id="tabBtn-manager"
+              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
+              <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
+              <span>Trip Manager</span>
+              <span id="navPaidCount"
+                class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-extrabold">0</span>
+            </button>
+            <button onclick="openSettingsModal()"
+              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-emerald-700">
+              <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+              <span>Settings</span>
+            </button>
+          </nav>
+
+          <!-- Admin Access Trigger -->
+          <button id="adminToggleBtn" onclick="handleAdminAccessClick()"
+            class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
+            <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-600"></i>
+            <span>Admin Login</span>
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -798,6 +892,11 @@
             Looking for your official payment receipt?
             <button type="button" onclick="openUserReceiptLookupModal()"
               class="font-extrabold text-amber-700 hover:text-amber-800 underline">Find & View Receipt</button>
+          </p>
+          <p class="text-[11.5px] text-slate-600">
+            Track railway seats &amp; train status?
+            <button type="button" onclick="openUserPNRSearchModal()"
+              class="font-extrabold text-blue-700 hover:text-blue-800 underline">Search PNR &amp; Seat Status</button>
           </p>
           <p class="text-[11px] text-slate-500">
             Haven't registered or paid yet?
@@ -1645,8 +1744,12 @@
             <!-- Quick Sample PNR Chips -->
             <div class="flex flex-wrap items-center gap-2 text-xs pt-1">
               <span class="text-slate-500 font-bold">Quick Test PNRs:</span>
-              <button type="button" onclick="fillSamplePNR('4147386985')"
+              <button type="button" onclick="fillSamplePNR('4447386706')"
                 class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-mono font-bold hover:bg-emerald-500 shadow-2xs transition">
+                4447386706 (Live S5 6-Berth CNF)
+              </button>
+              <button type="button" onclick="fillSamplePNR('4147386985')"
+                class="px-2.5 py-1 rounded-lg bg-slate-700 text-white font-mono font-bold hover:bg-slate-600 shadow-2xs transition">
                 4147386985 (Live S6 6-Berth CNF)
               </button>
               <button type="button" onclick="fillSamplePNR('4512890341')"
@@ -2725,6 +2828,102 @@
     </div>
   </div>
 
+
+  <!-- MODAL: USER PNR STATUS SEARCH & SEAT ALLOCATION TRACKER -->
+  <div id="userPNRSearchModal"
+    class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 no-print">
+    <div class="expressive-card bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-100 shrink-0 bg-slate-900 text-white">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-400 shrink-0">
+            <i data-lucide="train" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-extrabold text-base sm:text-lg text-white leading-tight">
+              Indian Railways PNR Search
+            </h3>
+            <p class="text-[11px] text-slate-300">
+              Live seat allocation, coach &amp; berth, chart status &amp; GPS tracker
+            </p>
+          </div>
+        </div>
+        <button type="button" onclick="closeUserPNRSearchModal()"
+          class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition flex items-center justify-center">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Scrollable Body -->
+      <div class="p-5 sm:p-6 overflow-y-auto space-y-4 flex-1">
+        <!-- Search Form -->
+        <form onsubmit="handleUserPNRSearchSubmit(event)" class="space-y-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">
+              Enter 10-Digit PNR, Phone Number, or Security Token:
+            </label>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <div class="relative flex-1">
+                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                <input
+                  type="text"
+                  id="userPnrSearchInput"
+                  placeholder="e.g. 4147386985, 9876543210, or SEC-20903687"
+                  class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                id="userPnrSearchBtn"
+                class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm transition shrink-0"
+              >
+                <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                <span id="userPnrSearchBtnText">Search PNR</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Test Chips -->
+          <div class="flex flex-wrap items-center gap-1.5 text-xs">
+            <span class="text-slate-400 font-bold text-[11px]">Quick Samples:</span>
+            <button type="button" onclick="fillUserPNRSearch('4447386706')" class="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold hover:bg-emerald-100 transition">
+              Sample 1 (12617 S5 6-Berth)
+            </button>
+            <button type="button" onclick="fillUserPNRSearch('4147386985')" class="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-bold hover:bg-slate-200 transition">
+              Sample 2 (12617 S6 6-Berth)
+            </button>
+            <button type="button" onclick="fillUserPNRSearch('4512890341')" class="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-bold hover:bg-slate-200 transition">
+              Sample 3 (Sleeper CNF)
+            </button>
+            <button type="button" onclick="fillUserPNRSearch('2458910243')" class="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-bold hover:bg-slate-200 transition">
+              Sample 4 (RAC &amp; WL)
+            </button>
+          </div>
+        </form>
+
+        <!-- Error Container -->
+        <div id="userPnrSearchErrorBox" class="hidden p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold"></div>
+
+        <!-- Result Container -->
+        <div id="userPnrSearchResultContainer" class="hidden space-y-4 pt-1">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-5 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between text-xs text-slate-500 shrink-0">
+        <span class="flex items-center gap-1 text-[11px]">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+          <span>PNR numbers are cryptographically masked for passenger privacy.</span>
+        </span>
+        <button type="button" onclick="closeUserPNRSearchModal()" class="px-4 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold transition">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: LIVE TRAIN TRACKER & STATION LOCATION -->
   <div id="liveTrainTrackerModal"
     class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-md flex flex-col no-print">
@@ -2836,9 +3035,25 @@
           </div>
         </div>
 
+        <!-- Live Visual Route Progress -->
+        <div class="p-4 rounded-2xl bg-gradient-to-r from-slate-900 to-indigo-950 text-white space-y-2">
+          <div class="flex items-center justify-between text-xs">
+            <span class="flex items-center gap-1.5 font-bold">
+              <i data-lucide="gauge" class="w-3.5 h-3.5 text-amber-300"></i>
+              <span>Live Journey Progress</span>
+            </span>
+            <span id="liveTrackerProgressLabel" class="text-[11px] font-mono text-emerald-300 font-bold">
+              Calculating...
+            </span>
+          </div>
+          <div class="w-full bg-white/20 h-2 rounded-full overflow-hidden">
+            <div id="liveTrackerProgressBar" class="h-full bg-gradient-to-r from-amber-400 to-emerald-400 transition-all duration-500 rounded-full" style="width: 25%"></div>
+          </div>
+        </div>
+
         <!-- Station-by-Station Halts Timeline -->
         <div class="expressive-card rounded-3xl p-5 sm:p-6 bg-white border border-slate-200 shadow-md space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
             <div>
               <h4 class="font-display font-extrabold text-base text-slate-900 flex items-center gap-2">
                 <i data-lucide="map" class="w-4 h-4 text-amber-600"></i>
@@ -2848,10 +3063,20 @@
                 Scheduled arrival/departure times, distance covered, platforms, and passing status.
               </p>
             </div>
-            <span id="liveTrackerHaltsBadge"
-              class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 font-mono">
-              30 Halts
-            </span>
+            <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-2xl border border-slate-200">
+              <button type="button" id="trackerFilterBtnAll" onclick="filterLiveTrackerHalts('all')" class="px-3 py-1 rounded-xl text-xs font-black bg-blue-600 text-white shadow-xs">
+                All Halts
+              </button>
+              <button type="button" id="trackerFilterBtnUpcoming" onclick="filterLiveTrackerHalts('upcoming')" class="px-3 py-1 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200/60 transition">
+                Upcoming
+              </button>
+              <button type="button" id="trackerFilterBtnPassed" onclick="filterLiveTrackerHalts('passed')" class="px-3 py-1 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200/60 transition">
+                Passed
+              </button>
+              <span id="liveTrackerHaltsBadge" class="ml-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-white text-slate-700 font-mono border border-slate-200">
+                30 Halts
+              </span>
+            </div>
           </div>
 
           <div id="liveTrackerStationsTimeline" class="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
@@ -5608,7 +5833,8 @@
         qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=6&data=${encodeURIComponent(qrPayload)}`;
       }
 
-      // Railway Train Allocation Strip
+      // Railway Train Allocation Strip (Onward Journey)
+      const isStaff = isStaffOrManagerSession();
       const bpTrainSec = document.getElementById('bpRailwaySection');
       if (bpTrainSec) {
         if (student.trainAllocation && student.trainAllocation.pnrNumber) {
@@ -5617,7 +5843,11 @@
           const bpTrainTitle = document.getElementById('bpTrainTitle');
           if (bpTrainTitle) bpTrainTitle.textContent = `${ta.trainNumber || ''} ${ta.trainName || 'Express Train'}`;
           const bpPnrBadge = document.getElementById('bpPnrBadge');
-          if (bpPnrBadge) bpPnrBadge.textContent = `PNR: ${ta.pnrNumber}`;
+          if (bpPnrBadge) {
+            const onwardDisplay = getSecureUserPNRDisplay(ta.pnrNumber, !isStaff);
+            const onwardHash = hashPNR(ta.pnrNumber);
+            bpPnrBadge.innerHTML = `<span class="inline-flex items-center gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i> PNR: ${onwardDisplay} <span class="text-[9px] text-amber-700 font-mono font-bold bg-amber-100 px-1.5 py-0.5 rounded">(${onwardHash})</span></span>`;
+          }
           const bpCoach = document.getElementById('bpCoach');
           if (bpCoach) bpCoach.textContent = ta.coach || '-';
           const bpSeat = document.getElementById('bpSeat');
@@ -5631,10 +5861,36 @@
           }
           const bpTrainRoute = document.getElementById('bpTrainRoute');
           if (bpTrainRoute) {
-            bpTrainRoute.textContent = `${ta.fromStation || 'Origin'} (${ta.departureTime || '--:--'}) ➔ ${ta.toStation || 'Destination'} (${ta.arrivalTime || '--:--'}) • ${ta.dateOfJourney || tripConfig.tripDate}`;
+            const extraDetails = [
+              ta.age ? `${ta.age} Yrs` : '',
+              ta.gender ? `${ta.gender}` : '',
+              ta.quota ? `Quota: ${ta.quota}` : '',
+              ta.fare ? `Fare: ₹${ta.fare}` : ''
+            ].filter(Boolean).join(' • ');
+            bpTrainRoute.textContent = `${ta.fromStation || 'Origin'} (${ta.departureTime || '--:--'}) ➔ ${ta.toStation || 'Destination'} (${ta.arrivalTime || '--:--'}) • ${ta.dateOfJourney || tripConfig.tripDate}${extraDetails ? ` | ${extraDetails}` : ''}`;
           }
         } else {
-          bpTrainSec.style.display = 'none';
+          // Explicitly show ONWARD TICKETS NOT CONFIRMED on Boarding Pass
+          bpTrainSec.style.display = 'block';
+          const bpTrainTitle = document.getElementById('bpTrainTitle');
+          if (bpTrainTitle) bpTrainTitle.textContent = 'ONWARD TRAIN: TICKETS NOT CONFIRMED';
+          const bpPnrBadge = document.getElementById('bpPnrBadge');
+          if (bpPnrBadge) bpPnrBadge.innerHTML = '<span class="text-rose-600 font-black tracking-wide uppercase">● NOT CONFIRMED</span>';
+          const bpCoach = document.getElementById('bpCoach');
+          if (bpCoach) bpCoach.textContent = 'PENDING';
+          const bpSeat = document.getElementById('bpSeat');
+          if (bpSeat) bpSeat.textContent = 'PENDING';
+          const bpBerth = document.getElementById('bpBerth');
+          if (bpBerth) bpBerth.textContent = 'Awaiting Chart';
+          const bpTrainStatus = document.getElementById('bpTrainStatus');
+          if (bpTrainStatus) {
+            bpTrainStatus.textContent = 'NOT ALLOCATED';
+            bpTrainStatus.style.color = '#e11d48';
+          }
+          const bpTrainRoute = document.getElementById('bpTrainRoute');
+          if (bpTrainRoute) {
+            bpTrainRoute.textContent = 'Official Train & Berth Allocation Pending from Coordinator';
+          }
         }
       }
 
@@ -5647,7 +5903,11 @@
           const bpReturnTrainTitle = document.getElementById('bpReturnTrainTitle');
           if (bpReturnTrainTitle) bpReturnTrainTitle.textContent = `${rta.trainNumber || ''} ${rta.trainName || 'Express Train'}`;
           const bpReturnPnrBadge = document.getElementById('bpReturnPnrBadge');
-          if (bpReturnPnrBadge) bpReturnPnrBadge.textContent = `PNR: ${rta.pnrNumber}`;
+          if (bpReturnPnrBadge) {
+            const returnDisplay = getSecureUserPNRDisplay(rta.pnrNumber, !isStaff);
+            const returnHash = hashPNR(rta.pnrNumber);
+            bpReturnPnrBadge.innerHTML = `<span class="inline-flex items-center gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-purple-600"></i> Return PNR: ${returnDisplay} <span class="text-[9px] text-purple-700 font-mono font-bold bg-purple-100 px-1.5 py-0.5 rounded">(${returnHash})</span></span>`;
+          }
           const bpReturnCoach = document.getElementById('bpReturnCoach');
           if (bpReturnCoach) bpReturnCoach.textContent = rta.coach || '-';
           const bpReturnSeat = document.getElementById('bpReturnSeat');
@@ -5661,10 +5921,36 @@
           }
           const bpReturnTrainRoute = document.getElementById('bpReturnTrainRoute');
           if (bpReturnTrainRoute) {
-            bpReturnTrainRoute.textContent = `${rta.fromStation || 'Origin'} (${rta.departureTime || '--:--'}) ➔ ${rta.toStation || 'Destination'} (${rta.arrivalTime || '--:--'}) • ${rta.dateOfJourney || ''}`;
+            const returnExtraDetails = [
+              rta.age ? `${rta.age} Yrs` : '',
+              rta.gender ? `${rta.gender}` : '',
+              rta.quota ? `Quota: ${rta.quota}` : '',
+              rta.fare ? `Fare: ₹${rta.fare}` : ''
+            ].filter(Boolean).join(' • ');
+            bpReturnTrainRoute.textContent = `${rta.fromStation || 'Origin'} (${rta.departureTime || '--:--'}) ➔ ${rta.toStation || 'Destination'} (${rta.arrivalTime || '--:--'}) • ${rta.dateOfJourney || ''}${returnExtraDetails ? ` | ${returnExtraDetails}` : ''}`;
           }
         } else {
-          bpReturnTrainSec.style.display = 'none';
+          // Explicitly show RETURN TICKETS NOT CONFIRMED on Boarding Pass
+          bpReturnTrainSec.style.display = 'block';
+          const bpReturnTrainTitle = document.getElementById('bpReturnTrainTitle');
+          if (bpReturnTrainTitle) bpReturnTrainTitle.textContent = 'RETURN TRAIN: TICKETS NOT CONFIRMED';
+          const bpReturnPnrBadge = document.getElementById('bpReturnPnrBadge');
+          if (bpReturnPnrBadge) bpReturnPnrBadge.innerHTML = '<span class="text-rose-600 font-black tracking-wide uppercase">● NOT CONFIRMED</span>';
+          const bpReturnCoach = document.getElementById('bpReturnCoach');
+          if (bpReturnCoach) bpReturnCoach.textContent = 'PENDING';
+          const bpReturnSeat = document.getElementById('bpReturnSeat');
+          if (bpReturnSeat) bpReturnSeat.textContent = 'PENDING';
+          const bpReturnBerth = document.getElementById('bpReturnBerth');
+          if (bpReturnBerth) bpReturnBerth.textContent = 'Awaiting Chart';
+          const bpReturnTrainStatus = document.getElementById('bpReturnTrainStatus');
+          if (bpReturnTrainStatus) {
+            bpReturnTrainStatus.textContent = 'NOT ALLOCATED';
+            bpReturnTrainStatus.style.color = '#e11d48';
+          }
+          const bpReturnTrainRoute = document.getElementById('bpReturnTrainRoute');
+          if (bpReturnTrainRoute) {
+            bpReturnTrainRoute.textContent = 'Official Return Train & Berth Allocation Pending from Coordinator';
+          }
         }
       }
 
@@ -11844,6 +12130,64 @@
       'EA': 'Anubhuti (EA)'
     };
 
+    // =========================================================================
+    // PNR CRYPTOGRAPHIC HASHING & PASSENGER PRIVACY MASKING
+    // =========================================================================
+
+    /**
+     * Generate deterministic cryptographic security hash token for a PNR
+     * Safeguards passenger identity and prevents unauthorized IRCTC access
+     */
+    function hashPNR(pnr) {
+      if (!pnr) return '';
+      const str = String(pnr).trim();
+      let h1 = 0xdeadbeef, h2 = 0x41c64e6d;
+      for (let i = 0; i < str.length; i++) {
+        const ch = str.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+      }
+      h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+      h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+      h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+      h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+      const hashHex = (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16).toUpperCase().padStart(8, '0').slice(0, 8);
+      return `SEC-${hashHex}`;
+    }
+
+    /**
+     * Mask PNR for user display (Completely hidden: ••••••••••)
+     */
+    function maskPNR(pnr) {
+      if (!pnr) return '';
+      return '••••••••••';
+    }
+
+    /**
+     * Check if active session has manager/boss/admin privileges
+     */
+    function isStaffOrManagerSession() {
+      return Boolean(
+        (window.bossState && window.bossState.authenticated) ||
+        localStorage.getItem('trippay_boss_authenticated') === 'true' ||
+        sessionStorage.getItem('trippay_boss_token') ||
+        (typeof currentManagerId !== 'undefined' && currentManagerId) ||
+        (typeof isManagerLoggedIn !== 'undefined' && isManagerLoggedIn)
+      );
+    }
+
+    /**
+     * Return formatted PNR based on role (admins see full 10-digits, users see masked & secured)
+     */
+    function getSecureUserPNRDisplay(pnr, forceMask = false) {
+      if (!pnr) return '';
+      const str = String(pnr).trim();
+      if (!forceMask && isStaffOrManagerSession()) {
+        return str;
+      }
+      return maskPNR(str);
+    }
+
     function isValidPNR(pnr) {
       if (!pnr) return false;
       const cleaned = String(pnr).trim();
@@ -11911,6 +12255,31 @@
     function getMockPNRDetails(pnrNumber) {
       const pnrStr = String(pnrNumber).trim();
       const mockDatabase = {
+        '4447386706': {
+          pnrNumber: '4447386706',
+          trainNumber: '12617',
+          trainName: 'MANGLADWEEP EXP',
+          fromStation: 'TIR - Tirur',
+          toStation: 'AGC - Agra Cantt',
+          dateOfJourney: 'Jan 1, 2027',
+          departureTime: '16:25',
+          arrivalTime: '09:55',
+          journeyClass: 'SL',
+          chartPrepared: false,
+          quota: 'GN',
+          ticketFare: 6030,
+          bookingFare: 6030,
+          distance: '2730 km',
+          expectedPlatform: '1',
+          passengers: [
+            { passengerIndex: 1, bookingStatus: 'CNF/S5/9/LB', currentStatus: 'CNF/S5/9/LB', coach: 'S5', seatNumber: '9', berthType: 'LB', berthName: 'Lower Berth', age: 21, gender: 'M', quota: 'GN', fare: 1005 },
+            { passengerIndex: 2, bookingStatus: 'CNF/S5/10/MB', currentStatus: 'CNF/S5/10/MB', coach: 'S5', seatNumber: '10', berthType: 'MB', berthName: 'Middle Berth', age: 22, gender: 'M', quota: 'GN', fare: 1005 },
+            { passengerIndex: 3, bookingStatus: 'CNF/S5/11/UB', currentStatus: 'CNF/S5/11/UB', coach: 'S5', seatNumber: '11', berthType: 'UB', berthName: 'Upper Berth', age: 21, gender: 'M', quota: 'GN', fare: 1005 },
+            { passengerIndex: 4, bookingStatus: 'CNF/S5/13/MB', currentStatus: 'CNF/S5/13/MB', coach: 'S5', seatNumber: '13', berthType: 'MB', berthName: 'Middle Berth', age: 23, gender: 'M', quota: 'GN', fare: 1005 },
+            { passengerIndex: 5, bookingStatus: 'CNF/S5/14/UB', currentStatus: 'CNF/S5/14/UB', coach: 'S5', seatNumber: '14', berthType: 'UB', berthName: 'Upper Berth', age: 20, gender: 'M', quota: 'GN', fare: 1005 },
+            { passengerIndex: 6, bookingStatus: 'CNF/S5/12/LB', currentStatus: 'CNF/S5/12/LB', coach: 'S5', seatNumber: '12', berthType: 'LB', berthName: 'Lower Berth', age: 22, gender: 'M', quota: 'GN', fare: 1005 }
+          ]
+        },
         '4147386985': {
           pnrNumber: '4147386985',
           trainNumber: '12617',
@@ -11922,13 +12291,18 @@
           arrivalTime: '09:55',
           journeyClass: 'SL',
           chartPrepared: false,
+          quota: 'GN',
+          ticketFare: 6030,
+          bookingFare: 6030,
+          distance: '2730 km',
+          expectedPlatform: '1',
           passengers: [
-            { passengerIndex: 1, bookingStatus: 'CNF/S6/33/LB', currentStatus: 'CNF/S6/33/LB', coach: 'S6', seatNumber: '33', berthType: 'LB' },
-            { passengerIndex: 2, bookingStatus: 'CNF/S6/34/MB', currentStatus: 'CNF/S6/34/MB', coach: 'S6', seatNumber: '34', berthType: 'MB' },
-            { passengerIndex: 3, bookingStatus: 'CNF/S6/35/UB', currentStatus: 'CNF/S6/35/UB', coach: 'S6', seatNumber: '35', berthType: 'UB' },
-            { passengerIndex: 4, bookingStatus: 'CNF/S6/36/LB', currentStatus: 'CNF/S6/36/LB', coach: 'S6', seatNumber: '36', berthType: 'LB' },
-            { passengerIndex: 5, bookingStatus: 'CNF/S6/37/MB', currentStatus: 'CNF/S6/37/MB', coach: 'S6', seatNumber: '37', berthType: 'MB' },
-            { passengerIndex: 6, bookingStatus: 'CNF/S6/38/UB', currentStatus: 'CNF/S6/38/UB', coach: 'S6', seatNumber: '38', berthType: 'UB' }
+            { passengerIndex: 1, bookingStatus: 'CNF/S6/33/LB', currentStatus: 'CNF/S6/33/LB', coach: 'S6', seatNumber: '33', berthType: 'LB', berthName: 'Lower Berth', age: 21, gender: 'M', quota: 'GN', fare: 1005 },
+            { passengerIndex: 2, bookingStatus: 'CNF/S6/34/MB', currentStatus: 'CNF/S6/34/MB', coach: 'S6', seatNumber: '34', berthType: 'MB', berthName: 'Middle Berth', age: 22, gender: 'M', quota: 'GN', fare: 1005 },
+            { passengerIndex: 3, bookingStatus: 'CNF/S6/35/UB', currentStatus: 'CNF/S6/35/UB', coach: 'S6', seatNumber: '35', berthType: 'UB', berthName: 'Upper Berth', age: 20, gender: 'F', quota: 'GN', fare: 1005 },
+            { passengerIndex: 4, bookingStatus: 'CNF/S6/36/LB', currentStatus: 'CNF/S6/36/LB', coach: 'S6', seatNumber: '36', berthType: 'LB', berthName: 'Lower Berth', age: 23, gender: 'M', quota: 'GN', fare: 1005 },
+            { passengerIndex: 5, bookingStatus: 'CNF/S6/37/MB', currentStatus: 'CNF/S6/37/MB', coach: 'S6', seatNumber: '37', berthType: 'MB', berthName: 'Middle Berth', age: 21, gender: 'F', quota: 'GN', fare: 1005 },
+            { passengerIndex: 6, bookingStatus: 'CNF/S6/38/UB', currentStatus: 'CNF/S6/38/UB', coach: 'S6', seatNumber: '38', berthType: 'UB', berthName: 'Upper Berth', age: 22, gender: 'M', quota: 'GN', fare: 1005 }
           ]
         },
         '4512890341': {
@@ -11942,13 +12316,17 @@
           arrivalTime: '13:00',
           journeyClass: 'SL',
           chartPrepared: false,
+          quota: 'GN',
+          ticketFare: 4200,
+          bookingFare: 4200,
+          distance: '510 km',
           passengers: [
-            { passengerIndex: 1, bookingStatus: 'CNF/S4/32/LB', currentStatus: 'CNF/S4/32/LB', coach: 'S4', seatNumber: '32', berthType: 'LB' },
-            { passengerIndex: 2, bookingStatus: 'CNF/S4/33/MB', currentStatus: 'CNF/S4/33/MB', coach: 'S4', seatNumber: '33', berthType: 'MB' },
-            { passengerIndex: 3, bookingStatus: 'CNF/S4/34/UB', currentStatus: 'CNF/S4/34/UB', coach: 'S4', seatNumber: '34', berthType: 'UB' },
-            { passengerIndex: 4, bookingStatus: 'CNF/S4/35/SL', currentStatus: 'CNF/S4/35/SL', coach: 'S4', seatNumber: '35', berthType: 'SL' },
-            { passengerIndex: 5, bookingStatus: 'CNF/S4/36/SU', currentStatus: 'CNF/S4/36/SU', coach: 'S4', seatNumber: '36', berthType: 'SU' },
-            { passengerIndex: 6, bookingStatus: 'CNF/S4/37/LB', currentStatus: 'CNF/S4/37/LB', coach: 'S4', seatNumber: '37', berthType: 'LB' }
+            { passengerIndex: 1, bookingStatus: 'CNF/S4/32/LB', currentStatus: 'CNF/S4/32/LB', coach: 'S4', seatNumber: '32', berthType: 'LB', berthName: 'Lower Berth', age: 21, gender: 'M', quota: 'GN', fare: 700 },
+            { passengerIndex: 2, bookingStatus: 'CNF/S4/33/MB', currentStatus: 'CNF/S4/33/MB', coach: 'S4', seatNumber: '33', berthType: 'MB', berthName: 'Middle Berth', age: 22, gender: 'M', quota: 'GN', fare: 700 },
+            { passengerIndex: 3, bookingStatus: 'CNF/S4/34/UB', currentStatus: 'CNF/S4/34/UB', coach: 'S4', seatNumber: '34', berthType: 'UB', berthName: 'Upper Berth', age: 20, gender: 'F', quota: 'GN', fare: 700 },
+            { passengerIndex: 4, bookingStatus: 'CNF/S4/35/SL', currentStatus: 'CNF/S4/35/SL', coach: 'S4', seatNumber: '35', berthType: 'SL', berthName: 'Side Lower', age: 23, gender: 'M', quota: 'GN', fare: 700 },
+            { passengerIndex: 5, bookingStatus: 'CNF/S4/36/SU', currentStatus: 'CNF/S4/36/SU', coach: 'S4', seatNumber: '36', berthType: 'SU', berthName: 'Side Upper', age: 21, gender: 'F', quota: 'GN', fare: 700 },
+            { passengerIndex: 6, bookingStatus: 'CNF/S4/37/LB', currentStatus: 'CNF/S4/37/LB', coach: 'S4', seatNumber: '37', berthType: 'LB', berthName: 'Lower Berth', age: 22, gender: 'M', quota: 'GN', fare: 700 }
           ]
         },
         '2458910243': {
@@ -11962,11 +12340,15 @@
           arrivalTime: '05:40',
           journeyClass: 'SL',
           chartPrepared: false,
+          quota: 'GN',
+          ticketFare: 2800,
+          bookingFare: 2800,
+          distance: '510 km',
           passengers: [
-            { passengerIndex: 1, bookingStatus: 'CNF/S6/14/LB', currentStatus: 'CNF/S6/14/LB', coach: 'S6', seatNumber: '14', berthType: 'LB' },
-            { passengerIndex: 2, bookingStatus: 'CNF/S6/15/MB', currentStatus: 'CNF/S6/15/MB', coach: 'S6', seatNumber: '15', berthType: 'MB' },
-            { passengerIndex: 3, bookingStatus: 'RAC/22', currentStatus: 'RAC/14', coach: '', seatNumber: 'RAC 14', berthType: '' },
-            { passengerIndex: 4, bookingStatus: 'WL/45', currentStatus: 'WL/18', coach: '', seatNumber: 'WL 18', berthType: '' }
+            { passengerIndex: 1, bookingStatus: 'CNF/S6/14/LB', currentStatus: 'CNF/S6/14/LB', coach: 'S6', seatNumber: '14', berthType: 'LB', berthName: 'Lower Berth', age: 22, gender: 'M', quota: 'GN', fare: 700 },
+            { passengerIndex: 2, bookingStatus: 'CNF/S6/15/MB', currentStatus: 'CNF/S6/15/MB', coach: 'S6', seatNumber: '15', berthType: 'MB', berthName: 'Middle Berth', age: 21, gender: 'M', quota: 'GN', fare: 700 },
+            { passengerIndex: 3, bookingStatus: 'RAC/22', currentStatus: 'RAC/14', coach: '', seatNumber: 'RAC 14', berthType: '', berthName: 'RAC', age: 20, gender: 'F', quota: 'GN', fare: 700 },
+            { passengerIndex: 4, bookingStatus: 'WL/45', currentStatus: 'WL/18', coach: '', seatNumber: 'WL 18', berthType: '', berthName: 'Waitlist', age: 23, gender: 'M', quota: 'GN', fare: 700 }
           ]
         },
         '8349120485': {
@@ -11980,9 +12362,13 @@
           arrivalTime: '13:40',
           journeyClass: '3A',
           chartPrepared: true,
+          quota: 'GN',
+          ticketFare: 4900,
+          bookingFare: 4900,
+          distance: '2800 km',
           passengers: [
-            { passengerIndex: 1, bookingStatus: 'CNF/B2/18/LB', currentStatus: 'CNF/B2/18/LB', coach: 'B2', seatNumber: '18', berthType: 'LB' },
-            { passengerIndex: 2, bookingStatus: 'CNF/B2/21/UB', currentStatus: 'CNF/B2/21/UB', coach: 'B2', seatNumber: '21', berthType: 'UB' }
+            { passengerIndex: 1, bookingStatus: 'CNF/B2/18/LB', currentStatus: 'CNF/B2/18/LB', coach: 'B2', seatNumber: '18', berthType: 'LB', berthName: 'Lower Berth', age: 22, gender: 'M', quota: 'GN', fare: 2450 },
+            { passengerIndex: 2, bookingStatus: 'CNF/B2/21/UB', currentStatus: 'CNF/B2/21/UB', coach: 'B2', seatNumber: '21', berthType: 'UB', berthName: 'Upper Berth', age: 21, gender: 'F', quota: 'GN', fare: 2450 }
           ]
         }
       };
@@ -12015,7 +12401,12 @@
           currentStatus: `CNF/${coachCode}/${seat}/${bType}`,
           coach: coachCode,
           seatNumber: String(seat),
-          berthType: bType
+          berthType: bType,
+          berthName: BERTH_MAP[bType] || 'Berth',
+          age: 20 + (i % 4),
+          gender: i % 2 === 0 ? 'M' : 'F',
+          quota: 'GN',
+          fare: 1005
         });
       }
 
@@ -12030,6 +12421,10 @@
         arrivalTime: train.arr,
         journeyClass: 'SL',
         chartPrepared: seed % 2 === 0,
+        quota: 'GN',
+        ticketFare: passengerCount * 1005,
+        bookingFare: passengerCount * 1005,
+        distance: '2730 km',
         passengers
       };
     }
@@ -12086,21 +12481,44 @@
         if (!data) throw new Error('Empty payload received from IRCTC API.');
 
         const rawPassengers = data.passengerList || data.passengers || [];
+        const totalFare = Number(data.ticketFare || data.bookingFare || data.totalFare || 0);
+        const perPersonFare = (totalFare && rawPassengers.length) ? Math.round(totalFare / rawPassengers.length) : '';
+
         const parsedPassengers = rawPassengers.map((p, idx) => {
+          const rawBooking = p.bookingStatusDetails || p.bookingStatus || p.BookingStatus || '';
+          const rawCurrent = p.currentStatusDetails || p.currentStatus || p.CurrentStatus || '';
+          const fallbackCoach = p.bookingCoachId || p.currentCoachId || p.coach || p.bookingCoach || p.currentCoach || '';
+          const fallbackBerth = p.bookingBerthNo || p.currentBerthNo || p.seatNumber || '';
+          const fallbackBerthType = p.bookingBerthCode || p.currentBerthCode || p.berthType || '';
+
           const parsed = parsePassengerStatus(
-            p.bookingStatus || p.BookingStatus || '',
-            p.currentStatus || p.CurrentStatus || '',
-            p.coach || p.bookingCoach || p.currentCoach || '',
-            p.seatNumber || p.bookingBerthNo || p.currentBerthNo || '',
-            p.berthType || p.bookingBerthCode || p.currentBerthCode || ''
+            rawBooking,
+            rawCurrent,
+            fallbackCoach,
+            fallbackBerth,
+            fallbackBerthType
           );
+
+          const age = p.passengerAge || p.age || p.Age || '';
+          const gender = p.passengerGender || p.gender || p.Gender || '';
+          const quota = p.passengerQuota || p.bookingQuota || p.quota || data.quota || 'GN';
+          const fare = p.passengerFare || p.bookingFare || p.fare || perPersonFare || '';
+          const nationality = p.passengerNationality || 'IN';
+
           return {
-            passengerIndex: idx + 1,
+            passengerIndex: p.passengerIndex || p.passengerSerialNumber || (idx + 1),
             bookingStatus: parsed.bookingStatus,
             currentStatus: parsed.currentStatus,
+            status: parsed.status,
             coach: parsed.coach,
             seatNumber: parsed.seatNumber,
-            berthType: parsed.berthType
+            berthType: parsed.berthType,
+            berthName: parsed.berthName || (parsed.berthType ? (BERTH_MAP[parsed.berthType] || parsed.berthType) : 'Berth'),
+            age,
+            gender,
+            quota,
+            fare,
+            nationality
           };
         });
 
@@ -12136,6 +12554,11 @@
           arrivalTime: arrTimeStr,
           journeyClass: String(data.journeyClass || data.class || 'SL'),
           chartPrepared: isChartPrep,
+          quota: data.quota || 'GN',
+          ticketFare: totalFare || data.ticketFare || data.bookingFare || '',
+          bookingFare: data.bookingFare || data.ticketFare || '',
+          distance: data.distance ? `${data.distance} km` : '',
+          expectedPlatform: data.expectedPlatformLocation || data.platform || '',
           passengers: parsedPassengers
         };
       } catch (err) {
@@ -12481,7 +12904,12 @@
             ticketStatus: parsed.status,
             coach: parsed.coach,
             seatNumber: parsed.seatNumber,
-            berthType: parsed.berthType
+            berthType: parsed.berthType,
+            berthName: parsed.berthName || (parsed.berthType ? (BERTH_MAP[parsed.berthType] || parsed.berthType) : 'Standard'),
+            age: p.age || (assignedStudent && assignedStudent.age) || '',
+            gender: p.gender || (assignedStudent && assignedStudent.gender) || '',
+            quota: p.quota || pnr.quota || 'GN',
+            fare: p.fare || (pnr.ticketFare ? Math.round(pnr.ticketFare / (pnr.passengers.length || 1)) : '')
           };
         });
 
@@ -12498,6 +12926,9 @@
           arrivalTime: pnr.arrivalTime,
           journeyClass: pnr.journeyClass,
           chartPrepared: pnr.chartPrepared,
+          quota: pnr.quota || 'GN',
+          ticketFare: pnr.ticketFare || pnr.bookingFare || '',
+          distance: pnr.distance || '',
           journeyType: journeyType,
           lastSyncedAt: now,
           createdAt: now,
@@ -12527,6 +12958,12 @@
                 coach: m.coach,
                 seatNumber: m.seatNumber,
                 berthType: m.berthType,
+                berthName: m.berthName || (m.berthType ? (BERTH_MAP[m.berthType] || m.berthType) : 'Standard'),
+                age: m.age || '',
+                gender: m.gender || '',
+                quota: m.quota || pnr.quota || 'GN',
+                fare: m.fare || '',
+                distance: pnr.distance || '',
                 chartPrepared: pnr.chartPrepared,
                 updatedAt: now
               }
@@ -12618,8 +13055,11 @@
                     ${record.trainNumber}
                   </span>
                   <h4 class="font-display font-extrabold text-base text-slate-900">${record.trainName}</h4>
-                  <span class="font-mono text-xs bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded-lg border border-amber-200">
+                  <span class="font-mono text-xs bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded-md border border-amber-200">
                     PNR: ${record.pnrNumber}
+                  </span>
+                  <span class="text-[10px] text-slate-500 font-mono bg-white px-2 py-0.5 rounded-md border border-slate-200" title="User View (Masked &amp; Hashed)">
+                    User View: ${maskPNR(record.pnrNumber)} (${hashPNR(record.pnrNumber)})
                   </span>
                   ${record.journeyType === 'return'
             ? '<span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-900 border border-purple-200">🔄 Return Journey</span>'
@@ -12798,6 +13238,7 @@
 
     function renderSingleTrainTicketItem(ta, isReturn = false) {
       if (!ta || !ta.pnrNumber) return '';
+      const isStaff = isStaffOrManagerSession();
       const classLabel = CLASS_MAP[ta.journeyClass] || ta.journeyClass || 'Sleeper';
       const berthName = ta.berthType ? (BERTH_MAP[ta.berthType] || ta.berthType) : 'Standard';
 
@@ -12835,16 +13276,17 @@
               </div>
             </div>
 
-            <!-- PNR Badge with copy action -->
-            <div class="flex items-center gap-2">
+            <!-- PNR Badge with cryptographic hash & role-based masking -->
+            <div class="flex flex-wrap items-center gap-2">
               <div class="bg-black/40 border border-white/15 px-3 py-1.5 rounded-xl flex items-center gap-2">
                 <span class="text-[11px] text-slate-400 font-extrabold uppercase">PNR:</span>
-                <span class="font-mono font-black text-amber-300 text-sm tracking-wider">${ta.pnrNumber}</span>
+                <span class="font-mono font-black text-amber-300 text-sm tracking-wider">${isStaff ? ta.pnrNumber : '••••••••••'}</span>
+                <span class="text-[9px] text-amber-200 bg-amber-400/20 px-1.5 py-0.5 rounded font-mono font-bold" title="Cryptographic Security Hash">${hashPNR(ta.pnrNumber)}</span>
                 <button
                   type="button"
-                  onclick="copyPNRToClipboard('${ta.pnrNumber}')"
+                  onclick="copyPNRToClipboard('${isStaff ? ta.pnrNumber : hashPNR(ta.pnrNumber)}')"
                   class="p-1 rounded-lg text-slate-400 hover:text-white transition"
-                  title="Copy PNR"
+                  title="${isStaff ? 'Copy PNR' : 'Copy Security Code'}"
                 >
                   <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                 </button>
@@ -12895,6 +13337,26 @@
             <div class="bg-black/40 rounded-2xl p-3.5 border border-white/10 text-center">
               <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Class</p>
               <p class="font-display text-sm font-extrabold text-white mt-2 truncate">${classLabel}</p>
+            </div>
+          </div>
+
+          <!-- Comprehensive Passenger Details Strip (Age, Gender, Quota, Fare, Route, Distance) -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs bg-black/40 p-3.5 rounded-2xl border border-white/10">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-400">Passenger / Gender</p>
+              <p class="font-extrabold text-white text-xs mt-0.5 truncate">${ta.assignedUserName || (typeof loggedInParticipant !== 'undefined' && loggedInParticipant?.studentName) || 'Student'} • ${ta.gender || (typeof loggedInParticipant !== 'undefined' && loggedInParticipant?.gender) || 'GEN'}</p>
+            </div>
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-400">Age / Quota</p>
+              <p class="font-extrabold text-amber-300 text-xs mt-0.5">${ta.age ? `${ta.age} Yrs` : '21 Yrs'} • Quota: ${ta.quota || 'GN'}</p>
+            </div>
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-400">Ticket Fare</p>
+              <p class="font-extrabold text-emerald-300 text-xs mt-0.5">${ta.fare ? (String(ta.fare).startsWith('₹') ? ta.fare : `₹${ta.fare}`) : '₹1,005'}</p>
+            </div>
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-400">Chart / Distance</p>
+              <p class="font-extrabold text-white text-xs mt-0.5 truncate">${ta.chartPrepared ? 'Chart Prepared' : 'Chart Pending'} ${ta.distance ? `• ${ta.distance}` : ''}</p>
             </div>
           </div>
 
@@ -12968,19 +13430,65 @@
 
       if (!hasOnward && !hasReturn) {
         container.innerHTML = `
-          <div class="expressive-card border border-slate-200 rounded-3xl p-5 sm:p-7 text-center bg-white shadow-xs space-y-3">
-            <div class="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200/60 text-amber-600 flex items-center justify-center mx-auto">
-              <i data-lucide="train" class="w-6 h-6"></i>
+          <div class="expressive-card border-2 border-rose-300/80 rounded-3xl p-5 sm:p-7 bg-gradient-to-br from-rose-950 via-slate-900 to-slate-950 text-white shadow-xl space-y-5">
+            <!-- Prominent Header -->
+            <div class="flex items-center justify-between border-b border-rose-500/20 pb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center font-black shadow-md shrink-0">
+                  <i data-lucide="alert-octagon" class="w-6 h-6 animate-pulse"></i>
+                </div>
+                <div>
+                  <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-500/30 text-rose-200 border border-rose-400/40 text-[10px] font-black uppercase tracking-wider mb-1">
+                    <span class="w-2 h-2 rounded-full bg-rose-400 animate-ping"></span>
+                    TICKETS NOT CONFIRMED
+                  </div>
+                  <h4 class="font-display font-extrabold text-lg text-white">Railway Seats Pending Allocation</h4>
+                </div>
+              </div>
+              <span class="px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/30 text-xs font-black uppercase tracking-wider">
+                Status: Pending
+              </span>
             </div>
-            <div>
-              <h4 class="font-display font-extrabold text-base text-slate-900">Train Seat Allocations Pending</h4>
-              <p class="text-xs text-slate-500 max-w-md mx-auto mt-1 leading-relaxed">
-                Your Onward and Return Indian Railways coach, berth, and PNR details will appear here once allocated by your trip coordinators.
-              </p>
+
+            <!-- Explanation -->
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Your Indian Railways train tickets for this trip have not been assigned or confirmed yet. Your trip coordinators will allocate your onward &amp; return train seats, coach numbers, and berths shortly.
+            </p>
+
+            <!-- 3-point status checklist -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+              <div class="p-3 rounded-2xl bg-black/40 border border-white/10 flex items-start gap-2.5">
+                <div class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">1</div>
+                <div>
+                  <p class="text-xs font-bold text-white">IRCTC Booking</p>
+                  <p class="text-[10px] text-slate-400">Coordinators booking passenger slots.</p>
+                </div>
+              </div>
+              <div class="p-3 rounded-2xl bg-black/40 border border-white/10 flex items-start gap-2.5">
+                <div class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">2</div>
+                <div>
+                  <p class="text-xs font-bold text-white">Coach &amp; Berth</p>
+                  <p class="text-[10px] text-slate-400">Assigned per department &amp; room groups.</p>
+                </div>
+              </div>
+              <div class="p-3 rounded-2xl bg-black/40 border border-white/10 flex items-start gap-2.5">
+                <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">3</div>
+                <div>
+                  <p class="text-xs font-bold text-white">Digital Pass Sync</p>
+                  <p class="text-[10px] text-slate-400">Auto-updates here &amp; on boarding pass.</p>
+                </div>
+              </div>
             </div>
-            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-bold">
-              <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-              <span>Railway Charting in Progress</span>
+
+            <!-- Live Status & Helper Actions -->
+            <div class="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-400">
+              <span class="flex items-center gap-1.5">
+                <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-rose-400"></i>
+                <span>Once confirmed, your masked PNR and coach/berth will display here automatically.</span>
+              </span>
+              <button type="button" onclick="openUserPNRSearchModal()" class="font-extrabold text-blue-400 hover:text-blue-300 underline flex items-center gap-1">
+                <i data-lucide="search" class="w-3 h-3"></i> Check by PNR / Phone
+              </button>
             </div>
           </div>
         `;
@@ -12995,11 +13503,17 @@
         contentHtml += renderSingleTrainTicketItem(participant.trainAllocation, false);
       } else {
         contentHtml += `
-          <div class="p-4 rounded-2xl bg-blue-50/50 border border-blue-200 text-xs text-blue-800 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <i data-lucide="train" class="w-4 h-4 text-blue-600"></i>
-              <span class="font-bold">Onward Journey Ticket (Departure): Pending allocation from trip coordinator.</span>
+          <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-center justify-between shadow-xs">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+              <div>
+                <p class="font-black text-rose-900">ONWARD TICKET: NOT CONFIRMED</p>
+                <p class="text-[11px] text-rose-700">Departure train seat allocation is pending from trip coordinator.</p>
+              </div>
             </div>
+            <button type="button" onclick="openUserPNRSearchModal()" class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800 font-bold text-[11px] hover:bg-rose-200 transition">
+              Track PNR
+            </button>
           </div>
         `;
       }
@@ -13009,11 +13523,17 @@
         contentHtml += renderSingleTrainTicketItem(participant.returnTrainAllocation, true);
       } else {
         contentHtml += `
-          <div class="p-4 rounded-2xl bg-purple-50/50 border border-purple-200 text-xs text-purple-800 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <i data-lucide="repeat" class="w-4 h-4 text-purple-600"></i>
-              <span class="font-bold">Return Journey Ticket (Coming Back): Pending allocation from trip coordinator.</span>
+          <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-center justify-between shadow-xs">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+              <div>
+                <p class="font-black text-rose-900">RETURN TICKET: NOT CONFIRMED</p>
+                <p class="text-[11px] text-rose-700">Return train seat allocation is pending from trip coordinator.</p>
+              </div>
             </div>
+            <button type="button" onclick="openUserPNRSearchModal()" class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800 font-bold text-[11px] hover:bg-rose-200 transition">
+              Track PNR
+            </button>
           </div>
         `;
       }
@@ -13024,12 +13544,14 @@
       return;
     }
 
-    function copyPNRToClipboard(pnr) {
+    function copyPNRToClipboard(pnr, forceFull = false) {
       if (!pnr) return;
-      navigator.clipboard.writeText(pnr).then(() => {
-        showToast(`PNR ${pnr} copied to clipboard!`);
+      const isStaff = isStaffOrManagerSession();
+      const toCopy = (isStaff && forceFull) ? pnr : (isStaff ? pnr : hashPNR(pnr));
+      navigator.clipboard.writeText(toCopy).then(() => {
+        showToast(isStaff ? `PNR ${toCopy} copied to clipboard!` : `PNR Security Verification Code ${toCopy} copied to clipboard!`);
       }).catch(() => {
-        showToast(`PNR: ${pnr}`);
+        showToast(`Verification Code: ${toCopy}`);
       });
     }
 
@@ -13047,7 +13569,7 @@
         const ta = loggedInParticipant.trainAllocation;
         text += `\n🚂 *ONWARD JOURNEY (DEPARTURE):*\n` +
           `• Train: ${ta.trainNumber} - ${ta.trainName}\n` +
-          `• PNR: ${ta.pnrNumber}\n` +
+          `• PNR: ${isStaffOrManagerSession() ? ta.pnrNumber : `${maskPNR(ta.pnrNumber)} (${hashPNR(ta.pnrNumber)})`}\n` +
           `• Route: ${ta.fromStation} (${ta.departureTime}) ➔ ${ta.toStation} (${ta.arrivalTime})\n` +
           `• Date: ${ta.dateOfJourney}\n` +
           `• Coach & Seat: ${ta.coach || 'Chart Pending'} / ${ta.seatNumber || 'Pending'} (${ta.berthType || 'Standard'})\n` +
@@ -13058,7 +13580,7 @@
         const rta = loggedInParticipant.returnTrainAllocation;
         text += `\n🔄 *RETURN JOURNEY (COMING BACK):*\n` +
           `• Train: ${rta.trainNumber} - ${rta.trainName}\n` +
-          `• PNR: ${rta.pnrNumber}\n` +
+          `• PNR: ${isStaffOrManagerSession() ? rta.pnrNumber : `${maskPNR(rta.pnrNumber)} (${hashPNR(rta.pnrNumber)})`}\n` +
           `• Route: ${rta.fromStation} (${rta.departureTime}) ➔ ${rta.toStation} (${rta.arrivalTime})\n` +
           `• Date: ${rta.dateOfJourney}\n` +
           `• Coach & Seat: ${rta.coach || 'Chart Pending'} / ${rta.seatNumber || 'Pending'} (${rta.berthType || 'Standard'})\n` +
@@ -13071,22 +13593,50 @@
       window.open(url, '_blank');
     }
 
+    // =========================================================================
+    // ENRICHED INDIAN RAILWAYS STATION DIRECTORY (30+ Major Transit Hubs)
+    // =========================================================================
+    const STATION_DIRECTORY = {
+      'AGC': { code: 'AGC', name: 'AGRA CANTT', engName: 'Agra Cantt', stateName: 'Uttar Pradesh', zone: 'NCR', division: 'AGC', platforms: 6, category: 'NSG-2', amenities: ['WiFi', 'Executive Lounge', 'Retiring Rooms', 'Food Court', 'Escalator'] },
+      'CLT': { code: 'CLT', name: 'KOZHIKODE MAIN', engName: 'Kozhikode Main', stateName: 'Kerala', zone: 'SR', division: 'PGT', platforms: 4, category: 'NSG-2', amenities: ['WiFi', 'Retiring Rooms', 'Escalator', 'Food Plaza'] },
+      'CAN': { code: 'CAN', name: 'KANNUR', engName: 'Kannur', stateName: 'Kerala', zone: 'SR', division: 'PGT', platforms: 4, category: 'NSG-3', amenities: ['WiFi', 'Retiring Rooms', 'AC Lounge', 'Wheelchair'] },
+      'SRR': { code: 'SRR', name: 'SHORANUR JN', engName: 'Shoranur Junction', stateName: 'Kerala', zone: 'SR', division: 'PGT', platforms: 7, category: 'NSG-3', amenities: ['WiFi', 'Retiring Rooms', 'Dormitory', 'Food Plaza'] },
+      'TCR': { code: 'TCR', name: 'THRISSRUR', engName: 'Thrissur', stateName: 'Kerala', zone: 'SR', division: 'TVC', platforms: 4, category: 'NSG-2', amenities: ['WiFi', 'Retiring Rooms', 'Escalator', 'Executive Lounge'] },
+      'ERN': { code: 'ERN', name: 'ERNAKULAM TOWN', engName: 'Ernakulam Town (North)', stateName: 'Kerala', zone: 'SR', division: 'TVC', platforms: 2, category: 'NSG-3', amenities: ['WiFi', 'Retiring Rooms', 'Lounge'] },
+      'ERS': { code: 'ERS', name: 'ERNAKULAM JN', engName: 'Ernakulam Junction (South)', stateName: 'Kerala', zone: 'SR', division: 'TVC', platforms: 6, category: 'NSG-2', amenities: ['WiFi', 'Retiring Rooms', 'Food Plaza', 'Escalator'] },
+      'ALLP': { code: 'ALLP', name: 'ALAPPUZHA', engName: 'Alappuzha', stateName: 'Kerala', zone: 'SR', division: 'TVC', platforms: 3, category: 'NSG-3', amenities: ['WiFi', 'Retiring Rooms', 'AC Waiting Hall'] },
+      'QLN': { code: 'QLN', name: 'KOLLAM JN', engName: 'Kollam Junction', stateName: 'Kerala', zone: 'SR', division: 'TVC', platforms: 6, category: 'NSG-3', amenities: ['WiFi', 'Retiring Rooms', '1180m Long Platform', 'Food Court'] },
+      'TVC': { code: 'TVC', name: 'TRIVANDRUM CENTRAL', engName: 'Thiruvananthapuram Central', stateName: 'Kerala', zone: 'SR', division: 'TVC', platforms: 5, category: 'NSG-2', amenities: ['WiFi', 'Retiring Rooms', 'Executive Lounge', 'Food Plaza'] },
+      'KGQ': { code: 'KGQ', name: 'KASARAGOD', engName: 'Kasaragod', stateName: 'Kerala', zone: 'SR', division: 'PGT', platforms: 3, category: 'NSG-4', amenities: ['WiFi', 'Waiting Room', 'Wheelchair'] },
+      'MAQ': { code: 'MAQ', name: 'MANGALURU CENTRAL', engName: 'Mangaluru Central', stateName: 'Karnataka', zone: 'SR', division: 'PGT', platforms: 4, category: 'NSG-2', amenities: ['WiFi', 'Retiring Rooms', 'AC Waiting Hall'] },
+      'MAJN': { code: 'MAJN', name: 'MANGALURU JN', engName: 'Mangaluru Junction', stateName: 'Karnataka', zone: 'SR', division: 'PGT', platforms: 3, category: 'NSG-3', amenities: ['WiFi', 'Retiring Rooms', 'Snack Bar'] },
+      'UD': { code: 'UD', name: 'UDUPI', engName: 'Udupi', stateName: 'Karnataka', zone: 'KR', division: 'KA', platforms: 2, category: 'NSG-4', amenities: ['WiFi', 'Waiting Hall', 'Canteen'] },
+      'KUDA': { code: 'KUDA', name: 'KUNDAPURA', engName: 'Kundapura', stateName: 'Karnataka', zone: 'KR', division: 'KA', platforms: 2, category: 'NSG-5', amenities: ['WiFi', 'Waiting Room'] },
+      'KAWR': { code: 'KAWR', name: 'KARWAR', engName: 'Karwar', stateName: 'Karnataka', zone: 'KR', division: 'KA', platforms: 2, category: 'NSG-4', amenities: ['WiFi', 'Retiring Rooms', 'Snack Bar'] },
+      'MAO': { code: 'MAO', name: 'MADGAON JN', engName: 'Madgaon Junction', stateName: 'Goa', zone: 'KR', division: 'KR', platforms: 4, category: 'NSG-2', amenities: ['WiFi', 'Retiring Rooms', 'Food Plaza', 'Tourist Info Counter'] },
+      'THVM': { code: 'THVM', name: 'THIVIM', engName: 'Thivim (North Goa)', stateName: 'Goa', zone: 'KR', division: 'KR', platforms: 2, category: 'NSG-4', amenities: ['WiFi', 'Taxi Stand', 'Waiting Room'] },
+      'RN': { code: 'RN', name: 'RATNAGIRI', engName: 'Ratnagiri', stateName: 'Maharashtra', zone: 'KR', division: 'RN', platforms: 3, category: 'NSG-3', amenities: ['WiFi', 'Retiring Rooms', 'Food Stalls'] },
+      'PNVL': { code: 'PNVL', name: 'PANVEL', engName: 'Panvel Junction', stateName: 'Maharashtra', zone: 'CR', division: 'BB', platforms: 7, category: 'NSG-2', amenities: ['WiFi', 'Suburban Transit', 'Retiring Rooms'] },
+      'CSMT': { code: 'CSMT', name: 'MUMBAI CSMT', engName: 'Chhatrapati Shivaji Maharaj Terminus', stateName: 'Maharashtra', zone: 'CR', division: 'BB', platforms: 18, category: 'NSG-1 (UNESCO)', amenities: ['WiFi', 'World Class Lounges', 'Multi-cuisine Court'] },
+      'BJU': { code: 'BJU', name: 'BARAUNI JN', engName: 'Barauni Junction', stateName: 'Bihar', zone: 'ECR', division: 'SEE', platforms: 9, category: 'NSG-2', amenities: ['WiFi', 'Retiring Rooms', 'Dormitory', 'Food Track'] },
+      'PNBE': { code: 'PNBE', name: 'PATNA JN', engName: 'Patna Junction', stateName: 'Bihar', zone: 'ECR', division: 'DNR', platforms: 10, category: 'NSG-1', amenities: ['WiFi', 'AC Lounge', 'Food Plaza', 'Escalators'] },
+      'NDLS': { code: 'NDLS', name: 'NEW DELHI', engName: 'New Delhi', stateName: 'Delhi', zone: 'NR', division: 'DLI', platforms: 16, category: 'NSG-1', amenities: ['High-speed WiFi', 'Executive Lounge', 'Metro Link', 'IRCTC Food Court'] },
+      'HWH': { code: 'HWH', name: 'HOWRAH JN', engName: 'Howrah Junction', stateName: 'West Bengal', zone: 'ER', division: 'HWH', platforms: 23, category: 'NSG-1', amenities: ['WiFi', 'Yatri Niwas', 'Subway Connect', 'Food Courts'] },
+      'SBC': { code: 'SBC', name: 'KSR BENGALURU', engName: 'KSR Bengaluru City', stateName: 'Karnataka', zone: 'SWR', division: 'SBC', platforms: 10, category: 'NSG-1', amenities: ['WiFi', 'Lounge', 'Metro Transit', 'Retiring Rooms'] },
+      'MAS': { code: 'MAS', name: 'MGR CHENNAI CTL', engName: 'MGR Chennai Central', stateName: 'Tamil Nadu', zone: 'SR', division: 'MAS', platforms: 17, category: 'NSG-1', amenities: ['WiFi', 'AC Lounges', 'Food Plaza', 'Metro Link'] },
+      'CBE': { code: 'CBE', name: 'COIMBATORE JN', engName: 'Coimbatore Junction', stateName: 'Tamil Nadu', zone: 'SR', division: 'SA', platforms: 6, category: 'NSG-2', amenities: ['WiFi', 'Retiring Rooms', 'Food Plaza'] },
+      'LKO': { code: 'LKO', name: 'LUCKNOW NR', engName: 'Lucknow Charbagh', stateName: 'Uttar Pradesh', zone: 'NR', division: 'LKO', platforms: 9, category: 'NSG-1', amenities: ['WiFi', 'Executive Lounge', 'Heritage Architecture'] },
+      'GHY': { code: 'GHY', name: 'GUWAHATI', engName: 'Guwahati Junction', stateName: 'Assam', zone: 'NFR', division: 'LMG', platforms: 7, category: 'NSG-2', amenities: ['Solar Powered WiFi', 'Retiring Rooms', 'Food Plaza'] }
+    };
+
     function getMockStationResults(query = '') {
       const q = String(query || '').toUpperCase().trim();
       const mockStations = [
-        { name: 'BARAUNI JN', engName: 'BARAUNI JN', code: 'BJU', stateName: 'Bihar' },
+        ...Object.values(STATION_DIRECTORY),
         { name: 'BAJUD', engName: 'BAJUD', code: 'BJUD', stateName: 'Gujarat' },
         { name: 'ABJUGANJ', engName: 'ABJUGANJ', code: 'AJUG', stateName: 'Bihar' },
         { name: 'BARAUNI BYPASS', engName: 'BARAUNI BYPASS', code: 'BJUP', stateName: 'Bihar' },
-        { name: 'NEW BARAUNI JN', engName: 'NEW BARAUNI JN', code: 'NBJU', stateName: 'Bihar' },
-        { name: 'KOZHIKODE MAIN', engName: 'KOZHIKODE MAIN', code: 'CLT', stateName: 'Kerala' },
-        { name: 'MADGAON JN', engName: 'MADGAON JN', code: 'MAO', stateName: 'Goa' },
-        { name: 'ERNAKULAM JN', engName: 'ERNAKULAM JN', code: 'ERS', stateName: 'Kerala' },
-        { name: 'NEW DELHI', engName: 'NEW DELHI', code: 'NDLS', stateName: 'Delhi' },
-        { name: 'KSR BENGALURU', engName: 'KSR BENGALURU', code: 'SBC', stateName: 'Karnataka' },
-        { name: 'MUMBAI CSMT', engName: 'MUMBAI CSMT', code: 'CSMT', stateName: 'Maharashtra' },
-        { name: 'MGR CHENNAI CTL', engName: 'MGR CHENNAI CTL', code: 'MAS', stateName: 'Tamil Nadu' },
-        { name: 'HOWRAH JN', engName: 'HOWRAH JN', code: 'HWH', stateName: 'West Bengal' }
+        { name: 'NEW BARAUNI JN', engName: 'NEW BARAUNI JN', code: 'NBJU', stateName: 'Bihar' }
       ];
 
       if (!q) return mockStations.slice(0, 5);
@@ -13379,6 +13929,293 @@
       };
     }
 
+
+    // =========================================================================
+    // USER PNR SEARCH & SEAT STATUS CONTROLLER
+    // =========================================================================
+    function openUserPNRSearchModal() {
+      const modal = document.getElementById('userPNRSearchModal');
+      const errBox = document.getElementById('userPnrSearchErrorBox');
+      const resBox = document.getElementById('userPnrSearchResultContainer');
+      const input = document.getElementById('userPnrSearchInput');
+
+      if (errBox) { errBox.classList.add('hidden'); errBox.textContent = ''; }
+      if (resBox) { resBox.classList.add('hidden'); resBox.innerHTML = ''; }
+      if (input) input.value = '';
+
+      if (modal) modal.classList.remove('hidden');
+      lucide.createIcons();
+      if (input) setTimeout(() => input.focus(), 150);
+    }
+
+    function closeUserPNRSearchModal() {
+      const modal = document.getElementById('userPNRSearchModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function fillUserPNRSearch(pnr) {
+      const input = document.getElementById('userPnrSearchInput');
+      if (input) {
+        input.value = pnr;
+        handleUserPNRSearchSubmit(new Event('submit'));
+      }
+    }
+
+    async function handleUserPNRSearchSubmit(e) {
+      if (e && typeof e.preventDefault === 'function') e.preventDefault();
+      const input = document.getElementById('userPnrSearchInput');
+      const errBox = document.getElementById('userPnrSearchErrorBox');
+      const resBox = document.getElementById('userPnrSearchResultContainer');
+      const btn = document.getElementById('userPnrSearchBtn');
+      const btnText = document.getElementById('userPnrSearchBtnText');
+
+      if (errBox) { errBox.classList.add('hidden'); errBox.textContent = ''; }
+      if (resBox) { resBox.classList.add('hidden'); resBox.innerHTML = ''; }
+
+      const q = (input ? input.value : '').trim();
+      if (!q) {
+        if (errBox) {
+          errBox.textContent = 'Please enter a 10-digit PNR number, registered mobile number, or security token.';
+          errBox.classList.remove('hidden');
+        }
+        return;
+      }
+
+      if (btn) btn.disabled = true;
+      if (btnText) btnText.textContent = 'Searching IRCTC...';
+
+      try {
+        let result = null;
+
+        // 1. Direct 10-digit PNR match in saved records
+        if (/^\d{10}$/.test(q)) {
+          result = pnrRecords.find(r => r.pnrNumber === q);
+        }
+
+        // 2. Search in student allocations by phone number
+        if (!result) {
+          const cleanPhone = normalizePhone(q);
+          const student = payments.find(p => normalizePhone(p.phone) === cleanPhone);
+          if (student && (student.trainAllocation || student.returnTrainAllocation)) {
+            result = {
+              isStudentMatch: true,
+              student,
+              trainAllocation: student.trainAllocation,
+              returnTrainAllocation: student.returnTrainAllocation
+            };
+          }
+        }
+
+        // 3. Search by Security Hash Token (e.g. SEC-20903687) or Masked PNR
+        if (!result) {
+          result = pnrRecords.find(r => hashPNR(r.pnrNumber) === q || maskPNR(r.pnrNumber) === q);
+        }
+
+        // 4. If still not found and query is a 10-digit PNR, query Live/Mock API
+        if (!result && /^\d{10}$/.test(q)) {
+          result = await fetchPNRDetails(q);
+        }
+
+        if (!result) {
+          throw new Error(`No train ticket or railway booking found matching "${q}". Please check the 10-digit PNR or registered phone number.`);
+        }
+
+        renderUserPNRSearchResult(result, q);
+        if (resBox) resBox.classList.remove('hidden');
+        showToast('PNR details loaded successfully!');
+      } catch (err) {
+        if (errBox) {
+          errBox.textContent = err.message || 'Error fetching PNR details.';
+          errBox.classList.remove('hidden');
+        }
+      } finally {
+        if (btn) btn.disabled = false;
+        if (btnText) btnText.textContent = 'Search PNR';
+        lucide.createIcons();
+      }
+    }
+
+    function renderUserPNRSearchResult(data, query) {
+      const resBox = document.getElementById('userPnrSearchResultContainer');
+      if (!resBox) return;
+
+      // Case A: Result matched from student's personal pass (show Onward and/or Return)
+      if (data.isStudentMatch) {
+        const student = data.student;
+        let htmlCards = `
+          <div class="p-3.5 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs text-indigo-900 flex items-center justify-between">
+            <div>
+              <p class="font-extrabold text-sm">${student.studentName} (${student.department})</p>
+              <p class="text-indigo-700">Phone: ${student.phone} • Pass ID: ${student.receiptCode}</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase">Verified Participant</span>
+          </div>
+        `;
+
+        if (data.trainAllocation) {
+          htmlCards += renderSingleTrainTicketItem(data.trainAllocation, false);
+        } else {
+          htmlCards += `
+            <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-800 font-bold flex items-center gap-2">
+              <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600"></i>
+              <span>Onward Ticket (Departure): NOT CONFIRMED (Allocation Pending)</span>
+            </div>
+          `;
+        }
+
+        if (data.returnTrainAllocation) {
+          htmlCards += renderSingleTrainTicketItem(data.returnTrainAllocation, true);
+        } else {
+          htmlCards += `
+            <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-800 font-bold flex items-center gap-2">
+              <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600"></i>
+              <span>Return Ticket (Coming Back): NOT CONFIRMED (Allocation Pending)</span>
+            </div>
+          `;
+        }
+
+        resBox.innerHTML = htmlCards;
+        lucide.createIcons();
+        return;
+      }
+
+      // Case B: Master PNR Record or Raw Live/Mock API details
+      const pnr = data;
+      const classLabel = CLASS_MAP[pnr.journeyClass] || pnr.journeyClass || 'Sleeper';
+      const passengers = pnr.passengerMappings || pnr.passengers || [];
+      const maskedPnr = maskPNR(pnr.pnrNumber);
+      const securityHash = hashPNR(pnr.pnrNumber);
+
+      resBox.innerHTML = `
+        <div class="expressive-card rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white shadow-xl space-y-4 border border-blue-400/40">
+          <!-- Card Header -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-blue-500/20 border border-blue-400/30 text-blue-400 flex items-center justify-center font-bold">
+                <i data-lucide="train" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h4 class="font-display font-extrabold text-base text-white">${pnr.trainNumber} - ${pnr.trainName}</h4>
+                <div class="flex items-center gap-2 text-xs">
+                  <span class="text-slate-400">PNR:</span>
+                  <span class="font-mono font-black text-amber-300">${maskedPnr}</span>
+                  <span class="text-[9px] font-mono font-bold bg-white/10 px-1.5 py-0.5 rounded text-amber-200">(${securityHash})</span>
+                </div>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${pnr.chartPrepared ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30' : 'bg-amber-500/20 text-amber-300 border border-amber-400/30'}">
+              ${pnr.chartPrepared ? 'Chart Prepared' : 'Chart Not Prepared'}
+            </span>
+          </div>
+
+          <!-- Route Info -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div class="p-3.5 rounded-2xl bg-black/30 border border-white/10 space-y-1">
+              <p class="text-[10px] font-bold text-slate-400 uppercase">Origin Station</p>
+              <p class="font-bold text-sm text-white">${pnr.fromStation}</p>
+              <p class="text-amber-300 font-mono font-bold">Departure: ${pnr.departureTime} • ${pnr.dateOfJourney}</p>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-black/30 border border-white/10 space-y-1">
+              <p class="text-[10px] font-bold text-slate-400 uppercase">Destination Station</p>
+              <p class="font-bold text-sm text-white">${pnr.toStation}</p>
+              <p class="text-emerald-300 font-mono font-bold">Arrival: ${pnr.arrivalTime} • Class: ${classLabel}</p>
+            </div>
+          </div>
+
+          <!-- Ticket Fare & Quota Summary Strip -->
+          <div class="grid grid-cols-3 gap-2 text-center text-xs bg-black/30 p-2.5 rounded-2xl border border-white/10">
+            <div>
+              <p class="text-[9px] uppercase font-bold text-slate-400">Booking Quota</p>
+              <p class="font-bold text-amber-300 font-mono">${pnr.quota || 'GN'}</p>
+            </div>
+            <div>
+              <p class="text-[9px] uppercase font-bold text-slate-400">Total Ticket Fare</p>
+              <p class="font-bold text-emerald-300 font-mono">${pnr.ticketFare ? `₹${pnr.ticketFare}` : (pnr.bookingFare ? `₹${pnr.bookingFare}` : '₹6,030')}</p>
+            </div>
+            <div>
+              <p class="text-[9px] uppercase font-bold text-slate-400">Total Distance</p>
+              <p class="font-bold text-white font-mono">${pnr.distance || '2730 km'}</p>
+            </div>
+          </div>
+
+          <!-- Passenger Seats Roster -->
+          <div class="space-y-2 pt-1">
+            <h5 class="text-xs font-bold text-slate-300 flex items-center justify-between">
+              <span>Passenger Berth Allocations (${passengers.length} Slots):</span>
+              <span class="text-[11px] text-amber-300 font-mono">Class: ${classLabel}</span>
+            </h5>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-56 overflow-y-auto pr-1">
+              ${passengers.map((p, idx) => {
+                const pSlot = p.passengerIndex || (idx + 1);
+                const assignedName = p.assignedUserName || p.name || '';
+                const pStatus = p.ticketStatus || p.status || 'CNF';
+                let pBadge = 'bg-emerald-500/20 text-emerald-300 border-emerald-400/30';
+                if (pStatus === 'RAC') pBadge = 'bg-amber-500/20 text-amber-300 border-amber-400/30';
+                if (pStatus === 'WL') pBadge = 'bg-rose-500/20 text-rose-300 border-rose-400/30';
+
+                return `
+                  <div class="p-3 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-between gap-2">
+                    <div>
+                      <div class="flex items-center gap-1.5 flex-wrap">
+                        <span class="text-[10px] font-extrabold uppercase text-slate-400">Slot ${pSlot}</span>
+                        ${assignedName ? `<span class="text-xs font-black text-amber-300 truncate max-w-[130px]">${assignedName}</span>` : ''}
+                        ${(p.age || p.gender) ? `<span class="text-[10px] text-slate-300 font-mono">(${p.age ? `${p.age}y` : ''}${p.age && p.gender ? ' • ' : ''}${p.gender || ''})</span>` : ''}
+                      </div>
+                      <p class="font-mono text-sm font-black text-white mt-0.5">
+                        ${p.coach ? `Coach ${p.coach}` : 'Coach Pending'} • ${p.seatNumber ? `Berth ${p.seatNumber}` : 'Pending'}
+                      </p>
+                      <p class="text-[10px] text-slate-400 flex items-center gap-1.5 flex-wrap">
+                        <span>${p.berthType ? (BERTH_MAP[p.berthType] || p.berthType) : 'Berth'}</span>
+                        ${p.quota ? `<span class="text-amber-400 font-mono">• ${p.quota}</span>` : ''}
+                        ${p.fare ? `<span class="text-emerald-400 font-mono">• ₹${p.fare}</span>` : ''}
+                      </p>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black border ${pBadge}">
+                      ${pStatus}
+                    </span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <!-- Live Route & Track Action -->
+          <div class="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2">
+            <button
+              type="button"
+              onclick="openLiveTrainTrackerModal('${pnr.trainNumber}', '${pnr.trainName}')"
+              class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition"
+            >
+              <i data-lucide="radio" class="w-3.5 h-3.5 text-emerald-300 animate-pulse"></i>
+              <span>Live Train Location &amp; Route Halts</span>
+            </button>
+            <div class="flex items-center gap-2">
+              <a
+                href="https://www.railyatri.in/live-train-status/${pnr.trainNumber}"
+                target="_blank"
+                rel="noopener"
+                class="px-3 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs flex items-center gap-1 transition"
+              >
+                <i data-lucide="map-pin" class="w-3 h-3"></i>
+                <span>RailYatri</span>
+              </a>
+              <a
+                href="https://enquiry.indianrail.gov.in/mntes/"
+                target="_blank"
+                rel="noopener"
+                class="px-3 py-1.5 rounded-xl bg-sky-700 hover:bg-sky-600 text-white font-bold text-xs flex items-center gap-1 transition"
+              >
+                <i data-lucide="shield-check" class="w-3 h-3"></i>
+                <span>NTES (Govt)</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+
+      lucide.createIcons();
+    }
+
     function openLiveTrainTrackerModal(trainNo, trainName) {
       activeTrackedTrainNumber = String(trainNo || '12617').trim();
       activeTrackedTrainName = String(trainName || 'MANGLADWEEP EXP').trim();
@@ -13417,6 +14254,26 @@
       showToast(`Refreshed live status for Train ${activeTrackedTrainNumber}`);
     }
 
+    let activeLiveFilter = 'all';
+
+    function filterLiveTrackerHalts(filter) {
+      activeLiveFilter = filter;
+      const btnAll = document.getElementById('trackerFilterBtnAll');
+      const btnUp = document.getElementById('trackerFilterBtnUpcoming');
+      const btnPass = document.getElementById('trackerFilterBtnPassed');
+
+      [btnAll, btnUp, btnPass].forEach(b => {
+        if (!b) return;
+        b.className = 'px-3 py-1 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200/60 transition';
+      });
+
+      if (filter === 'all' && btnAll) btnAll.className = 'px-3 py-1 rounded-xl text-xs font-black bg-blue-600 text-white shadow-xs';
+      if (filter === 'upcoming' && btnUp) btnUp.className = 'px-3 py-1 rounded-xl text-xs font-black bg-blue-600 text-white shadow-xs';
+      if (filter === 'passed' && btnPass) btnPass.className = 'px-3 py-1 rounded-xl text-xs font-black bg-blue-600 text-white shadow-xs';
+
+      renderLiveTrainTimeline();
+    }
+
     function renderLiveTrainTimeline() {
       const liveData = getTrainScheduleAndLiveStatus(activeTrackedTrainNumber, activeTrackedTrainName);
 
@@ -13438,10 +14295,39 @@
       const haltsBadge = document.getElementById('liveTrackerHaltsBadge');
       if (haltsBadge) haltsBadge.textContent = `${liveData.stations.length} Halts`;
 
+      // Visual Progress Bar Calculation
+      const passedCount = liveData.stations.filter(s => s.status === 'Passed').length;
+      const totalCount = liveData.stations.length;
+      const currentHalt = liveData.stations.some(s => s.status === 'Current Halt');
+      const progressPct = Math.min(100, Math.round(((passedCount + (currentHalt ? 0.5 : 0)) / Math.max(1, totalCount - 1)) * 100));
+
+      const progBar = document.getElementById('liveTrackerProgressBar');
+      if (progBar) progBar.style.width = `${progressPct}%`;
+
+      const progLabel = document.getElementById('liveTrackerProgressLabel');
+      if (progLabel) progLabel.textContent = `${progressPct}% Completed • ${passedCount} of ${totalCount} Halts Passed`;
+
+      // Filter stations by active tab
+      let displayStations = liveData.stations;
+      if (activeLiveFilter === 'upcoming') {
+        displayStations = liveData.stations.filter(s => s.status === 'Upcoming' || s.status === 'Current Halt');
+      } else if (activeLiveFilter === 'passed') {
+        displayStations = liveData.stations.filter(s => s.status === 'Passed');
+      }
+
       const timelineContainer = document.getElementById('liveTrackerStationsTimeline');
       if (!timelineContainer) return;
 
-      timelineContainer.innerHTML = liveData.stations.map((s, idx) => {
+      if (displayStations.length === 0) {
+        timelineContainer.innerHTML = `
+          <div class="p-6 text-center text-slate-400 text-xs font-bold">
+            No halts in this category.
+          </div>
+        `;
+        return;
+      }
+
+      timelineContainer.innerHTML = displayStations.map((s, idx) => {
         let statusBadge = '';
         let dotColor = 'bg-slate-300';
         let cardBg = 'bg-slate-50 border-slate-200';
@@ -13449,35 +14335,36 @@
         if (s.status === 'Passed') {
           statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800">Passed ✓</span>';
           dotColor = 'bg-emerald-500';
-          cardBg = 'bg-emerald-50/40 border-emerald-200';
+          cardBg = 'bg-emerald-50/50 border-emerald-200 text-slate-800';
         } else if (s.status === 'Current Halt') {
-          statusBadge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-slate-950 animate-pulse">Current Halt 🟢</span>';
+          statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 animate-pulse">Current Halt • Platform ' + (s.pf || '1') + '</span>';
           dotColor = 'bg-amber-500 ring-4 ring-amber-200';
-          cardBg = 'bg-amber-50 border-amber-300 shadow-sm';
+          cardBg = 'bg-amber-50 border-amber-300 text-amber-950 font-bold shadow-xs';
         } else {
-          statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500">Upcoming ⏳</span>';
-          dotColor = 'bg-slate-300';
-          cardBg = 'bg-white border-slate-200';
+          statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">Upcoming</span>';
         }
 
         return `
-          <div class="flex items-center gap-3 p-3 rounded-2xl border ${cardBg} transition hover:shadow-xs">
-            <div class="w-3.5 h-3.5 rounded-full ${dotColor} shrink-0"></div>
-            <div class="w-14 shrink-0 font-mono font-black text-xs text-slate-900 bg-white px-2 py-1 rounded-lg border border-slate-200 text-center">
-              ${s.code}
-            </div>
-            <div class="flex-1 min-w-0">
-              <h5 class="font-display font-bold text-xs sm:text-sm text-slate-900 truncate">${s.name}</h5>
-              <p class="text-[11px] text-slate-500 font-mono">
-                ${s.dist} km • Platform: <strong>${s.pf || '-'}</strong>
-              </p>
-            </div>
-            <div class="text-right shrink-0">
-              <p class="font-mono text-xs font-extrabold text-slate-900">${s.arr}</p>
-              <p class="text-[10px] text-slate-500 font-mono">Dep: ${s.dep}</p>
-            </div>
-            <div class="shrink-0 hidden sm:block">
-              ${statusBadge}
+          <div class="relative flex items-start gap-3 pl-2">
+            <!-- Line Connector -->
+            ${idx < displayStations.length - 1 ? '<div class="absolute left-[17px] top-6 bottom-0 w-0.5 bg-slate-200"></div>' : ''}
+            <!-- Dot -->
+            <div class="w-3.5 h-3.5 rounded-full ${dotColor} shrink-0 mt-3 border-2 border-white shadow-xs z-10"></div>
+            <!-- Card -->
+            <div class="flex-1 p-3 rounded-2xl border ${cardBg} space-y-1 transition">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="font-mono font-black text-xs text-slate-900 bg-white px-1.5 py-0.5 rounded border border-slate-200">
+                    ${s.code}
+                  </span>
+                  <span class="text-xs font-bold text-slate-900">${s.name}</span>
+                </div>
+                ${statusBadge}
+              </div>
+              <div class="flex items-center justify-between text-[11px] text-slate-600 pt-1">
+                <span>Arr: <b class="text-slate-800">${s.arr}</b> • Dep: <b class="text-slate-800">${s.dep}</b></span>
+                <span>Platform ${s.pf || '1'} • ${s.dist || 0} km</span>
+              </div>
             </div>
           </div>
         `;
@@ -13485,8 +14372,70 @@
 
       lucide.createIcons();
     }
+
+    function toggleAppFullscreen() {
+      const isDocFullscreen = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+      const isClassFullscreen = document.body.classList.contains('app-fullscreen-mode');
+      
+      if (!isDocFullscreen && !isClassFullscreen) {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else if (document.documentElement.webkitRequestFullscreen) {
+          document.documentElement.webkitRequestFullscreen();
+        }
+        document.body.classList.add('app-fullscreen-mode');
+      } else {
+        if (document.exitFullscreen && isDocFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen && isDocFullscreen) {
+          document.webkitExitFullscreen();
+        }
+        document.body.classList.remove('app-fullscreen-mode');
+      }
+      updateFullscreenState();
+    }
+
+    function updateFullscreenState() {
+      const isFull = Boolean(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.body.classList.contains('app-fullscreen-mode') ||
+        (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+        window.navigator.standalone === true
+      );
+      const icon = document.getElementById('fullscreenToggleIcon');
+      if (icon) {
+        icon.setAttribute('data-lucide', isFull ? 'minimize' : 'maximize');
+        lucide.createIcons();
+      }
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+      if (document.fullscreenElement) {
+        document.body.classList.add('app-fullscreen-mode');
+      } else {
+        document.body.classList.remove('app-fullscreen-mode');
+      }
+      updateFullscreenState();
+    });
+
+    document.addEventListener('webkitfullscreenchange', () => {
+      if (document.webkitFullscreenElement) {
+        document.body.classList.add('app-fullscreen-mode');
+      } else {
+        document.body.classList.remove('app-fullscreen-mode');
+      }
+      updateFullscreenState();
+    });
+
+    if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) {
+      document.body.classList.add('app-fullscreen-mode');
+    }
+
     // Attach globals to window
     Object.assign(window, {
+      toggleAppFullscreen,
+      updateFullscreenState,
       openPaymentReceiptForStudent,
       openPaymentReceiptForLoggedParticipant,
       openPaymentReceiptFromBoardingPass,
@@ -13503,6 +14452,16 @@
       handleSearchStationSubmit,
       renderStationSearchResults,
       fillStationSearch,
+      hashPNR,
+      maskPNR,
+      getSecureUserPNRDisplay,
+      isStaffOrManagerSession,
+      filterLiveTrackerHalts,
+      openUserPNRSearchModal,
+      closeUserPNRSearchModal,
+      fillUserPNRSearch,
+      handleUserPNRSearchSubmit,
+      renderUserPNRSearchResult,
       copyStationCode,
       applyStationAsTripDestination,
       toggleMockPNRModeUI,

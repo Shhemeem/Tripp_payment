@@ -81,13 +81,6 @@ export function hashPNR(pnr) {
  */
 export function maskPNR(pnr) {
   if (!pnr) return '';
-  const str = String(pnr).trim();
-  if (str.length === 10) {
-    return `${str.slice(0, 3)}••••${str.slice(7)}`;
-  }
-  if (str.length > 4) {
-    return `${str.slice(0, 2)}••••${str.slice(-2)}`;
-  }
   return '••••••••••';
 }
 
@@ -102,7 +95,7 @@ export function getSecureUserPNRDisplay(pnr, showFull = false) {
   if (!pnr) return '';
   const str = String(pnr).trim();
   if (showFull) return str;
-  return maskPNR(str);
+  return '••••••••••';
 }
 
 // Global mock mode state (can be toggled at runtime)
@@ -215,7 +208,40 @@ export function parsePassengerStatus(
  */
 export function getMockPNRDetails(pnrNumber) {
   const pnr = String(pnrNumber || '4147386985').trim();
-  
+
+  if (pnr === '4447386706') {
+    return {
+      pnrNumber: '4447386706',
+      trainNumber: '12617',
+      trainName: 'MANGLADWEEP EXP',
+      fromStation: 'TIR - Tirur',
+      fromStationCode: 'TIR',
+      toStation: 'AGC - Agra Cantt',
+      toStationCode: 'AGC',
+      dateOfJourney: 'Jan 1, 2027',
+      departureTime: '16:25',
+      arrivalTime: '09:55',
+      journeyClass: 'SL',
+      journeyClassName: 'Sleeper (SL)',
+      chartPrepared: false,
+      quota: 'GN',
+      ticketFare: 6030,
+      bookingFare: 6030,
+      distance: '2730 km',
+      expectedPlatform: '1',
+      lastSyncedAt: Date.now(),
+      isMock: true,
+      passengers: [
+        { passengerIndex: 1, bookingStatus: 'CNF/S5/9/LB', currentStatus: 'CNF/S5/9/LB', status: 'CNF', coach: 'S5', seatNumber: '9', berthType: 'LB', berthName: 'Lower Berth', age: 21, gender: 'M', quota: 'GN', fare: 1005 },
+        { passengerIndex: 2, bookingStatus: 'CNF/S5/10/MB', currentStatus: 'CNF/S5/10/MB', status: 'CNF', coach: 'S5', seatNumber: '10', berthType: 'MB', berthName: 'Middle Berth', age: 22, gender: 'M', quota: 'GN', fare: 1005 },
+        { passengerIndex: 3, bookingStatus: 'CNF/S5/11/UB', currentStatus: 'CNF/S5/11/UB', status: 'CNF', coach: 'S5', seatNumber: '11', berthType: 'UB', berthName: 'Upper Berth', age: 21, gender: 'M', quota: 'GN', fare: 1005 },
+        { passengerIndex: 4, bookingStatus: 'CNF/S5/13/MB', currentStatus: 'CNF/S5/13/MB', status: 'CNF', coach: 'S5', seatNumber: '13', berthType: 'MB', berthName: 'Middle Berth', age: 23, gender: 'M', quota: 'GN', fare: 1005 },
+        { passengerIndex: 5, bookingStatus: 'CNF/S5/14/UB', currentStatus: 'CNF/S5/14/UB', status: 'CNF', coach: 'S5', seatNumber: '14', berthType: 'UB', berthName: 'Upper Berth', age: 20, gender: 'M', quota: 'GN', fare: 1005 },
+        { passengerIndex: 6, bookingStatus: 'CNF/S5/12/LB', currentStatus: 'CNF/S5/12/LB', status: 'CNF', coach: 'S5', seatNumber: '12', berthType: 'LB', berthName: 'Lower Berth', age: 22, gender: 'M', quota: 'GN', fare: 1005 }
+      ]
+    };
+  }
+
   return {
     pnrNumber: pnr,
     trainNumber: '12617',
@@ -230,6 +256,11 @@ export function getMockPNRDetails(pnrNumber) {
     journeyClass: 'SL',
     journeyClassName: 'Sleeper (SL)',
     chartPrepared: false,
+    quota: 'GN',
+    ticketFare: 3015,
+    bookingFare: 3015,
+    distance: '2730 km',
+    expectedPlatform: '1',
     lastSyncedAt: Date.now(),
     isMock: true,
     passengers: [
@@ -241,7 +272,11 @@ export function getMockPNRDetails(pnrNumber) {
         coach: 'S6',
         seatNumber: '33',
         berthType: 'MB',
-        berthName: 'Middle Berth'
+        berthName: 'Middle Berth',
+        age: 21,
+        gender: 'M',
+        quota: 'GN',
+        fare: 1005
       },
       {
         passengerIndex: 2,
@@ -251,7 +286,11 @@ export function getMockPNRDetails(pnrNumber) {
         coach: 'S6',
         seatNumber: '34',
         berthType: 'UB',
-        berthName: 'Upper Berth'
+        berthName: 'Upper Berth',
+        age: 22,
+        gender: 'M',
+        quota: 'GN',
+        fare: 1005
       },
       {
         passengerIndex: 3,
@@ -261,7 +300,11 @@ export function getMockPNRDetails(pnrNumber) {
         coach: 'S6',
         seatNumber: '35',
         berthType: 'SL',
-        berthName: 'Side Lower'
+        berthName: 'Side Lower',
+        age: 21,
+        gender: 'F',
+        quota: 'GN',
+        fare: 1005
       },
       {
         passengerIndex: 4,
@@ -271,7 +314,11 @@ export function getMockPNRDetails(pnrNumber) {
         coach: 'S6',
         seatNumber: '36',
         berthType: 'SU',
-        berthName: 'Side Upper'
+        berthName: 'Side Upper',
+        age: 20,
+        gender: 'M',
+        quota: 'GN',
+        fare: 1005
       },
       {
         passengerIndex: 5,
@@ -281,7 +328,11 @@ export function getMockPNRDetails(pnrNumber) {
         coach: 'S6',
         seatNumber: '37',
         berthType: 'LB',
-        berthName: 'Lower Berth'
+        berthName: 'Lower Berth',
+        age: 22,
+        gender: 'F',
+        quota: 'GN',
+        fare: 1005
       },
       {
         passengerIndex: 6,
@@ -291,7 +342,11 @@ export function getMockPNRDetails(pnrNumber) {
         coach: 'S6',
         seatNumber: '38',
         berthType: 'MB',
-        berthName: 'Middle Berth'
+        berthName: 'Middle Berth',
+        age: 21,
+        gender: 'M',
+        quota: 'GN',
+        fare: 1005
       }
     ]
   };
@@ -408,6 +463,9 @@ export async function fetchPNRDetails(pnrNumber, options = {}) {
     ? data.passengerList
     : (Array.isArray(data.passengers) ? data.passengers : []);
 
+  const totalFare = Number(data.ticketFare || data.bookingFare || data.totalFare || 0);
+  const perPersonFare = (totalFare && rawPassengerList.length) ? Math.round(totalFare / rawPassengerList.length) : '';
+
   const passengers = rawPassengerList.map((p, idx) => {
     const passengerIndex = p.passengerIndex || p.passengerSerialNumber || (idx + 1);
     const rawBooking = p.bookingStatusDetails || p.bookingStatus || '';
@@ -424,8 +482,19 @@ export async function fetchPNRDetails(pnrNumber, options = {}) {
       fallbackBerthType
     );
 
+    const age = p.passengerAge || p.age || p.Age || '';
+    const gender = p.passengerGender || p.gender || p.Gender || '';
+    const quota = p.passengerQuota || p.bookingQuota || p.quota || data.quota || 'GN';
+    const fare = p.passengerFare || p.bookingFare || p.fare || perPersonFare || '';
+    const nationality = p.passengerNationality || 'IN';
+
     return {
       passengerIndex,
+      age,
+      gender,
+      quota,
+      fare,
+      nationality,
       ...parsed
     };
   });
@@ -444,6 +513,11 @@ export async function fetchPNRDetails(pnrNumber, options = {}) {
     journeyClass,
     journeyClassName,
     chartPrepared,
+    quota: data.quota || 'GN',
+    ticketFare: totalFare || data.ticketFare || data.bookingFare || '',
+    bookingFare: data.bookingFare || data.ticketFare || '',
+    distance: data.distance ? `${data.distance} km` : '',
+    expectedPlatform: data.expectedPlatformLocation || data.platform || '',
     lastSyncedAt: Date.now(),
     isMock: false,
     passengers
@@ -455,6 +529,17 @@ export async function fetchPNRDetails(pnrNumber, options = {}) {
 // =========================================================================
 
 export const STATION_DIRECTORY = {
+  'AGC': {
+    code: 'AGC',
+    name: 'Agra Cantt',
+    engName: 'Agra Cantonment',
+    stateName: 'Uttar Pradesh',
+    zone: 'NCR (North Central Railway)',
+    division: 'Agra (AGC)',
+    platforms: 6,
+    category: 'NSG-2 / Major Tourist Gateway',
+    amenities: ['📶 High-Speed WiFi', '🍽️ Multi-Cuisine Food Court', '🛏️ Executive AC Lounge & Retiring Rooms', '♿ Escalators & Lift Facilities', '🚖 Prepaid Taxi & Taj Mahal Tourist Desk']
+  },
   'BJU': {
     code: 'BJU',
     name: 'Barauni Junction',
