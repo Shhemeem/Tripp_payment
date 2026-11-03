@@ -214,91 +214,6 @@
         border: 2px solid #cbd5e1 !important;
       }
     }
-
-    /* Bottom Navigation only in Full Screen or Add to Home Screen (Standalone PWA) */
-    @media (display-mode: standalone), (display-mode: fullscreen) {
-      body {
-        padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
-      }
-      #headerNavWrapper {
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        top: auto !important;
-        z-index: 50 !important;
-        background: rgba(255, 255, 255, 0.96) !important;
-        backdrop-filter: blur(16px) !important;
-        -webkit-backdrop-filter: blur(16px) !important;
-        border-top: 1px solid rgba(226, 232, 240, 0.9) !important;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08) !important;
-        padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)) !important;
-        justify-content: center !important;
-        margin: 0 !important;
-        width: 100% !important;
-      }
-      #headerNavWrapper #userNavTabs,
-      #headerNavWrapper #adminNavTabs {
-        width: 100% !important;
-        max-width: 520px !important;
-        justify-content: space-around !important;
-        background: transparent !important;
-        border: none !important;
-        padding: 0 !important;
-      }
-      #headerNavWrapper #userNavTabs button,
-      #headerNavWrapper #adminNavTabs button {
-        flex: 1 !important;
-        flex-direction: column !important;
-        gap: 2px !important;
-        padding: 6px 4px !important;
-        font-size: 11px !important;
-      }
-      #headerNavWrapper #adminToggleBtn {
-        display: none !important;
-      }
-    }
-
-    body.app-fullscreen-mode {
-      padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
-    }
-    body.app-fullscreen-mode #headerNavWrapper {
-      position: fixed !important;
-      bottom: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      top: auto !important;
-      z-index: 50 !important;
-      background: rgba(255, 255, 255, 0.96) !important;
-      backdrop-filter: blur(16px) !important;
-      -webkit-backdrop-filter: blur(16px) !important;
-      border-top: 1px solid rgba(226, 232, 240, 0.9) !important;
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08) !important;
-      padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)) !important;
-      justify-content: center !important;
-      margin: 0 !important;
-      width: 100% !important;
-    }
-    body.app-fullscreen-mode #headerNavWrapper #userNavTabs,
-    body.app-fullscreen-mode #headerNavWrapper #adminNavTabs {
-      width: 100% !important;
-      max-width: 520px !important;
-      justify-content: space-around !important;
-      background: transparent !important;
-      border: none !important;
-      padding: 0 !important;
-    }
-    body.app-fullscreen-mode #headerNavWrapper #userNavTabs button,
-    body.app-fullscreen-mode #headerNavWrapper #adminNavTabs button {
-      flex: 1 !important;
-      flex-direction: column !important;
-      gap: 2px !important;
-      padding: 6px 4px !important;
-      font-size: 11px !important;
-    }
-    body.app-fullscreen-mode #headerNavWrapper #adminToggleBtn {
-      display: none !important;
-    }
   </style>
 </head>
 
@@ -368,73 +283,58 @@
 
       <!-- Navigation & Controls -->
       <div class="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
-        <!-- Fullscreen Mode Toggle -->
-        <button id="fullscreenToggleBtn" type="button" onclick="toggleAppFullscreen()"
-          class="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center justify-center shadow-sm transition"
-          title="Toggle Fullscreen / App Mode">
-          <i data-lucide="maximize" id="fullscreenToggleIcon" class="w-3.5 h-3.5 text-slate-600"></i>
-        </button>
-
-        <div id="headerNavWrapper" class="flex items-center gap-2">
-          <!-- Public Student Tabs -->
-          <nav id="userNavTabs" class="flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/80">
-            <button onclick="switchTab('pay')" id="userTabBtn-pay"
-              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-700 shadow-sm">
-              <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
-              <span>Pay</span>
-            </button>
-            <button onclick="switchTab('user-itinerary')" id="userTabBtn-itinerary"
-              class="hidden flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
-              <i data-lucide="map" class="w-3.5 h-3.5"></i>
-              <span>Schedule</span>
-            </button>
-            <button onclick="switchTab('user-contacts')" id="userTabBtn-contacts"
-              class="hidden flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
-              <i data-lucide="phone-call" class="w-3.5 h-3.5"></i>
-              <span>Helpline</span>
-            </button>
-            <button type="button" onclick="openUserPNRSearchModal()" id="userTabBtn-pnr"
-              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-blue-800 hover:text-blue-950 bg-blue-100/80 border border-blue-300/80 ml-0.5"
-              title="Search PNR &amp; Track Train Seats">
-              <i data-lucide="search" class="w-3.5 h-3.5 text-blue-700"></i>
-              <span>PNR Search</span>
-            </button>
-            <button onclick="handleParticipantPortalClick()" id="userTabBtn-portal"
-              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-indigo-700 hover:text-indigo-900 bg-indigo-50/70 border border-indigo-200/60 ml-0.5">
-              <i data-lucide="ticket" class="w-3.5 h-3.5"></i>
-              <span id="portalNavText">My Pass</span>
-            </button>
-          </nav>
-
-          <!-- Admin Main Tabs -->
-          <nav id="adminNavTabs"
-            class="hidden flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/80 flex-1 sm:flex-initial justify-between sm:justify-start">
-            <button onclick="switchTab('pay')" id="tabBtn-pay"
-              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-700 shadow-sm">
-              <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
-              <span>Pay Portal</span>
-            </button>
-            <button onclick="switchTab('manager')" id="tabBtn-manager"
-              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
-              <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
-              <span>Trip Manager</span>
-              <span id="navPaidCount"
-                class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-extrabold">0</span>
-            </button>
-            <button onclick="openSettingsModal()"
-              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-emerald-700">
-              <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
-              <span>Settings</span>
-            </button>
-          </nav>
-
-          <!-- Admin Access Trigger -->
-          <button id="adminToggleBtn" onclick="handleAdminAccessClick()"
-            class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
-            <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-600"></i>
-            <span>Admin Login</span>
+        <!-- Public Student Tabs -->
+        <nav id="userNavTabs" class="flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/80">
+          <button onclick="switchTab('pay')" id="userTabBtn-pay"
+            class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-700 shadow-sm">
+            <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
+            <span>Pay</span>
           </button>
-        </div>
+          <button onclick="switchTab('user-itinerary')" id="userTabBtn-itinerary"
+            class="hidden flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
+            <i data-lucide="map" class="w-3.5 h-3.5"></i>
+            <span>Schedule</span>
+          </button>
+          <button onclick="switchTab('user-contacts')" id="userTabBtn-contacts"
+            class="hidden flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
+            <i data-lucide="phone-call" class="w-3.5 h-3.5"></i>
+            <span>Helpline</span>
+          </button>
+          <button onclick="handleParticipantPortalClick()" id="userTabBtn-portal"
+            class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-indigo-700 hover:text-indigo-900 bg-indigo-50/70 border border-indigo-200/60 ml-0.5">
+            <i data-lucide="ticket" class="w-3.5 h-3.5"></i>
+            <span id="portalNavText">My Pass</span>
+          </button>
+        </nav>
+
+        <!-- Admin Main Tabs -->
+        <nav id="adminNavTabs"
+          class="hidden flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/80 flex-1 sm:flex-initial justify-between sm:justify-start">
+          <button onclick="switchTab('pay')" id="tabBtn-pay"
+            class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-700 shadow-sm">
+            <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
+            <span>Pay Portal</span>
+          </button>
+          <button onclick="switchTab('manager')" id="tabBtn-manager"
+            class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
+            <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
+            <span>Trip Manager</span>
+            <span id="navPaidCount"
+              class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-extrabold">0</span>
+          </button>
+          <button onclick="openSettingsModal()"
+            class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-emerald-700">
+            <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+            <span>Settings</span>
+          </button>
+        </nav>
+
+        <!-- Admin Access Trigger -->
+        <button id="adminToggleBtn" onclick="handleAdminAccessClick()"
+          class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
+          <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-600"></i>
+          <span>Admin Login</span>
+        </button>
       </div>
     </div>
   </header>
@@ -2988,6 +2888,12 @@
             </div>
           </div>
 
+          <!-- Info Banner for Not Started / Live -->
+          <div id="liveTrackerNotStartedBanner" class="hidden p-3.5 rounded-2xl bg-amber-500/20 border border-amber-400/30 text-amber-200 text-xs flex items-center gap-2.5">
+            <i data-lucide="clock" class="w-4 h-4 text-amber-400 shrink-0"></i>
+            <span id="liveTrackerNotStartedText">Journey has not started yet.</span>
+          </div>
+
           <!-- Current & Next Station Box -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div class="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-1">
@@ -3004,9 +2910,14 @@
 
           <!-- External Live GPS Tracking Links -->
           <div class="pt-2 border-t border-white/10">
-            <p class="text-[11px] font-bold text-slate-400 mb-2">Open Live GPS Satellite Tracking (NTES / RailYatri /
-              Where Is My Train):</p>
+            <p class="text-[11px] font-bold text-slate-400 mb-2">Open Live GPS Satellite Tracking (NTES / RailYatri / Where Is My Train):</p>
             <div class="flex flex-wrap items-center gap-2">
+              <a id="liveTrackerWhereIsMyTrainLink" href="https://www.google.com/search?q=Where+is+my+train+12617" target="_blank"
+                rel="noopener"
+                class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition">
+                <i data-lucide="map" class="w-3.5 h-3.5"></i>
+                <span>Where Is My Train</span>
+              </a>
               <a id="liveTrackerRailYatriLink" href="https://www.railyatri.in/live-train-status/12617" target="_blank"
                 rel="noopener"
                 class="px-3 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition">
@@ -5861,13 +5772,14 @@
           }
           const bpTrainRoute = document.getElementById('bpTrainRoute');
           if (bpTrainRoute) {
+            const depDateFormatted = formatDisplayDate(ta.dateOfJourney || tripConfig.tripDate);
+            const arrDateFormatted = computeArrivalDate(ta.dateOfJourney || tripConfig.tripDate, ta.arrivalDate, ta.departureTime, ta.arrivalTime, ta.trainNumber);
             const extraDetails = [
               ta.age ? `${ta.age} Yrs` : '',
               ta.gender ? `${ta.gender}` : '',
-              ta.quota ? `Quota: ${ta.quota}` : '',
-              ta.fare ? `Fare: ₹${ta.fare}` : ''
+              ta.quota ? `Quota: ${ta.quota}` : ''
             ].filter(Boolean).join(' • ');
-            bpTrainRoute.textContent = `${ta.fromStation || 'Origin'} (${ta.departureTime || '--:--'}) ➔ ${ta.toStation || 'Destination'} (${ta.arrivalTime || '--:--'}) • ${ta.dateOfJourney || tripConfig.tripDate}${extraDetails ? ` | ${extraDetails}` : ''}`;
+            bpTrainRoute.textContent = `${ta.fromStation || 'Origin'} (${ta.departureTime || '--:--'} • ${depDateFormatted}) ➔ ${ta.toStation || 'Destination'} (${ta.arrivalTime || '--:--'} • ${arrDateFormatted})${extraDetails ? ` | ${extraDetails}` : ''}`;
           }
         } else {
           // Explicitly show ONWARD TICKETS NOT CONFIRMED on Boarding Pass
@@ -5921,13 +5833,14 @@
           }
           const bpReturnTrainRoute = document.getElementById('bpReturnTrainRoute');
           if (bpReturnTrainRoute) {
+            const retDepDateFormatted = formatDisplayDate(rta.dateOfJourney);
+            const retArrDateFormatted = computeArrivalDate(rta.dateOfJourney, rta.arrivalDate, rta.departureTime, rta.arrivalTime, rta.trainNumber);
             const returnExtraDetails = [
               rta.age ? `${rta.age} Yrs` : '',
               rta.gender ? `${rta.gender}` : '',
-              rta.quota ? `Quota: ${rta.quota}` : '',
-              rta.fare ? `Fare: ₹${rta.fare}` : ''
+              rta.quota ? `Quota: ${rta.quota}` : ''
             ].filter(Boolean).join(' • ');
-            bpReturnTrainRoute.textContent = `${rta.fromStation || 'Origin'} (${rta.departureTime || '--:--'}) ➔ ${rta.toStation || 'Destination'} (${rta.arrivalTime || '--:--'}) • ${rta.dateOfJourney || ''}${returnExtraDetails ? ` | ${returnExtraDetails}` : ''}`;
+            bpReturnTrainRoute.textContent = `${rta.fromStation || 'Origin'} (${rta.departureTime || '--:--'} • ${retDepDateFormatted}) ➔ ${rta.toStation || 'Destination'} (${rta.arrivalTime || '--:--'} • ${retArrDateFormatted})${returnExtraDetails ? ` | ${returnExtraDetails}` : ''}`;
           }
         } else {
           // Explicitly show RETURN TICKETS NOT CONFIRMED on Boarding Pass
@@ -12252,6 +12165,133 @@
       };
     }
 
+
+    function parseJourneyDate(dateStr) {
+      if (!dateStr) return null;
+      const s = String(dateStr).trim();
+      let d = new Date(s);
+      if (!isNaN(d.getTime())) return d;
+      
+      const dmyMatch = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+      if (dmyMatch) {
+        const day = parseInt(dmyMatch[1], 10);
+        const month = parseInt(dmyMatch[2], 10) - 1;
+        const year = parseInt(dmyMatch[3], 10);
+        d = new Date(year, month, day);
+        if (!isNaN(d.getTime())) return d;
+      }
+      
+      const ymdMatch = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+      if (ymdMatch) {
+        const year = parseInt(ymdMatch[1], 10);
+        const month = parseInt(ymdMatch[2], 10) - 1;
+        const day = parseInt(ymdMatch[3], 10);
+        d = new Date(year, month, day);
+        if (!isNaN(d.getTime())) return d;
+      }
+      return null;
+    }
+
+    function formatDisplayDate(dateInput) {
+      let d = dateInput instanceof Date ? dateInput : parseJourneyDate(dateInput);
+      if (!d || isNaN(d.getTime())) return String(dateInput || '');
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = months[d.getMonth()];
+      const year = d.getFullYear();
+      return `${day} ${month} ${year}`;
+    }
+
+    function computeArrivalDate(depDateStr, arrDateStr, depTimeStr, arrTimeStr, trainNumber = '') {
+      if (arrDateStr) {
+        const parsed = parseJourneyDate(arrDateStr);
+        if (parsed) return formatDisplayDate(parsed);
+      }
+      const depDate = parseJourneyDate(depDateStr);
+      if (!depDate) return depDateStr || '';
+
+      let dayOffset = 0;
+      const tn = String(trainNumber).trim();
+      if (tn === '12617' || tn === '12618' || tn === '12625' || tn === '12626') {
+        dayOffset = 2; // Arrives Day 3 (2 days later)
+      } else {
+        const depH = parseInt((depTimeStr || '0').split(':')[0], 10);
+        const arrH = parseInt((arrTimeStr || '0').split(':')[0], 10);
+        if (!isNaN(depH) && !isNaN(arrH) && arrH < depH) {
+          dayOffset = 1;
+        }
+      }
+
+      const arrDate = new Date(depDate);
+      arrDate.setDate(arrDate.getDate() + dayOffset);
+      return formatDisplayDate(arrDate);
+    }
+
+    function checkTrainJourneyStatus(trainNo, doj, depTime) {
+      const depDate = parseJourneyDate(doj);
+      const now = new Date();
+
+      if (!depDate) {
+        return {
+          isStarted: false,
+          isTerminated: false,
+          statusText: 'Train Yet to Depart (Not Started)',
+          progressPct: 0,
+          bannerMessage: 'Train schedule loaded. Journey departure is pending.'
+        };
+      }
+
+      let depH = 10;
+      let depM = 30;
+      if (depTime) {
+        const tMatch = String(depTime).match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+        if (tMatch) {
+          depH = parseInt(tMatch[1], 10);
+          depM = parseInt(tMatch[2], 10);
+          const meridiem = (tMatch[3] || '').toUpperCase();
+          if (meridiem === 'PM' && depH < 12) depH += 12;
+          if (meridiem === 'AM' && depH === 12) depH = 0;
+        }
+      }
+
+      const trainDepDateTime = new Date(depDate);
+      trainDepDateTime.setHours(depH, depM, 0, 0);
+
+      const diffMs = now.getTime() - trainDepDateTime.getTime();
+
+      if (diffMs < 0) {
+        return {
+          isStarted: false,
+          isTerminated: false,
+          statusText: 'Train Yet to Depart (Not Started)',
+          progressPct: 0,
+          bannerMessage: `Train has not started yet. Scheduled to depart on ${formatDisplayDate(depDate)} at ${depTime || '10:30 AM'}.`
+        };
+      }
+
+      const totalJourneyHours = 51;
+      const elapsedHours = diffMs / (1000 * 60 * 60);
+
+      if (elapsedHours > totalJourneyHours) {
+        return {
+          isStarted: true,
+          isTerminated: true,
+          statusText: 'Journey Completed (Terminated at Destination)',
+          progressPct: 100,
+          bannerMessage: 'Train has reached destination station.'
+        };
+      }
+
+      const progressPct = Math.min(99, Math.max(5, Math.round((elapsedHours / totalJourneyHours) * 100)));
+      return {
+        isStarted: true,
+        isTerminated: false,
+        statusText: 'Running On Time (In Transit)',
+        progressPct,
+        bannerMessage: `Train is currently en route. Journey commenced on ${formatDisplayDate(depDate)}.`
+      };
+    }
+
     function getMockPNRDetails(pnrNumber) {
       const pnrStr = String(pnrNumber).trim();
       const mockDatabase = {
@@ -12262,6 +12302,7 @@
           fromStation: 'TIR - Tirur',
           toStation: 'AGC - Agra Cantt',
           dateOfJourney: 'Jan 1, 2027',
+          arrivalDate: 'Jan 3, 2027',
           departureTime: '16:25',
           arrivalTime: '09:55',
           journeyClass: 'SL',
@@ -12550,6 +12591,7 @@
           fromStation: String(data.fromStation || data.sourceStation || data.boardingPoint || 'Origin'),
           toStation: String(data.toStation || data.destinationStation || data.reservationUpto || 'Destination'),
           dateOfJourney: dojStr,
+          arrivalDate: data.arrivalDate ? formatDisplayDate(data.arrivalDate) : computeArrivalDate(dojStr, null, depTimeStr, arrTimeStr, data.trainNumber || data.trainNo),
           departureTime: depTimeStr,
           arrivalTime: arrTimeStr,
           journeyClass: String(data.journeyClass || data.class || 'SL'),
@@ -13299,7 +13341,7 @@
             <div class="bg-black/30 rounded-2xl p-4 border border-white/10">
               <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Boarding Origin</p>
               <p class="font-display font-extrabold text-base text-white mt-0.5">${ta.fromStation}</p>
-              <p class="text-amber-300 font-mono text-xs font-extrabold mt-1">Departure: ${ta.departureTime}</p>
+              <p class="text-amber-300 font-mono text-xs font-extrabold mt-1">Departure: ${ta.departureTime} • ${formatDisplayDate(ta.dateOfJourney)}</p>
             </div>
 
             <div class="text-center hidden sm:block">
@@ -13310,13 +13352,13 @@
                 </div>
                 <div class="h-0.5 w-10 bg-white/20"></div>
               </div>
-              <p class="text-[11px] text-slate-300 font-mono font-bold mt-1.5">${ta.dateOfJourney}</p>
+              <p class="text-[11px] text-slate-300 font-mono font-bold mt-1.5">${formatDisplayDate(ta.dateOfJourney)} ➔ ${computeArrivalDate(ta.dateOfJourney, ta.arrivalDate, ta.departureTime, ta.arrivalTime, ta.trainNumber)}</p>
             </div>
 
             <div class="bg-black/30 rounded-2xl p-4 border border-white/10 text-left sm:text-right">
               <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Destination</p>
               <p class="font-display font-extrabold text-base text-white mt-0.5">${ta.toStation}</p>
-              <p class="text-emerald-300 font-mono text-xs font-extrabold mt-1">Arrival: ${ta.arrivalTime}</p>
+              <p class="text-emerald-300 font-mono text-xs font-extrabold mt-1">Arrival: ${ta.arrivalTime} • ${computeArrivalDate(ta.dateOfJourney, ta.arrivalDate, ta.departureTime, ta.arrivalTime, ta.trainNumber)}</p>
             </div>
           </div>
 
@@ -13340,8 +13382,8 @@
             </div>
           </div>
 
-          <!-- Comprehensive Passenger Details Strip (Age, Gender, Quota, Fare, Route, Distance) -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs bg-black/40 p-3.5 rounded-2xl border border-white/10">
+          <!-- Comprehensive Passenger Details Strip (Age, Gender, Quota, Chart, Distance) - FARE REMOVED FOR USER -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs bg-black/40 p-3.5 rounded-2xl border border-white/10">
             <div>
               <p class="text-[10px] uppercase font-bold text-slate-400">Passenger / Gender</p>
               <p class="font-extrabold text-white text-xs mt-0.5 truncate">${ta.assignedUserName || (typeof loggedInParticipant !== 'undefined' && loggedInParticipant?.studentName) || 'Student'} • ${ta.gender || (typeof loggedInParticipant !== 'undefined' && loggedInParticipant?.gender) || 'GEN'}</p>
@@ -13349,10 +13391,6 @@
             <div>
               <p class="text-[10px] uppercase font-bold text-slate-400">Age / Quota</p>
               <p class="font-extrabold text-amber-300 text-xs mt-0.5">${ta.age ? `${ta.age} Yrs` : '21 Yrs'} • Quota: ${ta.quota || 'GN'}</p>
-            </div>
-            <div>
-              <p class="text-[10px] uppercase font-bold text-slate-400">Ticket Fare</p>
-              <p class="font-extrabold text-emerald-300 text-xs mt-0.5">${ta.fare ? (String(ta.fare).startsWith('₹') ? ta.fare : `₹${ta.fare}`) : '₹1,005'}</p>
             </div>
             <div>
               <p class="text-[10px] uppercase font-bold text-slate-400">Chart / Distance</p>
@@ -13376,7 +13414,7 @@
             </div>
             <button
               type="button"
-              onclick="openLiveTrainTrackerModal('${ta.trainNumber}', '${ta.trainName}')"
+              onclick="openLiveTrainTrackerModal('${ta.trainNumber}', '${ta.trainName}', '${ta.dateOfJourney || ''}', '${ta.departureTime || ''}', '${ta.fromStation || ''}', '${ta.toStation || ''}')"
               class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md transition shrink-0"
             >
               <i data-lucide="radio" class="w-3.5 h-3.5 text-emerald-300 animate-pulse"></i>
@@ -13401,7 +13439,7 @@
             <div class="flex items-center gap-2">
               <button
                 type="button"
-                onclick="openLiveTrainTrackerModal('${ta.trainNumber}', '${ta.trainName}')"
+                onclick="openLiveTrainTrackerModal('${ta.trainNumber}', '${ta.trainName}', '${ta.dateOfJourney || ''}', '${ta.departureTime || ''}', '${ta.fromStation || ''}', '${ta.toStation || ''}')"
                 class="px-3.5 py-2.5 rounded-xl bg-indigo-600/50 hover:bg-indigo-600 text-indigo-200 hover:text-white border border-indigo-400/30 font-extrabold text-xs flex items-center justify-center gap-1.5 transition"
               >
                 <i data-lucide="map-pin" class="w-4 h-4 text-amber-400"></i>
@@ -13861,54 +13899,142 @@
     let activeTrackedTrainNumber = '12617';
     let activeTrackedTrainName = 'MANGLADWEEP EXP';
 
-    function getTrainScheduleAndLiveStatus(trainNo, customName = '') {
+    function getTrainScheduleAndLiveStatus(trainNo, customName = '', doj = '', depTime = '', fromStation = '', toStation = '') {
       const trainNumber = String(trainNo || '12617').trim();
       const trainName = customName || (trainNumber === '12617' ? 'MANGLADWEEP EXP' : `Express Train ${trainNumber}`);
 
-      const defaultRoutes = {
-        '12617': [
-          { code: 'ERS', name: 'Ernakulam Junction', arr: 'Source', dep: '10:30 AM', dist: 0, pf: '1', status: 'Passed' },
-          { code: 'AWY', name: 'Aluva', arr: '10:51 AM', dep: '10:53 AM', dist: 19, pf: '3', status: 'Passed' },
-          { code: 'TCR', name: 'Thrissur', arr: '11:43 AM', dep: '11:45 AM', dist: 74, pf: '2', status: 'Passed' },
-          { code: 'SRR', name: 'Shoranur Junction', arr: '12:40 PM', dep: '12:45 PM', dist: 107, pf: '5', status: 'Passed' },
-          { code: 'TIR', name: 'Tirur', arr: '01:28 PM', dep: '01:30 PM', dist: 152, pf: '1', status: 'Current Halt' },
-          { code: 'CLT', name: 'Kozhikode Main', arr: '02:12 PM', dep: '02:15 PM', dist: 193, pf: '3', status: 'Upcoming' },
-          { code: 'BDJ', name: 'Vadakara', arr: '02:51 PM', dep: '02:53 PM', dist: 240, pf: '2', status: 'Upcoming' },
-          { code: 'CAN', name: 'Kannur', arr: '03:37 PM', dep: '03:40 PM', dist: 282, pf: '1', status: 'Upcoming' },
-          { code: 'PAY', name: 'Payyanur', arr: '04:09 PM', dep: '04:10 PM', dist: 316, pf: '1', status: 'Upcoming' },
-          { code: 'KZE', name: 'Kanhangad', arr: '04:34 PM', dep: '04:35 PM', dist: 345, pf: '2', status: 'Upcoming' },
-          { code: 'KGQ', name: 'Kasaragod', arr: '04:49 PM', dep: '04:50 PM', dist: 368, pf: '2', status: 'Upcoming' },
-          { code: 'MAJN', name: 'Mangaluru Junction', arr: '05:55 PM', dep: '06:00 PM', dist: 415, pf: '1', status: 'Upcoming' },
-          { code: 'UD', name: 'Udupi', arr: '07:22 PM', dep: '07:24 PM', dist: 477, pf: '1', status: 'Upcoming' },
-          { code: 'BYNR', name: 'Byndoor Mookambika Rd', arr: '08:28 PM', dep: '08:30 PM', dist: 543, pf: '1', status: 'Upcoming' },
-          { code: 'BTJL', name: 'Bhatkal', arr: '08:48 PM', dep: '08:50 PM', dist: 558, pf: '1', status: 'Upcoming' },
-          { code: 'MRDW', name: 'Murdeshwar', arr: '09:06 PM', dep: '09:08 PM', dist: 573, pf: '1', status: 'Upcoming' },
-          { code: 'KT', name: 'Kumta', arr: '09:44 PM', dep: '09:46 PM', dist: 613, pf: '1', status: 'Upcoming' },
-          { code: 'KAWR', name: 'Karwar', arr: '10:46 PM', dep: '10:48 PM', dist: 668, pf: '1', status: 'Upcoming' },
-          { code: 'MAO', name: 'Madgaon Junction (Goa)', arr: '12:30 AM', dep: '12:40 AM', dist: 728, pf: '2', status: 'Upcoming' },
-          { code: 'RN', name: 'Ratnagiri', arr: '05:25 AM', dep: '05:30 AM', dist: 964, pf: '1', status: 'Upcoming' },
-          { code: 'PNVL', name: 'Panvel (Mumbai)', arr: '12:35 PM', dep: '12:40 PM', dist: 1242, pf: '5', status: 'Upcoming' },
-          { code: 'KYN', name: 'Kalyan Junction', arr: '01:27 PM', dep: '01:30 PM', dist: 1276, pf: '4', status: 'Upcoming' },
-          { code: 'NK', name: 'Nashik Road', arr: '04:35 PM', dep: '04:40 PM', dist: 1408, pf: '2', status: 'Upcoming' },
-          { code: 'BSL', name: 'Bhusaval Junction', arr: '08:05 PM', dep: '08:10 PM', dist: 1665, pf: '6', status: 'Upcoming' },
-          { code: 'BPL', name: 'Bhopal Junction', arr: '02:30 AM', dep: '02:40 AM', dist: 2060, pf: '2', status: 'Upcoming' },
-          { code: 'VGLJ', name: 'V Lakshmibai Jhansi', arr: '06:30 AM', dep: '06:38 AM', dist: 2352, pf: '4', status: 'Upcoming' },
-          { code: 'GWL', name: 'Gwalior Junction', arr: '07:45 AM', dep: '07:47 AM', dist: 2449, pf: '2', status: 'Upcoming' },
-          { code: 'AGC', name: 'Agra Cantt', arr: '09:55 AM', dep: '10:00 AM', dist: 2730, pf: '3', status: 'Upcoming' },
-          { code: 'MTJ', name: 'Mathura Junction', arr: '10:48 AM', dep: '10:50 AM', dist: 2784, pf: '2', status: 'Upcoming' },
-          { code: 'NZM', name: 'Hazrat Nizamuddin (Delhi)', arr: '01:25 PM', dep: 'Terminus', dist: 2918, pf: '4', status: 'Upcoming' }
-        ]
-      };
-
-      const stations = defaultRoutes[trainNumber] || [
-        { code: 'CLT', name: 'Kozhikode Main', arr: 'Source', dep: '03:10 AM', dist: 0, pf: '1', status: 'Passed' },
-        { code: 'CAN', name: 'Kannur', arr: '04:15 AM', dep: '04:20 AM', dist: 89, pf: '2', status: 'Current Halt' },
-        { code: 'KGQ', name: 'Kasaragod', arr: '05:30 AM', dep: '05:32 AM', dist: 175, pf: '1', status: 'Upcoming' },
-        { code: 'MAO', name: 'Madgaon Junction', arr: '11:45 AM', dep: 'Terminus', dist: 450, pf: '2', status: 'Upcoming' }
+      // Complete Where Is My Train / IRCTC timetable for 12617 (ERS to NZM - 62 official halts)
+      const STATIONS_12617_FULL = [
+        { code: 'ERS', name: 'Ernakulam Jn', arr: 'Source', dep: '10:30 AM', dist: 0, pf: '1' },
+        { code: 'AWY', name: 'Aluva', arr: '10:51 AM', dep: '10:53 AM', dist: 19, pf: '3' },
+        { code: 'TCR', name: 'Thrissur', arr: '11:43 AM', dep: '11:45 AM', dist: 74, pf: '2' },
+        { code: 'SRR', name: 'Shoranur Jn', arr: '12:40 PM', dep: '12:45 PM', dist: 107, pf: '5' },
+        { code: 'PGI', name: 'Parappanangadi', arr: '01:09 PM', dep: '01:10 PM', dist: 132, pf: '1' },
+        { code: 'TA', name: 'Tanur', arr: '01:19 PM', dep: '01:20 PM', dist: 140, pf: '1' },
+        { code: 'TIR', name: 'Tirur', arr: '01:48 PM', dep: '01:50 PM', dist: 152, pf: '1' },
+        { code: 'FK', name: 'Ferok', arr: '02:14 PM', dep: '02:15 PM', dist: 173, pf: '1' },
+        { code: 'CLT', name: 'Kozhikode Main', arr: '02:42 PM', dep: '02:45 PM', dist: 193, pf: '3' },
+        { code: 'QLD', name: 'Quilandi (Koyilandy)', arr: '03:09 PM', dep: '03:10 PM', dist: 217, pf: '2' },
+        { code: 'BDJ', name: 'Vadakara', arr: '03:28 PM', dep: '03:30 PM', dist: 239, pf: '2' },
+        { code: 'TLY', name: 'Thalassery', arr: '03:49 PM', dep: '03:50 PM', dist: 262, pf: '1' },
+        { code: 'CAN', name: 'Kannur', arr: '04:27 PM', dep: '04:30 PM', dist: 282, pf: '1' },
+        { code: 'KPQ', name: 'Kannapuram', arr: '04:44 PM', dep: '04:45 PM', dist: 296, pf: '1' },
+        { code: 'PAY', name: 'Payyanur', arr: '05:04 PM', dep: '05:05 PM', dist: 316, pf: '1' },
+        { code: 'NLE', name: 'Nileshwar', arr: '05:24 PM', dep: '05:25 PM', dist: 336, pf: '1' },
+        { code: 'KZE', name: 'Kanhangad', arr: '05:34 PM', dep: '05:35 PM', dist: 345, pf: '2' },
+        { code: 'KGQ', name: 'Kasaragod', arr: '05:59 PM', dep: '06:00 PM', dist: 368, pf: '2' },
+        { code: 'MAJN', name: 'Mangaluru Jn', arr: '07:15 PM', dep: '07:20 PM', dist: 415, pf: '1' },
+        { code: 'SL', name: 'Surathkal', arr: '08:00 PM', dep: '08:02 PM', dist: 436, pf: '1' },
+        { code: 'MULK', name: 'Mulki', arr: '08:12 PM', dep: '08:14 PM', dist: 445, pf: '1' },
+        { code: 'UD', name: 'Udupi', arr: '08:42 PM', dep: '08:44 PM', dist: 477, pf: '1' },
+        { code: 'BKJ', name: 'Barkur', arr: '08:58 PM', dep: '09:00 PM', dist: 494, pf: '1' },
+        { code: 'KUDA', name: 'Kundapura', arr: '09:16 PM', dep: '09:18 PM', dist: 509, pf: '1' },
+        { code: 'BYNR', name: 'Byndoor Mookambika Rd', arr: '09:52 PM', dep: '09:54 PM', dist: 543, pf: '1' },
+        { code: 'BTJL', name: 'Bhatkal', arr: '10:12 PM', dep: '10:14 PM', dist: 558, pf: '1' },
+        { code: 'MRDW', name: 'Murdeshwar', arr: '10:30 PM', dep: '10:32 PM', dist: 573, pf: '1' },
+        { code: 'MNGL', name: 'Manki', arr: '10:42 PM', dep: '10:44 PM', dist: 582, pf: '1' },
+        { code: 'HNA', name: 'Honnavar', arr: '11:04 PM', dep: '11:06 PM', dist: 600, pf: '1' },
+        { code: 'KT', name: 'Kumta', arr: '11:22 PM', dep: '11:24 PM', dist: 613, pf: '1' },
+        { code: 'GOK', name: 'Gokarna Road', arr: '11:44 PM', dep: '11:46 PM', dist: 632, pf: '1' },
+        { code: 'ANK', name: 'Ankola', arr: '11:56 PM', dep: '11:58 PM', dist: 640, pf: '1' },
+        { code: 'KAWR', name: 'Karwar', arr: '12:30 AM', dep: '12:32 AM', dist: 668, pf: '1' },
+        { code: 'CNO', name: 'Canacona', arr: '01:00 AM', dep: '01:02 AM', dist: 695, pf: '1' },
+        { code: 'MAO', name: 'Madgaon Jn (Goa)', arr: '02:00 AM', dep: '02:10 AM', dist: 728, pf: '2' },
+        { code: 'KRMI', name: 'Karmali', arr: '02:44 AM', dep: '02:46 AM', dist: 757, pf: '1' },
+        { code: 'THVM', name: 'Thivim', arr: '03:06 AM', dep: '03:08 AM', dist: 775, pf: '1' },
+        { code: 'SWV', name: 'Sawantwadi Road', arr: '03:40 AM', dep: '03:42 AM', dist: 804, pf: '1' },
+        { code: 'KUDL', name: 'Kudal', arr: '04:02 AM', dep: '04:04 AM', dist: 825, pf: '1' },
+        { code: 'KKW', name: 'Kankavali', arr: '04:30 AM', dep: '04:32 AM', dist: 853, pf: '1' },
+        { code: 'RN', name: 'Ratnagiri', arr: '07:15 AM', dep: '07:20 AM', dist: 964, pf: '1' },
+        { code: 'CHI', name: 'Chiplun', arr: '08:50 AM', dep: '08:52 AM', dist: 1040, pf: '1' },
+        { code: 'KHED', name: 'Khed', arr: '09:22 AM', dep: '09:24 AM', dist: 1070, pf: '1' },
+        { code: 'MNI', name: 'Mangaon', arr: '10:48 AM', dep: '10:50 AM', dist: 1138, pf: '1' },
+        { code: 'PNVL', name: 'Panvel (Mumbai)', arr: '01:20 PM', dep: '01:25 PM', dist: 1242, pf: '5' },
+        { code: 'KYN', name: 'Kalyan Jn', arr: '02:12 PM', dep: '02:15 PM', dist: 1276, pf: '4' },
+        { code: 'IGP', name: 'Igatpuri', arr: '04:15 PM', dep: '04:20 PM', dist: 1358, pf: '1' },
+        { code: 'NK', name: 'Nashik Road', arr: '05:05 PM', dep: '05:10 PM', dist: 1408, pf: '2' },
+        { code: 'MMR', name: 'Manmad Jn', arr: '06:05 PM', dep: '06:10 PM', dist: 1481, pf: '2' },
+        { code: 'BSL', name: 'Bhusaval Jn', arr: '08:55 PM', dep: '09:00 PM', dist: 1665, pf: '6' },
+        { code: 'KNW', name: 'Khandwa Jn', arr: '11:22 PM', dep: '11:25 PM', dist: 1788, pf: '2' },
+        { code: 'ET', name: 'Itarsi Jn', arr: '01:55 AM', dep: '02:05 AM', dist: 1972, pf: '1' },
+        { code: 'BPL', name: 'Bhopal Jn', arr: '03:30 AM', dep: '03:35 AM', dist: 2064, pf: '2' },
+        { code: 'BINA', name: 'Bina Jn', arr: '05:30 AM', dep: '05:35 AM', dist: 2202, pf: '3' },
+        { code: 'VGLJ', name: 'V Lakshmibai Jhansi', arr: '07:45 AM', dep: '07:53 AM', dist: 2356, pf: '4' },
+        { code: 'GWL', name: 'Gwalior Jn', arr: '08:58 AM', dep: '09:00 AM', dist: 2453, pf: '2' },
+        { code: 'MRA', name: 'Morena', arr: '09:30 AM', dep: '09:32 AM', dist: 2492, pf: '2' },
+        { code: 'DHO', name: 'Dholpur Jn', arr: '10:08 AM', dep: '10:10 AM', dist: 2519, pf: '1' },
+        { code: 'AGC', name: 'Agra Cantt', arr: '10:55 AM', dep: '11:00 AM', dist: 2571, pf: '3' },
+        { code: 'MTJ', name: 'Mathura Jn', arr: '11:45 AM', dep: '11:50 AM', dist: 2625, pf: '2' },
+        { code: 'FDB', name: 'Faridabad', arr: '01:00 PM', dep: '01:02 PM', dist: 2738, pf: '2' },
+        { code: 'NZM', name: 'Hazrat Nizamuddin (Delhi)', arr: '01:25 PM', dep: 'Terminus', dist: 2761, pf: '4' }
       ];
 
-      const currentStation = stations.find(s => s.status === 'Current Halt') || stations[4] || stations[0];
-      const nextStation = stations.find(s => s.status === 'Upcoming') || stations[5] || stations[stations.length - 1];
+      // Prepare raw stations for requested train
+      let rawList;
+      if (trainNumber === '12617') {
+        rawList = STATIONS_12617_FULL;
+      } else if (trainNumber === '12618') {
+        // Reverse route for return train
+        rawList = [...STATIONS_12617_FULL].reverse().map((s, idx) => ({
+          code: s.code,
+          name: s.name,
+          arr: idx === 0 ? 'Source' : s.dep,
+          dep: idx === STATIONS_12617_FULL.length - 1 ? 'Terminus' : s.arr,
+          dist: Math.abs(2761 - s.dist),
+          pf: s.pf
+        }));
+      } else {
+        rawList = [
+          { code: 'CLT', name: 'Kozhikode Main', arr: 'Source', dep: '03:10 AM', dist: 0, pf: '1' },
+          { code: 'CAN', name: 'Kannur', arr: '04:15 AM', dep: '04:20 AM', dist: 89, pf: '2' },
+          { code: 'KGQ', name: 'Kasaragod', arr: '05:30 AM', dep: '05:32 AM', dist: 175, pf: '1' },
+          { code: 'MAO', name: 'Madgaon Junction', arr: '11:45 AM', dep: 'Terminus', dist: 450, pf: '2' }
+        ];
+      }
+
+      // Check real-time journey departure status
+      const journeyStatus = checkTrainJourneyStatus(trainNumber, doj, depTime);
+
+      let stations = [];
+      let currentStation = null;
+      let nextStation = null;
+      let finalProgress = 0;
+
+      if (!journeyStatus.isStarted) {
+        // Train has NOT started yet (future date or before departure time)
+        stations = rawList.map((s, idx) => ({
+          ...s,
+          status: idx === 0 ? 'Source (Awaiting Departure)' : 'Upcoming'
+        }));
+        currentStation = stations[0];
+        nextStation = stations[1] || stations[0];
+        finalProgress = 0;
+      } else if (journeyStatus.isTerminated) {
+        // Train has finished journey
+        stations = rawList.map(s => ({
+          ...s,
+          status: 'Passed'
+        }));
+        stations[stations.length - 1].status = 'Terminated';
+        currentStation = stations[stations.length - 1];
+        nextStation = stations[stations.length - 1];
+        finalProgress = 100;
+      } else {
+        // Train is running right now
+        finalProgress = journeyStatus.progressPct || 50;
+        const total = rawList.length;
+        const curIdx = Math.min(total - 1, Math.max(0, Math.floor((finalProgress / 100) * total)));
+        
+        stations = rawList.map((s, idx) => {
+          let st = 'Upcoming';
+          if (idx < curIdx) st = 'Passed';
+          else if (idx === curIdx) st = 'Current Halt';
+          return { ...s, status: st };
+        });
+
+        currentStation = stations[curIdx] || stations[0];
+        nextStation = stations[Math.min(total - 1, curIdx + 1)] || stations[curIdx];
+      }
 
       return {
         trainNumber,
@@ -13916,10 +14042,15 @@
         currentStation,
         nextStation,
         delayMinutes: 0,
-        statusText: 'Running On Time (Right Time)',
+        isStarted: journeyStatus.isStarted,
+        isTerminated: journeyStatus.isTerminated,
+        statusText: journeyStatus.statusText,
+        bannerMessage: journeyStatus.bannerMessage,
+        progressPct: finalProgress,
         lastUpdated: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
         stations,
         externalTrackers: {
+          whereismytrain: `https://whereismytrain.com/search-trains?train_no=${trainNumber}`,
           railyatri: `https://www.railyatri.in/live-train-status/${trainNumber}`,
           ntes: 'https://enquiry.indianrail.gov.in/mntes/',
           ixigo: `https://www.ixigo.com/trains/${trainNumber}/live-running-status`,
@@ -14108,29 +14239,29 @@
             </span>
           </div>
 
-          <!-- Route Info -->
+          <!-- Route Info with Departure Date & Arrival Date -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             <div class="p-3.5 rounded-2xl bg-black/30 border border-white/10 space-y-1">
               <p class="text-[10px] font-bold text-slate-400 uppercase">Origin Station</p>
               <p class="font-bold text-sm text-white">${pnr.fromStation}</p>
-              <p class="text-amber-300 font-mono font-bold">Departure: ${pnr.departureTime} • ${pnr.dateOfJourney}</p>
+              <p class="text-amber-300 font-mono font-bold">Departure: ${pnr.departureTime} • ${formatDisplayDate(pnr.dateOfJourney)}</p>
             </div>
             <div class="p-3.5 rounded-2xl bg-black/30 border border-white/10 space-y-1">
               <p class="text-[10px] font-bold text-slate-400 uppercase">Destination Station</p>
               <p class="font-bold text-sm text-white">${pnr.toStation}</p>
-              <p class="text-emerald-300 font-mono font-bold">Arrival: ${pnr.arrivalTime} • Class: ${classLabel}</p>
+              <p class="text-emerald-300 font-mono font-bold">Arrival: ${pnr.arrivalTime} • ${computeArrivalDate(pnr.dateOfJourney, pnr.arrivalDate, pnr.departureTime, pnr.arrivalTime, pnr.trainNumber)} • ${classLabel}</p>
             </div>
           </div>
 
-          <!-- Ticket Fare & Quota Summary Strip -->
+          <!-- Quota, Chart & Distance Summary Strip (FARE REMOVED FROM USER VIEW) -->
           <div class="grid grid-cols-3 gap-2 text-center text-xs bg-black/30 p-2.5 rounded-2xl border border-white/10">
             <div>
               <p class="text-[9px] uppercase font-bold text-slate-400">Booking Quota</p>
               <p class="font-bold text-amber-300 font-mono">${pnr.quota || 'GN'}</p>
             </div>
             <div>
-              <p class="text-[9px] uppercase font-bold text-slate-400">Total Ticket Fare</p>
-              <p class="font-bold text-emerald-300 font-mono">${pnr.ticketFare ? `₹${pnr.ticketFare}` : (pnr.bookingFare ? `₹${pnr.bookingFare}` : '₹6,030')}</p>
+              <p class="text-[9px] uppercase font-bold text-slate-400">Chart Status</p>
+              <p class="font-bold ${pnr.chartPrepared ? 'text-emerald-300' : 'text-amber-300'} font-mono">${pnr.chartPrepared ? 'Chart Prepared' : 'Chart Pending'}</p>
             </div>
             <div>
               <p class="text-[9px] uppercase font-bold text-slate-400">Total Distance</p>
@@ -14167,7 +14298,6 @@
                       <p class="text-[10px] text-slate-400 flex items-center gap-1.5 flex-wrap">
                         <span>${p.berthType ? (BERTH_MAP[p.berthType] || p.berthType) : 'Berth'}</span>
                         ${p.quota ? `<span class="text-amber-400 font-mono">• ${p.quota}</span>` : ''}
-                        ${p.fare ? `<span class="text-emerald-400 font-mono">• ₹${p.fare}</span>` : ''}
                       </p>
                     </div>
                     <span class="px-2 py-0.5 rounded-full text-[10px] font-black border ${pBadge}">
@@ -14183,7 +14313,7 @@
           <div class="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2">
             <button
               type="button"
-              onclick="openLiveTrainTrackerModal('${pnr.trainNumber}', '${pnr.trainName}')"
+              onclick="openLiveTrainTrackerModal('${pnr.trainNumber}', '${pnr.trainName}', '${pnr.dateOfJourney || ''}', '${pnr.departureTime || ''}', '${pnr.fromStation || ''}', '${pnr.toStation || ''}')"
               class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition"
             >
               <i data-lucide="radio" class="w-3.5 h-3.5 text-emerald-300 animate-pulse"></i>
@@ -14216,9 +14346,18 @@
       lucide.createIcons();
     }
 
-    function openLiveTrainTrackerModal(trainNo, trainName) {
+    let activeTrackedJourneyDate = '';
+    let activeTrackedDepTime = '';
+    let activeTrackedFromStation = '';
+    let activeTrackedToStation = '';
+
+    function openLiveTrainTrackerModal(trainNo, trainName, doj = '', depTime = '', fromStation = '', toStation = '') {
       activeTrackedTrainNumber = String(trainNo || '12617').trim();
       activeTrackedTrainName = String(trainName || 'MANGLADWEEP EXP').trim();
+      activeTrackedJourneyDate = doj || '';
+      activeTrackedDepTime = depTime || '';
+      activeTrackedFromStation = fromStation || '';
+      activeTrackedToStation = toStation || '';
 
       const modal = document.getElementById('liveTrainTrackerModal');
       if (!modal) return;
@@ -14230,6 +14369,9 @@
       if (nameEl) nameEl.textContent = activeTrackedTrainName;
 
       // Update external links
+      const wimtLink = document.getElementById('liveTrackerWhereIsMyTrainLink');
+      if (wimtLink) wimtLink.href = `https://whereismytrain.com/search-trains?train_no=${activeTrackedTrainNumber}`;
+
       const ryLink = document.getElementById('liveTrackerRailYatriLink');
       if (ryLink) ryLink.href = `https://www.railyatri.in/live-train-status/${activeTrackedTrainNumber}`;
 
@@ -14275,10 +14417,39 @@
     }
 
     function renderLiveTrainTimeline() {
-      const liveData = getTrainScheduleAndLiveStatus(activeTrackedTrainNumber, activeTrackedTrainName);
+      const liveData = getTrainScheduleAndLiveStatus(
+        activeTrackedTrainNumber,
+        activeTrackedTrainName,
+        activeTrackedJourneyDate,
+        activeTrackedDepTime,
+        activeTrackedFromStation,
+        activeTrackedToStation
+      );
 
       const updatedEl = document.getElementById('liveTrackerLastUpdated');
       if (updatedEl) updatedEl.textContent = liveData.lastUpdated;
+
+      // Status pill & Not Started banner handling
+      const statusPill = document.getElementById('liveTrackerStatusPill');
+      const notStartedBanner = document.getElementById('liveTrackerNotStartedBanner');
+      const notStartedText = document.getElementById('liveTrackerNotStartedText');
+
+      if (!liveData.isStarted) {
+        if (statusPill) {
+          statusPill.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-500/20 text-amber-300 border border-amber-400/30';
+          statusPill.innerHTML = '<i data-lucide="clock" class="w-3.5 h-3.5"></i><span>' + liveData.statusText + '</span>';
+        }
+        if (notStartedBanner) {
+          notStartedBanner.classList.remove('hidden');
+          if (notStartedText) notStartedText.textContent = liveData.bannerMessage || 'Train has not started yet. All halts are upcoming.';
+        }
+      } else {
+        if (statusPill) {
+          statusPill.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/30';
+          statusPill.innerHTML = '<i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i><span>' + liveData.statusText + '</span>';
+        }
+        if (notStartedBanner) notStartedBanner.classList.add('hidden');
+      }
 
       const curStationEl = document.getElementById('liveTrackerCurrentStation');
       if (curStationEl) curStationEl.textContent = `${liveData.currentStation.name} (${liveData.currentStation.code})`;
@@ -14298,14 +14469,19 @@
       // Visual Progress Bar Calculation
       const passedCount = liveData.stations.filter(s => s.status === 'Passed').length;
       const totalCount = liveData.stations.length;
-      const currentHalt = liveData.stations.some(s => s.status === 'Current Halt');
-      const progressPct = Math.min(100, Math.round(((passedCount + (currentHalt ? 0.5 : 0)) / Math.max(1, totalCount - 1)) * 100));
+      const progressPct = liveData.isStarted ? Math.min(100, Math.max(0, liveData.progressPct)) : 0;
 
       const progBar = document.getElementById('liveTrackerProgressBar');
       if (progBar) progBar.style.width = `${progressPct}%`;
 
       const progLabel = document.getElementById('liveTrackerProgressLabel');
-      if (progLabel) progLabel.textContent = `${progressPct}% Completed • ${passedCount} of ${totalCount} Halts Passed`;
+      if (progLabel) {
+        if (!liveData.isStarted) {
+          progLabel.textContent = `0% Completed • Train Yet to Depart • All ${totalCount} Halts Scheduled`;
+        } else {
+          progLabel.textContent = `${progressPct}% Completed • ${passedCount} of ${totalCount} Halts Passed`;
+        }
+      }
 
       // Filter stations by active tab
       let displayStations = liveData.stations;
