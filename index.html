@@ -8,6 +8,9 @@
   <meta name="theme-color" content="#059669" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="TripPay" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
   <!-- App Icon Favicon -->
   <link rel="icon" type="image/svg+xml"
@@ -421,6 +424,11 @@
             <i data-lucide="phone-call" class="w-3.5 h-3.5"></i>
             <span>Helpline</span>
           </button>
+          <button onclick="toggleTripAiModal()" id="userTabBtn-ai"
+            class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-800 hover:text-emerald-950 bg-emerald-50/90 border border-emerald-200 shadow-2xs">
+            <i data-lucide="bot" class="w-3.5 h-3.5 text-emerald-600"></i>
+            <span>AI Help</span>
+          </button>
           <button onclick="handleParticipantPortalClick()" id="userTabBtn-portal"
             class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-indigo-700 hover:text-indigo-900 bg-indigo-50/70 border border-indigo-200/60 ml-0.5">
             <i data-lucide="ticket" class="w-3.5 h-3.5"></i>
@@ -449,6 +457,14 @@
             <span>Settings</span>
           </button>
         </nav>
+
+        <!-- Install App Button (iOS, Android & Desktop) -->
+        <button id="pwaInstallHeaderBtn" type="button" onclick="triggerPWAInstall()"
+          class="px-2.5 sm:px-3 py-2 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center gap-1.5 shadow-xs transition active:scale-95 cursor-pointer"
+          title="Install TripPay App on your device">
+          <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-600"></i>
+          <span class="hidden xs:inline">Install App</span>
+        </button>
 
         <!-- Admin Access Trigger -->
         <button id="adminToggleBtn" onclick="handleAdminAccessClick()"
@@ -2022,6 +2038,14 @@
               <span id="bossTabBadgePayments"
                 class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-extrabold">0</span>
             </button>
+
+            <button type="button" onclick="switchBossDashboardTab('feedback')" id="bossSubTabBtn-feedback"
+              class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center gap-1.5 shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900">
+              <i data-lucide="message-square" class="w-4 h-4 text-purple-600"></i>
+              <span>4. Student Suggestions &amp; Feedback</span>
+              <span id="bossTabBadgeFeedback"
+                class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-purple-100 text-purple-800 font-extrabold">0</span>
+            </button>
           </div>
 
           <!-- ========================================== -->
@@ -2141,6 +2165,63 @@
               <div id="bossPaymentsEmptyNotice" class="hidden p-8 text-center text-slate-400 text-xs">
                 No matching payments found across trips.
               </div>
+            </div>
+          </div>
+
+          <!-- ========================================== -->
+          <!-- PILLAR 4: STUDENT SUGGESTIONS & FEEDBACK   -->
+          <!-- ========================================== -->
+          <div id="bossPillar-feedback" class="hidden space-y-4">
+            <!-- Search & Filters -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="relative flex-1 max-w-sm">
+                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                <input type="text" id="bossFeedbackSearchInput" oninput="renderBossFeedbackList()"
+                  placeholder="Search suggestions, feedback, student name or trip..."
+                  class="w-full pl-9 pr-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-purple-500 focus:outline-none text-xs text-slate-900 font-medium" />
+              </div>
+
+              <!-- Category & Status Filters -->
+              <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                <button type="button" onclick="setBossFeedbackFilter('all')" id="bossFeedbackFilterBtn-all"
+                  class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-purple-600 text-white shadow-2xs">All</button>
+                <button type="button" onclick="setBossFeedbackFilter('suggestion')" id="bossFeedbackFilterBtn-suggestion"
+                  class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200">Suggestions</button>
+                <button type="button" onclick="setBossFeedbackFilter('issue')" id="bossFeedbackFilterBtn-issue"
+                  class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200">Issues</button>
+                <button type="button" onclick="setBossFeedbackFilter('compliment')" id="bossFeedbackFilterBtn-compliment"
+                  class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200">Compliments</button>
+              </div>
+            </div>
+
+            <!-- Feedback Summary Stats -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-2xs">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Entries</span>
+                <p id="bossFeedbackStatTotal" class="text-xl font-extrabold text-slate-900 mt-0.5">0</p>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-purple-50 border border-purple-200 shadow-2xs">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-purple-700">Suggestions</span>
+                <p id="bossFeedbackStatSuggestions" class="text-xl font-extrabold text-purple-900 mt-0.5">0</p>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 shadow-2xs">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-amber-700">Pending Review</span>
+                <p id="bossFeedbackStatPending" class="text-xl font-extrabold text-amber-900 mt-0.5">0</p>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 shadow-2xs">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-rose-700">Reported Issues</span>
+                <p id="bossFeedbackStatIssues" class="text-xl font-extrabold text-rose-900 mt-0.5">0</p>
+              </div>
+            </div>
+
+            <!-- Feedback Cards List Container -->
+            <div id="bossFeedbackListContainer" class="space-y-3">
+              <!-- Dynamically populated -->
+            </div>
+            <div id="bossFeedbackEmptyNotice" class="hidden p-8 text-center text-xs text-slate-500 bg-white border border-slate-200 rounded-2xl">
+              <i data-lucide="inbox" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
+              <p class="font-bold text-slate-700">No suggestions or feedback yet</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">When students submit feedback through the AI Chat &amp; Help interface, their notes will be securely delivered directly to you here.</p>
             </div>
           </div>
 
@@ -4886,6 +4967,398 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- FLOATING AI ASSISTANT & SUPPORT BUTTON                                    -->
+  <!-- ========================================================================= -->
+  <div id="tripAiBotFloatingBtnContainer" class="fixed bottom-5 right-5 z-40 flex items-center gap-2 group print:hidden">
+    <div class="hidden sm:flex items-center px-3 py-1.5 rounded-full bg-slate-900/90 text-white text-xs font-bold shadow-lg backdrop-blur-md border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+      <span>Need help? Ask AI</span>
+    </div>
+    <button type="button" onclick="openTripAiModal()" id="tripAiBotFloatingBtn"
+      class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 text-white shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center relative border border-white/20"
+      title="TripPay AI Assistant &amp; Support">
+      <i data-lucide="sparkles" class="w-6 h-6 animate-pulse"></i>
+      <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white"></span>
+      </span>
+    </button>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: TRIPAY AI ASSISTANT, FAQ & STUDENT FEEDBACK HUB                    -->
+  <!-- ========================================================================= -->
+  <div id="tripAiChatModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-5"
+    style="background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);">
+    <div class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Top Modal Header -->
+      <div class="p-4 sm:p-5 bg-gradient-to-r from-emerald-700 via-teal-700 to-indigo-800 text-white flex items-center justify-between border-b border-white/10 shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-emerald-300 shadow-inner">
+            <i data-lucide="bot" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-display font-extrabold text-sm sm:text-base tracking-tight text-white">TripPay AI &amp; Support</h3>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-200 border border-emerald-400/30">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                Active 24/7
+              </span>
+            </div>
+            <p class="text-[11px] text-emerald-100/80">Instant answers on trips, tickets, train halts &amp; direct suggestions</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeTripAiModal()"
+          class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-white/90 hover:text-white flex items-center justify-center transition"
+          title="Close">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Navigation Tabs Inside Modal (Chat, FAQ, Suggestions & Feedback) -->
+      <div class="flex items-center gap-1 px-4 py-2.5 bg-slate-50 border-b border-slate-200 shrink-0 overflow-x-auto no-scrollbar">
+        <button type="button" onclick="switchAiModalMode('chat')" id="aiModalTabBtn-chat"
+          class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition bg-white text-emerald-800 shadow-xs border border-emerald-200">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-600"></i>
+          <span>Ask AI Assistant</span>
+        </button>
+        <button type="button" onclick="switchAiModalMode('faq')" id="aiModalTabBtn-faq"
+          class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+          <i data-lucide="help-circle" class="w-3.5 h-3.5 text-indigo-500"></i>
+          <span>Instant FAQ</span>
+        </button>
+        <button type="button" onclick="switchAiModalMode('feedback')" id="aiModalTabBtn-feedback"
+          class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+          <i data-lucide="message-square-plus" class="w-3.5 h-3.5 text-purple-600"></i>
+          <span>Suggestions &amp; Feedback</span>
+        </button>
+      </div>
+
+      <!-- VIEW 1: AI CHAT ASSISTANT -->
+      <div id="aiModalView-chat" class="flex-1 flex flex-col min-h-0 bg-slate-50/50">
+        <!-- Chat History -->
+        <div id="aiChatHistory" class="flex-1 overflow-y-auto p-4 space-y-3.5 text-xs">
+          <!-- Populated dynamically with welcome messages & queries -->
+        </div>
+
+        <!-- Quick Question Chips -->
+        <div class="px-4 py-2 bg-white/80 border-t border-slate-100 overflow-x-auto no-scrollbar flex items-center gap-1.5 shrink-0">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider shrink-0 mr-1">Quick:</span>
+          <button type="button" onclick="sendQuickAiQuery('What train halts and stations are there for Train 12617?')"
+            class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 text-[11px] font-semibold whitespace-nowrap transition">
+            Train 12617 Halts?
+          </button>
+          <button type="button" onclick="sendQuickAiQuery('Can I register with ₹0 advance payment?')"
+            class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200/80 text-[11px] font-semibold whitespace-nowrap transition">
+            Register with ₹0?
+          </button>
+          <button type="button" onclick="sendQuickAiQuery('How do I download my official Boarding Pass ticket?')"
+            class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/80 text-[11px] font-semibold whitespace-nowrap transition">
+            Boarding Pass?
+          </button>
+          <button type="button" onclick="sendQuickAiQuery('How are seats and coaches allocated from PNR?')"
+            class="px-2.5 py-1 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200/80 text-[11px] font-semibold whitespace-nowrap transition">
+            PNR Seat Allocation?
+          </button>
+        </div>
+
+        <!-- Message Input Box -->
+        <form id="aiChatForm" onsubmit="handleAiChatSubmit(event)" class="p-3 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0">
+          <div class="relative flex-1">
+            <input type="text" id="aiChatInput" autocomplete="off"
+              placeholder="Ask anything about trips, payments, train timings, passes..."
+              class="w-full px-4 py-2.5 rounded-2xl bg-slate-100 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-xs text-slate-800 font-medium transition" />
+          </div>
+          <button type="submit"
+            class="w-10 h-10 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white flex items-center justify-center transition shadow-sm shrink-0"
+            title="Send">
+            <i data-lucide="send" class="w-4 h-4"></i>
+          </button>
+        </form>
+      </div>
+
+      <!-- VIEW 2: INSTANT FAQ ACCORDION -->
+      <div id="aiModalView-faq" class="hidden flex-1 overflow-y-auto p-4 sm:p-5 space-y-3 bg-slate-50/50 text-xs">
+        <div class="p-3 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-900 flex items-start gap-2.5">
+          <i data-lucide="info" class="w-4 h-4 text-indigo-600 shrink-0 mt-0.5"></i>
+          <div>
+            <p class="font-extrabold text-xs">Frequently Asked Questions</p>
+            <p class="text-[11px] text-indigo-700 mt-0.5">Find instant answers to common questions regarding trip registration, payments, train details, and tickets.</p>
+          </div>
+        </div>
+
+        <!-- Accordion Items -->
+        <div class="space-y-2">
+          <!-- FAQ 1 -->
+          <details class="group bg-white rounded-2xl border border-slate-200 p-3.5 shadow-2xs open:border-emerald-300">
+            <summary class="font-bold text-slate-800 cursor-pointer flex items-center justify-between select-none list-none">
+              <span class="flex items-center gap-2">
+                <i data-lucide="help-circle" class="w-4 h-4 text-emerald-600"></i>
+                Can I register for a trip without paying immediately?
+              </span>
+              <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
+            </summary>
+            <div class="mt-2.5 pt-2.5 border-t border-slate-100 text-slate-600 text-xs leading-relaxed space-y-1">
+              <p><strong>Yes!</strong> TripPay allows registration with <strong>₹0 advance payment</strong>. You can secure your slot immediately and submit your payments in installments later.</p>
+            </div>
+          </details>
+
+          <!-- FAQ 2 -->
+          <details class="group bg-white rounded-2xl border border-slate-200 p-3.5 shadow-2xs open:border-emerald-300">
+            <summary class="font-bold text-slate-800 cursor-pointer flex items-center justify-between select-none list-none">
+              <span class="flex items-center gap-2">
+                <i data-lucide="train" class="w-4 h-4 text-indigo-600"></i>
+                Where does Train 12617 Mangala Lakshadweep Express halt?
+              </span>
+              <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
+            </summary>
+            <div class="mt-2.5 pt-2.5 border-t border-slate-100 text-slate-600 text-xs leading-relaxed space-y-1">
+              <p>Train 12617 departs <strong>Ernakulam Jn (ERS)</strong> at 13:25 and travels via <strong>Tirur (TIR) at 15:39</strong>, Kozhikode (CLT) at 16:27, Kannur, Mangaluru Jn, Goa (Madgaon), Panvel (Mumbai), Nashik Road, Bhopal, Jhansi, Gwalior, and reaches <strong>Agra Cantt (AGC) at 10:40</strong> on Day 3 before terminating at Hazrat Nizamuddin (NZM) at 13:35.</p>
+              <p class="text-[11px] text-indigo-600">You can also view the full route &amp; halts timeline in the "Train Route &amp; Timings" tab!</p>
+            </div>
+          </details>
+
+          <!-- FAQ 3 -->
+          <details class="group bg-white rounded-2xl border border-slate-200 p-3.5 shadow-2xs open:border-emerald-300">
+            <summary class="font-bold text-slate-800 cursor-pointer flex items-center justify-between select-none list-none">
+              <span class="flex items-center gap-2">
+                <i data-lucide="ticket" class="w-4 h-4 text-amber-600"></i>
+                How do I get my official Boarding Pass and PDF?
+              </span>
+              <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
+            </summary>
+            <div class="mt-2.5 pt-2.5 border-t border-slate-100 text-slate-600 text-xs leading-relaxed space-y-1">
+              <p>Go to the <strong>"Your Passes &amp; Tickets"</strong> tab on the homepage, enter your registered Phone Number, and your boarding pass will appear instantly. You can download it as an image, print it as a PDF ticket, or share it on WhatsApp.</p>
+            </div>
+          </details>
+
+          <!-- FAQ 4 -->
+          <details class="group bg-white rounded-2xl border border-slate-200 p-3.5 shadow-2xs open:border-emerald-300">
+            <summary class="font-bold text-slate-800 cursor-pointer flex items-center justify-between select-none list-none">
+              <span class="flex items-center gap-2">
+                <i data-lucide="smartphone" class="w-4 h-4 text-purple-600"></i>
+                Can I install TripPay on my iPhone, Android, or PC?
+              </span>
+              <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
+            </summary>
+            <div class="mt-2.5 pt-2.5 border-t border-slate-100 text-slate-600 text-xs leading-relaxed space-y-1">
+              <p><strong>Yes!</strong> Click the green <strong>"Install App"</strong> button in the top navigation header. On iOS Safari, tap the Share icon and choose "Add to Home Screen". On Android and Desktop, click Install when prompted to run TripPay as a native app.</p>
+            </div>
+          </details>
+
+          <!-- FAQ 5 -->
+          <details class="group bg-white rounded-2xl border border-slate-200 p-3.5 shadow-2xs open:border-emerald-300">
+            <summary class="font-bold text-slate-800 cursor-pointer flex items-center justify-between select-none list-none">
+              <span class="flex items-center gap-2">
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+                How long does payment approval take?
+              </span>
+              <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
+            </summary>
+            <div class="mt-2.5 pt-2.5 border-t border-slate-100 text-slate-600 text-xs leading-relaxed space-y-1">
+              <p>Trip coordinators review and verify UPI transaction IDs or cash receipts within 1 to 24 hours. Your Boarding Pass will update automatically once verified.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <!-- VIEW 3: STUDENT SUGGESTIONS & FEEDBACK (SENT ONLY TO BOSS) -->
+      <div id="aiModalView-feedback" class="hidden flex-1 overflow-y-auto p-4 sm:p-5 bg-slate-50/50 text-xs">
+        <!-- Privacy Notice Banner -->
+        <div class="p-3.5 rounded-2xl bg-purple-50 border border-purple-200 text-purple-900 flex items-start gap-3 mb-4">
+          <div class="w-8 h-8 rounded-xl bg-purple-200/80 flex items-center justify-center shrink-0 text-purple-700">
+            <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <p class="font-extrabold text-xs">Confidential Student Direct Channel</p>
+            <p class="text-[11px] text-purple-700 mt-0.5 leading-relaxed">
+              Your message will be sent <strong>directly and privately to the Trip Boss Admin</strong>. General coordinators or other students will NOT have access to your feedback.
+            </p>
+          </div>
+        </div>
+
+        <form id="studentFeedbackForm" onsubmit="handleStudentFeedbackSubmit(event)" class="space-y-3.5">
+          <div>
+            <label class="block text-slate-700 font-extrabold text-xs mb-1">Feedback Category <span class="text-rose-500">*</span></label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-white cursor-pointer hover:border-purple-300">
+                <input type="radio" name="feedbackCategory" value="suggestion" checked class="text-purple-600 focus:ring-purple-500" />
+                <span class="font-bold text-slate-800 text-[11px]">Suggestion</span>
+              </label>
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-white cursor-pointer hover:border-purple-300">
+                <input type="radio" name="feedbackCategory" value="issue" class="text-purple-600 focus:ring-purple-500" />
+                <span class="font-bold text-slate-800 text-[11px]">Issue / Bug</span>
+              </label>
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-white cursor-pointer hover:border-purple-300">
+                <input type="radio" name="feedbackCategory" value="compliment" class="text-purple-600 focus:ring-purple-500" />
+                <span class="font-bold text-slate-800 text-[11px]">Compliment</span>
+              </label>
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-white cursor-pointer hover:border-purple-300">
+                <input type="radio" name="feedbackCategory" value="other" class="text-purple-600 focus:ring-purple-500" />
+                <span class="font-bold text-slate-800 text-[11px]">Other Note</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-slate-700 font-extrabold text-xs mb-1">Your Name (Optional)</label>
+              <input type="text" id="feedbackStudentName" placeholder="E.g., Rahul K (or leave blank for Anonymous)"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 focus:border-purple-500 focus:outline-none text-xs text-slate-900" />
+            </div>
+            <div>
+              <label class="block text-slate-700 font-extrabold text-xs mb-1">WhatsApp / Phone (Optional)</label>
+              <input type="tel" id="feedbackStudentPhone" placeholder="For boss callback if needed"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 focus:border-purple-500 focus:outline-none text-xs text-slate-900" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-slate-700 font-extrabold text-xs mb-1">Related Trip (Optional)</label>
+            <input type="text" id="feedbackTripName" placeholder="E.g., North India Tour 2026 / Train 12617"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 focus:border-purple-500 focus:outline-none text-xs text-slate-900" />
+          </div>
+
+          <div>
+            <label class="block text-slate-700 font-extrabold text-xs mb-1">Your Suggestion or Feedback Details <span class="text-rose-500">*</span></label>
+            <textarea id="feedbackStudentMessage" rows="4" required
+              placeholder="Tell the Trip Boss what can be improved, report any issue with food, stay, payments, or train travel..."
+              class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 focus:border-purple-500 focus:outline-none text-xs text-slate-900"></textarea>
+          </div>
+
+          <div id="feedbackSubmitStatus" class="hidden text-center p-3 rounded-xl text-xs font-bold"></div>
+
+          <div class="pt-2 flex items-center justify-end gap-2">
+            <button type="button" onclick="switchAiModalMode('chat')"
+              class="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold transition">
+              Back to Chat
+            </button>
+            <button type="submit" id="feedbackSubmitBtn"
+              class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-extrabold shadow-sm transition flex items-center gap-1.5">
+              <i data-lucide="send" class="w-3.5 h-3.5"></i>
+              <span>Send Privately to Boss</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: PWA INSTALLATION INSTRUCTION GUIDE (iOS, Android, Desktop)        -->
+  <!-- ========================================================================= -->
+  <div id="pwaInstallGuideModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4"
+    style="background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);">
+    <div class="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Guide Header -->
+      <div class="p-4 sm:p-5 bg-gradient-to-r from-emerald-600 to-teal-700 text-white flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-white">
+            <i data-lucide="download" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-black text-sm sm:text-base">Install TripPay App</h3>
+            <p class="text-[11px] text-emerald-100">Fast 1-tap launch • Offline ready</p>
+          </div>
+        </div>
+        <button type="button" onclick="closePWAInstallGuideModal()"
+          class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Guide Content (Dynamic by platform) -->
+      <div class="p-5 space-y-4 text-xs text-slate-700">
+        
+        <!-- Platform badge -->
+        <div id="pwaGuidePlatformBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-extrabold text-[11px]">
+          <i data-lucide="apple" class="w-3.5 h-3.5"></i>
+          <span>iOS Apple Safari Instructions</span>
+        </div>
+
+        <div id="pwaGuideStepsContainer" class="space-y-3">
+          <!-- Step 1 -->
+          <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">1</div>
+            <div>
+              <p class="font-bold text-slate-900">Tap the Safari Share Button</p>
+              <p class="text-slate-500 text-[11px] mt-0.5">Look at the bottom toolbar in Safari and tap the square icon with an upward arrow (<i data-lucide="share" class="w-3.5 h-3.5 inline"></i>).</p>
+            </div>
+          </div>
+          <!-- Step 2 -->
+          <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">2</div>
+            <div>
+              <p class="font-bold text-slate-900">Select "Add to Home Screen"</p>
+              <p class="text-slate-500 text-[11px] mt-0.5">Scroll down the share sheet and tap <strong>"Add to Home Screen"</strong> (<i data-lucide="plus-square" class="w-3.5 h-3.5 inline"></i>).</p>
+            </div>
+          </div>
+          <!-- Step 3 -->
+          <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">3</div>
+            <div>
+              <p class="font-bold text-slate-900">Confirm &amp; Tap "Add"</p>
+              <p class="text-slate-500 text-[11px] mt-0.5">Tap <strong>"Add"</strong> in the top-right corner. TripPay will now appear directly on your iPhone home screen!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Android/Desktop Direct Action Button -->
+        <div id="pwaGuideDirectActionWrap" class="hidden pt-1">
+          <button type="button" onclick="executeNativePWAInstall()"
+            class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md transition flex items-center justify-center gap-2">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>Confirm App Install Now</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Guide Footer -->
+      <div class="p-3 bg-slate-50 border-t border-slate-100 text-center">
+        <button type="button" onclick="closePWAInstallGuideModal()"
+          class="text-xs font-bold text-slate-600 hover:text-slate-900">
+          Got it, close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- FIRST-TIME VISIT PWA INSTALL POPUP BANNER (BOTTOM SHEET)                  -->
+  <!-- ========================================================================= -->
+  <div id="pwaFirstTimePopup" class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 z-50 hidden max-w-sm bg-white/95 backdrop-blur-md rounded-3xl p-4 shadow-2xl border border-emerald-500/30 animate-in slide-in-from-bottom-5 duration-300">
+    <div class="flex items-start gap-3.5">
+      <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center shrink-0 shadow-md">
+        <i data-lucide="smartphone" class="w-6 h-6"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between">
+          <h4 class="font-display font-extrabold text-xs text-slate-900">Install TripPay App</h4>
+          <button type="button" onclick="dismissFirstTimePWAPrompt()" class="text-slate-400 hover:text-slate-600 p-0.5">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+        <p class="text-[11px] text-slate-600 mt-1 leading-relaxed">
+          Install on iOS, Android, or PC for fast 1-tap access to your Boarding Passes &amp; Live Train Halts.
+        </p>
+        <div class="mt-3 flex items-center gap-2">
+          <button type="button" onclick="triggerPWAInstall()"
+            class="flex-1 py-1.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-[11px] shadow-sm transition text-center flex items-center justify-center gap-1.5">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Install Now</span>
+          </button>
+          <button type="button" onclick="dismissFirstTimePWAPrompt()"
+            class="py-1.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-[11px] transition text-center">
+            Maybe Later
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Firebase & Application Engine -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -5056,6 +5529,13 @@
     let activeFetchedPnrData = null;
     let activePassengerMappings = {};
     let USE_MOCK_PNR = true;
+
+    // PWA, AI Assistant & Feedback State
+    let deferredPWAInstallPrompt = null;
+    let unsubFeedback = null;
+    let allTripFeedbacks = [];
+    let activeBossFeedbackFilter = 'all';
+    let aiChatHistoryMessages = [];
 
     let unsubTrips = null;
 
@@ -5489,6 +5969,17 @@
           }
         }
       }, (err) => console.error('PNR records listener error:', err));
+
+      // 10. Student Feedback & Suggestions Listener (Strictly viewable by Boss)
+      const feedbackCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_feedback');
+      unsubFeedback = onSnapshot(feedbackCol, (snap) => {
+        allTripFeedbacks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        allTripFeedbacks.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        updateBossFeedbackBadge();
+        if (currentAdminRole === 'boss') {
+          renderBossFeedbackList();
+        }
+      }, (err) => console.error('Feedback listener error:', err));
     }
 
     async function logSecurityEvent(action, target, details) {
@@ -10424,7 +10915,7 @@
 
     function switchBossDashboardTab(tab) {
       activeBossDashboardTab = tab;
-      const tabs = ['admins', 'trips', 'payments'];
+      const tabs = ['admins', 'trips', 'payments', 'feedback'];
 
       tabs.forEach(t => {
         const btn = document.getElementById(`bossSubTabBtn-${t}`);
@@ -10448,6 +10939,8 @@
         renderBossTripsHub();
       } else if (tab === 'payments') {
         renderBossGlobalPayments();
+      } else if (tab === 'feedback') {
+        renderBossFeedbackList();
       }
 
       if (window.lucide && typeof lucide.createIcons === 'function') {
@@ -14859,6 +15352,756 @@
       document.body.classList.add('app-fullscreen-mode');
     }
 
+    // =========================================================================
+    // PWA CONTROLLERS: CROSS-PLATFORM INSTALL & FIRST-TIME PROMPT
+    // =========================================================================
+    function getPWAClientPlatform() {
+      const ua = navigator.userAgent || '';
+      const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isAndroid = /Android/i.test(ua);
+      if (isIOS) return 'ios';
+      if (isAndroid) return 'android';
+      return 'desktop';
+    }
+
+    function isPWAStandaloneMode() {
+      return window.matchMedia('(display-mode: standalone)').matches ||
+             window.navigator.standalone === true ||
+             document.referrer.includes('android-app://');
+    }
+
+    function updatePWAInstallUIState() {
+      const headerBtn = document.getElementById('pwaInstallHeaderBtn');
+      const firstTimePopup = document.getElementById('pwaFirstTimePopup');
+      const isStandalone = isPWAStandaloneMode();
+
+      if (isStandalone) {
+        if (headerBtn) {
+          headerBtn.innerHTML = `
+            <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-300"></i>
+            <span class="hidden sm:inline">Installed</span>
+          `;
+          headerBtn.title = 'TripPay is installed as an app';
+          headerBtn.onclick = () => showToast('TripPay is already installed and running as an app! ✓');
+        }
+        if (firstTimePopup) firstTimePopup.classList.add('hidden');
+      } else {
+        if (headerBtn) {
+          headerBtn.title = 'Install TripPay App';
+        }
+      }
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function triggerPWAInstall() {
+      dismissFirstTimePWAPrompt();
+      const platform = getPWAClientPlatform();
+
+      if (deferredPWAInstallPrompt) {
+        deferredPWAInstallPrompt.prompt();
+        deferredPWAInstallPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            showToast('Installing TripPay App... 🎉');
+            try { localStorage.setItem('trippay_pwa_installed', 'true'); } catch (e) { }
+          }
+          deferredPWAInstallPrompt = null;
+          updatePWAInstallUIState();
+        }).catch(() => {
+          openPWAInstallGuideModal(platform);
+        });
+      } else {
+        openPWAInstallGuideModal(platform);
+      }
+    }
+
+    function executeNativePWAInstall() {
+      if (deferredPWAInstallPrompt) {
+        closePWAInstallGuideModal();
+        deferredPWAInstallPrompt.prompt();
+        deferredPWAInstallPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            showToast('Installing TripPay App... 🎉');
+            try { localStorage.setItem('trippay_pwa_installed', 'true'); } catch (e) { }
+          }
+          deferredPWAInstallPrompt = null;
+          updatePWAInstallUIState();
+        });
+      } else {
+        closePWAInstallGuideModal();
+        showToast('Please follow browser install instructions or use Add to Home Screen in menu.');
+      }
+    }
+
+    function openPWAInstallGuideModal(forcedPlatform) {
+      const platform = forcedPlatform || getPWAClientPlatform();
+      const badge = document.getElementById('pwaGuidePlatformBadge');
+      const stepsContainer = document.getElementById('pwaGuideStepsContainer');
+      const directAction = document.getElementById('pwaGuideDirectActionWrap');
+      const modal = document.getElementById('pwaInstallGuideModal');
+
+      if (!modal || !stepsContainer) return;
+
+      if (platform === 'ios') {
+        if (badge) {
+          badge.innerHTML = '<i data-lucide="apple" class="w-3.5 h-3.5 inline"></i><span>iOS Safari Instructions</span>';
+        }
+        stepsContainer.innerHTML = `
+          <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">1</div>
+            <div>
+              <p class="font-bold text-slate-900">Tap the Safari Share Button</p>
+              <p class="text-slate-500 text-[11px] mt-0.5">Tap the Share icon at the bottom of Safari (a square with an upward pointing arrow).</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">2</div>
+            <div>
+              <p class="font-bold text-slate-900">Choose "Add to Home Screen"</p>
+              <p class="text-slate-500 text-[11px] mt-0.5">Scroll down the share options and tap <strong>"Add to Home Screen"</strong>.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">3</div>
+            <div>
+              <p class="font-bold text-slate-900">Confirm &amp; Tap "Add"</p>
+              <p class="text-slate-500 text-[11px] mt-0.5">Tap <strong>"Add"</strong> in the top right. TripPay is now installed on your home screen!</p>
+            </div>
+          </div>
+        `;
+        if (directAction) directAction.classList.add('hidden');
+      } else if (platform === 'android') {
+        if (badge) {
+          badge.innerHTML = '<i data-lucide="smartphone" class="w-3.5 h-3.5 inline"></i><span>Android Chrome Instructions</span>';
+        }
+        stepsContainer.innerHTML = `
+          <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">1</div>
+            <div>
+              <p class="font-bold text-slate-900">Direct Native Install</p>
+              <p class="text-slate-500 text-[11px] mt-0.5">Tap the green "Confirm App Install Now" button below.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">2</div>
+            <div>
+              <p class="font-bold text-slate-900">Or use Browser Menu</p>
+              <p class="text-slate-500 text-[11px] mt-0.5">Tap Chrome's 3 dots (<i data-lucide="more-vertical" class="w-3 h-3 inline"></i>) at the top-right and select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</p>
+            </div>
+          </div>
+        `;
+        if (directAction) {
+          if (deferredPWAInstallPrompt) directAction.classList.remove('hidden');
+          else directAction.classList.add('hidden');
+        }
+      } else {
+        if (badge) {
+          badge.innerHTML = '<i data-lucide="monitor" class="w-3.5 h-3.5 inline"></i><span>Desktop / Laptop Instructions</span>';
+        }
+        stepsContainer.innerHTML = `
+          <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">1</div>
+            <div>
+              <p class="font-bold text-slate-900">Click Install Icon in Address Bar</p>
+              <p class="text-slate-500 text-[11px] mt-0.5">In Chrome or Edge, click the computer/install icon (<i data-lucide="download" class="w-3.5 h-3.5 inline"></i>) on the right side of the URL bar.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">2</div>
+            <div>
+              <p class="font-bold text-slate-900">Instant Desktop Launch</p>
+              <p class="text-slate-500 text-[11px] mt-0.5">Click "Install" to create a standalone desktop app window and taskbar shortcut.</p>
+            </div>
+          </div>
+        `;
+        if (directAction) {
+          if (deferredPWAInstallPrompt) directAction.classList.remove('hidden');
+          else directAction.classList.add('hidden');
+        }
+      }
+
+      modal.classList.remove('hidden');
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function closePWAInstallGuideModal() {
+      const modal = document.getElementById('pwaInstallGuideModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function checkFirstTimePWAInstallPrompt() {
+      if (isPWAStandaloneMode()) return;
+      try {
+        const isDismissed = localStorage.getItem('trippay_pwa_dismissed');
+        const isInstalled = localStorage.getItem('trippay_pwa_installed');
+        if (isDismissed || isInstalled) return;
+
+        setTimeout(() => {
+          const popup = document.getElementById('pwaFirstTimePopup');
+          if (popup && !isPWAStandaloneMode()) {
+            popup.classList.remove('hidden');
+            if (window.lucide && typeof lucide.createIcons === 'function') {
+              lucide.createIcons();
+            }
+          }
+        }, 1500);
+      } catch (e) { }
+    }
+
+    function dismissFirstTimePWAPrompt() {
+      try {
+        localStorage.setItem('trippay_pwa_dismissed', Date.now().toString());
+      } catch (e) { }
+      const popup = document.getElementById('pwaFirstTimePopup');
+      if (popup) popup.classList.add('hidden');
+    }
+
+    function initPWAServiceWorker() {
+      if ('serviceWorker' in navigator) {
+        const registerWorker = () => {
+          navigator.serviceWorker.register('./sw.js', { scope: './' })
+            .then(reg => {
+              console.log('TripPay ServiceWorker registered successfully:', reg.scope);
+            })
+            .catch(err => {
+              console.warn('TripPay ServiceWorker registration failed:', err);
+            });
+        };
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+          registerWorker();
+        } else {
+          window.addEventListener('load', registerWorker);
+        }
+      }
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPWAInstallPrompt = e;
+        updatePWAInstallUIState();
+      });
+
+      window.addEventListener('appinstalled', () => {
+        deferredPWAInstallPrompt = null;
+        try { localStorage.setItem('trippay_pwa_installed', 'true'); } catch (e) { }
+        updatePWAInstallUIState();
+        showToast('TripPay App installed successfully! 🎉');
+      });
+    }
+
+    // =========================================================================
+    // AI CHATBOT & FAQ SYSTEM
+    // =========================================================================
+    function toggleTripAiModal() {
+      const modal = document.getElementById('tripAiChatModal');
+      if (!modal) return;
+      if (modal.classList.contains('hidden')) {
+        openTripAiModal();
+      } else {
+        closeTripAiModal();
+      }
+    }
+
+    function openTripAiModal(tab = 'chat') {
+      const modal = document.getElementById('tripAiChatModal');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      switchAiModalMode(tab);
+      if (aiChatHistoryMessages.length === 0) {
+        initAiChatWelcome();
+      }
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function closeTripAiModal() {
+      const modal = document.getElementById('tripAiChatModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function switchAiModalMode(mode) {
+      const modes = ['chat', 'faq', 'feedback'];
+      modes.forEach(m => {
+        const btn = document.getElementById(`aiModalTabBtn-${m}`);
+        const view = document.getElementById(`aiModalView-${m}`);
+        if (!btn || !view) return;
+
+        if (m === mode) {
+          btn.className = 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition bg-white text-emerald-800 shadow-xs border border-emerald-200';
+          view.classList.remove('hidden');
+        } else {
+          btn.className = 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition text-slate-600 hover:text-slate-900 hover:bg-slate-100';
+          view.classList.add('hidden');
+        }
+      });
+
+      if (mode === 'chat') {
+        const input = document.getElementById('aiChatInput');
+        if (input) setTimeout(() => input.focus(), 100);
+      } else if (mode === 'feedback') {
+        // Pre-fill student name if logged in
+        if (loggedInParticipant) {
+          const nameInput = document.getElementById('feedbackStudentName');
+          const phoneInput = document.getElementById('feedbackStudentPhone');
+          if (nameInput && !nameInput.value) nameInput.value = loggedInParticipant.studentName || '';
+          if (phoneInput && !phoneInput.value) phoneInput.value = loggedInParticipant.phone || '';
+        }
+        const tripInput = document.getElementById('feedbackTripName');
+        if (tripInput && !tripInput.value) {
+          const trip = allTrips.find(t => t.id === currentTripId);
+          if (trip) tripInput.value = `${trip.tripTitle} (${trip.destination})`;
+        }
+      }
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function initAiChatWelcome() {
+      const activeTrip = allTrips.find(t => t.id === currentTripId) || {
+        tripTitle: tripConfig.tripTitle || 'College Tour',
+        destination: tripConfig.destination || 'Agra & North India'
+      };
+
+      aiChatHistoryMessages = [
+        {
+          id: 'welcome-1',
+          sender: 'bot',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          text: `👋 **Welcome to TripPay AI Assistant!**\n\nI can help you with anything regarding **${escapeHtml(activeTrip.tripTitle)}**:\n- 🚆 **Train 12617 Mangala Lakshadweep Express** route & halts (Tirur TIR 15:39 ➔ Agra Cantt AGC 10:40 Day 3)\n- 💳 **₹0 advance registration** & payment steps\n- 🎟️ Official **Boarding Passes** & PDF downloads\n- 💺 **PNR seat allocation** & live status\n- 💡 **Suggestions & Feedback** directly for the Trip Boss.\n\nHow can I help you today?`
+        }
+      ];
+      renderAiChatMessages();
+    }
+
+    function renderAiChatMessages() {
+      const history = document.getElementById('aiChatHistory');
+      if (!history) return;
+
+      history.innerHTML = aiChatHistoryMessages.map(msg => {
+        const isBot = msg.sender === 'bot';
+        const formattedText = formatAiMessageText(msg.text);
+
+        if (msg.isTyping) {
+          return `
+            <div class="flex items-start gap-2.5 animate-in fade-in duration-150">
+              <div class="w-7 h-7 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center shrink-0 text-xs shadow-xs">
+                <i data-lucide="bot" class="w-4 h-4"></i>
+              </div>
+              <div class="p-3 rounded-2xl rounded-tl-xs bg-white border border-slate-200 shadow-2xs flex items-center gap-1.5 text-slate-500">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce [animation-delay:0.2s]"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce [animation-delay:0.4s]"></span>
+                <span class="text-[11px] font-semibold text-slate-400 ml-1">Thinking...</span>
+              </div>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="flex items-start gap-2.5 ${isBot ? '' : 'flex-row-reverse'} animate-in fade-in duration-200">
+            <div class="w-7 h-7 rounded-xl ${isBot ? 'bg-gradient-to-tr from-emerald-600 to-teal-600 text-white' : 'bg-slate-800 text-white'} flex items-center justify-center shrink-0 text-xs shadow-xs">
+              <i data-lucide="${isBot ? 'bot' : 'user'}" class="w-3.5 h-3.5"></i>
+            </div>
+            <div class="max-w-[85%] sm:max-w-[75%] p-3.5 rounded-2xl ${isBot ? 'rounded-tl-xs bg-white border border-slate-200/90 text-slate-800 shadow-2xs' : 'rounded-tr-xs bg-gradient-to-tr from-emerald-700 to-teal-700 text-white shadow-sm'}">
+              <div class="prose prose-xs ${isBot ? 'text-slate-800' : 'text-white'} leading-relaxed space-y-1">
+                ${formattedText}
+              </div>
+              <div class="flex items-center justify-end gap-1 mt-1 text-[9px] ${isBot ? 'text-slate-400' : 'text-emerald-200'}">
+                <span>${msg.time || ''}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      history.scrollTop = history.scrollHeight;
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function formatAiMessageText(text) {
+      if (!text) return '';
+      let html = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`(.*?)`/g, '<code class="px-1 py-0.5 rounded bg-slate-100 text-slate-900 font-mono text-[10px]">$1</code>')
+        .replace(/\n\n/g, '<br/><br/>')
+        .replace(/\n- /g, '<br/>• ')
+        .replace(/\n/g, '<br/>');
+      return html;
+    }
+
+    function sendQuickAiQuery(queryText) {
+      switchAiModalMode('chat');
+      const input = document.getElementById('aiChatInput');
+      if (input) {
+        input.value = queryText;
+      }
+      handleAiChatSubmit(new Event('submit'));
+    }
+
+    function handleAiChatSubmit(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      const input = document.getElementById('aiChatInput');
+      if (!input) return;
+      const text = input.value.trim();
+      if (!text) return;
+
+      const userTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      aiChatHistoryMessages.push({
+        id: 'msg-' + Date.now(),
+        sender: 'user',
+        text: text,
+        time: userTime
+      });
+      input.value = '';
+      renderAiChatMessages();
+
+      // Show typing indicator
+      const typingId = 'typing-' + Date.now();
+      aiChatHistoryMessages.push({
+        id: typingId,
+        sender: 'bot',
+        isTyping: true
+      });
+      renderAiChatMessages();
+
+      setTimeout(() => {
+        const responseText = generateAiResponse(text);
+        // Replace typing with actual bot response
+        aiChatHistoryMessages = aiChatHistoryMessages.filter(m => m.id !== typingId);
+        aiChatHistoryMessages.push({
+          id: 'bot-' + Date.now(),
+          sender: 'bot',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          text: responseText
+        });
+        renderAiChatMessages();
+      }, 550);
+    }
+
+    function generateAiResponse(query) {
+      const q = query.toLowerCase();
+      const activeTrip = allTrips.find(t => t.id === currentTripId) || {
+        tripTitle: tripConfig.tripTitle || 'College Tour',
+        destination: tripConfig.destination || 'North India Tour',
+        tripAmount: tripConfig.tripAmount || 1500,
+        advanceAmount: tripConfig.advanceAmount || 500,
+        receiverName: tripConfig.receiverName || 'Trip Coordinator'
+      };
+
+      // 1. Train 12617 & Station Halts & Timings
+      if (q.includes('12617') || q.includes('train') || q.includes('halt') || q.includes('timing') || q.includes('schedule') || q.includes('tirur') || q.includes('agra') || q.includes('nizamuddin') || q.includes('route')) {
+        return `🚆 **Train 12617 - Mangala Lakshadweep Superfast Express Details:**\n\n- **Route:** Ernakulam Jn (ERS) ➔ Hazrat Nizamuddin (NZM)\n- **Key Halts & Timings:**\n  • **Tirur (TIR):** Departs at **15:39 (3:39 PM)** on Day 1 (Our primary college boarding halt!)\n  • **Kozhikode (CLT):** 16:27\n  • **Kannur (CAN):** 17:52\n  • **Mangaluru Jn (MAJN):** 20:00\n  • **Madgaon Goa (MAO):** 01:15 (Day 2)\n  • **Panvel / Mumbai (PNVL):** 13:25 (Day 2)\n  • **Nashik Road (NK):** 17:50 (Day 2)\n  • **Bhopal (BPL):** 02:40 (Day 3)\n  • **Jhansi (VGLJ):** 06:20 (Day 3)\n  • **Gwalior (GWL):** 07:45 (Day 3)\n  • **Agra Cantt (AGC):** Arrives at **10:40 AM** on Day 3 (Taj Mahal Tour Destination)\n  • **Hazrat Nizamuddin (NZM):** 13:35\n\n💡 You can track live halt updates anytime from the **"Live Route & Halts"** button on the home screen!`;
+      }
+
+      // 2. Advance / Zero fee / ₹0 Registration / Payment
+      if (q.includes('₹0') || q.includes('zero') || q.includes('0') || q.includes('advance') || q.includes('register') || q.includes('registration') || q.includes('fee') || q.includes('cost') || q.includes('price') || q.includes('amount')) {
+        return `💳 **Registration & Payment Guide:**\n\n- **Zero Advance Allowed:** Yes! You can register with **₹0 advance payment** to lock in your trip registration immediately.\n- **Trip Package:** ₹${activeTrip.tripAmount || 1500} per student.\n- **Payment Options:** Pay ₹0 now, pay advance ₹${activeTrip.advanceAmount || 500}, or pay in full.\n- **How to Pay:** Use any UPI app (Google Pay, PhonePe, Paytm) scanning the QR code, or pay cash directly to the student coordinators.\n- **Approval:** Once submitted, coordinators verify your transaction within a few hours and your official Boarding Pass becomes active.`;
+      }
+
+      // 3. Boarding Pass / Ticket / Download PDF
+      if (q.includes('pass') || q.includes('ticket') || q.includes('download') || q.includes('pdf') || q.includes('boarding') || q.includes('print')) {
+        return `🎟️ **Boarding Pass & Official Ticket:**\n\n- Every verified participant gets an official **Expressive Boarding Pass Ticket** featuring a verifiable QR code, Department, Seat details, and Security seal.\n- **To View/Download:** Go to the **"Your Passes & Tickets"** tab on the homepage, enter your registered Phone Number, and your pass will load instantly.\n- You can **Save as Image (PNG)**, **Download as PDF**, or **Share directly to WhatsApp**!`;
+      }
+
+      // 4. PNR / Seat Allocation / Coach / Berth
+      if (q.includes('pnr') || q.includes('seat') || q.includes('coach') || q.includes('berth') || q.includes('allocation')) {
+        return `💺 **Railway PNR & Seat Allocation:**\n\n- Trip coordinators link the group Railway PNR directly in TripPay.\n- Seats, coaches, and berth numbers (e.g. S4 42 LB, S5 18 MB) are automatically allocated and mapped to students.\n- Your seat info is printed directly on your **Boarding Pass**.\n- You can also look up any group PNR using the **"Check PNR & Seats"** button in the header.`;
+      }
+
+      // 5. Install App / PWA / Android / iOS
+      if (q.includes('install') || q.includes('app') || q.includes('ios') || q.includes('iphone') || q.includes('android') || q.includes('desktop') || q.includes('download app')) {
+        return `📱 **Installing TripPay App:**\n\nTripPay is an installable Progressive Web App (PWA) that works on all devices:\n- **iPhone / iPad:** Tap the Safari Share button (<i data-lucide="share" class="w-3 h-3 inline"></i>), then choose **"Add to Home Screen"**.\n- **Android:** Tap the green **"Install App"** button in the top navigation header, or tap Chrome menu ➔ "Install App".\n- **Desktop (Windows/Mac):** Click the Install button in the address bar to add TripPay directly to your desktop & taskbar!\n\nOnce installed, TripPay opens in full screen and works smoothly offline!`;
+      }
+
+      // 6. Feedback & Suggestions
+      if (q.includes('suggest') || q.includes('feedback') || q.includes('complain') || q.includes('issue') || q.includes('boss') || q.includes('problem')) {
+        return `💡 **Direct Boss Feedback Channel:**\n\nWe provide a **100% confidential feedback channel** strictly for the Boss Administrator!\n\nTo submit your feedback or suggestion:\n1. Click the **"Suggestions & Feedback"** tab right above in this window.\n2. Choose your category (Suggestion, Issue, Compliment).\n3. Write your message and click **"Send Privately to Boss"**.\n\nOnly the Boss has access to view and act upon your message!`;
+      }
+
+      // 7. Coordinators & Contact & Emergency
+      if (q.includes('contact') || q.includes('phone') || q.includes('coordinator') || q.includes('call') || q.includes('help') || q.includes('emergency')) {
+        return `📞 **Trip Coordinators & Support:**\n\n- **Trip Receiver / Coordinator:** ${escapeHtml(activeTrip.receiverName || 'Trip Coordinator')}\n- **Emergency Hotline:** Reach out to your class representative or department staff coordinator.\n- You can also check the **"Help & Contacts"** section on the homepage for direct phone and WhatsApp links to faculty leads.`;
+      }
+
+      // 8. Default fallback
+      return `Thank you for your question about **${escapeHtml(activeTrip.tripTitle)}**!\n\nHere are some things I can instantly assist you with:\n- 🚆 **Train 12617 Halts & Timings** (Tirur, Kozhikode, Agra Cantt)\n- 💳 **₹0 Advance Registration** & UPI payment\n- 🎟️ **Boarding Pass & PDF Ticket** lookup\n- 💺 **PNR Coach & Seat Allocation**\n- 💡 **Suggestions & Feedback** for Trip Boss\n\nFeel free to ask specifically about any of the above, or switch to the **Quick FAQ** tab!`;
+    }
+
+    // =========================================================================
+    // STUDENT SUGGESTIONS & FEEDBACK CONTROLLER (PRIVATE TO BOSS)
+    // =========================================================================
+    async function handleStudentFeedbackSubmit(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      const statusEl = document.getElementById('feedbackSubmitStatus');
+      const submitBtn = document.getElementById('feedbackSubmitBtn');
+      const messageEl = document.getElementById('feedbackStudentMessage');
+      const nameEl = document.getElementById('feedbackStudentName');
+      const phoneEl = document.getElementById('feedbackStudentPhone');
+      const tripEl = document.getElementById('feedbackTripName');
+
+      if (!messageEl || !messageEl.value.trim()) {
+        showToast('Please type your suggestion or feedback.', 'error');
+        return;
+      }
+
+      const categoryEl = document.querySelector('input[name="feedbackCategory"]:checked');
+      const category = categoryEl ? categoryEl.value : 'suggestion';
+      const studentName = (nameEl && nameEl.value.trim()) ? nameEl.value.trim() : 'Anonymous Participant';
+      const phone = phoneEl ? phoneEl.value.trim() : '';
+      const tripName = tripEl ? tripEl.value.trim() : (currentTripId || 'General Trip');
+      const message = messageEl.value.trim();
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="inline-block animate-spin mr-1">⏳</span> Sending...';
+      }
+
+      try {
+        const payload = {
+          category,
+          studentName,
+          phone,
+          tripId: currentTripId || 'default',
+          tripName,
+          message,
+          status: 'pending', // pending, reviewed, resolved
+          createdAt: Date.now(),
+          createdDateStr: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
+        };
+
+        const feedbackCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_feedback');
+        await addDoc(feedbackCol, payload);
+
+        await logSecurityEvent('FEEDBACK_SUBMITTED', category, `Confidential note from ${studentName}`);
+
+        if (statusEl) {
+          statusEl.className = 'p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-bold text-center animate-in fade-in';
+          statusEl.innerHTML = '✓ Thank you! Your note has been securely submitted directly to the Trip Boss.';
+          statusEl.classList.remove('hidden');
+        }
+
+        messageEl.value = '';
+        showToast('Feedback submitted privately to Trip Boss! ✓');
+
+        setTimeout(() => {
+          if (statusEl) statusEl.classList.add('hidden');
+          switchAiModalMode('chat');
+        }, 2200);
+
+      } catch (err) {
+        console.error('Feedback submission error:', err);
+        showToast('Failed to submit feedback. Please check your connection.', 'error');
+        if (statusEl) {
+          statusEl.className = 'p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-xs font-bold text-center';
+          statusEl.innerHTML = 'Error submitting feedback. Please try again.';
+          statusEl.classList.remove('hidden');
+        }
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i data-lucide="send" class="w-3.5 h-3.5"></i><span>Send Privately to Boss</span>';
+          if (window.lucide && typeof lucide.createIcons === 'function') {
+            lucide.createIcons();
+          }
+        }
+      }
+    }
+
+    // =========================================================================
+    // BOSS MASTER COMMAND SUITE: SUGGESTIONS & FEEDBACK PILLAR (BOSS ONLY)
+    // =========================================================================
+    function updateBossFeedbackBadge() {
+      const badge = document.getElementById('bossTabBadgeFeedback');
+      if (badge) badge.textContent = allTripFeedbacks.length;
+
+      // Update KPI cards in Pillar 4
+      const totalEl = document.getElementById('bossFeedbackStatTotal');
+      const sugEl = document.getElementById('bossFeedbackStatSuggestions');
+      const pendEl = document.getElementById('bossFeedbackStatPending');
+      const issEl = document.getElementById('bossFeedbackStatIssues');
+
+      if (totalEl) totalEl.textContent = allTripFeedbacks.length;
+      if (sugEl) sugEl.textContent = allTripFeedbacks.filter(f => f.category === 'suggestion').length;
+      if (pendEl) pendEl.textContent = allTripFeedbacks.filter(f => !f.status || f.status === 'pending').length;
+      if (issEl) issEl.textContent = allTripFeedbacks.filter(f => f.category === 'issue').length;
+    }
+
+    function setBossFeedbackFilter(category) {
+      activeBossFeedbackFilter = category;
+      const categories = ['all', 'suggestion', 'issue', 'compliment'];
+      categories.forEach(cat => {
+        const btn = document.getElementById(`bossFeedbackFilterBtn-${cat}`);
+        if (!btn) return;
+        if (cat === category) {
+          btn.className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold bg-purple-600 text-white shadow-2xs';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200';
+        }
+      });
+      renderBossFeedbackList();
+    }
+
+    function renderBossFeedbackList() {
+      // STRICT SECURITY CHECK: Only Boss may view feedback
+      if (currentAdminRole !== 'boss') {
+        const container = document.getElementById('bossFeedbackListContainer');
+        if (container) container.innerHTML = '';
+        return;
+      }
+
+      updateBossFeedbackBadge();
+      const container = document.getElementById('bossFeedbackListContainer');
+      const emptyNotice = document.getElementById('bossFeedbackEmptyNotice');
+      if (!container) return;
+
+      const searchInput = document.getElementById('bossFeedbackSearchInput');
+      const term = (searchInput ? searchInput.value : '').toLowerCase().trim();
+
+      let filtered = allTripFeedbacks.slice();
+
+      if (activeBossFeedbackFilter !== 'all') {
+        filtered = filtered.filter(f => f.category === activeBossFeedbackFilter);
+      }
+
+      if (term) {
+        filtered = filtered.filter(f =>
+          (f.studentName && f.studentName.toLowerCase().includes(term)) ||
+          (f.message && f.message.toLowerCase().includes(term)) ||
+          (f.phone && f.phone.includes(term)) ||
+          (f.tripName && f.tripName.toLowerCase().includes(term))
+        );
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        if (emptyNotice) emptyNotice.classList.remove('hidden');
+        return;
+      }
+
+      if (emptyNotice) emptyNotice.classList.add('hidden');
+
+      container.innerHTML = filtered.map(fb => {
+        const isPending = !fb.status || fb.status === 'pending';
+        const isResolved = fb.status === 'resolved';
+
+        let categoryBadge = '';
+        if (fb.category === 'suggestion') {
+          categoryBadge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-100 text-purple-900 border border-purple-200">💡 Suggestion</span>';
+        } else if (fb.category === 'issue') {
+          categoryBadge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-100 text-rose-900 border border-rose-200">⚠️ Issue / Bug</span>';
+        } else if (fb.category === 'compliment') {
+          categoryBadge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-900 border border-emerald-200">⭐ Compliment</span>';
+        } else {
+          categoryBadge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 text-slate-700 border border-slate-200">📝 Note</span>';
+        }
+
+        let statusBadge = isPending
+          ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">Pending Review</span>'
+          : isResolved
+          ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Resolved ✓</span>'
+          : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">Reviewed</span>';
+
+        const phoneLink = fb.phone ? `
+          <a href="https://wa.me/91${fb.phone.replace(/[^0-9]/g, '')}" target="_blank"
+            class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200">
+            <i data-lucide="phone" class="w-3 h-3"></i>
+            <span>${escapeHtml(fb.phone)}</span>
+          </a>
+        ` : '';
+
+        return `
+          <div class="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200/90 shadow-2xs space-y-3 transition hover:shadow-sm">
+            <div class="flex items-start justify-between gap-3 flex-wrap">
+              <div class="flex items-center gap-2 flex-wrap">
+                ${categoryBadge}
+                ${statusBadge}
+                <span class="text-[11px] font-bold text-slate-400">• ${escapeHtml(fb.createdDateStr || 'Recent')}</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                ${isPending ? `
+                  <button type="button" onclick="updateBossFeedbackStatus('${fb.id}', 'resolved')"
+                    class="px-2.5 py-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold transition flex items-center gap-1">
+                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                    <span>Mark Resolved</span>
+                  </button>
+                ` : `
+                  <button type="button" onclick="updateBossFeedbackStatus('${fb.id}', 'pending')"
+                    class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                    <span>Reopen</span>
+                  </button>
+                `}
+                <button type="button" onclick="deleteBossFeedback('${fb.id}')"
+                  class="p-1.5 rounded-xl hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition"
+                  title="Delete Note">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Student Info & Trip -->
+            <div class="flex items-center justify-between text-xs text-slate-600 gap-2 flex-wrap">
+              <div class="flex items-center gap-2">
+                <span class="font-extrabold text-slate-900">${escapeHtml(fb.studentName || 'Anonymous Participant')}</span>
+                ${phoneLink}
+              </div>
+              <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-semibold text-[10px]">
+                ${escapeHtml(fb.tripName || 'Trip')}
+              </span>
+            </div>
+
+            <!-- Message Body -->
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs text-slate-800 leading-relaxed font-medium whitespace-pre-wrap">
+              "${escapeHtml(fb.message)}"
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    async function updateBossFeedbackStatus(feedbackId, newStatus) {
+      if (currentAdminRole !== 'boss') return;
+      try {
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_feedback', feedbackId);
+        await updateDoc(ref, {
+          status: newStatus,
+          updatedAt: Date.now()
+        });
+        showToast(`Feedback updated to ${newStatus}. ✓`);
+      } catch (err) {
+        console.error('Failed to update feedback status:', err);
+        showToast('Error updating status.', 'error');
+      }
+    }
+
+    async function deleteBossFeedback(feedbackId) {
+      if (currentAdminRole !== 'boss') return;
+      if (!confirm('Are you sure you want to permanently delete this feedback entry?')) return;
+      try {
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_feedback', feedbackId);
+        await deleteDoc(ref);
+        showToast('Feedback entry deleted.');
+      } catch (err) {
+        console.error('Failed to delete feedback:', err);
+        showToast('Error deleting entry.', 'error');
+      }
+    }
+
     // Attach globals to window
     Object.assign(window, {
       toggleAppFullscreen,
@@ -15070,7 +16313,29 @@
       openPaymentReceiptByStudentId,
       clearDashSearch,
       handleDashSearch,
-      renderDashboard
+      renderDashboard,
+      getPWAClientPlatform,
+      isPWAStandaloneMode,
+      updatePWAInstallUIState,
+      triggerPWAInstall,
+      executeNativePWAInstall,
+      openPWAInstallGuideModal,
+      closePWAInstallGuideModal,
+      checkFirstTimePWAInstallPrompt,
+      dismissFirstTimePWAPrompt,
+      initPWAServiceWorker,
+      toggleTripAiModal,
+      openTripAiModal,
+      closeTripAiModal,
+      switchAiModalMode,
+      sendQuickAiQuery,
+      handleAiChatSubmit,
+      handleStudentFeedbackSubmit,
+      updateBossFeedbackBadge,
+      setBossFeedbackFilter,
+      renderBossFeedbackList,
+      updateBossFeedbackStatus,
+      deleteBossFeedback
     });
 
     // Restore sessions from localStorage on load
@@ -15121,6 +16386,9 @@
       updateActiveTripUI();
       restoreSessionsFromStorage();
       updateAdminUIState();
+      initPWAServiceWorker();
+      updatePWAInstallUIState();
+      checkFirstTimePWAInstallPrompt();
 
       // Boss Master Command Suite Event Listeners
       const bossAdmSearch = document.getElementById('bossAdminSearchInput');
@@ -15137,6 +16405,9 @@
 
       const bossPayStatFilter = document.getElementById('bossPaymentStatusFilter');
       if (bossPayStatFilter) bossPayStatFilter.addEventListener('change', () => renderBossGlobalPayments());
+
+      const bossFdbSearch = document.getElementById('bossFeedbackSearchInput');
+      if (bossFdbSearch) bossFdbSearch.addEventListener('input', () => renderBossFeedbackList());
 
       lucide.createIcons();
       initFirebaseAndListeners();
