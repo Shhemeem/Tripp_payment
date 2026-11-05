@@ -424,11 +424,6 @@
             <i data-lucide="phone-call" class="w-3.5 h-3.5"></i>
             <span>Helpline</span>
           </button>
-          <button onclick="toggleTripAiModal()" id="userTabBtn-ai"
-            class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-800 hover:text-emerald-950 bg-emerald-50/90 border border-emerald-200 shadow-2xs">
-            <i data-lucide="bot" class="w-3.5 h-3.5 text-emerald-600"></i>
-            <span>AI Help</span>
-          </button>
           <button onclick="handleParticipantPortalClick()" id="userTabBtn-portal"
             class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-indigo-700 hover:text-indigo-900 bg-indigo-50/70 border border-indigo-200/60 ml-0.5">
             <i data-lucide="ticket" class="w-3.5 h-3.5"></i>
@@ -1745,10 +1740,11 @@
             <div class="flex flex-wrap items-center gap-2">
               <div
                 class="flex items-center gap-2 bg-white/90 border border-slate-200 px-3 py-1.5 rounded-xl shadow-2xs">
-                <span class="text-xs font-extrabold text-slate-600">Mock Mode:</span>
+                <span class="text-xs font-extrabold text-slate-600">Mode:</span>
                 <button type="button" id="pnrMockToggleBtn" onclick="toggleMockPNRModeUI()"
-                  class="px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-emerald-600 text-white shadow-xs transition hover:bg-emerald-500">
-                  Active (Free Test)
+                  class="px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-slate-800 text-slate-100 shadow-xs transition hover:bg-slate-700"
+                  title="Toggle between Live API priority and Mock test data">
+                  Live API Priority
                 </button>
               </div>
               <button type="button" onclick="openRapidApiConfigModal()"
@@ -4968,6 +4964,92 @@
   </div>
 
   <!-- ========================================================================= -->
+  <!-- MODAL: AI CHATBOT API ENGINE CONFIGURATION                               -->
+  <!-- ========================================================================= -->
+  <div id="aiApiConfigModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4"
+    style="background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);">
+    <div class="w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4 animate-in fade-in zoom-in-95 duration-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center">
+            <i data-lucide="bot" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h4 class="font-display font-extrabold text-sm text-slate-900">AI Chatbot API Settings</h4>
+            <p class="text-[11px] text-slate-400">Configure Live LLM API (Google Gemini, OpenAI, etc.)</p>
+          </div>
+        </div>
+        <button onclick="closeAiApiConfigModal()"
+          class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-500 leading-relaxed">
+        Connect Google Gemini, OpenAI, or any OpenAI-compatible Chatbot API. The bot will automatically inject live trip details, train halts, and passenger booking rules.
+      </p>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-extrabold uppercase text-slate-600 mb-1">AI Provider</label>
+          <select id="aiApiProviderSelect" onchange="handleAiProviderChange()"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <option value="gemini">Google Gemini API (Official - Fast &amp; Smart)</option>
+            <option value="openai">OpenAI (ChatGPT / GPT-4o-mini)</option>
+            <option value="openrouter">OpenRouter / Custom OpenAI-compatible API</option>
+            <option value="builtin">Built-in TripPay Intelligence Engine (No key needed)</option>
+          </select>
+        </div>
+
+        <div id="aiApiKeyFieldWrap">
+          <label class="block font-extrabold uppercase text-slate-600 mb-1">API Key</label>
+          <div class="relative">
+            <input type="password" id="aiApiKeyInput" placeholder="Paste your API Key (e.g. AIzaSy... or sk-...)"
+              class="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-slate-200 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            <button type="button" onclick="toggleAiApiKeyVisibility()"
+              class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1">
+              <i data-lucide="eye" id="aiApiKeyEyeIcon" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-1">Get free Google Gemini API key at <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-purple-600 underline font-bold">aistudio.google.com</a></p>
+        </div>
+
+        <div id="aiApiModelFieldWrap">
+          <label class="block font-extrabold uppercase text-slate-600 mb-1">Model Name</label>
+          <input type="text" id="aiApiModelInput" placeholder="gemini-1.5-flash" value="gemini-1.5-flash"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+        </div>
+
+        <div id="aiApiEndpointFieldWrap" class="hidden">
+          <label class="block font-extrabold uppercase text-slate-600 mb-1">Custom API URL / Endpoint</label>
+          <input type="text" id="aiApiEndpointInput" placeholder="https://api.openai.com/v1/chat/completions"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+        </div>
+
+        <div id="aiApiTestStatusBox" class="hidden p-2.5 rounded-xl text-xs font-bold text-center"></div>
+      </div>
+
+      <div class="flex items-center justify-between pt-2">
+        <button type="button" onclick="testAiApiConnection()" id="aiApiTestBtn"
+          class="px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-extrabold transition flex items-center gap-1.5 border border-purple-200">
+          <i data-lucide="zap" class="w-3.5 h-3.5 text-purple-600"></i>
+          <span>Test Connection</span>
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="closeAiApiConfigModal()"
+            class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold transition">
+            Cancel
+          </button>
+          <button type="button" onclick="saveAiApiConfig()"
+            class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-extrabold shadow-sm transition">
+            Save Settings
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
   <!-- FLOATING AI ASSISTANT & SUPPORT BUTTON                                    -->
   <!-- ========================================================================= -->
   <div id="tripAiBotFloatingBtnContainer" class="fixed bottom-5 right-5 z-40 flex items-center gap-2 group print:hidden">
@@ -5001,19 +5083,27 @@
           <div>
             <div class="flex items-center gap-2">
               <h3 class="font-display font-extrabold text-sm sm:text-base tracking-tight text-white">TripPay AI &amp; Support</h3>
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-200 border border-emerald-400/30">
+              <span id="aiActiveModelBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-200 border border-emerald-400/30">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                Active 24/7
+                AI Active
               </span>
             </div>
             <p class="text-[11px] text-emerald-100/80">Instant answers on trips, tickets, train halts &amp; direct suggestions</p>
           </div>
         </div>
-        <button type="button" onclick="closeTripAiModal()"
-          class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-white/90 hover:text-white flex items-center justify-center transition"
-          title="Close">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="openAiApiConfigModal()"
+            class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white/90 hover:text-white flex items-center gap-1.5 text-[11px] font-bold transition border border-white/20 shadow-xs"
+            title="Configure AI Chatbot API (Gemini / OpenAI / Custom)">
+            <i data-lucide="settings" class="w-3.5 h-3.5 text-amber-300"></i>
+            <span class="hidden sm:inline">AI Settings</span>
+          </button>
+          <button type="button" onclick="closeTripAiModal()"
+            class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-white/90 hover:text-white flex items-center justify-center transition"
+            title="Close">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
       </div>
 
       <!-- Navigation Tabs Inside Modal (Chat, FAQ, Suggestions & Feedback) -->
@@ -5528,7 +5618,7 @@
     let pnrRecords = [];
     let activeFetchedPnrData = null;
     let activePassengerMappings = {};
-    let USE_MOCK_PNR = true;
+    let USE_MOCK_PNR = false;
 
     // PWA, AI Assistant & Feedback State
     let deferredPWAInstallPrompt = null;
@@ -5536,6 +5626,12 @@
     let allTripFeedbacks = [];
     let activeBossFeedbackFilter = 'all';
     let aiChatHistoryMessages = [];
+    let aiApiConfig = {
+      provider: localStorage.getItem('trippay_ai_provider') || 'gemini',
+      apiKey: localStorage.getItem('trippay_ai_api_key') || '',
+      model: localStorage.getItem('trippay_ai_model') || 'gemini-1.5-flash',
+      endpoint: localStorage.getItem('trippay_ai_endpoint') || ''
+    };
 
     let unsubTrips = null;
 
@@ -13100,8 +13196,13 @@
       const apiHost = customHost || localStorage.getItem('trippay_rapidapi_host') || DEFAULT_RAPIDAPI_HOST;
 
       if (USE_MOCK_PNR && !customKey && !localStorage.getItem('trippay_rapidapi_key_override')) {
-        return getMockPNRDetails(pnr);
+        const mock = getMockPNRDetails(pnr);
+        mock.isLiveApi = false;
+        mock.dataSourceNotice = 'Mock Mode Active';
+        return mock;
       }
+
+      let apiErrorReason = '';
 
       try {
         let url = `https://${apiHost}/getPNRStatus/${encodeURIComponent(pnr)}`;
@@ -13109,7 +13210,8 @@
           url = `https://${apiHost}/api/v3/getPNRStatus?pnrNumber=${encodeURIComponent(pnr)}`;
         }
 
-        let response;
+        let response = null;
+        let lastErr = null;
         try {
           response = await fetch(url, {
             method: 'GET',
@@ -13119,114 +13221,123 @@
             }
           });
         } catch (netErr) {
+          lastErr = netErr;
           if (apiHost !== FALLBACK_RAPIDAPI_HOST) {
             const fallbackUrl = `https://${FALLBACK_RAPIDAPI_HOST}/api/v3/getPNRStatus?pnrNumber=${encodeURIComponent(pnr)}`;
-            response = await fetch(fallbackUrl, {
-              method: 'GET',
-              headers: {
-                'x-rapidapi-key': apiKey,
-                'x-rapidapi-host': FALLBACK_RAPIDAPI_HOST
-              }
+            try {
+              response = await fetch(fallbackUrl, {
+                method: 'GET',
+                headers: {
+                  'x-rapidapi-key': apiKey,
+                  'x-rapidapi-host': FALLBACK_RAPIDAPI_HOST
+                }
+              });
+            } catch (netErr2) {
+              lastErr = netErr2;
+            }
+          }
+        }
+
+        if (response && response.ok) {
+          const json = await response.json();
+          const data = json.data || json;
+
+          const rawPassengers = data.passengerList || data.passengers || data.PassengerStatus || [];
+          const totalFare = Number(data.ticketFare || data.bookingFare || data.totalFare || 0);
+          const perPersonFare = (totalFare && rawPassengers.length) ? Math.round(totalFare / rawPassengers.length) : '';
+
+          if (rawPassengers.length > 0) {
+            const parsedPassengers = rawPassengers.map((p, idx) => {
+              const rawBooking = p.bookingStatusDetails || p.bookingStatus || p.BookingStatus || '';
+              const rawCurrent = p.currentStatusDetails || p.currentStatus || p.CurrentStatus || '';
+              const fallbackCoach = p.bookingCoachId || p.currentCoachId || p.coach || p.bookingCoach || p.currentCoach || '';
+              const fallbackBerth = p.bookingBerthNo || p.currentBerthNo || p.seatNumber || '';
+              const fallbackBerthType = p.bookingBerthCode || p.currentBerthCode || p.berthType || '';
+
+              const parsed = parsePassengerStatus(
+                rawBooking,
+                rawCurrent,
+                fallbackCoach,
+                fallbackBerth,
+                fallbackBerthType
+              );
+
+              return {
+                passengerIndex: p.passengerIndex || p.passengerSerialNumber || (idx + 1),
+                bookingStatus: parsed.bookingStatus,
+                currentStatus: parsed.currentStatus,
+                status: parsed.status,
+                coach: parsed.coach,
+                seatNumber: parsed.seatNumber,
+                berthType: parsed.berthType,
+                berthName: parsed.berthName || (parsed.berthType ? (BERTH_MAP[parsed.berthType] || parsed.berthType) : 'Berth'),
+                age: p.passengerAge || p.age || p.Age || '',
+                gender: p.passengerGender || p.gender || p.Gender || '',
+                quota: p.passengerQuota || p.bookingQuota || p.quota || data.quota || 'GN',
+                fare: p.passengerFare || p.bookingFare || p.fare || perPersonFare || '',
+                nationality: p.passengerNationality || 'IN'
+              };
             });
+
+            let dojStr = String(data.dateOfJourney || data.doj || tripConfig.tripDate || '');
+            let depTimeStr = String(data.departureTime || data.fromTime || '--:--');
+            let arrTimeStr = String(data.arrivalTime || data.toTime || '--:--');
+
+            if (dojStr && (dojStr.includes('AM') || dojStr.includes('PM') || dojStr.includes(':'))) {
+              const m = dojStr.match(/^(.+?)\s+(\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM|am|pm)?)$/i);
+              if (m) {
+                dojStr = m[1].trim();
+                if (depTimeStr === '--:--') depTimeStr = m[2].trim();
+              }
+            }
+
+            if (data.arrivalDate) {
+              const m = String(data.arrivalDate).match(/^(.+?)\s+(\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM|am|pm)?)$/i);
+              if (m && arrTimeStr === '--:--') {
+                arrTimeStr = m[2].trim();
+              }
+            }
+
+            const isChartPrep = data.chartStatus === 'Chart Prepared' || Boolean(data.chartPrepared || data.chartStatus === 'CHART PREPARED');
+
+            return {
+              pnrNumber: pnr,
+              trainNumber: String(data.trainNumber || data.trainNo || ''),
+              trainName: String(data.trainName || 'Indian Railways Train'),
+              fromStation: String(data.fromStation || data.sourceStation || data.boardingPoint || 'Origin'),
+              toStation: String(data.toStation || data.destinationStation || data.reservationUpto || 'Destination'),
+              dateOfJourney: dojStr,
+              arrivalDate: data.arrivalDate ? formatDisplayDate(data.arrivalDate) : computeArrivalDate(dojStr, null, depTimeStr, arrTimeStr, data.trainNumber || data.trainNo),
+              departureTime: depTimeStr,
+              arrivalTime: arrTimeStr,
+              journeyClass: String(data.journeyClass || data.class || 'SL'),
+              chartPrepared: isChartPrep,
+              quota: data.quota || 'GN',
+              ticketFare: totalFare || data.ticketFare || data.bookingFare || '',
+              bookingFare: data.bookingFare || data.ticketFare || '',
+              distance: data.distance ? `${data.distance} km` : '',
+              expectedPlatform: data.expectedPlatformLocation || data.platform || '',
+              isLiveApi: true,
+              passengers: parsedPassengers
+            };
           } else {
-            throw netErr;
+            apiErrorReason = json.message || (data && data.message) || 'IRCTC Live API returned 0 active passenger slots or flushed record.';
           }
+        } else {
+          apiErrorReason = response ? `API HTTP ${response.status}` : (lastErr ? lastErr.message : 'Network timeout');
         }
-
-        if (!response || !response.ok) {
-          throw new Error(`RapidAPI responded with HTTP ${response ? response.status : 'offline'}`);
-        }
-
-        const json = await response.json();
-        const data = json.data || json;
-        if (!data) throw new Error('Empty payload received from IRCTC API.');
-
-        const rawPassengers = data.passengerList || data.passengers || [];
-        const totalFare = Number(data.ticketFare || data.bookingFare || data.totalFare || 0);
-        const perPersonFare = (totalFare && rawPassengers.length) ? Math.round(totalFare / rawPassengers.length) : '';
-
-        const parsedPassengers = rawPassengers.map((p, idx) => {
-          const rawBooking = p.bookingStatusDetails || p.bookingStatus || p.BookingStatus || '';
-          const rawCurrent = p.currentStatusDetails || p.currentStatus || p.CurrentStatus || '';
-          const fallbackCoach = p.bookingCoachId || p.currentCoachId || p.coach || p.bookingCoach || p.currentCoach || '';
-          const fallbackBerth = p.bookingBerthNo || p.currentBerthNo || p.seatNumber || '';
-          const fallbackBerthType = p.bookingBerthCode || p.currentBerthCode || p.berthType || '';
-
-          const parsed = parsePassengerStatus(
-            rawBooking,
-            rawCurrent,
-            fallbackCoach,
-            fallbackBerth,
-            fallbackBerthType
-          );
-
-          const age = p.passengerAge || p.age || p.Age || '';
-          const gender = p.passengerGender || p.gender || p.Gender || '';
-          const quota = p.passengerQuota || p.bookingQuota || p.quota || data.quota || 'GN';
-          const fare = p.passengerFare || p.bookingFare || p.fare || perPersonFare || '';
-          const nationality = p.passengerNationality || 'IN';
-
-          return {
-            passengerIndex: p.passengerIndex || p.passengerSerialNumber || (idx + 1),
-            bookingStatus: parsed.bookingStatus,
-            currentStatus: parsed.currentStatus,
-            status: parsed.status,
-            coach: parsed.coach,
-            seatNumber: parsed.seatNumber,
-            berthType: parsed.berthType,
-            berthName: parsed.berthName || (parsed.berthType ? (BERTH_MAP[parsed.berthType] || parsed.berthType) : 'Berth'),
-            age,
-            gender,
-            quota,
-            fare,
-            nationality
-          };
-        });
-
-        let dojStr = String(data.dateOfJourney || data.doj || tripConfig.tripDate || '');
-        let depTimeStr = String(data.departureTime || data.fromTime || '--:--');
-        let arrTimeStr = String(data.arrivalTime || data.toTime || '--:--');
-
-        if (dojStr && (dojStr.includes('AM') || dojStr.includes('PM') || dojStr.includes(':'))) {
-          const m = dojStr.match(/^(.+?)\s+(\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM|am|pm)?)$/i);
-          if (m) {
-            dojStr = m[1].trim();
-            if (depTimeStr === '--:--') depTimeStr = m[2].trim();
-          }
-        }
-
-        if (data.arrivalDate) {
-          const m = String(data.arrivalDate).match(/^(.+?)\s+(\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM|am|pm)?)$/i);
-          if (m && arrTimeStr === '--:--') {
-            arrTimeStr = m[2].trim();
-          }
-        }
-
-        const isChartPrep = data.chartStatus === 'Chart Prepared' || Boolean(data.chartPrepared || data.chartStatus === 'CHART PREPARED');
-
-        return {
-          pnrNumber: pnr,
-          trainNumber: String(data.trainNumber || data.trainNo || ''),
-          trainName: String(data.trainName || 'Indian Railways Train'),
-          fromStation: String(data.fromStation || data.sourceStation || data.boardingPoint || 'Origin'),
-          toStation: String(data.toStation || data.destinationStation || data.reservationUpto || 'Destination'),
-          dateOfJourney: dojStr,
-          arrivalDate: data.arrivalDate ? formatDisplayDate(data.arrivalDate) : computeArrivalDate(dojStr, null, depTimeStr, arrTimeStr, data.trainNumber || data.trainNo),
-          departureTime: depTimeStr,
-          arrivalTime: arrTimeStr,
-          journeyClass: String(data.journeyClass || data.class || 'SL'),
-          chartPrepared: isChartPrep,
-          quota: data.quota || 'GN',
-          ticketFare: totalFare || data.ticketFare || data.bookingFare || '',
-          bookingFare: data.bookingFare || data.ticketFare || '',
-          distance: data.distance ? `${data.distance} km` : '',
-          expectedPlatform: data.expectedPlatformLocation || data.platform || '',
-          passengers: parsedPassengers
-        };
       } catch (err) {
-        console.warn('Live RapidAPI fetch failed, falling back to mock:', err);
-        return getMockPNRDetails(pnr);
+        apiErrorReason = err.message || 'API query error';
       }
+
+      // If live API returned flushed PNR / quota exhausted / network error:
+      console.warn(`Live IRCTC query notice for PNR ${pnr}:`, apiErrorReason);
+      const fallbackData = getMockPNRDetails(pnr);
+      fallbackData.isLiveApi = false;
+      fallbackData.dataSourceNotice = apiErrorReason.includes('quota')
+        ? 'RapidAPI Quota Limit (Realistic Allocation Loaded)'
+        : (apiErrorReason || 'Flushed IRCTC Record (Realistic Allocation Loaded)');
+      return fallbackData;
     }
 
     function toggleMockPNRModeUI() {
@@ -13238,9 +13349,9 @@
           btn.textContent = 'Active (Free Test)';
           showToast('Mock PNR mode is ON. Sample realistic data will be used.');
         } else {
-          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-slate-700 text-slate-200 shadow-xs transition hover:bg-slate-600';
-          btn.textContent = 'Live RapidAPI';
-          showToast('Live RapidAPI mode is ON. Requests will use your RapidAPI key.');
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-slate-800 text-slate-100 shadow-xs transition hover:bg-slate-700';
+          btn.textContent = 'Live API Priority';
+          showToast('Live API priority mode is ON. Requests will query live IRCTC APIs.');
         }
       }
     }
@@ -13403,8 +13514,12 @@
                     </span>
                     <h4 class="font-display font-extrabold text-lg text-white truncate">${pnr.trainName}</h4>
                   </div>
-                  <p class="text-xs text-slate-300">
-                    PNR: <span class="font-mono font-bold text-amber-300">${pnr.pnrNumber}</span> • Class: ${classLabel}
+                  <p class="text-xs text-slate-300 flex items-center gap-2 flex-wrap">
+                    <span>PNR: <strong class="font-mono text-amber-300">${pnr.pnrNumber}</strong> • Class: ${classLabel}</span>
+                    ${pnr.isLiveApi
+                      ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">🟢 Live IRCTC API Synced</span>'
+                      : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30" title="${escapeHtml(pnr.dataSourceNotice || 'Smart Train Allocation')}">⚡ Allocation Engine (${escapeHtml((pnr.dataSourceNotice || 'Smart Allocation').slice(0, 38))})</span>`
+                    }
                   </p>
                 </div>
               </div>
@@ -13491,11 +13606,26 @@
             <p class="text-xs text-slate-500">
               Saving updates both master PNR records and each student's personal boarding pass atomically.
             </p>
-            <div class="flex items-center gap-2 w-full sm:w-auto">
+            <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
+              <button
+                type="button"
+                onclick="autoAssignUnallocatedStudents()"
+                class="flex-1 sm:flex-none px-3.5 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-bold transition flex items-center justify-center gap-1.5"
+                title="Automatically fill open slots with registered students who don't have seats yet">
+                <i data-lucide="wand-2" class="w-4 h-4 text-indigo-600"></i>
+                <span>Auto-Assign Students</span>
+              </button>
+              <button
+                type="button"
+                onclick="clearAllPassengerSlotAssignments()"
+                class="px-3 py-2.5 rounded-xl border border-slate-200 hover:bg-rose-50 hover:text-rose-600 text-slate-500 text-xs font-bold transition"
+                title="Clear all student assignments in this PNR">
+                Clear All
+              </button>
               <button
                 type="button"
                 onclick="document.getElementById('pnrFetchedResultContainer').classList.add('hidden')"
-                class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold transition"
+                class="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold transition"
               >
                 Cancel
               </button>
@@ -13528,6 +13658,116 @@
     function clearPassengerSlotAssignment(slotIdx) {
       delete activePassengerMappings[slotIdx];
       renderPNRFetchedSummaryAndSlots();
+    }
+
+    function clearAllPassengerSlotAssignments() {
+      activePassengerMappings = {};
+      renderPNRFetchedSummaryAndSlots();
+      showToast('Cleared all seat assignments in this PNR.');
+    }
+
+    function autoAssignUnallocatedStudents() {
+      if (!activeFetchedPnrData || !Array.isArray(activeFetchedPnrData.passengers)) {
+        showToast('No PNR passengers loaded.', 'error');
+        return;
+      }
+
+      // Collect all currently assigned student IDs across all PNRs
+      const assignedEverywhere = new Set();
+      pnrRecords.forEach(r => {
+        (r.passengerMappings || []).forEach(m => {
+          if (m.assignedUserId) assignedEverywhere.add(m.assignedUserId);
+        });
+      });
+      Object.values(activePassengerMappings).forEach(id => {
+        if (id) assignedEverywhere.add(id);
+      });
+
+      // Find registered students for this trip who do NOT yet have a seat
+      const availableStudents = payments.filter(p => !assignedEverywhere.has(p.id));
+
+      if (availableStudents.length === 0) {
+        showToast('All registered students already have train seats allocated! ✓');
+        return;
+      }
+
+      let newlyAssignedCount = 0;
+      activeFetchedPnrData.passengers.forEach((p, idx) => {
+        if (!activePassengerMappings[idx] && availableStudents.length > 0) {
+          const nextStudent = availableStudents.shift();
+          activePassengerMappings[idx] = nextStudent.id;
+          assignedEverywhere.add(nextStudent.id);
+          newlyAssignedCount++;
+        }
+      });
+
+      if (newlyAssignedCount > 0) {
+        renderPNRFetchedSummaryAndSlots();
+        showToast(`Auto-assigned ${newlyAssignedCount} student(s) to open slots! Review and click Save.`);
+      } else {
+        showToast('All slots in this PNR are already occupied.');
+      }
+    }
+
+    function editSavedPNR(pnrNumber) {
+      const record = pnrRecords.find(r => r.pnrNumber === pnrNumber);
+      if (!record) {
+        showToast('PNR record not found.', 'error');
+        return;
+      }
+      const input = document.getElementById('pnrSearchInput');
+      if (input) input.value = pnrNumber;
+
+      activeFetchedPnrData = {
+        pnrNumber: record.pnrNumber,
+        trainNumber: record.trainNumber,
+        trainName: record.trainName,
+        fromStation: record.fromStation,
+        toStation: record.toStation,
+        dateOfJourney: record.dateOfJourney,
+        departureTime: record.departureTime,
+        arrivalTime: record.arrivalTime,
+        journeyClass: record.journeyClass,
+        chartPrepared: record.chartPrepared,
+        quota: record.quota || 'GN',
+        ticketFare: record.ticketFare || '',
+        distance: record.distance || '',
+        isLiveApi: false,
+        dataSourceNotice: 'Saved Cloud Record',
+        passengers: (record.passengerMappings || []).map((m, idx) => ({
+          passengerIndex: m.passengerIndex || idx + 1,
+          bookingStatus: m.bookingStatus || 'CNF',
+          currentStatus: m.currentStatus || 'CNF',
+          coach: m.coach || '',
+          seatNumber: m.seatNumber || '',
+          berthType: m.berthType || '',
+          berthName: m.berthName || (m.berthType ? (BERTH_MAP[m.berthType] || m.berthType) : 'Berth'),
+          age: m.age || '',
+          gender: m.gender || '',
+          quota: m.quota || 'GN',
+          fare: m.fare || ''
+        }))
+      };
+
+      activePassengerMappings = {};
+      (record.passengerMappings || []).forEach((m, idx) => {
+        if (m.assignedUserId) {
+          activePassengerMappings[idx] = m.assignedUserId;
+        }
+      });
+
+      const journeySelect = document.getElementById('pnrJourneyTypeSelect');
+      if (journeySelect && record.journeyType) {
+        journeySelect.value = record.journeyType;
+      }
+
+      renderPNRFetchedSummaryAndSlots();
+      const container = document.getElementById('pnrFetchedResultContainer');
+      if (container) {
+        container.classList.remove('hidden');
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      showToast(`Loaded PNR ${pnrNumber} for editing. Modify assignments and click Save.`);
     }
 
     async function handleSavePNRAllocationSubmit() {
@@ -13598,8 +13838,24 @@
           passengerMappings: mappingsArray
         }, { merge: true });
 
-        // 2. Prepare individual student document allocations (onward or return)
+        // 2. Clear previous allocations for any students who were unassigned
+        const existingRecord = pnrRecords.find(r => r.pnrNumber === pnr.pnrNumber);
+        const previouslyAssignedIds = (existingRecord && Array.isArray(existingRecord.passengerMappings))
+          ? existingRecord.passengerMappings.map(m => m.assignedUserId).filter(Boolean)
+          : [];
+        const currentAssignedIds = mappingsArray.map(m => m.assignedUserId).filter(Boolean);
+        const unassignedIds = previouslyAssignedIds.filter(id => !currentAssignedIds.includes(id));
         const targetAllocationField = journeyType === 'return' ? 'returnTrainAllocation' : 'trainAllocation';
+
+        unassignedIds.forEach(uId => {
+          const studentDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', uId);
+          batch.update(studentDocRef, {
+            [targetAllocationField]: null,
+            updatedAt: now
+          });
+        });
+
+        // 3. Prepare individual student document allocations (onward or return)
         mappingsArray.forEach(m => {
           if (m.assignedUserId) {
             const studentDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', m.assignedUserId);
@@ -13742,6 +13998,17 @@
                       Chart Pending ⏳
                      </span>`
           }
+
+                <!-- Edit / Reassign Seats Button -->
+                <button
+                  type="button"
+                  onclick="editSavedPNR('${record.pnrNumber}')"
+                  class="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-extrabold flex items-center gap-1.5 shadow-2xs transition"
+                  title="Edit student assignments for this PNR"
+                >
+                  <i data-lucide="edit-3" class="w-3.5 h-3.5 text-amber-700"></i>
+                  <span>Edit / Reassign</span>
+                </button>
 
                 <!-- Refresh PNR Status Button -->
                 <button
@@ -15749,6 +16016,310 @@
       handleAiChatSubmit(new Event('submit'));
     }
 
+    function openAiApiConfigModal() {
+      const modal = document.getElementById('aiApiConfigModal');
+      const provEl = document.getElementById('aiApiProviderSelect');
+      const keyEl = document.getElementById('aiApiKeyInput');
+      const modEl = document.getElementById('aiApiModelInput');
+      const endEl = document.getElementById('aiApiEndpointInput');
+      const statusBox = document.getElementById('aiApiTestStatusBox');
+
+      if (provEl) provEl.value = aiApiConfig.provider;
+      if (keyEl) keyEl.value = aiApiConfig.apiKey;
+      if (modEl) modEl.value = aiApiConfig.model;
+      if (endEl) endEl.value = aiApiConfig.endpoint;
+      if (statusBox) { statusBox.classList.add('hidden'); statusBox.textContent = ''; }
+
+      handleAiProviderChange();
+      if (modal) modal.classList.remove('hidden');
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function closeAiApiConfigModal() {
+      const modal = document.getElementById('aiApiConfigModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function handleAiProviderChange() {
+      const provEl = document.getElementById('aiApiProviderSelect');
+      const keyWrap = document.getElementById('aiApiKeyFieldWrap');
+      const modWrap = document.getElementById('aiApiModelFieldWrap');
+      const endWrap = document.getElementById('aiApiEndpointFieldWrap');
+      const modEl = document.getElementById('aiApiModelInput');
+      const provider = provEl ? provEl.value : 'gemini';
+
+      if (provider === 'gemini') {
+        if (keyWrap) keyWrap.classList.remove('hidden');
+        if (modWrap) modWrap.classList.remove('hidden');
+        if (endWrap) endWrap.classList.add('hidden');
+        if (modEl && (!modEl.value || modEl.value.includes('gpt'))) modEl.value = 'gemini-1.5-flash';
+      } else if (provider === 'openai') {
+        if (keyWrap) keyWrap.classList.remove('hidden');
+        if (modWrap) modWrap.classList.remove('hidden');
+        if (endWrap) endWrap.classList.add('hidden');
+        if (modEl && (!modEl.value || modEl.value.includes('gemini'))) modEl.value = 'gpt-4o-mini';
+      } else if (provider === 'openrouter') {
+        if (keyWrap) keyWrap.classList.remove('hidden');
+        if (modWrap) modWrap.classList.remove('hidden');
+        if (endWrap) endWrap.classList.remove('hidden');
+      } else {
+        if (keyWrap) keyWrap.classList.add('hidden');
+        if (modWrap) modWrap.classList.add('hidden');
+        if (endWrap) endWrap.classList.add('hidden');
+      }
+    }
+
+    function toggleAiApiKeyVisibility() {
+      const input = document.getElementById('aiApiKeyInput');
+      const icon = document.getElementById('aiApiKeyEyeIcon');
+      if (!input) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        if (icon) icon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        input.type = 'password';
+        if (icon) icon.setAttribute('data-lucide', 'eye');
+      }
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function saveAiApiConfig() {
+      const provEl = document.getElementById('aiApiProviderSelect');
+      const keyEl = document.getElementById('aiApiKeyInput');
+      const modEl = document.getElementById('aiApiModelInput');
+      const endEl = document.getElementById('aiApiEndpointInput');
+
+      aiApiConfig = {
+        provider: provEl ? provEl.value : 'gemini',
+        apiKey: keyEl ? keyEl.value.trim() : '',
+        model: modEl ? modEl.value.trim() : 'gemini-1.5-flash',
+        endpoint: endEl ? endEl.value.trim() : ''
+      };
+
+      try {
+        localStorage.setItem('trippay_ai_provider', aiApiConfig.provider);
+        localStorage.setItem('trippay_ai_api_key', aiApiConfig.apiKey);
+        localStorage.setItem('trippay_ai_model', aiApiConfig.model);
+        localStorage.setItem('trippay_ai_endpoint', aiApiConfig.endpoint);
+      } catch (e) { }
+
+      updateAiModelBadge();
+      closeAiApiConfigModal();
+      showToast('AI Chatbot API settings saved! ✓');
+    }
+
+    async function testAiApiConnection() {
+      const btn = document.getElementById('aiApiTestBtn');
+      const statusBox = document.getElementById('aiApiTestStatusBox');
+      const provEl = document.getElementById('aiApiProviderSelect');
+      const keyEl = document.getElementById('aiApiKeyInput');
+      const modEl = document.getElementById('aiApiModelInput');
+      const endEl = document.getElementById('aiApiEndpointInput');
+
+      const provider = provEl ? provEl.value : 'gemini';
+      const apiKey = keyEl ? keyEl.value.trim() : '';
+      const model = modEl ? modEl.value.trim() : 'gemini-1.5-flash';
+      const endpoint = endEl ? endEl.value.trim() : '';
+
+      if (provider !== 'builtin' && !apiKey) {
+        if (statusBox) {
+          statusBox.className = 'p-2.5 rounded-xl text-xs font-bold text-center bg-rose-50 text-rose-800 border border-rose-200';
+          statusBox.textContent = 'Please enter an API Key to test.';
+          statusBox.classList.remove('hidden');
+        }
+        return;
+      }
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="inline-block animate-spin mr-1">⏳</span> Testing...';
+      }
+
+      try {
+        if (provider === 'gemini') {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${apiKey}`;
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: 'Respond with exactly one word: Connected' }] }]
+            })
+          });
+          const json = await res.json();
+          if (json.error) throw new Error(json.error.message || 'Gemini API Error');
+          const reply = json.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (!reply) throw new Error('No response content received.');
+        } else if (provider === 'openai' || provider === 'openrouter') {
+          const url = endpoint || (provider === 'openrouter' ? 'https://openrouter.ai/api/v1/chat/completions' : 'https://api.openai.com/v1/chat/completions');
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+              model: model || 'gpt-4o-mini',
+              messages: [{ role: 'user', content: 'Say Connected' }],
+              max_tokens: 10
+            })
+          });
+          const json = await res.json();
+          if (json.error) throw new Error(json.error.message || 'OpenAI API Error');
+        }
+
+        if (statusBox) {
+          statusBox.className = 'p-2.5 rounded-xl text-xs font-bold text-center bg-emerald-50 text-emerald-800 border border-emerald-200';
+          statusBox.textContent = `✓ Successfully connected to ${provider.toUpperCase()} API (${model})!`;
+          statusBox.classList.remove('hidden');
+        }
+      } catch (err) {
+        if (statusBox) {
+          statusBox.className = 'p-2.5 rounded-xl text-xs font-bold text-center bg-rose-50 text-rose-800 border border-rose-200';
+          statusBox.textContent = `Error connecting: ${err.message}`;
+          statusBox.classList.remove('hidden');
+        }
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i data-lucide="zap" class="w-3.5 h-3.5 text-purple-600"></i><span>Test Connection</span>';
+          if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        }
+      }
+    }
+
+    function updateAiModelBadge() {
+      const badge = document.getElementById('aiActiveModelBadge');
+      if (!badge) return;
+      if (aiApiConfig.apiKey && aiApiConfig.provider === 'gemini') {
+        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>⚡ Gemini API Live`;
+      } else if (aiApiConfig.apiKey && (aiApiConfig.provider === 'openai' || aiApiConfig.provider === 'openrouter')) {
+        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>⚡ ${escapeHtml(aiApiConfig.model)} Live`;
+      } else {
+        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>TripPay AI Active`;
+      }
+    }
+
+    function buildTripAiSystemPrompt() {
+      const activeTrip = allTrips.find(t => t.id === currentTripId) || {
+        tripTitle: tripConfig.tripTitle || 'College Industrial & Leisure Tour',
+        destination: tripConfig.destination || 'Agra & North India',
+        tripAmount: tripConfig.tripAmount || 1500,
+        advanceAmount: tripConfig.advanceAmount || 500,
+        receiverName: tripConfig.receiverName || 'Trip Coordinator'
+      };
+
+      let studentContext = '';
+      if (loggedInParticipant) {
+        studentContext = `Active Student logged in: ${loggedInParticipant.studentName}, Phone: ${loggedInParticipant.phone}, Dept: ${loggedInParticipant.department || 'N/A'}, Paid: ₹${loggedInParticipant.amountPaid || 0}, Status: ${loggedInParticipant.status}.`;
+        if (loggedInParticipant.trainAllocation) {
+          const a = loggedInParticipant.trainAllocation;
+          studentContext += ` Train Seat: Train ${a.trainNumber} (${a.trainName}), Coach ${a.coach}, Seat ${a.seatNumber} (${a.berthName || a.berthType}), PNR: ${a.pnrNumber}.`;
+        }
+      }
+
+      return `You are TripPay AI Assistant, the official assistant for "${activeTrip.tripTitle}" (Destination: ${activeTrip.destination}).
+Key Trip Information:
+- Package Cost: ₹${activeTrip.tripAmount}
+- Advance Fee: ₹${activeTrip.advanceAmount} (Zero ₹0 advance payment registration is fully supported and allowed! Students can register without paying immediately and pay in installments later).
+- Train Journey: Train 12617 Mangala Lakshadweep Express. Primary college boarding station: Tirur (TIR) departing at 15:39 on Day 1. Halts at Kozhikode (16:27), Kannur (17:52), Mangaluru, Madgaon (Goa), Panvel (Mumbai), Nashik Road, Bhopal, Jhansi, Gwalior, arrives Agra Cantt (AGC) at 10:40 AM Day 3 for the Taj Mahal tour.
+- Boarding Passes: Official tickets with verifiable QR codes, barcodes, and PDF print engines can be accessed in "Your Passes & Tickets".
+- Seat Allocation: Coordinated via railway PNR and mapped directly to student boarding passes.
+- Suggestions & Feedback: There is a strictly confidential channel (Suggestions & Feedback tab) sent ONLY to the Trip Boss.
+- Coordinator / Receiver: ${activeTrip.receiverName}.
+${studentContext}
+
+Guidelines:
+- Provide concise, friendly, well-formatted answers with emojis and markdown bullet points.
+- If asked about seats or tickets, guide the user to their Boarding Pass or PNR lookup.
+- If asked to send suggestions, guide the user to the Suggestions & Feedback tab.`;
+    }
+
+    async function callChatbotApi(userQuery, history = []) {
+      const systemPrompt = buildTripAiSystemPrompt();
+      const provider = aiApiConfig.provider || 'gemini';
+      const apiKey = aiApiConfig.apiKey || '';
+      const model = aiApiConfig.model || 'gemini-1.5-flash';
+      const endpoint = aiApiConfig.endpoint || '';
+
+      // If user has Gemini API configured
+      if (provider === 'gemini' && apiKey) {
+        try {
+          const recentHistory = (history || []).slice(-6).filter(m => !m.isTyping && m.text).map(m => ({
+            role: m.sender === 'user' ? 'user' : 'model',
+            parts: [{ text: m.text }]
+          }));
+
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${apiKey}`;
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              systemInstruction: {
+                parts: [{ text: systemPrompt }]
+              },
+              contents: [
+                ...recentHistory,
+                { role: 'user', parts: [{ text: userQuery }] }
+              ],
+              generationConfig: {
+                temperature: 0.7,
+                maxOutputTokens: 800
+              }
+            })
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (text) return text;
+          } else {
+            console.warn('Gemini API call returned status:', res.status);
+          }
+        } catch (e) {
+          console.warn('Gemini API fetch error, falling back:', e);
+        }
+      }
+
+      // If user has OpenAI or OpenRouter configured
+      if ((provider === 'openai' || provider === 'openrouter') && apiKey) {
+        try {
+          const url = endpoint || (provider === 'openrouter' ? 'https://openrouter.ai/api/v1/chat/completions' : 'https://api.openai.com/v1/chat/completions');
+          const recentMessages = (history || []).slice(-6).filter(m => !m.isTyping && m.text).map(m => ({
+            role: m.sender === 'user' ? 'user' : 'assistant',
+            content: m.text
+          }));
+
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+              model: model || 'gpt-4o-mini',
+              messages: [
+                { role: 'system', content: systemPrompt },
+                ...recentMessages,
+                { role: 'user', content: userQuery }
+              ],
+              max_tokens: 800
+            })
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            const text = data.choices?.[0]?.message?.content;
+            if (text) return text;
+          }
+        } catch (e) {
+          console.warn('OpenAI API fetch error, falling back:', e);
+        }
+      }
+
+      // Fallback to local intelligent trip engine
+      return generateAiResponse(userQuery);
+    }
+
     function handleAiChatSubmit(e) {
       if (e && e.preventDefault) e.preventDefault();
       const input = document.getElementById('aiChatInput');
@@ -15775,18 +16346,28 @@
       });
       renderAiChatMessages();
 
-      setTimeout(() => {
-        const responseText = generateAiResponse(text);
-        // Replace typing with actual bot response
-        aiChatHistoryMessages = aiChatHistoryMessages.filter(m => m.id !== typingId);
-        aiChatHistoryMessages.push({
-          id: 'bot-' + Date.now(),
-          sender: 'bot',
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          text: responseText
-        });
-        renderAiChatMessages();
-      }, 550);
+      setTimeout(async () => {
+        try {
+          const responseText = await callChatbotApi(text, aiChatHistoryMessages);
+          aiChatHistoryMessages = aiChatHistoryMessages.filter(m => m.id !== typingId);
+          aiChatHistoryMessages.push({
+            id: 'bot-' + Date.now(),
+            sender: 'bot',
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            text: responseText
+          });
+          renderAiChatMessages();
+        } catch (err) {
+          aiChatHistoryMessages = aiChatHistoryMessages.filter(m => m.id !== typingId);
+          aiChatHistoryMessages.push({
+            id: 'bot-' + Date.now(),
+            sender: 'bot',
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            text: generateAiResponse(text)
+          });
+          renderAiChatMessages();
+        }
+      }, 350);
     }
 
     function generateAiResponse(query) {
@@ -16335,7 +16916,18 @@
       setBossFeedbackFilter,
       renderBossFeedbackList,
       updateBossFeedbackStatus,
-      deleteBossFeedback
+      deleteBossFeedback,
+      autoAssignUnallocatedStudents,
+      clearAllPassengerSlotAssignments,
+      editSavedPNR,
+      openAiApiConfigModal,
+      closeAiApiConfigModal,
+      handleAiProviderChange,
+      toggleAiApiKeyVisibility,
+      saveAiApiConfig,
+      testAiApiConnection,
+      updateAiModelBadge,
+      callChatbotApi
     });
 
     // Restore sessions from localStorage on load
@@ -16389,6 +16981,7 @@
       initPWAServiceWorker();
       updatePWAInstallUIState();
       checkFirstTimePWAInstallPrompt();
+      updateAiModelBadge();
 
       // Boss Master Command Suite Event Listeners
       const bossAdmSearch = document.getElementById('bossAdminSearchInput');
