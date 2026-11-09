@@ -1,8 +1,29 @@
 const fs = require('fs');
+const { execSync } = require('child_process');
 
 const content = fs.readFileSync('index.html', 'utf8');
-const scripts = content.match(/<script[\s\S]*?<\/script>/gi) || [];
 
+// Test ES module
+const tag = '<script type="module">';
+const start = content.indexOf(tag);
+const end = content.lastIndexOf('</script>');
+
+if (start !== -1 && end !== -1) {
+  const code = content.substring(start + tag.length, end);
+  fs.writeFileSync('temp_check_module.js', code);
+  try {
+    execSync('node --check temp_check_module.js');
+    console.log('PASS: ES module syntax verified with 0 errors.');
+  } catch (err) {
+    console.error('FAIL: ES module syntax error:', err.message);
+    process.exit(1);
+  } finally {
+    if (fs.existsSync('temp_check_module.js')) fs.unlinkSync('temp_check_module.js');
+  }
+}
+
+// Test other inline scripts
+const scripts = content.match(/<script[\s\S]*?<\/script>/gi) || [];
 let errors = 0;
 scripts.forEach((s, idx) => {
   if (!s.includes('type="module"') && !s.includes('src=')) {
@@ -20,4 +41,3 @@ scripts.forEach((s, idx) => {
 if (errors === 0) {
   console.log('All inline scripts verified successfully!');
 }
-

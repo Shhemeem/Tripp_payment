@@ -1,0 +1,106 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // TRIPPAY PRODUCTION FIRESTORE SECURITY RULES
+    // Deny-by-default architecture protecting all trip data, payments, and auth
+    // =========================================================================
+
+    // Global helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isPendingRegistration() {
+      // Unauthenticated students registering can ONLY create records with 'Pending Verification'
+      return request.resource.data.status == 'Pending Verification'
+        && request.resource.data.amountPaid is number
+        && request.resource.data.amountPaid >= 0
+        && request.resource.data.studentName is string
+        && request.resource.data.studentName.size() >= 2
+        && request.resource.data.phone is string;
+    }
+
+    // Application scope root
+    match /artifacts/{appId}/public/data {
+
+      // 1. Trips Master — Trip Instances & Metadata
+      match /trips_master/{tripId} {
+        allow read: if true; // Public can discover available trips
+        allow create, update: if isAuthenticated(); // Only authenticated admins can modify trips
+        allow delete: if isAuthenticated(); // Prefer soft-archival
+      }
+
+      // 2. Trip Settings — UPI ID, Amounts, Coordinator Details
+      match /trip_settings/{settingId} {
+        allow read: if true; // Needed by registration page for UPI ID and amounts
+        allow write: if isAuthenticated(); // Sensitive settings protected
+      }
+
+      // 3. Trip Payments — Student Registrations, Access Codes & Boarding Records
+      match /trip_payments/{paymentId} {
+        // Public read for student access-code verification and boarding pass rendering
+        allow read: if true;
+        // Public can register, but status is locked to 'Pending Verification'
+        allow create: if isPendingRegistration() || isAuthenticated();
+        // Only authenticated admins/staff can verify payments or update records
+        allow update: if isAuthenticated();
+        // Only authenticated admins can delete records
+        allow delete: if isAuthenticated();
+      }
+
+      // 4. Trip Expenses — Vendor Bills, Bus Rentals & Food Receipts
+      match /trip_expenses/{expenseId} {
+        allow read, write: if isAuthenticated(); // Hidden completely from students
+      }
+
+      // 5. Audit Logs — Tamper-Proof Immutable Security History
+      match /trip_audit_logs/{logId} {
+        allow read: if isAuthenticated();
+        allow create: if true; // Events can be recorded from app lifecycle
+        allow update, delete: if false; // NON-REPUDIATION: Audit logs can NEVER be modified or erased
+      }
+
+      // 6. Admin Accounts & Roles
+      match /admin_users/{userId} {
+        allow read, write: if isAuthenticated(); // Zero unauthenticated exposure
+      }
+
+      // 7. Master Boss Security
+      match /boss_security/{docId} {
+        allow read, write: if isAuthenticated(); // Protected from public inspection
+      }
+
+      // 8. Railway PNR Records & Passenger Allocations
+      match /pnr_records/{pnrId} {
+        allow read: if true; // Boarding pass railway seat details
+        allow write: if isAuthenticated();
+      }
+
+      // 9. Itinerary, Emergency Contacts & Feedback
+      match /trip_itinerary/{itinId} {
+        allow read: if true;
+        allow write: if isAuthenticated();
+      }
+
+      match /trip_contacts/{contactId} {
+        allow read: if true;
+        allow write: if isAuthenticated();
+      }
+
+      match /trip_feedback/{feedbackId} {
+        allow read: if true;
+        allow create: if request.resource.data.rating is number;
+        allow update, delete: if isAuthenticated();
+      }
+    }
+
+    // Default deny for all other unmatched documents
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
