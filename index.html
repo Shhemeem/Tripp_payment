@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -15267,23 +15267,6 @@
       openPrintWindow(content, `Ticket_Details_PNR_${record.pnrNumber}`);
     }
 
-    function printAllPnrTickets() {
-      const filterVal = document.getElementById('pnrJourneyFilterSelect')?.value || 'all';
-      const recordsToPrint = pnrRecords.filter(r => {
-        if (filterVal === 'onward') return (r.journeyType || 'onward') !== 'return';
-        if (filterVal === 'return') return r.journeyType === 'return';
-        return true;
-      });
-
-      if (recordsToPrint.length === 0) {
-        showToast('No PNR records to print for the selected filter.', 'error');
-        return;
-      }
-
-      const combinedHtml = recordsToPrint.map(r => generatePnrTicketPrintHtml(r)).join('');
-      openPrintWindow(combinedHtml, `All_Railway_Tickets_${filterVal}_${new Date().toISOString().slice(0, 10)}`);
-    }
-
     let nearSeatsActivePnr = 'all';
     let nearSeatsActiveCoach = 'all';
     let nearSeatsFocusedStudentId = null;
@@ -18169,7 +18152,6 @@ Guidelines:
       generatePnrTicketPrintHtml,
       openPrintWindow,
       printPnrTicketDetails,
-      printAllPnrTickets,
       openNearSeatsModal,
       closeNearSeatsModal,
       populateNearSeatsFilters,
