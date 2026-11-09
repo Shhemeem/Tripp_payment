@@ -1797,7 +1797,7 @@
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   <i data-lucide="search" class="w-4 h-4"></i>
                 </div>
-                <input type="text" id="pnrSearchInput" maxlength="10" pattern="\d{10}"
+                <input type="text" id="pnrSearchInput" maxlength="16"
                   placeholder="Enter 10-digit Indian Railways PNR (e.g. 4512890341)"
                   class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-900 font-mono font-bold tracking-wider placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                   required />
@@ -1806,6 +1806,12 @@
                 class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-md transition shrink-0">
                 <i data-lucide="satellite-dish" class="w-4 h-4"></i>
                 <span id="fetchPnrBtnText">Fetch PNR Details</span>
+              </button>
+              <button type="button" onclick="openManualPnrModal()"
+                class="px-4 py-3 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 font-extrabold text-sm flex items-center justify-center gap-1.5 shadow-xs transition shrink-0"
+                title="Create or customize train ticket manually without external API quota">
+                <i data-lucide="edit-3" class="w-4 h-4 text-amber-700"></i>
+                <span>Manual / Custom Entry</span>
               </button>
             </div>
 
@@ -3005,7 +3011,7 @@
             <div class="flex flex-col sm:flex-row gap-2">
               <div class="relative flex-1">
                 <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-                <input type="text" id="userPnrSearchInput" placeholder="e.g. 4147386985, 9876543210, or SEC-20903687"
+                <input type="text" id="userPnrSearchInput" placeholder="Enter 10-digit PNR, Student Name, Phone, Pass ID (e.g. RCP-...), or Seat..."
                   class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required />
               </div>
@@ -4960,6 +4966,138 @@
           Yes, Delete
         </button>
       </div>
+    </div>
+  </div>
+
+  
+  <!-- Modal: Manual / Custom Train Ticket Entry -->
+  <div id="manualPnrModal"
+    class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div class="expressive-card bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full p-6 space-y-4 my-8">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-black">
+            <i data-lucide="train" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-extrabold text-base text-slate-900">Manual / Custom Ticket Entry</h3>
+            <p class="text-xs text-slate-500">Create train ticket allocation without third-party API dependencies</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeManualPnrModal()"
+          class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleGenerateManualPnrSlots(event)" class="space-y-4 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-extrabold uppercase text-slate-600 mb-1">PNR Number (10 Digits) *</label>
+            <input type="text" id="manualPnrNumber" maxlength="10" placeholder="e.g. 4447386706" required
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+          </div>
+          <div>
+            <label class="block font-extrabold uppercase text-slate-600 mb-1">Ticket / Journey Type *</label>
+            <select id="manualPnrJourneyType"
+              class="w-full px-3 py-2.5 rounded-xl border border-slate-200 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white">
+              <option value="onward">🚂 Onward Ticket (Departure to Destination)</option>
+              <option value="return">🔄 Return Ticket (Coming Back Home)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-extrabold uppercase text-slate-600 mb-1">Train Number *</label>
+            <input type="text" id="manualPnrTrainNumber" placeholder="e.g. 12617" value="12617" required
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+          </div>
+          <div>
+            <label class="block font-extrabold uppercase text-slate-600 mb-1">Train Name *</label>
+            <input type="text" id="manualPnrTrainName" placeholder="e.g. Mangala Lakshadweep Express" value="Mangala Lakshadweep Express" required
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-extrabold uppercase text-slate-600 mb-1">From Station (Boarding) *</label>
+            <input type="text" id="manualPnrFrom" placeholder="e.g. CLT - Kozhikode" value="CLT - Kozhikode" required
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+          </div>
+          <div>
+            <label class="block font-extrabold uppercase text-slate-600 mb-1">To Station (Destination) *</label>
+            <input type="text" id="manualPnrTo" placeholder="e.g. MAO - Madgaon" value="MAO - Madgaon" required
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-extrabold uppercase text-slate-600 mb-1">Journey Date *</label>
+            <input type="date" id="manualPnrDoj" required
+              class="w-full px-3.5 py-2 rounded-xl border border-slate-200 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+          </div>
+          <div>
+            <label class="block font-extrabold uppercase text-slate-600 mb-1">Departure Time</label>
+            <input type="time" id="manualPnrDepTime" value="16:25"
+              class="w-full px-3.5 py-2 rounded-xl border border-slate-200 font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+          </div>
+          <div>
+            <label class="block font-extrabold uppercase text-slate-600 mb-1">Arrival Time</label>
+            <input type="time" id="manualPnrArrTime" value="09:55"
+              class="w-full px-3.5 py-2 rounded-xl border border-slate-200 font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+          <div>
+            <label class="block font-extrabold uppercase text-slate-600 mb-1">Class *</label>
+            <select id="manualPnrClass"
+              class="w-full px-2.5 py-2 rounded-xl border border-slate-200 font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+              <option value="SL">Sleeper (SL)</option>
+              <option value="3A">AC 3 Tier (3A)</option>
+              <option value="2A">AC 2 Tier (2A)</option>
+              <option value="1A">AC 1st Class (1A)</option>
+              <option value="CC">AC Chair Car (CC)</option>
+              <option value="2S">Second Sitting (2S)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-extrabold uppercase text-slate-600 mb-1">Coach (e.g. S5) *</label>
+            <input type="text" id="manualPnrCoach" value="S5" placeholder="S5" required
+              class="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono font-bold uppercase text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+          </div>
+          <div>
+            <label class="block font-extrabold uppercase text-slate-600 mb-1">Start Seat # *</label>
+            <input type="number" id="manualPnrStartSeat" value="41" min="1" max="150" required
+              class="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+          </div>
+          <div>
+            <label class="block font-extrabold uppercase text-slate-600 mb-1">Berth Count *</label>
+            <input type="number" id="manualPnrPassengerCount" value="6" min="1" max="72" required
+              class="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="manualPnrChartPrepared" class="w-4 h-4 rounded text-amber-600 focus:ring-amber-500" />
+          <label for="manualPnrChartPrepared" class="font-bold text-slate-700">Train Chart Prepared</label>
+        </div>
+
+        <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeManualPnrModal()"
+            class="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold transition">
+            Cancel
+          </button>
+          <button type="submit"
+            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-extrabold shadow-md flex items-center gap-1.5 transition">
+            <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+            <span>Generate Passenger Slots</span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -13298,14 +13436,242 @@
       };
     }
 
-    async function fetchPNRDetails(pnrNumber, customKey = '', customHost = '') {
+    
+    function determineBerthType(seatNum, travelClass = 'SL') {
+      const n = parseInt(seatNum, 10);
+      if (isNaN(n) || n <= 0) return 'LB';
+      if (travelClass === '2A') {
+        const mod = n % 6;
+        if (mod === 1 || mod === 3) return 'LB';
+        if (mod === 2 || mod === 4) return 'UB';
+        if (mod === 5) return 'SL';
+        return 'SU';
+      }
+      const mod = n % 8;
+      if (mod === 1 || mod === 4) return 'LB';
+      if (mod === 2 || mod === 5) return 'MB';
+      if (mod === 3 || mod === 6) return 'UB';
+      if (mod === 7) return 'SL';
+      return 'SU';
+    }
+
+    function openManualPnrModal() {
+      const modal = document.getElementById('manualPnrModal');
+      if (!modal) return;
+      const pnrInput = document.getElementById('manualPnrNumber');
+      const searchInput = document.getElementById('pnrSearchInput');
+      if (pnrInput && searchInput && searchInput.value) {
+        pnrInput.value = searchInput.value.replace(/\D/g, '');
+      }
+      const dojInput = document.getElementById('manualPnrDoj');
+      if (dojInput && !dojInput.value && tripConfig.tripDate) {
+        dojInput.value = tripConfig.tripDate;
+      }
+      const fromInput = document.getElementById('manualPnrFrom');
+      if (fromInput && !fromInput.value && tripConfig.boardingPoint) {
+        fromInput.value = tripConfig.boardingPoint;
+      }
+      const toInput = document.getElementById('manualPnrTo');
+      if (toInput && !toInput.value && tripConfig.destination) {
+        toInput.value = tripConfig.destination;
+      }
+      modal.classList.remove('hidden');
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function closeManualPnrModal() {
+      const modal = document.getElementById('manualPnrModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function handleGenerateManualPnrSlots(event) {
+      if (event && typeof event.preventDefault === 'function') event.preventDefault();
+      const pnrNumber = (document.getElementById('manualPnrNumber')?.value || '').trim().replace(/\D/g, '');
+      if (!isValidPNR(pnrNumber)) {
+        showToast('Please enter a valid 10-digit Indian Railways PNR number.', 'error');
+        return;
+      }
+
+      const trainNumber = (document.getElementById('manualPnrTrainNumber')?.value || '12617').trim();
+      const trainName = (document.getElementById('manualPnrTrainName')?.value || 'Mangala Lakshadweep Express').trim();
+      const fromStation = (document.getElementById('manualPnrFrom')?.value || 'CLT - Kozhikode').trim();
+      const toStation = (document.getElementById('manualPnrTo')?.value || 'MAO - Madgaon').trim();
+      const dateOfJourney = (document.getElementById('manualPnrDoj')?.value || tripConfig.tripDate || '2026-11-15').trim();
+      const depTime = (document.getElementById('manualPnrDepTime')?.value || '16:25').trim();
+      const arrTime = (document.getElementById('manualPnrArrTime')?.value || '09:55').trim();
+      const journeyClass = document.getElementById('manualPnrClass')?.value || 'SL';
+      const journeyType = document.getElementById('manualPnrJourneyType')?.value || 'onward';
+      const coach = (document.getElementById('manualPnrCoach')?.value || 'S5').trim().toUpperCase();
+      const startSeat = parseInt(document.getElementById('manualPnrStartSeat')?.value || '41', 10);
+      const totalPassengers = parseInt(document.getElementById('manualPnrPassengerCount')?.value || '6', 10);
+      const chartPrepared = document.getElementById('manualPnrChartPrepared')?.checked || false;
+
+      const passengers = [];
+      for (let i = 0; i < totalPassengers; i++) {
+        const seatNum = startSeat + i;
+        const berthType = determineBerthType(seatNum, journeyClass);
+        const berthName = BERTH_MAP[berthType] || berthType;
+        passengers.push({
+          passengerIndex: i + 1,
+          bookingStatus: `CNF/${coach}/${seatNum}/${berthType}`,
+          currentStatus: `CNF/${coach}/${seatNum}/${berthType}`,
+          status: 'CNF',
+          coach: coach,
+          seatNumber: String(seatNum),
+          berthType: berthType,
+          berthName: berthName,
+          age: '',
+          gender: '',
+          quota: 'GN',
+          fare: ''
+        });
+      }
+
+      activeFetchedPnrData = {
+        pnrNumber,
+        trainNumber,
+        trainName,
+        fromStation,
+        toStation,
+        dateOfJourney,
+        departureTime: depTime,
+        arrivalTime: arrTime,
+        journeyClass,
+        journeyType,
+        chartPrepared,
+        quota: 'GN',
+        ticketFare: '',
+        distance: '',
+        isLiveApi: false,
+        dataSourceNotice: 'Manual Entry (Custom Allocation)',
+        passengers
+      };
+      window.activeFetchedPnrData = activeFetchedPnrData;
+      activePassengerMappings = {};
+
+      closeManualPnrModal();
+
+      const searchInput = document.getElementById('pnrSearchInput');
+      if (searchInput) searchInput.value = pnrNumber;
+
+      renderPNRFetchedSummaryAndSlots();
+      const container = document.getElementById('pnrFetchedResultContainer');
+      if (container) {
+        container.classList.remove('hidden');
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      showToast(`Generated ${totalPassengers} passenger slots for PNR ${pnrNumber}! Assign students and save.`);
+    }
+
+    function updateSlotCoach(idx, val) {
+      if (!activeFetchedPnrData || !activeFetchedPnrData.passengers || !activeFetchedPnrData.passengers[idx]) return;
+      const cleanVal = String(val || '').trim().toUpperCase();
+      activeFetchedPnrData.passengers[idx].coach = cleanVal;
+      activeFetchedPnrData.passengers[idx].currentStatus = `${activeFetchedPnrData.passengers[idx].status || 'CNF'}/${cleanVal}/${activeFetchedPnrData.passengers[idx].seatNumber || ''}`;
+    }
+
+    function updateSlotSeat(idx, val) {
+      if (!activeFetchedPnrData || !activeFetchedPnrData.passengers || !activeFetchedPnrData.passengers[idx]) return;
+      const cleanVal = String(val || '').trim();
+      activeFetchedPnrData.passengers[idx].seatNumber = cleanVal;
+      activeFetchedPnrData.passengers[idx].currentStatus = `${activeFetchedPnrData.passengers[idx].status || 'CNF'}/${activeFetchedPnrData.passengers[idx].coach || ''}/${cleanVal}`;
+    }
+
+    function updateSlotBerth(idx, val) {
+      if (!activeFetchedPnrData || !activeFetchedPnrData.passengers || !activeFetchedPnrData.passengers[idx]) return;
+      activeFetchedPnrData.passengers[idx].berthType = val;
+      activeFetchedPnrData.passengers[idx].berthName = BERTH_MAP[val] || val || 'Standard';
+    }
+
+    function updateSlotStatus(idx, val) {
+      if (!activeFetchedPnrData || !activeFetchedPnrData.passengers || !activeFetchedPnrData.passengers[idx]) return;
+      activeFetchedPnrData.passengers[idx].status = val;
+      activeFetchedPnrData.passengers[idx].ticketStatus = val;
+      activeFetchedPnrData.passengers[idx].currentStatus = `${val}/${activeFetchedPnrData.passengers[idx].coach || ''}/${activeFetchedPnrData.passengers[idx].seatNumber || ''}`;
+      renderPNRFetchedSummaryAndSlots();
+    }
+
+    function addNewPassengerSlot() {
+      if (!activeFetchedPnrData) return;
+      if (!Array.isArray(activeFetchedPnrData.passengers)) activeFetchedPnrData.passengers = [];
+      const nextIdx = activeFetchedPnrData.passengers.length + 1;
+      const lastPassenger = activeFetchedPnrData.passengers[activeFetchedPnrData.passengers.length - 1];
+      const lastSeat = lastPassenger ? parseInt(lastPassenger.seatNumber, 10) : 0;
+      const nextSeat = (lastSeat && !isNaN(lastSeat)) ? lastSeat + 1 : nextIdx;
+      const coach = lastPassenger ? (lastPassenger.coach || 'S5') : 'S5';
+      const berthType = determineBerthType(nextSeat, activeFetchedPnrData.journeyClass || 'SL');
+
+      activeFetchedPnrData.passengers.push({
+        passengerIndex: nextIdx,
+        bookingStatus: `CNF/${coach}/${nextSeat}/${berthType}`,
+        currentStatus: `CNF/${coach}/${nextSeat}/${berthType}`,
+        status: 'CNF',
+        coach: coach,
+        seatNumber: String(nextSeat),
+        berthType: berthType,
+        berthName: BERTH_MAP[berthType] || berthType,
+        age: '',
+        gender: '',
+        quota: 'GN',
+        fare: ''
+      });
+      renderPNRFetchedSummaryAndSlots();
+      showToast(`Added Slot #${nextIdx}!`);
+    }
+
+    function removePassengerSlot(idx) {
+      if (!activeFetchedPnrData || !activeFetchedPnrData.passengers) return;
+      if (activeFetchedPnrData.passengers.length <= 1) {
+        showToast('A ticket must have at least 1 passenger slot.', 'error');
+        return;
+      }
+      activeFetchedPnrData.passengers.splice(idx, 1);
+      activeFetchedPnrData.passengers.forEach((p, i) => {
+        p.passengerIndex = i + 1;
+      });
+      const newMappings = {};
+      Object.keys(activePassengerMappings).forEach(k => {
+        const numK = parseInt(k, 10);
+        if (numK < idx) {
+          newMappings[numK] = activePassengerMappings[k];
+        } else if (numK > idx) {
+          newMappings[numK - 1] = activePassengerMappings[k];
+        }
+      });
+      activePassengerMappings = newMappings;
+      renderPNRFetchedSummaryAndSlots();
+    }
+
+    let isEditingTrainDetails = false;
+    function toggleEditTrainDetails() {
+      isEditingTrainDetails = !isEditingTrainDetails;
+      const editBox = document.getElementById('pnrTrainDetailsEditBox');
+      const staticBox = document.getElementById('pnrTrainDetailsStaticBox');
+      const toggleText = document.getElementById('editTrainDetailsToggleText');
+      if (editBox && staticBox) {
+        if (isEditingTrainDetails) {
+          editBox.classList.remove('hidden');
+          staticBox.classList.add('hidden');
+          if (toggleText) toggleText.textContent = 'Hide Edit';
+        } else {
+          editBox.classList.add('hidden');
+          staticBox.classList.remove('hidden');
+          if (toggleText) toggleText.textContent = 'Edit Train Details';
+          renderPNRFetchedSummaryAndSlots();
+        }
+      }
+    }
+
+        async function fetchPNRDetails(pnrNumber, customKey = '', customHost = '') {
       if (!isValidPNR(pnrNumber)) {
         throw new Error('Please enter a valid 10-digit Indian Railways PNR number.');
       }
 
       const pnr = String(pnrNumber).trim();
-      const apiKey = customKey || localStorage.getItem('trippay_rapidapi_key') || DEFAULT_RAPIDAPI_KEY;
-      const apiHost = customHost || localStorage.getItem('trippay_rapidapi_host') || DEFAULT_RAPIDAPI_HOST;
+      const apiKey = customKey || localStorage.getItem('trippay_rapidapi_key') || '';
+      const apiHost = customHost || localStorage.getItem('trippay_rapidapi_host') || '';
 
       if (USE_MOCK_PNR && !customKey && !localStorage.getItem('trippay_rapidapi_key_override')) {
         const mock = getMockPNRDetails(pnr);
@@ -13316,139 +13682,195 @@
 
       let apiErrorReason = '';
 
-      try {
-        let url = `https://${apiHost}/getPNRStatus/${encodeURIComponent(pnr)}`;
-        if (!apiHost.includes('irctc-indian-railway-pnr-status')) {
-          url = `https://${apiHost}/api/v3/getPNRStatus?pnrNumber=${encodeURIComponent(pnr)}`;
-        }
-
-        let response = null;
-        let lastErr = null;
+      // =========================================================================
+      // TIER 1: High-Speed Direct Live Indian Railways Engine (Zero Quota, Zero API Key required)
+      // =========================================================================
+      if (!customKey && !localStorage.getItem('trippay_rapidapi_key_override')) {
         try {
-          response = await fetch(url, {
-            method: 'GET',
+          const directUrl = `https://cttrainsapi.confirmtkt.com/api/v2/ctpro/mweb/${encodeURIComponent(pnr)}?querysource=ct-mweb&locale=en&getHighChanceText=true&livePnr=false`;
+          const directResp = await fetch(directUrl, {
+            method: 'POST',
             headers: {
-              'x-rapidapi-key': apiKey,
-              'x-rapidapi-host': apiHost
-            }
+              'ClientId': 'ct-mweb',
+              'ApiKey': 'ct-mweb!2$',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ proPlanName: 'CP7', emailId: '', tempToken: '' })
           });
-        } catch (netErr) {
-          lastErr = netErr;
-          if (apiHost !== FALLBACK_RAPIDAPI_HOST) {
-            const fallbackUrl = `https://${FALLBACK_RAPIDAPI_HOST}/api/v3/getPNRStatus?pnrNumber=${encodeURIComponent(pnr)}`;
-            try {
-              response = await fetch(fallbackUrl, {
-                method: 'GET',
-                headers: {
-                  'x-rapidapi-key': apiKey,
-                  'x-rapidapi-host': FALLBACK_RAPIDAPI_HOST
+
+          if (directResp.ok) {
+            const directJson = await directResp.json();
+            const pnrResp = directJson.data && directJson.data.pnrResponse;
+            if (pnrResp && pnrResp.trainNo && Array.isArray(pnrResp.passengerStatus) && pnrResp.passengerStatus.length > 0) {
+              const totalFare = Number(pnrResp.ticketFare || pnrResp.bookingFare || 0);
+              const perPersonFare = totalFare ? Math.round(totalFare / pnrResp.passengerStatus.length) : '';
+              const dojFormatted = pnrResp.doj ? formatDisplayDate(pnrResp.doj) : (tripConfig.tripDate || '');
+
+              const parsedPassengers = pnrResp.passengerStatus.map((p, idx) => {
+                const coach = p.currentCoachId || p.bookingCoachId || p.coach || '';
+                const seatNumber = String(p.currentBerthNo || p.bookingBerthNo || p.berth || '');
+                const berthType = p.currentBerthCode || p.bookingBerthCode || '';
+                const rawBooking = p.bookingStatus || '';
+                const rawCurrent = p.currentStatus || '';
+                let status = p.currentStatusNew || p.bookingStatusNew || 'CNF';
+                if (!status || status === '0') {
+                  status = rawCurrent.includes('CNF') ? 'CNF' : (rawCurrent.includes('RAC') ? 'RAC' : (rawCurrent.includes('WL') ? 'WL' : 'CNF'));
                 }
+
+                return {
+                  passengerIndex: p.number || (idx + 1),
+                  bookingStatus: rawBooking || `${status}/${coach}/${seatNumber}`,
+                  currentStatus: rawCurrent || `${status}/${coach}/${seatNumber}`,
+                  status: status,
+                  coach: coach,
+                  seatNumber: seatNumber,
+                  berthType: berthType,
+                  berthName: BERTH_MAP[berthType] || berthType || 'Berth',
+                  age: p.age || '',
+                  gender: p.gender || '',
+                  quota: p.quota || pnrResp.quota || 'GN',
+                  fare: perPersonFare || '',
+                  nationality: 'IN'
+                };
               });
-            } catch (netErr2) {
-              lastErr = netErr2;
-            }
-          }
-        }
 
-        if (response && response.ok) {
-          const json = await response.json();
-          const data = json.data || json;
-
-          const rawPassengers = data.passengerList || data.passengers || data.PassengerStatus || [];
-          const totalFare = Number(data.ticketFare || data.bookingFare || data.totalFare || 0);
-          const perPersonFare = (totalFare && rawPassengers.length) ? Math.round(totalFare / rawPassengers.length) : '';
-
-          if (rawPassengers.length > 0) {
-            const parsedPassengers = rawPassengers.map((p, idx) => {
-              const rawBooking = p.bookingStatusDetails || p.bookingStatus || p.BookingStatus || '';
-              const rawCurrent = p.currentStatusDetails || p.currentStatus || p.CurrentStatus || '';
-              const fallbackCoach = p.bookingCoachId || p.currentCoachId || p.coach || p.bookingCoach || p.currentCoach || '';
-              const fallbackBerth = p.bookingBerthNo || p.currentBerthNo || p.seatNumber || '';
-              const fallbackBerthType = p.bookingBerthCode || p.currentBerthCode || p.berthType || '';
-
-              const parsed = parsePassengerStatus(
-                rawBooking,
-                rawCurrent,
-                fallbackCoach,
-                fallbackBerth,
-                fallbackBerthType
-              );
+              const fromName = pnrResp.boardingStationName ? `${pnrResp.boardingPoint || pnrResp.from} - ${pnrResp.boardingStationName}` : (pnrResp.from || 'Origin');
+              const toName = pnrResp.reservationUptoName ? `${pnrResp.reservationUpto || pnrResp.to} - ${pnrResp.reservationUptoName}` : (pnrResp.to || 'Destination');
+              const depTime = pnrResp.departureTime || '--:--';
+              const arrTime = pnrResp.arrivalTime || '--:--';
+              const isChartPrep = Boolean(pnrResp.chartPrepared);
 
               return {
-                passengerIndex: p.passengerIndex || p.passengerSerialNumber || (idx + 1),
-                bookingStatus: parsed.bookingStatus,
-                currentStatus: parsed.currentStatus,
-                status: parsed.status,
-                coach: parsed.coach,
-                seatNumber: parsed.seatNumber,
-                berthType: parsed.berthType,
-                berthName: parsed.berthName || (parsed.berthType ? (BERTH_MAP[parsed.berthType] || parsed.berthType) : 'Berth'),
-                age: p.passengerAge || p.age || p.Age || '',
-                gender: p.passengerGender || p.gender || p.Gender || '',
-                quota: p.passengerQuota || p.bookingQuota || p.quota || data.quota || 'GN',
-                fare: p.passengerFare || p.bookingFare || p.fare || perPersonFare || '',
-                nationality: p.passengerNationality || 'IN'
+                pnrNumber: pnr,
+                trainNumber: String(pnrResp.trainNo),
+                trainName: String(pnrResp.trainName || 'Indian Railways Train'),
+                fromStation: fromName,
+                toStation: toName,
+                dateOfJourney: dojFormatted,
+                arrivalDate: pnrResp.destinationDoj ? formatDisplayDate(pnrResp.destinationDoj) : computeArrivalDate(dojFormatted, null, depTime, arrTime, pnrResp.trainNo),
+                departureTime: depTime,
+                arrivalTime: arrTime,
+                journeyClass: String(pnrResp.class || 'SL'),
+                chartPrepared: isChartPrep,
+                quota: pnrResp.quota || 'GN',
+                ticketFare: totalFare || '',
+                bookingFare: totalFare || '',
+                distance: pnrResp.duration ? `${pnrResp.duration} hrs` : '',
+                expectedPlatform: pnrResp.expectedPlatformNo || '',
+                isLiveApi: true,
+                liveEngine: 'Indian Railways Live Sync',
+                passengers: parsedPassengers
               };
-            });
-
-            let dojStr = String(data.dateOfJourney || data.doj || tripConfig.tripDate || '');
-            let depTimeStr = String(data.departureTime || data.fromTime || '--:--');
-            let arrTimeStr = String(data.arrivalTime || data.toTime || '--:--');
-
-            if (dojStr && (dojStr.includes('AM') || dojStr.includes('PM') || dojStr.includes(':'))) {
-              const m = dojStr.match(/^(.+?)\s+(\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM|am|pm)?)$/i);
-              if (m) {
-                dojStr = m[1].trim();
-                if (depTimeStr === '--:--') depTimeStr = m[2].trim();
-              }
+            } else if (pnrResp && pnrResp.error) {
+              apiErrorReason = pnrResp.error;
             }
-
-            if (data.arrivalDate) {
-              const m = String(data.arrivalDate).match(/^(.+?)\s+(\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM|am|pm)?)$/i);
-              if (m && arrTimeStr === '--:--') {
-                arrTimeStr = m[2].trim();
-              }
-            }
-
-            const isChartPrep = data.chartStatus === 'Chart Prepared' || Boolean(data.chartPrepared || data.chartStatus === 'CHART PREPARED');
-
-            return {
-              pnrNumber: pnr,
-              trainNumber: String(data.trainNumber || data.trainNo || ''),
-              trainName: String(data.trainName || 'Indian Railways Train'),
-              fromStation: String(data.fromStation || data.sourceStation || data.boardingPoint || 'Origin'),
-              toStation: String(data.toStation || data.destinationStation || data.reservationUpto || 'Destination'),
-              dateOfJourney: dojStr,
-              arrivalDate: data.arrivalDate ? formatDisplayDate(data.arrivalDate) : computeArrivalDate(dojStr, null, depTimeStr, arrTimeStr, data.trainNumber || data.trainNo),
-              departureTime: depTimeStr,
-              arrivalTime: arrTimeStr,
-              journeyClass: String(data.journeyClass || data.class || 'SL'),
-              chartPrepared: isChartPrep,
-              quota: data.quota || 'GN',
-              ticketFare: totalFare || data.ticketFare || data.bookingFare || '',
-              bookingFare: data.bookingFare || data.ticketFare || '',
-              distance: data.distance ? `${data.distance} km` : '',
-              expectedPlatform: data.expectedPlatformLocation || data.platform || '',
-              isLiveApi: true,
-              passengers: parsedPassengers
-            };
-          } else {
-            apiErrorReason = json.message || (data && data.message) || 'IRCTC Live API returned 0 active passenger slots or flushed record.';
           }
-        } else {
-          apiErrorReason = response ? `API HTTP ${response.status}` : (lastErr ? lastErr.message : 'Network timeout');
+        } catch (tier1Err) {
+          console.warn('Tier 1 Live IRCTC sync notice:', tier1Err.message);
+          apiErrorReason = tier1Err.message;
         }
-      } catch (err) {
-        apiErrorReason = err.message || 'API query error';
       }
 
-      // If live API returned flushed PNR / quota exhausted / network error:
-      console.warn(`Live IRCTC query notice for PNR ${pnr}:`, apiErrorReason);
+      // =========================================================================
+      // TIER 2: RapidAPI (When user configured a custom RapidAPI key in Settings)
+      // =========================================================================
+      const rapidKey = apiKey || DEFAULT_RAPIDAPI_KEY;
+      const rapidHost = apiHost || DEFAULT_RAPIDAPI_HOST;
+
+      if (rapidKey && (customKey || localStorage.getItem('trippay_rapidapi_key_override'))) {
+        try {
+          let url = `https://${rapidHost}/getPNRStatus/${encodeURIComponent(pnr)}`;
+          if (!rapidHost.includes('irctc-indian-railway-pnr-status')) {
+            url = `https://${rapidHost}/api/v3/getPNRStatus?pnrNumber=${encodeURIComponent(pnr)}`;
+          }
+
+          let response = await fetch(url, {
+            method: 'GET',
+            headers: {
+              'x-rapidapi-key': rapidKey,
+              'x-rapidapi-host': rapidHost
+            }
+          });
+
+          if (response && response.status === 429) {
+            apiErrorReason = 'RapidAPI Monthly Quota Exceeded (HTTP 429)';
+          } else if (response && response.ok) {
+            const json = await response.json();
+            const data = json.data || json;
+            const rawPassengers = data.passengerList || data.passengers || data.PassengerStatus || [];
+            const totalFare = Number(data.ticketFare || data.bookingFare || data.totalFare || 0);
+            const perPersonFare = (totalFare && rawPassengers.length) ? Math.round(totalFare / rawPassengers.length) : '';
+
+            if (rawPassengers.length > 0) {
+              const parsedPassengers = rawPassengers.map((p, idx) => {
+                const rawBooking = p.bookingStatusDetails || p.bookingStatus || p.BookingStatus || '';
+                const rawCurrent = p.currentStatusDetails || p.currentStatus || p.CurrentStatus || '';
+                const fallbackCoach = p.bookingCoachId || p.currentCoachId || p.coach || p.bookingCoach || p.currentCoach || '';
+                const fallbackBerth = p.bookingBerthNo || p.currentBerthNo || p.seatNumber || '';
+                const fallbackBerthType = p.bookingBerthCode || p.currentBerthCode || p.berthType || '';
+
+                const parsed = parsePassengerStatus(rawBooking, rawCurrent, fallbackCoach, fallbackBerth, fallbackBerthType);
+
+                return {
+                  passengerIndex: p.passengerIndex || p.passengerSerialNumber || (idx + 1),
+                  bookingStatus: parsed.bookingStatus,
+                  currentStatus: parsed.currentStatus,
+                  status: parsed.status,
+                  coach: parsed.coach,
+                  seatNumber: parsed.seatNumber,
+                  berthType: parsed.berthType,
+                  berthName: parsed.berthName || (parsed.berthType ? (BERTH_MAP[parsed.berthType] || parsed.berthType) : 'Berth'),
+                  age: p.passengerAge || p.age || p.Age || '',
+                  gender: p.passengerGender || p.gender || p.Gender || '',
+                  quota: p.passengerQuota || p.bookingQuota || p.quota || data.quota || 'GN',
+                  fare: p.passengerFare || p.bookingFare || p.fare || perPersonFare || '',
+                  nationality: 'IN'
+                };
+              });
+
+              let dojStr = String(data.dateOfJourney || data.doj || tripConfig.tripDate || '');
+              let depTimeStr = String(data.departureTime || data.fromTime || '--:--');
+              let arrTimeStr = String(data.arrivalTime || data.toTime || '--:--');
+
+              return {
+                pnrNumber: pnr,
+                trainNumber: String(data.trainNumber || data.trainNo || ''),
+                trainName: String(data.trainName || 'Indian Railways Train'),
+                fromStation: String(data.fromStation || data.sourceStation || data.boardingPoint || 'Origin'),
+                toStation: String(data.toStation || data.destinationStation || data.reservationUpto || 'Destination'),
+                dateOfJourney: dojStr,
+                arrivalDate: data.arrivalDate ? formatDisplayDate(data.arrivalDate) : computeArrivalDate(dojStr, null, depTimeStr, arrTimeStr, data.trainNumber || data.trainNo),
+                departureTime: depTimeStr,
+                arrivalTime: arrTimeStr,
+                journeyClass: String(data.journeyClass || data.class || 'SL'),
+                chartPrepared: Boolean(data.chartPrepared || data.chartStatus === 'Chart Prepared' || data.chartStatus === 'CHART PREPARED'),
+                quota: data.quota || 'GN',
+                ticketFare: totalFare || '',
+                bookingFare: totalFare || '',
+                distance: data.distance ? `${data.distance} km` : '',
+                expectedPlatform: data.expectedPlatformLocation || data.platform || '',
+                isLiveApi: true,
+                passengers: parsedPassengers
+              };
+            }
+          }
+        } catch (rapidErr) {
+          apiErrorReason = rapidErr.message;
+        }
+      }
+
+      // =========================================================================
+      // TIER 3: Realistic Allocation Template (Offline / Expired Fallback)
+      // =========================================================================
+      console.warn(`IRCTC query notice for PNR ${pnr}:`, apiErrorReason);
+      const isQuota = (apiErrorReason && (apiErrorReason.includes('429') || apiErrorReason.toLowerCase().includes('quota')));
       const fallbackData = getMockPNRDetails(pnr);
       fallbackData.isLiveApi = false;
-      fallbackData.dataSourceNotice = apiErrorReason.includes('quota')
+      fallbackData.quotaExceeded = isQuota;
+      fallbackData.apiErrorReason = apiErrorReason;
+      fallbackData.dataSourceNotice = isQuota
         ? 'RapidAPI Quota Limit (Realistic Allocation Loaded)'
-        : (apiErrorReason || 'Flushed IRCTC Record (Realistic Allocation Loaded)');
+        : (apiErrorReason ? `IRCTC Notice: ${apiErrorReason}` : 'Realistic Allocation Template Loaded');
       return fallbackData;
     }
 
@@ -13485,7 +13907,9 @@
       const resultBox = document.getElementById('pnrFetchedResultContainer');
 
       if (errBox) { errBox.classList.add('hidden'); errBox.textContent = ''; }
-      const pnr = (input ? input.value : '').trim();
+      const rawVal = (input ? input.value : '').trim();
+      const pnr = rawVal.replace(/\D/g, '');
+      if (input) input.value = pnr;
 
       if (!isValidPNR(pnr)) {
         if (errBox) {
@@ -13496,15 +13920,54 @@
       }
 
       if (btn) btn.disabled = true;
-      if (btnText) btnText.textContent = 'Querying IRCTC...';
+      if (btnText) btnText.textContent = 'Querying IRCTC Live...';
 
       try {
-        const details = await fetchPNRDetails(pnr);
+        let details = null;
+        // Priority 1: Check if PNR is already saved in this trip
+        const existingRecord = pnrRecords.find(r => r.pnrNumber === pnr);
+        if (existingRecord) {
+          details = {
+            pnrNumber: existingRecord.pnrNumber,
+            trainNumber: existingRecord.trainNumber,
+            trainName: existingRecord.trainName,
+            fromStation: existingRecord.fromStation,
+            toStation: existingRecord.toStation,
+            dateOfJourney: existingRecord.dateOfJourney,
+            departureTime: existingRecord.departureTime,
+            arrivalTime: existingRecord.arrivalTime,
+            journeyClass: existingRecord.journeyClass || 'SL',
+            journeyType: existingRecord.journeyType || 'onward',
+            chartPrepared: existingRecord.chartPrepared,
+            quota: existingRecord.quota || 'GN',
+            ticketFare: existingRecord.ticketFare || '',
+            distance: existingRecord.distance || '',
+            isLiveApi: false,
+            dataSourceNotice: 'Saved Trip Record (Instant Load)',
+            passengers: (existingRecord.passengerMappings || []).map((m, idx) => ({
+              passengerIndex: m.passengerIndex || (idx + 1),
+              bookingStatus: m.bookingStatus || '',
+              currentStatus: m.currentStatus || '',
+              status: m.ticketStatus || 'CNF',
+              coach: m.coach || '',
+              seatNumber: m.seatNumber || '',
+              berthType: m.berthType || '',
+              berthName: m.berthName || (BERTH_MAP[m.berthType] || m.berthType || 'Standard'),
+              age: m.age || '',
+              gender: m.gender || '',
+              quota: m.quota || 'GN',
+              fare: m.fare || ''
+            }))
+          };
+        } else {
+          details = await fetchPNRDetails(pnr);
+        }
+
         activeFetchedPnrData = details;
+        window.activeFetchedPnrData = details;
         activePassengerMappings = {};
 
         // If this PNR was already saved previously, pre-fill any existing student assignments
-        const existingRecord = pnrRecords.find(r => r.pnrNumber === pnr);
         if (existingRecord && Array.isArray(existingRecord.passengerMappings)) {
           existingRecord.passengerMappings.forEach(pm => {
             if (pm.assignedUserId) {
@@ -13533,10 +13996,9 @@
       if (!container || !activeFetchedPnrData) return;
 
       const pnr = activeFetchedPnrData;
-      const classLabel = CLASS_MAP[pnr.journeyClass] || pnr.journeyClass;
+      const classLabel = CLASS_MAP[pnr.journeyClass] || pnr.journeyClass || 'Sleeper';
 
       // Build options array of participants for this trip
-      // We want to list all verified/paid participants
       const participants = payments.map(p => ({
         id: p.id,
         name: p.studentName || 'Participant',
@@ -13548,7 +14010,7 @@
       // Find all currently selected userIds across all slots to prevent double-booking
       const assignedIds = Object.values(activePassengerMappings).filter(Boolean);
 
-      const passengerRowsHtml = pnr.passengers.map((p, idx) => {
+      const passengerRowsHtml = (pnr.passengers || []).map((p, idx) => {
         const parsed = parsePassengerStatus(p.bookingStatus, p.currentStatus, p.coach, p.seatNumber, p.berthType);
         const assignedUserId = activePassengerMappings[idx] || '';
 
@@ -13569,28 +14031,62 @@
 
         return `
           <tr class="border-b border-slate-100 hover:bg-slate-50/70 transition">
-            <td class="py-3.5 px-4 font-mono font-bold text-xs text-slate-700">
+            <td class="py-3 px-3 font-mono font-bold text-xs text-slate-700">
               <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200">
                 Slot #${p.passengerIndex}
               </span>
             </td>
-            <td class="py-3.5 px-4">
-              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-black border ${statusBadgeClass}">
-                ${parsed.status} • ${p.currentStatus}
-              </span>
+            <td class="py-3 px-3">
+              <select
+                onchange="updateSlotStatus(${idx}, this.value)"
+                class="px-2 py-1 rounded-lg text-[11px] font-black border ${statusBadgeClass} bg-white cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-500"
+              >
+                <option value="CNF" ${parsed.status === 'CNF' ? 'selected' : ''}>CNF</option>
+                <option value="RAC" ${parsed.status === 'RAC' ? 'selected' : ''}>RAC</option>
+                <option value="WL" ${parsed.status === 'WL' ? 'selected' : ''}>WL</option>
+              </select>
             </td>
-            <td class="py-3.5 px-4 text-xs font-bold text-slate-800 font-mono">
-              ${parsed.coach ? `<span class="px-2 py-1 rounded bg-amber-50 text-amber-900 border border-amber-200">${parsed.coach} - ${parsed.seatNumber}</span>` : `<span class="text-slate-400 font-sans font-normal">Pending Chart</span>`}
+            <td class="py-3 px-3">
+              <input
+                type="text"
+                value="${escapeHtml(p.coach || '')}"
+                placeholder="Coach"
+                title="Edit Coach (e.g. S5)"
+                onchange="updateSlotCoach(${idx}, this.value)"
+                class="w-16 px-2 py-1 rounded-lg border border-slate-200 text-xs font-mono font-black text-slate-800 bg-white uppercase text-center focus:outline-none focus:ring-1 focus:ring-amber-500"
+              />
             </td>
-            <td class="py-3.5 px-4 text-xs text-slate-600">
-              ${parsed.berthType ? `<span class="font-bold text-slate-800">${BERTH_MAP[parsed.berthType] || parsed.berthType}</span> (${parsed.berthType})` : '<span class="text-slate-400">-</span>'}
+            <td class="py-3 px-3">
+              <input
+                type="text"
+                value="${escapeHtml(String(p.seatNumber || ''))}"
+                placeholder="Seat #"
+                title="Edit Seat Number"
+                onchange="updateSlotSeat(${idx}, this.value)"
+                class="w-16 px-2 py-1 rounded-lg border border-slate-200 text-xs font-mono font-black text-slate-800 bg-white text-center focus:outline-none focus:ring-1 focus:ring-amber-500"
+              />
             </td>
-            <td class="py-3.5 px-4">
-              <div class="flex items-center gap-2">
+            <td class="py-3 px-3">
+              <select
+                onchange="updateSlotBerth(${idx}, this.value)"
+                class="px-2 py-1 rounded-lg border border-slate-200 text-xs font-mono font-bold text-slate-800 bg-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+              >
+                <option value="LB" ${p.berthType === 'LB' ? 'selected' : ''}>LB (Lower)</option>
+                <option value="MB" ${p.berthType === 'MB' ? 'selected' : ''}>MB (Middle)</option>
+                <option value="UB" ${p.berthType === 'UB' ? 'selected' : ''}>UB (Upper)</option>
+                <option value="SL" ${p.berthType === 'SL' ? 'selected' : ''}>SL (Side Lower)</option>
+                <option value="SU" ${p.berthType === 'SU' ? 'selected' : ''}>SU (Side Upper)</option>
+                <option value="SUB" ${p.berthType === 'SUB' ? 'selected' : ''}>SUB (Side Middle)</option>
+                <option value="CAB" ${p.berthType === 'CAB' ? 'selected' : ''}>Cabin</option>
+                <option value="" ${!p.berthType ? 'selected' : ''}>Standard</option>
+              </select>
+            </td>
+            <td class="py-3 px-3">
+              <div class="flex items-center gap-1.5">
                 <select
                   id="pnrSlotUserSelect_${idx}"
                   onchange="handleSelectPassengerStudent(${idx}, this.value)"
-                  class="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  class="flex-1 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
                 >
                   ${optionsHtml}
                 </select>
@@ -13598,20 +14094,68 @@
                   <button
                     type="button"
                     onclick="clearPassengerSlotAssignment(${idx})"
-                    class="p-2 rounded-lg text-rose-500 hover:bg-rose-50 hover:text-rose-700 transition"
+                    class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 hover:text-rose-700 transition"
                     title="Clear Assignment"
                   >
-                    <i data-lucide="x" class="w-4 h-4"></i>
+                    <i data-lucide="x" class="w-3.5 h-3.5"></i>
                   </button>
                 ` : ''}
               </div>
+            </td>
+            <td class="py-3 px-3 text-center">
+              <button
+                type="button"
+                onclick="removePassengerSlot(${idx})"
+                class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                title="Delete Slot"
+              >
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
             </td>
           </tr>
         `;
       }).join('');
 
+      // Optional Notice Banner
+      const noticeBannerHtml = pnr.isLiveApi ? `
+        <div class="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-900 text-xs flex items-center justify-between gap-3 shadow-xs">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-700 flex items-center justify-center shrink-0">
+              <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+            </div>
+            <div>
+              <p class="font-extrabold text-sm text-emerald-950">Live Indian Railways Sync Active</p>
+              <p class="text-emerald-800">PNR ${pnr.pnrNumber} details fetched in real-time from railway reservation systems.</p>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase bg-emerald-600 text-white shadow-2xs">Live Verified</span>
+        </div>
+      ` : (pnr.quotaExceeded ? `
+        <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-700 flex items-center justify-center shrink-0">
+              <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="font-extrabold text-sm text-amber-950">IRCTC API Quota Exceeded (Editable Template Loaded)</p>
+              <p class="text-amber-800">The RapidAPI quota is reached. You can customize the train, coach, and seat numbers directly below, or configure a personal RapidAPI key.</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button type="button" onclick="openRapidApiConfigModal()" class="px-3 py-1.5 rounded-xl bg-white border border-amber-300 hover:bg-amber-100 font-extrabold text-xs text-amber-900 shadow-2xs">
+              API Settings
+            </button>
+            <button type="button" onclick="openManualPnrModal()" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 font-extrabold text-xs text-white shadow-2xs">
+              Manual Entry
+            </button>
+          </div>
+        </div>
+      ` : '');
+
       container.innerHTML = `
         <div class="expressive-card border border-amber-200 rounded-3xl p-5 sm:p-7 bg-white shadow-lg space-y-6">
+          ${noticeBannerHtml}
+
           <!-- Train Summary Card -->
           <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-5 shadow-sm border border-slate-800 space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
@@ -13629,26 +14173,31 @@
                   <p class="text-xs text-slate-300 flex items-center gap-2 flex-wrap">
                     <span>PNR: <strong class="font-mono text-amber-300">${pnr.pnrNumber}</strong> • Class: ${classLabel}</span>
                     ${pnr.isLiveApi
-          ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">🟢 Live IRCTC API Synced</span>'
-          : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30" title="${escapeHtml(pnr.dataSourceNotice || 'Smart Train Allocation')}">⚡ Allocation Engine (${escapeHtml((pnr.dataSourceNotice || 'Smart Allocation').slice(0, 38))})</span>`
-        }
+                      ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">🟢 Live IRCTC API Synced</span>'
+                      : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30" title="${escapeHtml(pnr.dataSourceNotice || 'Smart Train Allocation')}">⚡ Allocation Engine (${escapeHtml((pnr.dataSourceNotice || 'Smart Allocation').slice(0, 38))})</span>`
+                    }
                   </p>
                 </div>
               </div>
-              <div>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="toggleEditTrainDetails()"
+                  class="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-white font-extrabold text-xs flex items-center gap-1 border border-white/20 transition">
+                  <i data-lucide="edit-3" class="w-3.5 h-3.5 text-amber-300"></i>
+                  <span id="editTrainDetailsToggleText">Edit Train Info</span>
+                </button>
                 ${pnr.chartPrepared
-          ? `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                  ? `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
                       <i data-lucide="check-check" class="w-3.5 h-3.5"></i> Chart Prepared
                      </span>`
-          : `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-amber-500/20 text-amber-300 border border-amber-400/30">
+                  : `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-amber-500/20 text-amber-300 border border-amber-400/30">
                       <i data-lucide="clock" class="w-3.5 h-3.5"></i> Chart Not Prepared
                      </span>`
-        }
+                }
               </div>
             </div>
 
-            <!-- Route & Timings Strip -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center text-xs">
+            <!-- Route & Timings Strip (Static View) -->
+            <div id="pnrTrainDetailsStaticBox" class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center text-xs">
               <div class="bg-black/30 rounded-xl p-3 border border-white/5">
                 <p class="text-[10px] uppercase font-bold text-slate-400">Boarding Origin</p>
                 <p class="font-bold text-sm text-white">${pnr.fromStation}</p>
@@ -13666,6 +14215,55 @@
                 <p class="text-[10px] uppercase font-bold text-slate-400">Destination Station</p>
                 <p class="font-bold text-sm text-white">${pnr.toStation}</p>
                 <p class="text-emerald-300 font-mono text-xs font-bold mt-0.5">Arr: ${pnr.arrivalTime}</p>
+              </div>
+            </div>
+
+            <!-- Route & Timings Strip (Edit View) -->
+            <div id="pnrTrainDetailsEditBox" class="hidden bg-black/40 rounded-xl p-4 border border-white/15 space-y-3 text-xs">
+              <p class="font-bold text-amber-300 flex items-center gap-1.5 text-xs">
+                <i data-lucide="edit" class="w-3.5 h-3.5"></i>
+                <span>Customize Train Route &amp; Timings Details</span>
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-300 mb-1">Train Number</label>
+                  <input type="text" value="${escapeHtml(pnr.trainNumber || '')}" oninput="activeFetchedPnrData.trainNumber = this.value;"
+                    class="w-full px-3 py-1.5 rounded-lg bg-black/50 border border-white/20 text-white font-mono text-xs focus:outline-none focus:ring-1 focus:ring-amber-400" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-300 mb-1">Train Name</label>
+                  <input type="text" value="${escapeHtml(pnr.trainName || '')}" oninput="activeFetchedPnrData.trainName = this.value;"
+                    class="w-full px-3 py-1.5 rounded-lg bg-black/50 border border-white/20 text-white text-xs focus:outline-none focus:ring-1 focus:ring-amber-400" />
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-300 mb-1">Origin Station</label>
+                  <input type="text" value="${escapeHtml(pnr.fromStation || '')}" oninput="activeFetchedPnrData.fromStation = this.value;"
+                    class="w-full px-3 py-1.5 rounded-lg bg-black/50 border border-white/20 text-white text-xs focus:outline-none focus:ring-1 focus:ring-amber-400" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-300 mb-1">Destination Station</label>
+                  <input type="text" value="${escapeHtml(pnr.toStation || '')}" oninput="activeFetchedPnrData.toStation = this.value;"
+                    class="w-full px-3 py-1.5 rounded-lg bg-black/50 border border-white/20 text-white text-xs focus:outline-none focus:ring-1 focus:ring-amber-400" />
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-300 mb-1">Journey Date</label>
+                  <input type="text" value="${escapeHtml(pnr.dateOfJourney || '')}" oninput="activeFetchedPnrData.dateOfJourney = this.value;"
+                    class="w-full px-3 py-1.5 rounded-lg bg-black/50 border border-white/20 text-white text-xs focus:outline-none focus:ring-1 focus:ring-amber-400" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-300 mb-1">Departure Time</label>
+                  <input type="text" value="${escapeHtml(pnr.departureTime || '')}" oninput="activeFetchedPnrData.departureTime = this.value;"
+                    class="w-full px-3 py-1.5 rounded-lg bg-black/50 border border-white/20 text-white font-mono text-xs focus:outline-none focus:ring-1 focus:ring-amber-400" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-300 mb-1">Arrival Time</label>
+                  <input type="text" value="${escapeHtml(pnr.arrivalTime || '')}" oninput="activeFetchedPnrData.arrivalTime = this.value;"
+                    class="w-full px-3 py-1.5 rounded-lg bg-black/50 border border-white/20 text-white font-mono text-xs focus:outline-none focus:ring-1 focus:ring-amber-400" />
+                </div>
               </div>
             </div>
           </div>
@@ -13699,17 +14297,34 @@
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr class="bg-slate-50 text-[11px] font-extrabold uppercase tracking-wider text-slate-500 border-b border-slate-200">
-                    <th class="py-3 px-4">Slot</th>
-                    <th class="py-3 px-4">Status</th>
-                    <th class="py-3 px-4">Coach / Seat</th>
-                    <th class="py-3 px-4">Berth Type</th>
-                    <th class="py-3 px-4 min-w-[260px]">Assigned Student</th>
+                    <th class="py-3 px-3">Slot</th>
+                    <th class="py-3 px-3">Status</th>
+                    <th class="py-3 px-3">Coach</th>
+                    <th class="py-3 px-3">Seat / Berth</th>
+                    <th class="py-3 px-3">Berth Type</th>
+                    <th class="py-3 px-3 min-w-[260px]">Assigned Student</th>
+                    <th class="py-3 px-3 text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   ${passengerRowsHtml}
                 </tbody>
               </table>
+            </div>
+
+            <!-- Add Slot & Count Bar -->
+            <div class="flex items-center justify-between pt-1">
+              <button
+                type="button"
+                onclick="addNewPassengerSlot()"
+                class="px-3.5 py-2 rounded-xl border border-dashed border-amber-300 bg-amber-50/70 hover:bg-amber-100 text-amber-900 text-xs font-extrabold flex items-center gap-1.5 transition"
+              >
+                <i data-lucide="plus-circle" class="w-4 h-4 text-amber-700"></i>
+                <span>+ Add Another Passenger Slot</span>
+              </button>
+              <span class="text-xs font-bold text-slate-500">
+                ${assignedIds.length} of ${pnr.passengers.length} slots assigned
+              </span>
             </div>
           </div>
 
@@ -16837,6 +17452,17 @@ Guidelines:
       handleSelectPassengerStudent,
       clearPassengerSlotAssignment,
       handleSavePNRAllocationSubmit,
+      openManualPnrModal,
+      closeManualPnrModal,
+      handleGenerateManualPnrSlots,
+      updateSlotCoach,
+      updateSlotSeat,
+      updateSlotBerth,
+      updateSlotStatus,
+      addNewPassengerSlot,
+      removePassengerSlot,
+      toggleEditTrainDetails,
+      determineBerthType,
       renderSavedPNRRecords,
       renderRailwayManagerUI,
       handleRefreshPNRStatus,
