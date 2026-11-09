@@ -1866,15 +1866,25 @@
               </p>
             </div>
 
-            <!-- Filter Option: Onward and Return -->
-            <div class="flex items-center gap-1.5 shrink-0">
-              <label for="pnrJourneyFilterSelect" class="text-xs font-bold text-slate-500">Filter:</label>
-              <select id="pnrJourneyFilterSelect" onchange="renderSavedPNRRecords()"
-                class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs">
-                <option value="all">All Allocations</option>
-                <option value="onward">🚂 Onward Journey</option>
-                <option value="return">🔄 Return Journey</option>
-              </select>
+            <!-- Filter Option & PDF Export -->
+            <div class="flex items-center gap-2 shrink-0 flex-wrap">
+              <div class="flex items-center gap-1.5">
+                <label for="pnrJourneyFilterSelect" class="text-xs font-bold text-slate-500">Filter:</label>
+                <select id="pnrJourneyFilterSelect" onchange="renderSavedPNRRecords()"
+                  class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs">
+                  <option value="all">All Allocations</option>
+                  <option value="onward">🚂 Onward Journey</option>
+                  <option value="return">🔄 Return Journey</option>
+                </select>
+              </div>
+
+              <!-- PDF Manifest Download Button -->
+              <button type="button" onclick="openPnrPdfModal()"
+                class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs transition"
+                title="Download all PNR and ticket seat details as PDF (Seat or Coach wise)">
+                <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
+                <span>Download PDF</span>
+              </button>
             </div>
           </div>
 
@@ -3152,6 +3162,130 @@
           class="px-4 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold transition">
           Close
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DOWNLOAD PNR TICKET & SEAT MANIFEST PDF -->
+  <div id="pnrPdfModal"
+    class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 no-print">
+    <div
+      class="expressive-card bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[92vh] flex flex-col overflow-hidden">
+      <!-- Modal Header -->
+      <div
+        class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-100 shrink-0 bg-slate-900 text-white">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-2xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-300 shrink-0">
+            <i data-lucide="file-text" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-extrabold text-base sm:text-lg text-white leading-tight">
+              Download Ticket &amp; PNR Manifest
+            </h3>
+            <p class="text-xs text-slate-300 mt-0.5">
+              Export official passenger roster organized seat-wise or coach-wise
+            </p>
+          </div>
+        </div>
+        <button type="button" onclick="closePnrPdfModal()"
+          class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white flex items-center justify-center transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-5 sm:p-6 space-y-4 overflow-y-auto">
+        <!-- Organization / Grouping Selection -->
+        <div>
+          <label class="block text-xs font-black uppercase tracking-wider text-slate-600 mb-2">
+            Organize PDF By:
+          </label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="relative flex flex-col p-3.5 rounded-2xl border-2 border-indigo-600 bg-indigo-50/50 cursor-pointer hover:bg-indigo-50/70 transition">
+              <input type="radio" name="pnrPdfOrganizeMode" value="seat" checked onchange="updatePnrPdfModeUI()" class="sr-only" />
+              <div class="flex items-center gap-2">
+                <span class="w-7 h-7 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                  <i data-lucide="hash" class="w-4 h-4"></i>
+                </span>
+                <span class="font-extrabold text-xs text-slate-900">Seat-wise</span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1.5 leading-tight">
+                Sorted sequentially by seat numbers (1, 2, 3...) per coach
+              </p>
+            </label>
+
+            <label class="relative flex flex-col p-3.5 rounded-2xl border-2 border-slate-200 bg-white cursor-pointer hover:bg-slate-50 transition">
+              <input type="radio" name="pnrPdfOrganizeMode" value="coach" onchange="updatePnrPdfModeUI()" class="sr-only" />
+              <div class="flex items-center gap-2">
+                <span class="w-7 h-7 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                  <i data-lucide="train" class="w-4 h-4"></i>
+                </span>
+                <span class="font-extrabold text-xs text-slate-900">Coach-wise</span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1.5 leading-tight">
+                Grouped by carriage &amp; bay compartments (8 berths)
+              </p>
+            </label>
+          </div>
+        </div>
+
+        <!-- Journey Selection -->
+        <div>
+          <label class="block text-xs font-black uppercase tracking-wider text-slate-600 mb-1.5">
+            Journey:
+          </label>
+          <select id="pnrPdfJourneyFilter" onchange="handlePnrPdfJourneyFilterChange()"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white font-bold text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-2xs">
+            <option value="all">All Journeys (Onward + Return)</option>
+            <option value="onward">🚂 Onward Journey Only</option>
+            <option value="return">🔄 Return Journey Only</option>
+          </select>
+        </div>
+
+        <!-- Specific Train Filter (Optional) -->
+        <div id="pnrPdfTrainSelectWrapper">
+          <label class="block text-xs font-black uppercase tracking-wider text-slate-600 mb-1.5">
+            Train / PNR:
+          </label>
+          <select id="pnrPdfTrainFilter"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white font-bold text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-2xs">
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+
+        <!-- Options checkboxes -->
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">
+          <label class="flex items-center gap-2 cursor-pointer font-bold text-slate-700">
+            <input type="checkbox" id="pnrPdfIncludePhone" checked class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+            <span>Include Student Contact Phone Numbers</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer font-bold text-slate-700">
+            <input type="checkbox" id="pnrPdfIncludeDept" checked class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+            <span>Include Department / Course Information</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div
+        class="px-5 py-3.5 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shrink-0">
+        <button type="button" onclick="closePnrPdfModal()"
+          class="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs transition">
+          Cancel
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="executePnrPrintManifest()"
+            class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center gap-1.5 transition">
+            <i data-lucide="printer" class="w-3.5 h-3.5 text-slate-600"></i>
+            <span>Print View</span>
+          </button>
+          <button type="button" id="pnrDownloadPdfBtn" onclick="executePnrDownloadPdf()"
+            class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Download PDF</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -14996,6 +15130,559 @@
     }
 
     // =========================================================================
+    // ADMIN PNR TICKET & SEAT MANIFEST PDF EXPORT (SEAT-WISE & COACH-WISE)
+    // =========================================================================
+    function openPnrPdfModal() {
+      if (!pnrRecords || pnrRecords.length === 0) {
+        showToast('No PNR allocations found to download.', 'error');
+        return;
+      }
+
+      const modal = document.getElementById('pnrPdfModal');
+      const journeySelect = document.getElementById('pnrPdfJourneyFilter');
+      const mainJourneyFilter = document.getElementById('pnrJourneyFilterSelect')?.value || 'all';
+
+      if (journeySelect) {
+        journeySelect.value = mainJourneyFilter;
+      }
+
+      handlePnrPdfJourneyFilterChange();
+
+      if (modal) modal.classList.remove('hidden');
+      updatePnrPdfModeUI();
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function closePnrPdfModal() {
+      const modal = document.getElementById('pnrPdfModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function updatePnrPdfModeUI() {
+      const mode = document.querySelector('input[name="pnrPdfOrganizeMode"]:checked')?.value || 'seat';
+      const radios = document.querySelectorAll('input[name="pnrPdfOrganizeMode"]');
+      radios.forEach(r => {
+        const parent = r.closest('label');
+        if (!parent) return;
+        if (r.value === mode) {
+          parent.classList.add('border-indigo-600', 'bg-indigo-50/50');
+          parent.classList.remove('border-slate-200', 'bg-white');
+        } else {
+          parent.classList.remove('border-indigo-600', 'bg-indigo-50/50');
+          parent.classList.add('border-slate-200', 'bg-white');
+        }
+      });
+    }
+
+    function handlePnrPdfJourneyFilterChange() {
+      const journeySelect = document.getElementById('pnrPdfJourneyFilter');
+      const trainSelect = document.getElementById('pnrPdfTrainFilter');
+      if (!trainSelect) return;
+
+      const jVal = journeySelect ? journeySelect.value : 'all';
+      const records = (jVal === 'all')
+        ? pnrRecords
+        : pnrRecords.filter(r => (r.journeyType || 'onward') === jVal);
+
+      trainSelect.innerHTML = `
+        <option value="all">All Trains &amp; PNRs in this selection (${records.length} records)</option>
+        ${records.map(r => `
+          <option value="${r.pnrNumber}">
+            ${r.journeyType === 'return' ? '🔄 Return' : '🚂 Onward'}: ${r.trainNumber} - ${r.trainName} (PNR: ${r.pnrNumber})
+          </option>
+        `).join('')}
+      `;
+    }
+
+    function generatePnrManifestHtml(options = {}) {
+      const mode = options.mode || 'seat'; // 'seat' or 'coach'
+      const journeyFilter = options.journeyFilter || 'all';
+      const trainFilter = options.trainFilter || 'all';
+      const includePhone = options.includePhone ?? true;
+      const includeDept = options.includeDept ?? true;
+
+      let targetRecords = pnrRecords || [];
+      if (journeyFilter !== 'all') {
+        targetRecords = targetRecords.filter(r => (r.journeyType || 'onward') === journeyFilter);
+      }
+      if (trainFilter !== 'all') {
+        targetRecords = targetRecords.filter(r => r.pnrNumber === trainFilter);
+      }
+
+      if (targetRecords.length === 0) {
+        return `
+          <div style="padding: 40px; text-align: center; color: #64748b; font-family: sans-serif;">
+            <h3 style="font-size: 16px; margin-bottom: 8px;">No PNR records found matching the selected filter.</h3>
+            <p style="font-size: 12px; margin: 0;">Please check your journey or train selection and try again.</p>
+          </div>
+        `;
+      }
+
+      const tripTitle = (typeof tripConfig !== 'undefined' && tripConfig.tripName) ? tripConfig.tripName : 'Educational Tour';
+      const coordinatorName = (typeof tripConfig !== 'undefined' && (tripConfig.receiverName || tripConfig.leaderName)) ? (tripConfig.receiverName || tripConfig.leaderName) : 'Trip Coordinator';
+      const nowFormatted = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+      // Collect all slots across records
+      const allSlots = [];
+      targetRecords.forEach(rec => {
+        (rec.passengerMappings || []).forEach(m => {
+          const student = (typeof payments !== 'undefined' && m.assignedUserId)
+            ? payments.find(p => p.id === m.assignedUserId)
+            : null;
+
+          allSlots.push({
+            pnrNumber: rec.pnrNumber,
+            trainNumber: rec.trainNumber,
+            trainName: rec.trainName,
+            fromStation: rec.fromStation || '-',
+            toStation: rec.toStation || '-',
+            departureTime: rec.departureTime || '-',
+            arrivalTime: rec.arrivalTime || '-',
+            dateOfJourney: rec.dateOfJourney || '-',
+            journeyType: rec.journeyType || 'onward',
+            journeyClass: rec.journeyClass || 'SL',
+            classLabel: CLASS_MAP[rec.journeyClass] || rec.journeyClass || 'SL',
+            passengerIndex: m.passengerIndex,
+            coach: m.coach ? String(m.coach).trim().toUpperCase() : 'NO-COACH',
+            seatNumber: m.seatNumber ? parseInt(m.seatNumber, 10) : null,
+            rawSeat: m.seatNumber || '-',
+            berthType: m.berthType || '-',
+            berthLabel: m.berthType ? (BERTH_MAP[m.berthType] || m.berthType) : (m.berthType || '-'),
+            ticketStatus: m.ticketStatus || 'CNF',
+            assignedUserId: m.assignedUserId || null,
+            assignedUserName: m.assignedUserName || (student ? student.studentName : 'Unassigned Slot'),
+            studentDept: student ? (student.department || '-') : '-',
+            studentPhone: student ? (student.phone || '-') : '-'
+          });
+        });
+      });
+
+      // Distinct trains list for summary header
+      const distinctTrains = [];
+      const trainSeen = new Set();
+      targetRecords.forEach(r => {
+        const key = `${r.trainNumber}_${r.journeyType}`;
+        if (!trainSeen.has(key)) {
+          trainSeen.add(key);
+          distinctTrains.push({
+            trainNumber: r.trainNumber,
+            trainName: r.trainName,
+            journeyType: r.journeyType || 'onward',
+            pnrNumber: r.pnrNumber,
+            dateOfJourney: r.dateOfJourney,
+            route: `${r.fromStation} ➔ ${r.toStation}`
+          });
+        }
+      });
+
+      let contentHtml = '';
+
+      if (mode === 'seat') {
+        // Sort strictly seat-wise
+        allSlots.sort((a, b) => {
+          if (a.journeyType !== b.journeyType) return a.journeyType === 'onward' ? -1 : 1;
+          if (a.trainNumber !== b.trainNumber) return a.trainNumber.localeCompare(b.trainNumber);
+          if (a.coach !== b.coach) return a.coach.localeCompare(b.coach, undefined, { numeric: true });
+          const seatA = (a.seatNumber !== null && !isNaN(a.seatNumber)) ? a.seatNumber : 99999;
+          const seatB = (b.seatNumber !== null && !isNaN(b.seatNumber)) ? b.seatNumber : 99999;
+          if (seatA !== seatB) return seatA - seatB;
+          return a.passengerIndex - b.passengerIndex;
+        });
+
+        contentHtml = `
+          <table class="manifest-table">
+            <thead>
+              <tr>
+                <th style="width: 36px; text-align: center;">#</th>
+                <th style="width: 55px; text-align: center;">Coach</th>
+                <th style="width: 55px; text-align: center;">Seat</th>
+                <th style="width: 95px;">Berth Type</th>
+                <th>Passenger / Student Name</th>
+                ${includeDept ? '<th style="width: 140px;">Department</th>' : ''}
+                ${includePhone ? '<th style="width: 110px;">Mobile No</th>' : ''}
+                <th style="width: 65px; text-align: center;">Status</th>
+                <th style="width: 80px; text-align: center;">Journey</th>
+                <th style="width: 95px; text-align: center;">PNR No</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${allSlots.map((s, idx) => {
+                let statusBadge = '<span class="badge badge-cnf">CNF</span>';
+                if (s.ticketStatus === 'RAC') statusBadge = '<span class="badge badge-rac">RAC</span>';
+                if (s.ticketStatus === 'WL') statusBadge = '<span class="badge badge-wl">WL</span>';
+                const journeyBadge = s.journeyType === 'return'
+                  ? '<span class="badge badge-return">Return</span>'
+                  : '<span class="badge badge-onward">Onward</span>';
+
+                return `
+                  <tr>
+                    <td style="text-align: center; color: #64748b; font-family: monospace;">${idx + 1}</td>
+                    <td style="text-align: center; font-weight: 800; font-family: monospace; color: #1e1b4b;">${escapeHtml(s.coach)}</td>
+                    <td style="text-align: center; font-weight: 800; font-family: monospace; color: #b45309; font-size: 12px;">${escapeHtml(String(s.rawSeat))}</td>
+                    <td style="font-size: 10px; color: #475569;">${escapeHtml(s.berthLabel)}</td>
+                    <td style="font-weight: 700; color: #0f172a;">${escapeHtml(s.assignedUserName)}</td>
+                    ${includeDept ? `<td style="color: #475569;">${escapeHtml(s.studentDept)}</td>` : ''}
+                    ${includePhone ? `<td style="font-family: monospace; color: #334155;">${escapeHtml(s.studentPhone)}</td>` : ''}
+                    <td style="text-align: center;">${statusBadge}</td>
+                    <td style="text-align: center;">${journeyBadge}</td>
+                    <td style="text-align: center; font-family: monospace; font-weight: 700; color: #334155;">${escapeHtml(s.pnrNumber)}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        `;
+      } else {
+        // Mode === 'coach': Group by Journey -> Train -> Coach -> Bay
+        const coachGroupMap = new Map();
+
+        allSlots.forEach(s => {
+          const groupKey = `${s.journeyType}_${s.trainNumber}_${s.coach}`;
+          if (!coachGroupMap.has(groupKey)) {
+            coachGroupMap.set(groupKey, {
+              journeyType: s.journeyType,
+              trainNumber: s.trainNumber,
+              trainName: s.trainName,
+              coach: s.coach,
+              slots: []
+            });
+          }
+          coachGroupMap.get(groupKey).slots.push(s);
+        });
+
+        const sortedGroups = Array.from(coachGroupMap.values()).sort((a, b) => {
+          if (a.journeyType !== b.journeyType) return a.journeyType === 'onward' ? -1 : 1;
+          if (a.trainNumber !== b.trainNumber) return a.trainNumber.localeCompare(b.trainNumber);
+          return a.coach.localeCompare(b.coach, undefined, { numeric: true });
+        });
+
+        contentHtml = sortedGroups.map(grp => {
+          const coachSlots = grp.slots;
+          const journeyBadge = grp.journeyType === 'return'
+            ? '<span class="badge badge-return" style="font-size: 11px;">🔄 Return Journey</span>'
+            : '<span class="badge badge-onward" style="font-size: 11px;">🚂 Onward Journey</span>';
+
+          // Group by Bay
+          const jClass = coachSlots[0]?.journeyClass || 'SL';
+          const bayMap = new Map();
+          const unnumbered = [];
+
+          coachSlots.forEach(s => {
+            if (s.seatNumber && !isNaN(s.seatNumber) && s.seatNumber > 0) {
+              const bayInfo = computeSeatBayInfo(s.seatNumber, jClass);
+              if (!bayMap.has(bayInfo.bayIndex)) {
+                bayMap.set(bayInfo.bayIndex, { info: bayInfo, slots: [] });
+              }
+              bayMap.get(bayInfo.bayIndex).slots.push(s);
+            } else {
+              unnumbered.push(s);
+            }
+          });
+
+          const sortedBays = Array.from(bayMap.values()).sort((a, b) => a.info.bayIndex - b.info.bayIndex);
+
+          return `
+            <div style="margin-bottom: 20px; page-break-inside: avoid;">
+              <div class="coach-header">
+                <div>
+                  <span style="font-size: 14px; text-transform: uppercase;">Coach ${escapeHtml(grp.coach)}</span>
+                  <span style="font-size: 11px; margin-left: 8px; color: #4338ca; font-weight: normal;">${escapeHtml(grp.trainNumber)} - ${escapeHtml(grp.trainName)}</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  ${journeyBadge}
+                  <span style="background: #ffffff; padding: 2px 8px; border-radius: 4px; font-size: 11px; color: #312e81; border: 1px solid #c7d2fe;">
+                    ${coachSlots.length} Passengers
+                  </span>
+                </div>
+              </div>
+
+              ${sortedBays.map(bay => {
+                const baySlots = bay.slots.sort((a, b) => a.seatNumber - b.seatNumber);
+                return `
+                  <div style="margin-bottom: 12px;">
+                    <div class="bay-header">
+                      <span>${bay.info.bayLabel}</span>
+                      <span style="float: right; font-weight: normal; font-size: 10px; color: #64748b;">${baySlots.length} Students</span>
+                    </div>
+                    <table class="manifest-table" style="margin-bottom: 4px;">
+                      <thead>
+                        <tr>
+                          <th style="width: 50px; text-align: center;">Seat</th>
+                          <th style="width: 95px;">Berth Type</th>
+                          <th>Passenger / Student Name</th>
+                          ${includeDept ? '<th style="width: 140px;">Department</th>' : ''}
+                          ${includePhone ? '<th style="width: 110px;">Mobile No</th>' : ''}
+                          <th style="width: 65px; text-align: center;">Status</th>
+                          <th style="width: 95px; text-align: center;">PNR</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${baySlots.map(s => {
+                          let statusBadge = '<span class="badge badge-cnf">CNF</span>';
+                          if (s.ticketStatus === 'RAC') statusBadge = '<span class="badge badge-rac">RAC</span>';
+                          if (s.ticketStatus === 'WL') statusBadge = '<span class="badge badge-wl">WL</span>';
+                          return `
+                            <tr>
+                              <td style="text-align: center; font-weight: 800; font-family: monospace; color: #b45309; font-size: 12px;">${s.seatNumber}</td>
+                              <td style="font-size: 10px; color: #475569;">${escapeHtml(s.berthLabel)}</td>
+                              <td style="font-weight: 700; color: #0f172a;">${escapeHtml(s.assignedUserName)}</td>
+                              ${includeDept ? `<td style="color: #475569;">${escapeHtml(s.studentDept)}</td>` : ''}
+                              ${includePhone ? `<td style="font-family: monospace; color: #334155;">${escapeHtml(s.studentPhone)}</td>` : ''}
+                              <td style="text-align: center;">${statusBadge}</td>
+                              <td style="text-align: center; font-family: monospace; font-size: 10px;">${escapeHtml(s.pnrNumber)}</td>
+                            </tr>
+                          `;
+                        }).join('')}
+                      </tbody>
+                    </table>
+                  </div>
+                `;
+              }).join('')}
+
+              ${unnumbered.length > 0 ? `
+                <div style="margin-top: 8px; padding: 8px 10px; background: #fffbeb; border: 1px dashed #f59e0b; border-radius: 6px;">
+                  <strong style="font-size: 11px; color: #92400e;">Unnumbered / WL / RAC in Coach ${escapeHtml(grp.coach)} (${unnumbered.length}):</strong>
+                  <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;">
+                    ${unnumbered.map(u => `
+                      <span style="background: white; border: 1px solid #fde68a; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; color: #78350f;">
+                        ${escapeHtml(u.assignedUserName)} (${escapeHtml(u.ticketStatus || 'Pending')}) • PNR ${escapeHtml(u.pnrNumber)}
+                      </span>
+                    `).join('')}
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+
+      return `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0f172a; max-width: 1050px; margin: 0 auto; background: #ffffff;">
+          <style>
+            .manifest-header { border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: flex-start; }
+            .manifest-title { font-size: 20px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+            .manifest-subtitle { font-size: 12px; font-weight: 700; color: #4338ca; margin: 3px 0 0 0; }
+            .manifest-meta { font-size: 11px; color: #475569; text-align: right; }
+            .train-summary-pill { display: inline-block; font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 6px; background: #f8fafc; border: 1px solid #cbd5e1; margin-right: 6px; margin-bottom: 4px; }
+            .badge-onward { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; font-weight: 800; font-size: 9px; padding: 2px 5px; border-radius: 4px; }
+            .badge-return { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; font-weight: 800; font-size: 9px; padding: 2px 5px; border-radius: 4px; }
+            .badge-cnf { background: #dcfce7; color: #15803d; font-weight: 800; font-size: 9px; padding: 1px 5px; border-radius: 3px; }
+            .badge-rac { background: #fef3c7; color: #b45309; font-weight: 800; font-size: 9px; padding: 1px 5px; border-radius: 3px; }
+            .badge-wl { background: #ffe4e6; color: #be123c; font-weight: 800; font-size: 9px; padding: 1px 5px; border-radius: 3px; }
+            table.manifest-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 14px; }
+            table.manifest-table tr { page-break-inside: avoid; }
+            table.manifest-table th { background: #1e293b; color: #ffffff; text-align: left; padding: 6px 8px; font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid #0f172a; }
+            table.manifest-table td { padding: 5px 8px; border: 1px solid #cbd5e1; font-size: 11px; }
+            table.manifest-table tr:nth-child(even) { background: #f8fafc; }
+            .coach-header { background: #e0e7ff; color: #312e81; font-weight: 800; font-size: 13px; padding: 6px 10px; border-radius: 6px; margin: 14px 0 8px 0; border: 1px solid #c7d2fe; display: flex; justify-content: space-between; align-items: center; }
+            .bay-header { background: #f1f5f9; color: #334155; font-weight: 700; font-size: 11px; padding: 4px 8px; margin: 6px 0 3px 0; border-left: 4px solid #6366f1; }
+            .manifest-footer { margin-top: 20px; padding-top: 10px; border-top: 1px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #64748b; }
+          </style>
+
+          <!-- Top Header -->
+          <div class="manifest-header">
+            <div>
+              <h1 class="manifest-title">${escapeHtml(tripTitle)}</h1>
+              <p class="manifest-subtitle">
+                Official Railway Passenger &amp; Berth Allocation Manifest (${mode === 'coach' ? 'Coach-wise Compartment View' : 'Seat-wise Sequential View'})
+              </p>
+              <div style="margin-top: 6px;">
+                ${distinctTrains.map(t => `
+                  <span class="train-summary-pill">
+                    ${t.journeyType === 'return' ? '🔄 Return' : '🚂 Onward'}: ${escapeHtml(t.trainNumber)} ${escapeHtml(t.trainName)} • PNR: ${escapeHtml(t.pnrNumber)} (${escapeHtml(t.route)})
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+            <div class="manifest-meta">
+              <p style="margin: 0; font-weight: bold; color: #0f172a;">Generated: ${nowFormatted}</p>
+              <p style="margin: 2px 0 0 0;">Total Passengers: <strong>${allSlots.length}</strong></p>
+              <p style="margin: 2px 0 0 0;">PNR Records: <strong>${targetRecords.length}</strong></p>
+            </div>
+          </div>
+
+          <!-- Manifest Body -->
+          ${contentHtml}
+
+          <!-- Footer / Verification -->
+          <div class="manifest-footer">
+            <div>
+              <p style="margin: 0; font-weight: bold;">Verified by Tour Management Committee • Coordinator: ${escapeHtml(coordinatorName)}</p>
+              <p style="margin: 2px 0 0 0; color: #94a3b8;">This document is an authorized passenger travel roster for educational tour coordination.</p>
+            </div>
+            <div style="text-align: right;">
+              <p style="margin: 0; font-family: monospace;">Page 1 of 1 • System Generated</p>
+              <div style="margin-top: 18px; border-top: 1px dashed #94a3b8; width: 140px; text-align: center; font-size: 9px; color: #64748b;">
+                Coordinator Signature
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function executePnrDownloadPdf() {
+      const btn = document.getElementById('pnrDownloadPdfBtn');
+      const originalHtml = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Generating PDF...';
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+      }
+
+      try {
+        const mode = document.querySelector('input[name="pnrPdfOrganizeMode"]:checked')?.value || 'seat';
+        const journeyFilter = document.getElementById('pnrPdfJourneyFilter')?.value || 'all';
+        const trainFilter = document.getElementById('pnrPdfTrainFilter')?.value || 'all';
+        const includePhone = document.getElementById('pnrPdfIncludePhone')?.checked ?? true;
+        const includeDept = document.getElementById('pnrPdfIncludeDept')?.checked ?? true;
+
+        const htmlContent = generatePnrManifestHtml({ mode, journeyFilter, trainFilter, includePhone, includeDept });
+
+        const tripNameClean = (typeof tripConfig !== 'undefined' && tripConfig.tripName)
+          ? tripConfig.tripName.replace(/[^a-zA-Z0-9_-]/g, '_')
+          : 'Trip';
+        const fileName = `${tripNameClean}_Train_Manifest_${mode}_wise_${new Date().toISOString().slice(0, 10)}.pdf`;
+
+        // Create container for html2pdf
+        const container = document.createElement('div');
+        container.style.position = 'fixed';
+        container.style.left = '-9999px';
+        container.style.top = '0';
+        container.style.width = '1050px';
+        container.innerHTML = htmlContent;
+        document.body.appendChild(container);
+
+        await new Promise(r => setTimeout(r, 150));
+
+        if (typeof html2pdf !== 'undefined') {
+          const opt = {
+            margin: [8, 8, 8, 8],
+            filename: fileName,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, logging: false },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+          };
+          await html2pdf().set(opt).from(container).save();
+          showToast('Train Ticket & PNR Manifest PDF downloaded! ✅');
+          closePnrPdfModal();
+        } else {
+          openPrintWindow(htmlContent, fileName.replace('.pdf', ''));
+          closePnrPdfModal();
+        }
+
+        if (container.parentNode) document.body.removeChild(container);
+      } catch (err) {
+        console.error('Error generating PNR PDF:', err);
+        showToast('PDF generator error. Opening print preview...', 'error');
+        executePnrPrintManifest();
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalHtml;
+          if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        }
+      }
+    }
+
+    function executePnrPrintManifest() {
+      const mode = document.querySelector('input[name="pnrPdfOrganizeMode"]:checked')?.value || 'seat';
+      const journeyFilter = document.getElementById('pnrPdfJourneyFilter')?.value || 'all';
+      const trainFilter = document.getElementById('pnrPdfTrainFilter')?.value || 'all';
+      const includePhone = document.getElementById('pnrPdfIncludePhone')?.checked ?? true;
+      const includeDept = document.getElementById('pnrPdfIncludeDept')?.checked ?? true;
+
+      const htmlContent = generatePnrManifestHtml({ mode, journeyFilter, trainFilter, includePhone, includeDept });
+      openPrintWindow(htmlContent, `Train_Manifest_${mode}_wise`);
+      closePnrPdfModal();
+    }
+
+    function openPrintWindow(htmlContent, title = 'Railway Ticket Details') {
+      let printWin = null;
+      try {
+        printWin = window.open('', '_blank', 'width=1000,height=800');
+      } catch (e) {
+        printWin = null;
+      }
+
+      const fullHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${escapeHtml(title)}</title>
+  <style>
+    @media print {
+      @page { size: A4 landscape; margin: 10mm; }
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .no-print { display: none !important; }
+    }
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    .print-bar {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .print-btn {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="print-bar no-print">
+    <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+  </div>
+  ${htmlContent}
+  <` + `script>
+    window.addEventListener('load', () => {
+      setTimeout(() => { window.print(); }, 400);
+    });
+  <` + `/script>
+</body>
+</html>`;
+
+      if (printWin) {
+        printWin.document.open();
+        printWin.document.write(fullHtml);
+        printWin.document.close();
+      } else {
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+        document.body.appendChild(iframe);
+        iframe.contentDocument.open();
+        iframe.contentDocument.write(fullHtml);
+        iframe.contentDocument.close();
+        iframe.contentWindow.focus();
+        setTimeout(() => {
+          iframe.contentWindow.print();
+          setTimeout(() => {
+            if (iframe.parentNode) document.body.removeChild(iframe);
+          }, 1000);
+        }, 500);
+      }
+    }
+
+    // =========================================================================
     // USER NEARBY SEATS & COMPANIONS CONTROLLER (USER / STUDENT VIEW)
     // =========================================================================
     let activeUserNearSeatsState = null;
@@ -17996,6 +18683,14 @@ Guidelines:
       renderRailwayManagerUI,
       handleRefreshPNRStatus,
       handleDeletePNRRecord,
+      openPnrPdfModal,
+      closePnrPdfModal,
+      updatePnrPdfModeUI,
+      handlePnrPdfJourneyFilterChange,
+      generatePnrManifestHtml,
+      executePnrDownloadPdf,
+      executePnrPrintManifest,
+      openPrintWindow,
       renderUserTrainTicketCard,
       openUserNearSeatsModal,
       closeUserNearSeatsModal,
