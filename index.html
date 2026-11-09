@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -1866,31 +1866,15 @@
               </p>
             </div>
 
-            <!-- Roster Actions: Filter, Near Seats Map, Print Roster -->
-            <div class="flex items-center gap-2 shrink-0 flex-wrap">
-              <div class="flex items-center gap-1.5">
-                <label for="pnrJourneyFilterSelect" class="text-xs font-bold text-slate-500">Filter:</label>
-                <select id="pnrJourneyFilterSelect" onchange="renderSavedPNRRecords()"
-                  class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs">
-                  <option value="all">All Allocations</option>
-                  <option value="onward">🚂 Onward Journey</option>
-                  <option value="return">🔄 Return Journey</option>
-                </select>
-              </div>
-
-              <button type="button" onclick="openNearSeatsModal()"
-                class="px-3 py-1.5 rounded-xl border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-900 text-xs font-bold flex items-center gap-1.5 shadow-2xs transition"
-                title="View seating chart and see who is seated near each other">
-                <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-700"></i>
-                <span class="hidden sm:inline">Near Seats</span>
-              </button>
-
-              <button type="button" onclick="printAllPnrTickets()"
-                class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold flex items-center gap-1.5 shadow-2xs transition"
-                title="Print ticket details and passenger manifest">
-                <i data-lucide="printer" class="w-3.5 h-3.5 text-slate-600"></i>
-                <span class="hidden sm:inline">Print All</span>
-              </button>
+            <!-- Filter Option: Onward and Return -->
+            <div class="flex items-center gap-1.5 shrink-0">
+              <label for="pnrJourneyFilterSelect" class="text-xs font-bold text-slate-500">Filter:</label>
+              <select id="pnrJourneyFilterSelect" onchange="renderSavedPNRRecords()"
+                class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs">
+                <option value="all">All Allocations</option>
+                <option value="onward">🚂 Onward Journey</option>
+                <option value="return">🔄 Return Journey</option>
+              </select>
             </div>
           </div>
 
@@ -14792,11 +14776,8 @@
           if (m.ticketStatus === 'RAC') statusBadgeClass = 'bg-amber-100 text-amber-800';
           if (m.ticketStatus === 'WL') statusBadgeClass = 'bg-rose-100 text-rose-800';
 
-          const hasSeatDetails = !!(m.assignedUserId && m.coach && m.seatNumber);
-
           return `
-            <div class="p-3 rounded-xl border border-slate-200 bg-white space-y-1.5 shadow-2xs ${hasSeatDetails ? 'cursor-pointer hover:border-indigo-300 hover:bg-indigo-50/20 transition' : ''}"
-              ${hasSeatDetails ? `onclick="openNearSeatsModal('${record.pnrNumber}', '${m.assignedUserId}')" title="Click to view near seats for ${m.assignedUserName || 'passenger'}"` : ''}>
+            <div class="p-3 rounded-xl border border-slate-200 bg-white space-y-1.5 shadow-2xs">
               <div class="flex items-center justify-between text-xs">
                 <span class="font-mono font-bold text-slate-500">Slot #${m.passengerIndex}</span>
                 <span class="px-2 py-0.5 rounded-full text-[10px] font-black ${statusBadgeClass}">
@@ -14850,27 +14831,38 @@
                      </span>`
           }
 
-                <!-- Print PNR & Ticket Details -->
-                <button
-                  type="button"
-                  onclick="printPnrTicketDetails('${record.pnrNumber}')"
-                  class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 text-xs font-extrabold flex items-center gap-1.5 shadow-2xs transition"
-                  title="Print PNR and ticket passenger details"
-                >
-                  <i data-lucide="printer" class="w-3.5 h-3.5 text-slate-600"></i>
-                  <span>Print Ticket</span>
-                </button>
-
-                <!-- Near Seats / Companions -->
-                <button
-                  type="button"
-                  onclick="openNearSeatsModal('${record.pnrNumber}')"
-                  class="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 text-xs font-extrabold flex items-center gap-1.5 shadow-2xs transition"
-                  title="See students seated near each other in this train/coach"
-                >
-                  <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-700"></i>
-                  <span>Near Seats</span>
-                </button>
+                <!-- More Actions Dropdown (Print Ticket & Near Seats) -->
+                <div class="relative inline-block text-left">
+                  <button
+                    type="button"
+                    onclick="togglePnrActionsMenu('${record.pnrNumber}', event)"
+                    class="p-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold flex items-center justify-center transition shadow-2xs"
+                    title="Actions: Print &amp; Near Seats"
+                  >
+                    <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                  </button>
+                  <div
+                    id="pnrActionsMenu_${record.pnrNumber}"
+                    class="hidden absolute right-0 mt-1 w-44 rounded-2xl bg-white border border-slate-200 shadow-xl py-1.5 z-30 text-xs font-semibold text-slate-700"
+                  >
+                    <button
+                      type="button"
+                      onclick="printPnrTicketDetails('${record.pnrNumber}')"
+                      class="w-full text-left px-3.5 py-2 hover:bg-slate-50 flex items-center gap-2 transition"
+                    >
+                      <i data-lucide="printer" class="w-3.5 h-3.5 text-slate-500"></i>
+                      <span>Print Ticket</span>
+                    </button>
+                    <button
+                      type="button"
+                      onclick="openNearSeatsModal('${record.pnrNumber}')"
+                      class="w-full text-left px-3.5 py-2 hover:bg-slate-50 flex items-center gap-2 transition"
+                    >
+                      <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-600"></i>
+                      <span>Near Seats</span>
+                    </button>
+                  </div>
+                </div>
 
                 <!-- Edit / Reassign Seats Button -->
                 <button
@@ -15046,6 +15038,22 @@
     // =========================================================================
     // ADMIN PRINT TICKET MANIFEST & PASSENGER NEAR SEATS EXPLORER
     // =========================================================================
+    function togglePnrActionsMenu(pnrNumber, event) {
+      if (event && typeof event.stopPropagation === 'function') event.stopPropagation();
+      const menu = document.getElementById(`pnrActionsMenu_${pnrNumber}`);
+      const isCurrentlyOpen = menu && !menu.classList.contains('hidden');
+      closeAllPnrActionMenus();
+      if (menu && !isCurrentlyOpen) {
+        menu.classList.remove('hidden');
+      }
+    }
+
+    function closeAllPnrActionMenus() {
+      document.querySelectorAll('[id^="pnrActionsMenu_"]').forEach(m => m.classList.add('hidden'));
+    }
+
+    window.addEventListener('click', () => closeAllPnrActionMenus());
+
     function computeSeatBayInfo(seatNum, jClass = 'SL') {
       const num = parseInt(seatNum, 10);
       if (isNaN(num) || num <= 0) {
@@ -15742,15 +15750,6 @@
             </div>
 
             <div class="flex items-center gap-2">
-              <button
-                type="button"
-                onclick="openNearSeatsModal('${ta.pnrNumber}', '${ta.assignedUserId || ''}')"
-                class="px-3.5 py-2.5 rounded-xl bg-violet-600/50 hover:bg-violet-600 text-violet-200 hover:text-white border border-violet-400/30 font-extrabold text-xs flex items-center justify-center gap-1.5 transition"
-                title="See classmates and companions seated near you"
-              >
-                <i data-lucide="users" class="w-4 h-4 text-violet-300"></i>
-                <span>Near Seats</span>
-              </button>
               <button
                 type="button"
                 onclick="openLiveTrainTrackerModal('${ta.trainNumber}', '${ta.trainName}', '${ta.dateOfJourney || ''}', '${ta.departureTime || ''}', '${ta.fromStation || ''}', '${ta.toStation || ''}')"
@@ -16708,25 +16707,14 @@
 
           <!-- Live Route & Track Action -->
           <div class="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2">
-            <div class="flex items-center gap-2 flex-wrap">
-              <button
-                type="button"
-                onclick="openNearSeatsModal('${pnr.pnrNumber}')"
-                class="px-3.5 py-2 rounded-xl bg-indigo-600/80 hover:bg-indigo-600 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition"
-                title="View seating map and see who is seated near each other"
-              >
-                <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-200"></i>
-                <span>Near Seats</span>
-              </button>
-              <button
-                type="button"
-                onclick="openLiveTrainTrackerModal('${pnr.trainNumber}', '${pnr.trainName}', '${pnr.dateOfJourney || ''}', '${pnr.departureTime || ''}', '${pnr.fromStation || ''}', '${pnr.toStation || ''}')"
-                class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition"
-              >
-                <i data-lucide="radio" class="w-3.5 h-3.5 text-emerald-300 animate-pulse"></i>
-                <span>Live Train Location &amp; Route Halts</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onclick="openLiveTrainTrackerModal('${pnr.trainNumber}', '${pnr.trainName}', '${pnr.dateOfJourney || ''}', '${pnr.departureTime || ''}', '${pnr.fromStation || ''}', '${pnr.toStation || ''}')"
+              class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition"
+            >
+              <i data-lucide="radio" class="w-3.5 h-3.5 text-emerald-300 animate-pulse"></i>
+              <span>Live Train Location &amp; Route Halts</span>
+            </button>
             <div class="flex items-center gap-2">
               <a
                 href="https://www.railyatri.in/live-train-status/${pnr.trainNumber}"
@@ -18175,6 +18163,8 @@ Guidelines:
       renderRailwayManagerUI,
       handleRefreshPNRStatus,
       handleDeletePNRRecord,
+      togglePnrActionsMenu,
+      closeAllPnrActionMenus,
       computeSeatBayInfo,
       generatePnrTicketPrintHtml,
       openPrintWindow,
