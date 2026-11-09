@@ -1865,6 +1865,17 @@
                 berth updates to assigned students.
               </p>
             </div>
+
+            <!-- Filter Option: Onward and Return -->
+            <div class="flex items-center gap-1.5 shrink-0">
+              <label for="pnrJourneyFilterSelect" class="text-xs font-bold text-slate-500">Filter:</label>
+              <select id="pnrJourneyFilterSelect" onchange="renderSavedPNRRecords()"
+                class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs">
+                <option value="all">All Allocations</option>
+                <option value="onward">🚂 Onward Journey</option>
+                <option value="return">🔄 Return Journey</option>
+              </select>
+            </div>
           </div>
 
           <div id="savedPnrListContainer" class="space-y-4">
@@ -14642,8 +14653,16 @@
     function renderSavedPNRRecords() {
       const container = document.getElementById('savedPnrListContainer');
       const badge = document.getElementById('savedPnrCountBadge');
-      if (badge) badge.textContent = pnrRecords.length;
       if (!container) return;
+
+      const filterVal = document.getElementById('pnrJourneyFilterSelect')?.value || 'all';
+      const recordsToDisplay = pnrRecords.filter(r => {
+        if (filterVal === 'onward') return (r.journeyType || 'onward') !== 'return';
+        if (filterVal === 'return') return r.journeyType === 'return';
+        return true;
+      });
+
+      if (badge) badge.textContent = recordsToDisplay.length;
 
       if (pnrRecords.length === 0) {
         container.innerHTML = `
@@ -14661,7 +14680,23 @@
         return;
       }
 
-      container.innerHTML = pnrRecords.map(record => {
+      if (recordsToDisplay.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+            <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto mb-3">
+              <i data-lucide="filter" class="w-6 h-6"></i>
+            </div>
+            <h5 class="text-sm font-bold text-slate-800">No ${filterVal === 'return' ? 'Return' : 'Onward'} PNR Allocations</h5>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto mt-1">
+              No train allocations match this journey filter. Select "All Allocations" to view all records.
+            </p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = recordsToDisplay.map(record => {
         const mappings = record.passengerMappings || [];
         const assignedCount = mappings.filter(m => m.assignedUserId).length;
         const lastSyncedStr = record.lastSyncedAt
