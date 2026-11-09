@@ -3081,6 +3081,81 @@
     </div>
   </div>
 
+  <!-- MODAL: USER NEARBY SEATS & COMPANIONS EXPLORER -->
+  <div id="userNearSeatsModal"
+    class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 no-print">
+    <div
+      class="expressive-card bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden">
+      <!-- Modal Header -->
+      <div
+        class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-100 shrink-0 bg-slate-900 text-white">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-2xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300 shrink-0">
+            <i data-lucide="users" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 class="font-display font-extrabold text-base sm:text-lg text-white leading-tight">
+                Nearby Seats &amp; Companions
+              </h3>
+              <span id="userNearSeatsJourneyBadge" class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-purple-500/30 text-purple-200 border border-purple-400/30">
+                Onward Journey
+              </span>
+            </div>
+            <p id="userNearSeatsSubtitle" class="text-xs text-slate-300 mt-0.5">
+              Loading seating companions...
+            </p>
+          </div>
+        </div>
+        <button type="button" onclick="closeUserNearSeatsModal()"
+          class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white flex items-center justify-center transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Coach Selector Tabs & Search Filter -->
+      <div class="p-4 border-b border-slate-100 bg-slate-50/70 space-y-3 shrink-0">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div id="userNearSeatsCoachTabs" class="flex flex-wrap items-center gap-1.5">
+            <!-- Dynamic coach tabs -->
+          </div>
+          <div class="relative w-full sm:w-56">
+            <input type="text" id="userNearSeatsSearchInput" oninput="handleUserNearSeatsSearch(this.value)"
+              placeholder="Search classmate / seat..."
+              class="w-full px-3 py-1.5 pl-8 rounded-xl border border-slate-200 bg-white font-semibold text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-2xs" />
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div id="userNearSeatsBody" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+        <!-- Dynamically rendered -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div
+        class="px-5 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between text-xs text-slate-500 shrink-0">
+        <div class="flex items-center gap-3">
+          <span class="flex items-center gap-1.5 font-bold text-slate-700">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Your Seat
+          </span>
+          <span class="flex items-center gap-1.5 font-bold text-slate-700">
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block"></span> Bay Companion
+          </span>
+          <span class="flex items-center gap-1.5 font-bold text-slate-700">
+            <span class="w-2.5 h-2.5 rounded-full bg-slate-400 inline-block"></span> Other Seat
+          </span>
+        </div>
+        <button type="button" onclick="closeUserNearSeatsModal()"
+          class="px-4 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold transition">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: LIVE TRAIN TRACKER & STATION LOCATION -->
   <div id="liveTrainTrackerModal"
     class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-md flex flex-col no-print">
@@ -14920,6 +14995,420 @@
       }
     }
 
+    // =========================================================================
+    // USER NEARBY SEATS & COMPANIONS CONTROLLER (USER / STUDENT VIEW)
+    // =========================================================================
+    let activeUserNearSeatsState = null;
+
+    function computeSeatBayInfo(seatNum, jClass = 'SL') {
+      const num = parseInt(seatNum, 10);
+      if (isNaN(num) || num <= 0) {
+        return { seatNumber: 0, bayIndex: 1, bayStart: 1, bayEnd: 8, baySize: 8, bayLabel: 'Bay 1 (Seats 1–8)' };
+      }
+      const jc = String(jClass || '').toUpperCase();
+      const baySize = (jc === '2A') ? 6 : ((jc === 'CC' || jc === '2S') ? 5 : 8);
+      const bayIndex = Math.floor((num - 1) / baySize) + 1;
+      const bayStart = (bayIndex - 1) * baySize + 1;
+      const bayEnd = bayIndex * baySize;
+      return {
+        seatNumber: num,
+        bayIndex,
+        bayStart,
+        bayEnd,
+        baySize,
+        bayLabel: `Bay ${bayIndex} (Seats ${bayStart}–${bayEnd})`
+      };
+    }
+
+    function openUserNearSeatsModal(pnrNumber, userCoach = '', userSeatNumber = '', journeyType = 'onward') {
+      const modal = document.getElementById('userNearSeatsModal');
+      if (!modal) return;
+
+      const normCoach = String(userCoach || '').trim().toUpperCase();
+      const normSeat = userSeatNumber ? String(userSeatNumber).trim() : '';
+
+      activeUserNearSeatsState = {
+        pnrNumber: pnrNumber || '',
+        userCoach: normCoach,
+        userSeatNumber: normSeat,
+        journeyType: journeyType || 'onward',
+        selectedCoach: normCoach || 'all',
+        searchQuery: ''
+      };
+
+      const searchInput = document.getElementById('userNearSeatsSearchInput');
+      if (searchInput) searchInput.value = '';
+
+      modal.classList.remove('hidden');
+      renderUserNearSeatsModalContent();
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function closeUserNearSeatsModal() {
+      const modal = document.getElementById('userNearSeatsModal');
+      if (modal) modal.classList.add('hidden');
+      activeUserNearSeatsState = null;
+    }
+
+    function handleUserNearSeatsSearch(val) {
+      if (!activeUserNearSeatsState) return;
+      activeUserNearSeatsState.searchQuery = (val || '').trim().toLowerCase();
+      renderUserNearSeatsModalContent();
+    }
+
+    function setUserNearSeatsCoach(coach) {
+      if (!activeUserNearSeatsState) return;
+      activeUserNearSeatsState.selectedCoach = coach;
+      renderUserNearSeatsModalContent();
+    }
+
+    function renderUserNearSeatsModalContent() {
+      if (!activeUserNearSeatsState) return;
+      const body = document.getElementById('userNearSeatsBody');
+      const tabs = document.getElementById('userNearSeatsCoachTabs');
+      const badge = document.getElementById('userNearSeatsJourneyBadge');
+      const subtitle = document.getElementById('userNearSeatsSubtitle');
+      if (!body) return;
+
+      const { pnrNumber, userCoach, userSeatNumber, journeyType, searchQuery } = activeUserNearSeatsState;
+
+      if (badge) {
+        badge.textContent = journeyType === 'return' ? '🔄 Return Journey' : '🚂 Onward Journey';
+        badge.className = journeyType === 'return'
+          ? 'text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-purple-500/30 text-purple-200 border border-purple-400/30'
+          : 'text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-blue-500/30 text-blue-200 border border-blue-400/30';
+      }
+
+      // 1. Gather all matching allocations for this journey
+      const targetRecord = pnrRecords.find(r => r.pnrNumber === pnrNumber);
+      const trainNum = targetRecord ? targetRecord.trainNumber : null;
+      const trainName = targetRecord ? targetRecord.trainName : 'Train Service';
+
+      const matchingRecords = trainNum
+        ? pnrRecords.filter(r => r.trainNumber === trainNum && (r.journeyType || 'onward') === journeyType)
+        : (targetRecord ? [targetRecord] : pnrRecords.filter(r => (r.journeyType || 'onward') === journeyType));
+
+      const allSlots = [];
+      const seenUserIds = new Set();
+
+      matchingRecords.forEach(rec => {
+        (rec.passengerMappings || []).forEach(m => {
+          const student = (typeof payments !== 'undefined' && m.assignedUserId)
+            ? payments.find(p => p.id === m.assignedUserId)
+            : null;
+          const assignedId = m.assignedUserId || (student ? student.id : null);
+          if (assignedId) seenUserIds.add(assignedId);
+
+          allSlots.push({
+            pnrNumber: rec.pnrNumber,
+            trainNumber: rec.trainNumber,
+            trainName: rec.trainName,
+            journeyClass: rec.journeyClass || 'SL',
+            coach: m.coach ? String(m.coach).trim().toUpperCase() : '',
+            seatNumber: m.seatNumber ? parseInt(m.seatNumber, 10) : null,
+            rawSeat: m.seatNumber || '',
+            berthType: m.berthType || '',
+            berthName: m.berthType ? (BERTH_MAP[m.berthType] || m.berthType) : '',
+            ticketStatus: m.ticketStatus || 'CNF',
+            assignedUserId: assignedId,
+            assignedUserName: m.assignedUserName || (student ? student.studentName : ''),
+            studentDept: student ? (student.department || '') : '',
+            studentPhone: student ? (student.phone || '') : ''
+          });
+        });
+      });
+
+      // Also incorporate payments direct allocations if any missed
+      if (typeof payments !== 'undefined') {
+        payments.forEach(p => {
+          if (seenUserIds.has(p.id)) return;
+          const alloc = (journeyType === 'return') ? p.returnTrainAllocation : p.trainAllocation;
+          if (alloc && alloc.coach && alloc.seatNumber) {
+            if (!trainNum || alloc.trainNumber === trainNum || alloc.pnrNumber === pnrNumber) {
+              seenUserIds.add(p.id);
+              allSlots.push({
+                pnrNumber: alloc.pnrNumber || pnrNumber,
+                trainNumber: alloc.trainNumber || trainNum || '',
+                trainName: alloc.trainName || trainName,
+                journeyClass: alloc.journeyClass || 'SL',
+                coach: String(alloc.coach).trim().toUpperCase(),
+                seatNumber: parseInt(alloc.seatNumber, 10) || null,
+                rawSeat: alloc.seatNumber,
+                berthType: alloc.berthType || '',
+                berthName: alloc.berthType ? (BERTH_MAP[alloc.berthType] || alloc.berthType) : '',
+                ticketStatus: alloc.ticketStatus || 'CNF',
+                assignedUserId: p.id,
+                assignedUserName: p.studentName,
+                studentDept: p.department || '',
+                studentPhone: p.phone || ''
+              });
+            }
+          }
+        });
+      }
+
+      // Update subtitle
+      if (subtitle) {
+        const yourSeatDesc = (userCoach && userSeatNumber)
+          ? `Your Seat: Coach ${userCoach}, Seat ${userSeatNumber}`
+          : 'Seat Pending Allocation';
+        subtitle.textContent = `${trainName} (${trainNum || pnrNumber}) • ${yourSeatDesc}`;
+      }
+
+      // Extract unique coaches
+      const distinctCoaches = Array.from(new Set(allSlots.map(s => s.coach).filter(Boolean))).sort();
+
+      // If userCoach is set and exists, make sure selectedCoach defaults to it
+      if (activeUserNearSeatsState.selectedCoach === 'all' && distinctCoaches.length > 0) {
+        activeUserNearSeatsState.selectedCoach = (userCoach && distinctCoaches.includes(userCoach))
+          ? userCoach
+          : distinctCoaches[0];
+      }
+
+      const selectedCoach = activeUserNearSeatsState.selectedCoach;
+
+      // Render coach selector tabs
+      if (tabs) {
+        if (distinctCoaches.length <= 1) {
+          tabs.innerHTML = `
+            <span class="text-xs font-extrabold text-slate-700 px-3 py-1 bg-white rounded-xl border border-slate-200">
+              Coach: ${distinctCoaches[0] || userCoach || 'Standard'}
+            </span>
+          `;
+        } else {
+          tabs.innerHTML = distinctCoaches.map(c => {
+            const isUserCoach = (c === userCoach);
+            const isSelected = (c === selectedCoach);
+            const countInCoach = allSlots.filter(s => s.coach === c).length;
+            const btnBg = isSelected
+              ? 'bg-purple-600 text-white shadow-xs'
+              : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200';
+
+            return `
+              <button type="button" onclick="setUserNearSeatsCoach('${c}')"
+                class="px-3 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${btnBg}">
+                <span>Coach ${c}</span>
+                ${isUserCoach ? '<span class="px-1 py-0.2 rounded bg-amber-400 text-slate-950 text-[10px] font-black">You</span>' : ''}
+                <span class="text-[10px] opacity-75 font-mono">(${countInCoach})</span>
+              </button>
+            `;
+          }).join('');
+        }
+      }
+
+      // Filter slots for current coach
+      const coachSlots = (selectedCoach && selectedCoach !== 'all')
+        ? allSlots.filter(s => s.coach === selectedCoach)
+        : allSlots;
+
+      // Filter by search query if any
+      const searchMatches = searchQuery
+        ? coachSlots.filter(s =>
+            (s.assignedUserName && s.assignedUserName.toLowerCase().includes(searchQuery)) ||
+            (s.studentDept && s.studentDept.toLowerCase().includes(searchQuery)) ||
+            String(s.seatNumber || '').includes(searchQuery) ||
+            (s.coach && s.coach.toLowerCase().includes(searchQuery))
+          )
+        : null;
+
+      // Check if user has a seat in this coach
+      const userSeatNumInt = userSeatNumber ? parseInt(userSeatNumber, 10) : null;
+      const isUserInSelectedCoach = (userCoach === selectedCoach) && !isNaN(userSeatNumInt) && userSeatNumInt > 0;
+
+      let bodyHtml = '';
+
+      if (coachSlots.length === 0) {
+        bodyHtml = `
+          <div class="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+            <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto mb-2 font-bold">
+              <i data-lucide="info" class="w-6 h-6"></i>
+            </div>
+            <h5 class="text-sm font-bold text-slate-800">No Passenger Allocations in Coach ${selectedCoach || '-'}</h5>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto mt-1">
+              Seat assignments for this coach will appear here once finalized by the admin.
+            </p>
+          </div>
+        `;
+        body.innerHTML = bodyHtml;
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        return;
+      }
+
+      // If search query is entered, display matching results directly
+      if (searchMatches !== null) {
+        if (searchMatches.length === 0) {
+          bodyHtml = `
+            <div class="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+              <p class="text-xs font-bold text-slate-500">No classmates found matching "${searchQuery}" in Coach ${selectedCoach}.</p>
+            </div>
+          `;
+        } else {
+          bodyHtml = `
+            <div class="space-y-3">
+              <p class="text-xs font-extrabold text-slate-700">Search Results in Coach ${selectedCoach} (${searchMatches.length}):</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                ${searchMatches.map(s => renderCompanionSlotCard(s, userSeatNumInt, isUserInSelectedCoach)).join('')}
+              </div>
+            </div>
+          `;
+        }
+        body.innerHTML = bodyHtml;
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        return;
+      }
+
+      // SECTION 1: USER'S IMMEDIATE COMPARTMENT / BAY (if user is in this coach)
+      if (isUserInSelectedCoach) {
+        const jClass = coachSlots[0]?.journeyClass || 'SL';
+        const myBay = computeSeatBayInfo(userSeatNumInt, jClass);
+        const myBaySlots = coachSlots.filter(s => s.seatNumber && s.seatNumber >= myBay.bayStart && s.seatNumber <= myBay.bayEnd);
+
+        // Sort by seat number
+        myBaySlots.sort((a, b) => (a.seatNumber || 0) - (b.seatNumber || 0));
+
+        bodyHtml += `
+          <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-purple-50 via-indigo-50 to-amber-50/40 border-2 border-purple-200 shadow-sm space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-purple-100 pb-2.5">
+              <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                  <i data-lucide="compass" class="w-4 h-4"></i>
+                </span>
+                <div>
+                  <h4 class="font-display font-extrabold text-sm text-purple-950">
+                    Your Immediate Compartment (${myBay.bayLabel})
+                  </h4>
+                  <p class="text-[11px] text-purple-700">
+                    These classmates are seated in the same cabin section as you in Coach ${selectedCoach}
+                  </p>
+                </div>
+              </div>
+              <span class="text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-300 self-start sm:self-auto">
+                ${myBaySlots.length} Classmate(s) in your Bay
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+              ${myBaySlots.map(s => renderCompanionSlotCard(s, userSeatNumInt, true)).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // SECTION 2: OTHER BAYS & COMPANIONS IN COACH
+      // Group all coach slots by Bay
+      const jClass = coachSlots[0]?.journeyClass || 'SL';
+      const bayMap = new Map();
+
+      coachSlots.forEach(s => {
+        const num = s.seatNumber;
+        if (num && num > 0) {
+          const info = computeSeatBayInfo(num, jClass);
+          if (!bayMap.has(info.bayIndex)) {
+            bayMap.set(info.bayIndex, { info, slots: [] });
+          }
+          bayMap.get(info.bayIndex).slots.push(s);
+        }
+      });
+
+      const sortedBays = Array.from(bayMap.values()).sort((a, b) => a.info.bayIndex - b.info.bayIndex);
+      const userBayIndex = isUserInSelectedCoach ? computeSeatBayInfo(userSeatNumInt, jClass).bayIndex : -1;
+
+      // Filter bays other than the user's bay, or show all if user is not in this coach
+      const otherBays = isUserInSelectedCoach
+        ? sortedBays.filter(b => b.info.bayIndex !== userBayIndex)
+        : sortedBays;
+
+      if (otherBays.length > 0) {
+        bodyHtml += `
+          <div class="space-y-3.5">
+            <div class="flex items-center justify-between">
+              <h5 class="text-xs font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-slate-400"></i>
+                <span>${isUserInSelectedCoach ? `Other Bays in Coach ${selectedCoach}` : `All Classmates in Coach ${selectedCoach}`}</span>
+              </h5>
+              <span class="text-[11px] font-bold text-slate-500">${coachSlots.length} Total in Coach</span>
+            </div>
+
+            <div class="space-y-3">
+              ${otherBays.map(bay => {
+                const baySlots = bay.slots.sort((a, b) => (a.seatNumber || 0) - (b.seatNumber || 0));
+                return `
+                  <div class="p-3.5 rounded-2xl border border-slate-200 bg-white space-y-2.5 shadow-2xs">
+                    <div class="flex items-center justify-between text-xs pb-1.5 border-b border-slate-100">
+                      <span class="font-extrabold text-slate-800 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-purple-500 inline-block"></span>
+                        ${bay.info.bayLabel}
+                      </span>
+                      <span class="text-[11px] font-bold text-slate-500">${baySlots.length} Classmate(s)</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      ${baySlots.map(s => renderCompanionSlotCard(s, userSeatNumInt, false)).join('')}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      body.innerHTML = bodyHtml;
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function renderCompanionSlotCard(s, userSeatNumInt, isSameBay = false) {
+      const isYou = (userSeatNumInt && s.seatNumber === userSeatNumInt);
+      let cardBg = 'bg-slate-50 border-slate-200 text-slate-800';
+      let seatBadgeBg = 'bg-slate-200 text-slate-800';
+
+      if (isYou) {
+        cardBg = 'bg-amber-500/10 border-amber-400 text-slate-900 ring-2 ring-amber-400/50 shadow-sm';
+        seatBadgeBg = 'bg-amber-400 text-slate-950 font-black';
+      } else if (isSameBay) {
+        cardBg = 'bg-purple-50/70 border-purple-200 text-slate-900 shadow-2xs';
+        seatBadgeBg = 'bg-purple-100 text-purple-900 font-bold';
+      }
+
+      return `
+        <div class="p-2.5 rounded-xl border transition ${cardBg}">
+          <div class="flex items-center justify-between gap-1 text-xs">
+            <div class="flex items-center gap-1.5">
+              <span class="px-2 py-0.5 rounded-md text-xs font-mono font-black ${seatBadgeBg}">
+                Seat ${s.seatNumber || s.rawSeat || '-'}
+              </span>
+              <span class="text-[10px] font-bold text-slate-500">
+                ${s.berthName || s.berthType || 'Berth'}
+              </span>
+            </div>
+            ${isYou ? `
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 shadow-2xs">
+                ⭐ You
+              </span>
+            ` : `
+              <span class="text-[10px] font-bold ${s.ticketStatus === 'CNF' ? 'text-emerald-700' : 'text-amber-700'}">
+                ${s.ticketStatus || 'CNF'}
+              </span>
+            `}
+          </div>
+
+          <div class="mt-1.5">
+            <p class="font-extrabold text-xs text-slate-900 truncate">
+              ${s.assignedUserName || '<span class="text-slate-400 font-normal">Unassigned</span>'}
+            </p>
+            ${s.studentDept ? `
+              <p class="text-[10px] text-slate-500 font-semibold truncate mt-0.5">
+                ${s.studentDept} ${s.studentPhone ? `• 📞 ${s.studentPhone}` : ''}
+              </p>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
     function renderSingleTrainTicketItem(ta, isReturn = false) {
       if (!ta || !ta.pnrNumber) return '';
       const isStaff = isStaffOrManagerSession();
@@ -15013,6 +15502,13 @@
             <div class="bg-black/40 rounded-2xl p-3.5 border border-white/15 text-center">
               <p class="text-[10px] font-extrabold uppercase tracking-wider text-amber-300">Seat / Berth</p>
               <p class="font-mono text-2xl font-black text-amber-400 mt-1">${ta.seatNumber || '-'}</p>
+              ${ta.coach && ta.seatNumber ? `
+                <button type="button" onclick="openUserNearSeatsModal('${ta.pnrNumber}', '${ta.coach || ''}', '${ta.seatNumber || ''}', '${isReturn ? 'return' : 'onward'}')"
+                  class="mt-1 text-[10px] font-extrabold text-amber-300 hover:text-white flex items-center justify-center gap-1 mx-auto underline decoration-amber-400/40 transition">
+                  <i data-lucide="users" class="w-3 h-3 text-amber-300"></i>
+                  <span>Who's near me?</span>
+                </button>
+              ` : ''}
             </div>
             <div class="bg-black/40 rounded-2xl p-3.5 border border-white/10 text-center">
               <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Berth Type</p>
@@ -15078,7 +15574,7 @@
               ` : ''}
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
               <button
                 type="button"
                 onclick="openLiveTrainTrackerModal('${ta.trainNumber}', '${ta.trainName}', '${ta.dateOfJourney || ''}', '${ta.departureTime || ''}', '${ta.fromStation || ''}', '${ta.toStation || ''}')"
@@ -15086,6 +15582,14 @@
               >
                 <i data-lucide="map-pin" class="w-4 h-4 text-amber-400"></i>
                 <span>Live Route Halts</span>
+              </button>
+              <button
+                type="button"
+                onclick="openUserNearSeatsModal('${ta.pnrNumber}', '${ta.coach || ''}', '${ta.seatNumber || ''}', '${isReturn ? 'return' : 'onward'}')"
+                class="px-3.5 py-2.5 rounded-xl bg-purple-600/60 hover:bg-purple-600 text-purple-200 hover:text-white border border-purple-400/30 font-extrabold text-xs flex items-center justify-center gap-1.5 transition shadow-sm"
+              >
+                <i data-lucide="users" class="w-4 h-4 text-purple-300"></i>
+                <span>Nearby Seats</span>
               </button>
               <button
                 type="button"
@@ -17493,6 +17997,11 @@ Guidelines:
       handleRefreshPNRStatus,
       handleDeletePNRRecord,
       renderUserTrainTicketCard,
+      openUserNearSeatsModal,
+      closeUserNearSeatsModal,
+      handleUserNearSeatsSearch,
+      setUserNearSeatsCoach,
+      renderUserNearSeatsModalContent,
       copyPNRToClipboard,
       shareUserTrainTicketWhatsApp,
       openRapidApiConfigModal,
