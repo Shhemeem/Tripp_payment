@@ -1865,6 +1865,17 @@
                 berth updates to assigned students.
               </p>
             </div>
+
+            <!-- Filter Option: Onward and Return -->
+            <div class="flex items-center gap-1.5 shrink-0">
+              <label for="pnrJourneyFilterSelect" class="text-xs font-bold text-slate-500">Filter:</label>
+              <select id="pnrJourneyFilterSelect" onchange="renderSavedPNRRecords()"
+                class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs">
+                <option value="all">All Allocations</option>
+                <option value="onward">🚂 Onward Journey</option>
+                <option value="return">🔄 Return Journey</option>
+              </select>
+            </div>
           </div>
 
           <div id="savedPnrListContainer" class="space-y-4">
@@ -14661,7 +14672,21 @@
         return;
       }
 
-      container.innerHTML = pnrRecords.map(record => {
+      const journeyFilter = document.getElementById('pnrJourneyFilterSelect')?.value || 'all';
+      const filteredRecords = journeyFilter === 'all'
+        ? pnrRecords
+        : pnrRecords.filter(r => (r.journeyType || 'onward') === journeyFilter);
+
+      if (filteredRecords.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+            <p class="text-xs font-bold text-slate-500">No ${journeyFilter === 'return' ? 'Return Journey' : 'Onward Journey'} PNR allocations found.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filteredRecords.map(record => {
         const mappings = record.passengerMappings || [];
         const assignedCount = mappings.filter(m => m.assignedUserId).length;
         const lastSyncedStr = record.lastSyncedAt
