@@ -14922,6 +14922,10 @@
       }).join('');
 
       lucide.createIcons();
+      const nearModal = document.getElementById('nearSeatsModal');
+      if (nearModal && !nearModal.classList.contains('hidden')) {
+        renderNearSeatsContent();
+      }
     }
 
     function renderRailwayManagerUI() {
@@ -15232,11 +15236,11 @@
     </div>
   </div>
   ${htmlContent}
-  <script>
+  <` + `script>
     window.addEventListener('load', () => {
       setTimeout(() => { window.print(); }, 400);
     });
-  <\/script>
+  <` + `/script>
 </body>
 </html>`;
 
