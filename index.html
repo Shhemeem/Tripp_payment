@@ -15068,6 +15068,16 @@
                   <span>Refresh Status</span>
                 </button>
 
+                <!-- View Visual Seating Map Button -->
+                <button
+                  type="button"
+                  onclick="openUserNearSeatsModal('${record.pnrNumber}', '${mappings[0]?.coach || ''}', '', '${record.journeyType || 'onward'}', 'map')"
+                  class="p-1.5 rounded-xl text-purple-600 hover:bg-purple-50 hover:text-purple-800 transition"
+                  title="View Visual Coach Seating Layout"
+                >
+                  <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                </button>
+
                 <!-- Download Manifest PDF Button -->
                 <button
                   type="button"
