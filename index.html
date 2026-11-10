@@ -3095,30 +3095,30 @@
     </div>
   </div>
 
-  <!-- MODAL: USER NEARBY SEATS & COMPANIONS EXPLORER -->
+  <!-- MODAL: USER NEARBY SEATS & TRAIN SEATING LAYOUT EXPLORER -->
   <div id="userNearSeatsModal"
     class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 no-print">
     <div
-      class="expressive-card bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden">
+      class="expressive-card bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-3xl w-full max-h-[94vh] flex flex-col overflow-hidden">
       <!-- Modal Header -->
       <div
         class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-100 shrink-0 bg-slate-900 text-white">
         <div class="flex items-center gap-3">
           <div
             class="w-10 h-10 rounded-2xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300 shrink-0">
-            <i data-lucide="users" class="w-5 h-5"></i>
+            <i data-lucide="layout-grid" class="w-5 h-5"></i>
           </div>
           <div>
             <div class="flex items-center gap-2 flex-wrap">
               <h3 class="font-display font-extrabold text-base sm:text-lg text-white leading-tight">
-                Nearby Seats &amp; Companions
+                Train Seating Layout &amp; Companions
               </h3>
               <span id="userNearSeatsJourneyBadge" class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-purple-500/30 text-purple-200 border border-purple-400/30">
                 Onward Journey
               </span>
             </div>
             <p id="userNearSeatsSubtitle" class="text-xs text-slate-300 mt-0.5">
-              Loading seating companions...
+              Loading seating arrangement...
             </p>
           </div>
         </div>
@@ -3128,17 +3128,34 @@
         </button>
       </div>
 
-      <!-- Coach Selector Tabs & Search Filter -->
-      <div class="p-4 border-b border-slate-100 bg-slate-50/70 space-y-3 shrink-0">
+      <!-- Coach Selector Tabs, View Switcher & Search Filter -->
+      <div class="p-3 sm:p-4 border-b border-slate-100 bg-slate-50/70 space-y-2.5 shrink-0">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div id="userNearSeatsCoachTabs" class="flex flex-wrap items-center gap-1.5">
             <!-- Dynamic coach tabs -->
           </div>
-          <div class="relative w-full sm:w-56">
-            <input type="text" id="userNearSeatsSearchInput" oninput="handleUserNearSeatsSearch(this.value)"
-              placeholder="Search classmate / seat..."
-              class="w-full px-3 py-1.5 pl-8 rounded-xl border border-slate-200 bg-white font-semibold text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-2xs" />
-            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2"></i>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- View Mode Switcher -->
+            <div class="inline-flex items-center bg-slate-200/80 p-0.5 rounded-xl text-xs font-bold shrink-0">
+              <button type="button" id="userNearSeatsTab_map" onclick="setUserNearSeatsViewMode('map')"
+                class="px-2.5 py-1 rounded-lg bg-white text-purple-950 shadow-2xs font-extrabold flex items-center gap-1.5 transition">
+                <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                <span>Visual Map</span>
+              </button>
+              <button type="button" id="userNearSeatsTab_list" onclick="setUserNearSeatsViewMode('list')"
+                class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-bold flex items-center gap-1.5 transition">
+                <i data-lucide="list" class="w-3.5 h-3.5"></i>
+                <span>List View</span>
+              </button>
+            </div>
+
+            <div class="relative w-full sm:w-44">
+              <input type="text" id="userNearSeatsSearchInput" oninput="handleUserNearSeatsSearch(this.value)"
+                placeholder="Search name / seat..."
+                class="w-full px-3 py-1.5 pl-7 rounded-xl border border-slate-200 bg-white font-semibold text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-2xs" />
+              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2 top-2"></i>
+            </div>
           </div>
         </div>
       </div>
@@ -3150,16 +3167,19 @@
 
       <!-- Modal Footer -->
       <div
-        class="px-5 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between text-xs text-slate-500 shrink-0">
-        <div class="flex items-center gap-3">
+        class="px-5 py-3 border-t border-slate-100 bg-slate-50 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 shrink-0">
+        <div class="flex items-center gap-3 flex-wrap">
           <span class="flex items-center gap-1.5 font-bold text-slate-700">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Your Seat
+            <span class="w-3 h-3 rounded-md bg-amber-400 border border-amber-500 inline-block"></span> Your Seat (⭐ You)
           </span>
           <span class="flex items-center gap-1.5 font-bold text-slate-700">
-            <span class="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block"></span> Bay Companion
+            <span class="w-3 h-3 rounded-md bg-purple-100 border border-purple-300 inline-block"></span> Classmate / Companion
           </span>
           <span class="flex items-center gap-1.5 font-bold text-slate-700">
-            <span class="w-2.5 h-2.5 rounded-full bg-slate-400 inline-block"></span> Other Seat
+            <span class="w-3 h-3 rounded-md bg-slate-100 border border-slate-300 border-dashed inline-block"></span> Other / Vacant
+          </span>
+          <span class="flex items-center gap-1.5 font-bold text-slate-700">
+            <span class="text-xs">🪟</span> Window
           </span>
         </div>
         <button type="button" onclick="closeUserNearSeatsModal()"
@@ -3167,6 +3187,38 @@
           Close
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SEAT DETAILS DIALOG -->
+  <div id="seatDetailsModal" class="fixed inset-0 z-60 hidden bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 no-print">
+    <div class="expressive-card bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-sm w-full p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span id="seatDetailBadgeIcon" class="w-10 h-10 rounded-2xl bg-amber-400 text-slate-950 font-black text-base flex items-center justify-center shadow-xs">
+            -
+          </span>
+          <div>
+            <h4 id="seatDetailTitle" class="font-display font-extrabold text-base text-slate-900 leading-tight">
+              Seat Details
+            </h4>
+            <p id="seatDetailBerthType" class="text-xs font-bold text-amber-700">
+              Lower Berth (LB)
+            </p>
+          </div>
+        </div>
+        <button type="button" onclick="closeSeatDetailsModal()" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div id="seatDetailContent" class="space-y-3 text-xs">
+        <!-- Dynamic content -->
+      </div>
+
+      <button type="button" onclick="closeSeatDetailsModal()" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs transition">
+        Done
+      </button>
     </div>
   </div>
 
@@ -15753,7 +15805,7 @@
       };
     }
 
-    function openUserNearSeatsModal(pnrNumber, userCoach = '', userSeatNumber = '', journeyType = 'onward') {
+    function openUserNearSeatsModal(pnrNumber, userCoach = '', userSeatNumber = '', journeyType = 'onward', preferredView = 'map') {
       const modal = document.getElementById('userNearSeatsModal');
       if (!modal) return;
 
@@ -15766,11 +15818,14 @@
         userSeatNumber: normSeat,
         journeyType: journeyType || 'onward',
         selectedCoach: normCoach || 'all',
-        searchQuery: ''
+        searchQuery: '',
+        viewMode: preferredView || 'map'
       };
 
       const searchInput = document.getElementById('userNearSeatsSearchInput');
       if (searchInput) searchInput.value = '';
+
+      updateUserNearSeatsViewTabsUI();
 
       modal.classList.remove('hidden');
       renderUserNearSeatsModalContent();
@@ -15782,7 +15837,476 @@
     function closeUserNearSeatsModal() {
       const modal = document.getElementById('userNearSeatsModal');
       if (modal) modal.classList.add('hidden');
+      closeSeatDetailsModal();
       activeUserNearSeatsState = null;
+    }
+
+    function setUserNearSeatsViewMode(mode) {
+      if (!activeUserNearSeatsState) return;
+      activeUserNearSeatsState.viewMode = mode;
+      updateUserNearSeatsViewTabsUI();
+      renderUserNearSeatsModalContent();
+    }
+
+    function updateUserNearSeatsViewTabsUI() {
+      const mode = activeUserNearSeatsState?.viewMode || 'map';
+      const tabMap = document.getElementById('userNearSeatsTab_map');
+      const tabList = document.getElementById('userNearSeatsTab_list');
+      if (tabMap && tabList) {
+        if (mode === 'map') {
+          tabMap.className = 'px-2.5 py-1 rounded-lg bg-white text-purple-950 shadow-2xs font-extrabold flex items-center gap-1.5 transition';
+          tabList.className = 'px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-bold flex items-center gap-1.5 transition';
+        } else {
+          tabList.className = 'px-2.5 py-1 rounded-lg bg-white text-purple-950 shadow-2xs font-extrabold flex items-center gap-1.5 transition';
+          tabMap.className = 'px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-bold flex items-center gap-1.5 transition';
+        }
+      }
+    }
+
+    function scrollToCoachBay(bayIndex) {
+      const el = document.getElementById(`coachBaySection_${bayIndex}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('ring-4', 'ring-amber-400');
+        setTimeout(() => {
+          el.classList.remove('ring-4');
+        }, 1800);
+      }
+    }
+
+    function getSeatPhysicalDescription(seatNum, jClass = 'SL') {
+      const num = parseInt(seatNum, 10);
+      if (isNaN(num) || num <= 0) return 'Seating position pending chart allocation.';
+      const jc = String(jClass || 'SL').toUpperCase();
+
+      if (jc === '2A') {
+        const mod = num % 6;
+        if (mod === 1) return `Seat ${num} is a Lower Berth (LB) beside the main cabin window. Sits facing Seat 3 (LB).`;
+        if (mod === 2) return `Seat ${num} is an Upper Berth (UB) above the window. Quiet and private.`;
+        if (mod === 3) return `Seat ${num} is a Lower Berth (LB) beside the main cabin window. Sits facing Seat 1 (LB).`;
+        if (mod === 4) return `Seat ${num} is an Upper Berth (UB) above the window. Quiet and private.`;
+        if (mod === 5) return `Seat ${num} is a Side Lower (SL) berth directly along the corridor window with scenic views.`;
+        return `Seat ${num} is a Side Upper (SU) berth along the corridor ceiling.`;
+      }
+
+      const mod = num % 8;
+      if (mod === 1) return `Seat ${num} is a Lower Berth (LB) right beside the main cabin window. Sits facing Seat 4 (Lower Berth).`;
+      if (mod === 2) return `Seat ${num} is a Middle Berth (MB) between Lower & Upper. Folds down as daytime backrest.`;
+      if (mod === 3) return `Seat ${num} is an Upper Berth (UB) on the aisle side. Private and undisturbed all day.`;
+      if (mod === 4) return `Seat ${num} is a Lower Berth (LB) right beside the main cabin window. Sits facing Seat 1 (Lower Berth).`;
+      if (mod === 5) return `Seat ${num} is a Middle Berth (MB) between Lower & Upper. Folds down as daytime backrest.`;
+      if (mod === 6) return `Seat ${num} is an Upper Berth (UB) on the aisle side. Private and undisturbed all day.`;
+      if (mod === 7) return `Seat ${num} is a Side Lower (SL) berth directly along the corridor window. Converts into 2 daytime seats.`;
+      return `Seat ${num} is a Side Upper (SU) berth along the corridor ceiling with dedicated overhead luggage space.`;
+    }
+
+    function showSeatDetailsModal(seatNumber) {
+      if (!activeUserNearSeatsState) return;
+      const num = parseInt(seatNumber, 10);
+      if (isNaN(num)) return;
+
+      const modal = document.getElementById('seatDetailsModal');
+      const badgeIcon = document.getElementById('seatDetailBadgeIcon');
+      const title = document.getElementById('seatDetailTitle');
+      const berthTypeEl = document.getElementById('seatDetailBerthType');
+      const content = document.getElementById('seatDetailContent');
+      if (!modal || !content) return;
+
+      const { selectedCoach, userCoach, userSeatNumber, journeyType } = activeUserNearSeatsState;
+      const userSeatNumInt = userSeatNumber ? parseInt(userSeatNumber, 10) : null;
+      const isYou = (userCoach === selectedCoach && userSeatNumInt === num);
+
+      // Find slot in current coach
+      const targetRecord = pnrRecords.find(r => r.pnrNumber === activeUserNearSeatsState.pnrNumber);
+      const jClass = targetRecord?.journeyClass || 'SL';
+      const berthCode = determineBerthType(num, jClass);
+      const berthFullName = BERTH_MAP[berthCode] || berthCode;
+      const bayInfo = computeSeatBayInfo(num, jClass);
+      const locDesc = getSeatPhysicalDescription(num, jClass);
+
+      // Look for assigned student in coach
+      let assignedSlot = null;
+      const matchingRecords = targetRecord?.trainNumber
+        ? pnrRecords.filter(r => r.trainNumber === targetRecord.trainNumber && (r.journeyType || 'onward') === journeyType)
+        : (targetRecord ? [targetRecord] : pnrRecords);
+
+      for (const rec of matchingRecords) {
+        for (const m of (rec.passengerMappings || [])) {
+          if (String(m.coach).trim().toUpperCase() === selectedCoach && parseInt(m.seatNumber, 10) === num) {
+            const student = (typeof payments !== 'undefined' && m.assignedUserId)
+              ? payments.find(p => p.id === m.assignedUserId)
+              : null;
+            assignedSlot = {
+              assignedUserName: m.assignedUserName || (student ? student.studentName : 'Classmate'),
+              studentDept: student?.department || '',
+              studentPhone: student?.phone || '',
+              ticketStatus: m.ticketStatus || 'CNF',
+              pnrNumber: rec.pnrNumber
+            };
+            break;
+          }
+        }
+        if (assignedSlot) break;
+      }
+
+      if (badgeIcon) {
+        badgeIcon.textContent = num;
+        badgeIcon.className = isYou
+          ? 'w-10 h-10 rounded-2xl bg-amber-400 text-slate-950 font-black text-base flex items-center justify-center shadow-xs'
+          : (assignedSlot ? 'w-10 h-10 rounded-2xl bg-purple-600 text-white font-black text-base flex items-center justify-center shadow-xs' : 'w-10 h-10 rounded-2xl bg-slate-200 text-slate-700 font-bold text-base flex items-center justify-center');
+      }
+
+      if (title) {
+        title.textContent = `Coach ${selectedCoach} • Seat ${num}`;
+      }
+
+      if (berthTypeEl) {
+        berthTypeEl.textContent = `${berthFullName} (${berthCode}) • ${bayInfo.bayLabel}`;
+      }
+
+      content.innerHTML = `
+        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+          <p class="text-[10px] font-black uppercase tracking-wider text-slate-500">Physical Location</p>
+          <p class="text-xs font-medium text-slate-700 leading-relaxed">${locDesc}</p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl ${isYou ? 'bg-amber-50 border border-amber-300' : (assignedSlot ? 'bg-purple-50 border border-purple-200' : 'bg-slate-50 border border-slate-200')} space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">Passenger Info</span>
+            ${isYou ? `
+              <span class="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[10px]">⭐ YOU</span>
+            ` : (assignedSlot ? `
+              <span class="px-2 py-0.5 rounded-full bg-purple-200 text-purple-900 font-bold text-[10px]">Group Member</span>
+            ` : `
+              <span class="text-[10px] font-bold text-slate-400">Other Passenger / Vacant</span>
+            `)}
+          </div>
+
+          ${assignedSlot ? `
+            <div>
+              <p class="text-sm font-extrabold text-slate-900">${escapeHtml(assignedSlot.assignedUserName)}</p>
+              ${assignedSlot.studentDept ? `<p class="text-xs text-purple-700 font-semibold mt-0.5">${escapeHtml(assignedSlot.studentDept)}</p>` : ''}
+              <p class="text-[11px] text-slate-500 font-mono mt-1">Status: <strong class="text-emerald-700">${assignedSlot.ticketStatus}</strong> • PNR: ${escapeHtml(assignedSlot.pnrNumber)}</p>
+            </div>
+
+            ${assignedSlot.studentPhone ? `
+              <div class="flex items-center gap-2 pt-2 border-t border-purple-200/60">
+                <a href="tel:${assignedSlot.studentPhone}" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 font-bold text-xs flex items-center gap-1.5 shadow-2xs transition">
+                  <i data-lucide="phone" class="w-3.5 h-3.5 text-emerald-600"></i>
+                  <span>Call</span>
+                </a>
+                <a href="https://wa.me/91${assignedSlot.studentPhone.replace(/[^0-9]/g, '')}" target="_blank" class="px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs flex items-center gap-1.5 shadow-2xs transition">
+                  <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                  <span>WhatsApp</span>
+                </a>
+              </div>
+            ` : ''}
+          ` : `
+            <p class="text-xs text-slate-500">
+              This seat is currently unassigned or allocated to general railway passengers outside our tour group.
+            </p>
+          `}
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function closeSeatDetailsModal() {
+      const modal = document.getElementById('seatDetailsModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function renderVisualBerthTile(sNum, slot, userSeatNumInt, isUserInSelectedCoach, jc, searchQuery = '') {
+      const isYou = (isUserInSelectedCoach && sNum === userSeatNumInt);
+      const isAssigned = !!slot;
+      const berthCode = slot?.berthType || determineBerthType(sNum, jc);
+      const berthFullName = BERTH_MAP[berthCode] || berthCode;
+
+      let isSearchMatch = false;
+      if (searchQuery) {
+        if (String(sNum).includes(searchQuery)) isSearchMatch = true;
+        if (slot && slot.assignedUserName && slot.assignedUserName.toLowerCase().includes(searchQuery)) isSearchMatch = true;
+        if (slot && slot.studentDept && slot.studentDept.toLowerCase().includes(searchQuery)) isSearchMatch = true;
+      }
+
+      let containerClass = '';
+      let badgeClass = '';
+      let nameHtml = '';
+      let searchRing = (searchQuery && isSearchMatch) ? 'ring-4 ring-purple-600 scale-[1.02]' : (searchQuery && !isSearchMatch ? 'opacity-40' : '');
+
+      if (isYou) {
+        containerClass = 'bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 text-slate-950 font-black border-2 border-amber-600 shadow-md ring-2 ring-amber-400/50';
+        badgeClass = 'bg-slate-950 text-amber-300';
+        nameHtml = `
+          <p class="text-[11px] font-black text-slate-950 truncate mt-1">
+            ${slot ? escapeHtml(slot.assignedUserName) : 'Your Seat'}
+          </p>
+          <span class="inline-block mt-0.5 text-[9px] font-black uppercase px-1 rounded bg-slate-950/20 text-slate-950">
+            ⭐ YOU
+          </span>
+        `;
+      } else if (isAssigned) {
+        containerClass = 'bg-white hover:bg-purple-50 text-slate-900 border-2 border-purple-300 shadow-2xs';
+        badgeClass = 'bg-purple-100 text-purple-900 border border-purple-200';
+        nameHtml = `
+          <p class="text-[11px] font-extrabold text-slate-900 truncate mt-1">
+            ${escapeHtml(slot.assignedUserName)}
+          </p>
+          <p class="text-[9px] text-purple-700 font-semibold truncate mt-0.5">
+            ${slot.studentDept ? escapeHtml(slot.studentDept) : 'Classmate'}
+          </p>
+        `;
+      } else {
+        containerClass = 'bg-slate-100/70 hover:bg-slate-200/70 text-slate-500 border border-slate-200 border-dashed';
+        badgeClass = 'bg-slate-200/80 text-slate-600';
+        nameHtml = `
+          <p class="text-[10px] font-medium text-slate-400 mt-1">
+            Other / Vacant
+          </p>
+          <p class="text-[9px] text-slate-400 truncate mt-0.5">
+            ${berthFullName}
+          </p>
+        `;
+      }
+
+      return `
+        <div onclick="showSeatDetailsModal(${sNum})"
+          class="p-2 sm:p-2.5 rounded-2xl flex flex-col justify-between min-h-[76px] sm:min-h-[82px] cursor-pointer transition transform hover:scale-[1.02] ${containerClass} ${searchRing}">
+          <div class="flex items-center justify-between gap-1 leading-none">
+            <span class="font-mono text-xs sm:text-sm font-black">${sNum}</span>
+            <span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase ${badgeClass}">
+              ${berthCode}
+            </span>
+          </div>
+          <div>
+            ${nameHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderVisualCoachSeatingMap(coachSlots, selectedCoach, userSeatNumInt, isUserInSelectedCoach, journeyClass, searchQuery = '') {
+      const jc = String(journeyClass || 'SL').toUpperCase();
+      let baySize = (jc === '2A') ? 6 : ((jc === 'CC' || jc === '2S') ? 5 : 8);
+      let totalBerths = (jc === '2A') ? 54 : ((jc === 'CC' || jc === '2S') ? 75 : 72);
+
+      const maxSeat = coachSlots.reduce((max, s) => (s.seatNumber && s.seatNumber > max ? s.seatNumber : max), 0);
+      if (maxSeat > totalBerths) {
+        totalBerths = Math.ceil(maxSeat / baySize) * baySize;
+      }
+      const numBays = Math.ceil(totalBerths / baySize);
+
+      const slotMap = new Map();
+      coachSlots.forEach(s => {
+        if (s.seatNumber && s.seatNumber > 0) {
+          slotMap.set(s.seatNumber, s);
+        }
+      });
+
+      const userBay = (isUserInSelectedCoach && userSeatNumInt) ? computeSeatBayInfo(userSeatNumInt, jc) : null;
+      const userSlot = (userSeatNumInt) ? slotMap.get(userSeatNumInt) : null;
+      const userBerthCode = userSlot?.berthType || (userSeatNumInt ? determineBerthType(userSeatNumInt, jc) : '');
+      const userBerthName = BERTH_MAP[userBerthCode] || userBerthCode;
+
+      let html = '';
+
+      // 1. Top Callout: User Seat Location & Focus Button (if user is in this coach)
+      if (isUserInSelectedCoach && userSeatNumInt) {
+        const locDesc = getSeatPhysicalDescription(userSeatNumInt, jc);
+        html += `
+          <div class="p-3.5 sm:p-4 rounded-3xl bg-gradient-to-r from-amber-500/15 via-purple-500/10 to-indigo-500/15 border-2 border-amber-400/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-base shadow-sm shrink-0">
+                ⭐
+              </div>
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-display font-black text-sm text-slate-900">
+                    You are in Coach ${selectedCoach}, Seat ${userSeatNumInt}
+                  </span>
+                  <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-black border border-amber-300">
+                    ${userBerthCode} - ${userBerthName}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-600 mt-0.5">
+                  ${locDesc}
+                </p>
+              </div>
+            </div>
+            <button type="button" onclick="scrollToCoachBay(${userBay.bayIndex})"
+              class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-sm transition shrink-0">
+              <i data-lucide="target" class="w-3.5 h-3.5"></i>
+              <span>Focus My Bay (${userBay.bayIndex})</span>
+            </button>
+          </div>
+        `;
+      }
+
+      // 2. Coach Exterior / Train Header & Quick Bay Jump Bar
+      html += `
+        <div class="bg-slate-900 text-white rounded-3xl p-4 sm:p-5 shadow-md space-y-3.5 border border-slate-800">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-2xl bg-purple-500/20 text-purple-300 border border-purple-400/30 flex items-center justify-center font-black text-xs shrink-0">
+                <i data-lucide="train" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h4 class="font-display font-extrabold text-sm sm:text-base text-white flex items-center gap-2">
+                  <span>Coach ${selectedCoach}</span>
+                  <span class="text-xs font-mono font-bold text-amber-400">(${jc === '2A' ? '2-Tier AC' : (jc === '3A' ? '3-Tier AC' : 'Sleeper Class')})</span>
+                </h4>
+                <p class="text-[11px] text-slate-400">
+                  Interactive 2D Physical Layout • Total Berths: ${totalBerths} (${numBays} Bays)
+                </p>
+              </div>
+            </div>
+            <div class="text-[11px] font-mono text-slate-300 flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded-lg bg-white/10 text-slate-300 border border-white/10">
+                ${coachSlots.length} Group Member(s)
+              </span>
+            </div>
+          </div>
+
+          <!-- Quick Bay Navigator Strip -->
+          <div>
+            <p class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">
+              Jump to Compartment Bay:
+            </p>
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+              ${Array.from({ length: numBays }, (_, idx) => {
+                const bIdx = idx + 1;
+                const bStart = (bIdx - 1) * baySize + 1;
+                const bEnd = bIdx * baySize;
+                const isUserB = (userBay && userBay.bayIndex === bIdx);
+                const countInBay = coachSlots.filter(s => s.seatNumber && s.seatNumber >= bStart && s.seatNumber <= bEnd).length;
+
+                return `
+                  <button type="button" onclick="scrollToCoachBay(${bIdx})"
+                    class="px-2.5 py-1.5 rounded-xl text-xs font-bold shrink-0 transition flex items-center gap-1 border ${isUserB ? 'bg-amber-400 text-slate-950 border-amber-300 font-black shadow-xs' : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'}">
+                    <span>Bay ${bIdx}</span>
+                    ${isUserB ? '<span>⭐</span>' : ''}
+                    ${countInBay > 0 ? `<span class="text-[9px] px-1 py-0.2 rounded-full ${isUserB ? 'bg-slate-950 text-amber-300' : 'bg-purple-500/30 text-purple-200'}">(${countInBay})</span>` : ''}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+
+      // 3. Render Each Bay
+      html += `<div class="space-y-4">`;
+
+      for (let bIdx = 1; bIdx <= numBays; bIdx++) {
+        const bStart = (bIdx - 1) * baySize + 1;
+        const bEnd = bIdx * baySize;
+        const isUserB = (userBay && userBay.bayIndex === bIdx);
+        const baySlots = coachSlots.filter(s => s.seatNumber && s.seatNumber >= bStart && s.seatNumber <= bEnd);
+
+        let mainCabinSeats = { row1: [], row2: [] };
+        let sideSeats = [];
+
+        if (baySize === 8) {
+          mainCabinSeats = {
+            row1: [bStart, bStart + 1, bStart + 2],
+            row2: [bStart + 3, bStart + 4, bStart + 5]
+          };
+          sideSeats = [bStart + 6, bStart + 7];
+        } else if (baySize === 6) {
+          mainCabinSeats = {
+            row1: [bStart, bStart + 1],
+            row2: [bStart + 2, bStart + 3]
+          };
+          sideSeats = [bStart + 4, bStart + 5];
+        } else {
+          mainCabinSeats = {
+            row1: [bStart, bStart + 1, bStart + 2],
+            row2: []
+          };
+          sideSeats = [bStart + 3, bStart + 4];
+        }
+
+        html += `
+          <div id="coachBaySection_${bIdx}"
+            class="expressive-card rounded-3xl border ${isUserB ? 'border-amber-400 bg-amber-50/20 ring-2 ring-amber-400/40' : 'border-slate-200 bg-white'} p-4 sm:p-5 shadow-xs space-y-3 transition">
+
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg ${isUserB ? 'bg-amber-400 text-slate-950' : 'bg-slate-100 text-slate-700'} flex items-center justify-center font-black text-xs">
+                  ${bIdx}
+                </span>
+                <span class="font-display font-extrabold text-sm text-slate-900">
+                  Bay ${bIdx} • Seats ${bStart}–${bEnd}
+                </span>
+                ${isUserB ? `
+                  <span class="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[10px] uppercase tracking-wider shadow-2xs">
+                    ⭐ Your Compartment
+                  </span>
+                ` : ''}
+              </div>
+              <span class="text-xs font-bold text-slate-500">
+                ${baySlots.length} Classmate(s)
+              </span>
+            </div>
+
+            <div class="rounded-2xl border-2 border-slate-300/80 bg-slate-50/50 p-3 sm:p-3.5 space-y-2.5">
+              <!-- Main Cabin -->
+              <div class="space-y-1.5">
+                <div class="flex items-center justify-between px-2.5 py-0.5 text-[10px] font-extrabold text-sky-700 bg-sky-50 rounded-lg border border-sky-200/60">
+                  <span class="flex items-center gap-1">🪟 Main Cabin Window</span>
+                  <span class="text-slate-400 font-normal">Lower Berth (Window Seat)</span>
+                </div>
+
+                <div class="grid ${baySize === 6 ? 'grid-cols-2' : 'grid-cols-3'} gap-2">
+                  ${mainCabinSeats.row1.map(sNum => renderVisualBerthTile(sNum, slotMap.get(sNum), userSeatNumInt, isUserInSelectedCoach, jc, searchQuery)).join('')}
+                </div>
+
+                <div class="py-1 px-3 bg-gradient-to-r from-amber-100/70 via-slate-100 to-amber-100/70 rounded-xl border border-slate-200 flex items-center justify-between text-[10px] font-bold text-slate-500">
+                  <span class="flex items-center gap-1 text-slate-600">☕ Snack Table</span>
+                  <span class="text-slate-400 italic">Facing Berths</span>
+                  <span class="text-slate-400">Aisle End ➔</span>
+                </div>
+
+                ${mainCabinSeats.row2.length > 0 ? `
+                  <div class="grid ${baySize === 6 ? 'grid-cols-2' : 'grid-cols-3'} gap-2">
+                    ${mainCabinSeats.row2.map(sNum => renderVisualBerthTile(sNum, slotMap.get(sNum), userSeatNumInt, isUserInSelectedCoach, jc, searchQuery)).join('')}
+                  </div>
+                ` : ''}
+              </div>
+
+              <!-- Walking Aisle / Corridor -->
+              <div class="py-1.5 px-3 rounded-xl bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 border-y border-dashed border-slate-300 flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-slate-600">
+                <span>◄ Coach Passage</span>
+                <span class="flex items-center gap-1.5 text-slate-500 font-bold">
+                  <i data-lucide="footprints" class="w-3.5 h-3.5"></i>
+                  <span>Walking Corridor / Aisle</span>
+                </span>
+                <span>Exit Doors ►</span>
+              </div>
+
+              <!-- Side Berths -->
+              <div class="space-y-1.5">
+                <div class="grid grid-cols-2 gap-2">
+                  ${sideSeats.map(sNum => renderVisualBerthTile(sNum, slotMap.get(sNum), userSeatNumInt, isUserInSelectedCoach, jc, searchQuery)).join('')}
+                </div>
+
+                <div class="flex items-center justify-between px-2.5 py-0.5 text-[10px] font-extrabold text-sky-700 bg-sky-50 rounded-lg border border-sky-200/60">
+                  <span class="flex items-center gap-1">🪟 Corridor Window</span>
+                  <span class="text-slate-400 font-normal">Side Lower &amp; Side Upper Berths</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        `;
+      }
+
+      html += `</div>`;
+      return html;
     }
 
     function handleUserNearSeatsSearch(val) {
@@ -15966,6 +16490,18 @@
         `;
         body.innerHTML = bodyHtml;
         if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        return;
+      }
+
+      const viewMode = activeUserNearSeatsState.viewMode || 'map';
+      const jClass = coachSlots[0]?.journeyClass || 'SL';
+
+      // Visual Representation of Seating Inside Train
+      if (viewMode === 'map') {
+        body.innerHTML = renderVisualCoachSeatingMap(coachSlots, selectedCoach, userSeatNumInt, isUserInSelectedCoach, jClass, searchQuery);
+        if (window.lucide && typeof lucide.createIcons === 'function') {
+          lucide.createIcons();
+        }
         return;
       }
 
@@ -16198,11 +16734,11 @@
                 </button>
                 <button
                   type="button"
-                  onclick="openUserNearSeatsModal('${ta.pnrNumber}', '${ta.coach || ''}', '${ta.seatNumber || ''}', '${isReturn ? 'return' : 'onward'}')"
+                  onclick="openUserNearSeatsModal('${ta.pnrNumber}', '${ta.coach || ''}', '${ta.seatNumber || ''}', '${isReturn ? 'return' : 'onward'}', 'map')"
                   class="p-1 rounded-lg text-purple-300 hover:text-white transition"
-                  title="View Nearby Seats & Companions"
+                  title="View Train Seating Layout & Companions"
                 >
-                  <i data-lucide="users" class="w-3.5 h-3.5"></i>
+                  <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
             </div>
@@ -16240,12 +16776,12 @@
               <p class="text-[10px] font-extrabold uppercase tracking-wider text-amber-300">Coach</p>
               <p class="font-mono text-2xl font-black text-white mt-1">${ta.coach || '-'}</p>
             </div>
-            <div class="bg-black/40 rounded-2xl p-3.5 border border-white/15 text-center cursor-pointer hover:border-purple-400/50 hover:bg-black/60 transition group"
-                 onclick="openUserNearSeatsModal('${ta.pnrNumber}', '${ta.coach || ''}', '${ta.seatNumber || ''}', '${isReturn ? 'return' : 'onward'}')"
-                 title="Click to view Nearby Seats & Companions">
+            <div class="bg-black/40 rounded-2xl p-3.5 border border-white/15 text-center cursor-pointer hover:border-amber-400/60 hover:bg-black/60 transition group"
+                 onclick="openUserNearSeatsModal('${ta.pnrNumber}', '${ta.coach || ''}', '${ta.seatNumber || ''}', '${isReturn ? 'return' : 'onward'}', 'map')"
+                 title="Click to view Train Seating Layout & Companions">
               <p class="text-[10px] font-extrabold uppercase tracking-wider text-amber-300 flex items-center justify-center gap-1">
                 <span>Seat / Berth</span>
-                <i data-lucide="users" class="w-3 h-3 text-purple-300 opacity-80 group-hover:opacity-100"></i>
+                <i data-lucide="layout-grid" class="w-3 h-3 text-amber-400 opacity-75 group-hover:opacity-100"></i>
               </p>
               <p class="font-mono text-2xl font-black text-amber-400 mt-1">${ta.seatNumber || '-'}</p>
             </div>
@@ -18739,6 +19275,10 @@ Guidelines:
       renderUserTrainTicketCard,
       openUserNearSeatsModal,
       closeUserNearSeatsModal,
+      setUserNearSeatsViewMode,
+      showSeatDetailsModal,
+      closeSeatDetailsModal,
+      scrollToCoachBay,
       handleUserNearSeatsSearch,
       setUserNearSeatsCoach,
       renderUserNearSeatsModalContent,
