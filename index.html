@@ -16530,7 +16530,6 @@
 
       // SECTION 1: USER'S IMMEDIATE COMPARTMENT / BAY (if user is in this coach)
       if (isUserInSelectedCoach) {
-        const jClass = coachSlots[0]?.journeyClass || 'SL';
         const myBay = computeSeatBayInfo(userSeatNumInt, jClass);
         const myBaySlots = coachSlots.filter(s => s.seatNumber && s.seatNumber >= myBay.bayStart && s.seatNumber <= myBay.bayEnd);
 
@@ -16567,7 +16566,6 @@
 
       // SECTION 2: OTHER BAYS & COMPANIONS IN COACH
       // Group all coach slots by Bay
-      const jClass = coachSlots[0]?.journeyClass || 'SL';
       const bayMap = new Map();
 
       coachSlots.forEach(s => {

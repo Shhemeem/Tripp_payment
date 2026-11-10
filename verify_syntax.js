@@ -6,19 +6,19 @@ const content = fs.readFileSync('index.html', 'utf8');
 // Test ES module
 const tag = '<script type="module">';
 const start = content.indexOf(tag);
-const end = content.lastIndexOf('</script>');
+const end = content.indexOf('</script>', start);
 
 if (start !== -1 && end !== -1) {
   const code = content.substring(start + tag.length, end);
-  fs.writeFileSync('temp_check_module.js', code);
+  fs.writeFileSync('temp_check_module.mjs', code);
   try {
-    execSync('node --check temp_check_module.js');
+    execSync('node --check temp_check_module.mjs');
     console.log('PASS: ES module syntax verified with 0 errors.');
   } catch (err) {
     console.error('FAIL: ES module syntax error:', err.message);
     process.exit(1);
   } finally {
-    if (fs.existsSync('temp_check_module.js')) fs.unlinkSync('temp_check_module.js');
+    if (fs.existsSync('temp_check_module.mjs')) fs.unlinkSync('temp_check_module.mjs');
   }
 }
 
