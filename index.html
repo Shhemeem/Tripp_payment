@@ -38,6 +38,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <!-- html5-qrcode CDN for Admin Boarding Pass QR Scanner -->
   <script src="https://unpkg.com/html5-qrcode"></script>
+  <!-- Three.js 3D Virtual Engine for Interactive Train Seating Representation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <script>
     tailwind.config = {
@@ -3247,15 +3249,20 @@
       <div class="flex items-center gap-2.5 flex-1 sm:flex-initial justify-end">
         <!-- View Mode Switcher -->
         <div class="inline-flex items-center p-1 rounded-xl bg-slate-800 border border-slate-700/80 text-xs font-bold">
+          <button type="button" id="trainSeatingTab_3d" onclick="setUserTrainSeatingTab('3d')"
+            class="px-3 py-1 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-2xs font-extrabold flex items-center gap-1.5 transition">
+            <i data-lucide="box" class="w-3.5 h-3.5 text-amber-300"></i>
+            <span>3D Virtual Train</span>
+          </button>
           <button type="button" id="trainSeatingTab_map" onclick="setUserTrainSeatingTab('map')"
-            class="px-3 py-1 rounded-lg bg-purple-600 text-white shadow-2xs font-extrabold flex items-center gap-1.5 transition">
+            class="px-3 py-1 rounded-lg text-slate-400 hover:text-white font-bold flex items-center gap-1.5 transition">
             <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
-            <span>Visual Coach Map</span>
+            <span>2D Coach Map</span>
           </button>
           <button type="button" id="trainSeatingTab_list" onclick="setUserTrainSeatingTab('list')"
             class="px-3 py-1 rounded-lg text-slate-400 hover:text-white font-bold flex items-center gap-1.5 transition">
             <i data-lucide="users" class="w-3.5 h-3.5"></i>
-            <span>Companions List</span>
+            <span>Companions</span>
           </button>
         </div>
 
@@ -14531,7 +14538,7 @@
       return 'SU';
     }
 
-    function openUserTrainSeatingModal(pnrNumber, userCoach, userSeatNumber, journeyType = 'onward', initialTab = 'map') {
+    function openUserTrainSeatingModal(pnrNumber, userCoach, userSeatNumber, journeyType = 'onward', initialTab = '3d') {
       const modal = document.getElementById('userTrainSeatingModal');
       if (!modal) return;
 
@@ -14541,7 +14548,7 @@
         userSeatNumber: parseInt(userSeatNumber, 10) || null,
         selectedCoach: (userCoach || '').trim().toUpperCase(),
         journeyType: journeyType || 'onward',
-        viewMode: initialTab || 'map',
+        viewMode: initialTab || '3d',
         searchQuery: ''
       };
 
@@ -14554,18 +14561,10 @@
       if (window.lucide && typeof lucide.createIcons === 'function') {
         lucide.createIcons();
       }
-
-      if (activeTrainSeatingState.userSeatNumber) {
-        setTimeout(() => {
-          const el = document.getElementById(`trainBerthTile_${activeTrainSeatingState.userSeatNumber}`);
-          if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        }, 250);
-      }
     }
 
     function closeUserTrainSeatingModal() {
+      cleanup3DVirtualCoach();
       const modal = document.getElementById('userTrainSeatingModal');
       if (modal) modal.classList.add('hidden');
       document.body.style.overflow = '';
@@ -14573,19 +14572,21 @@
 
     function setUserTrainSeatingTab(mode) {
       if (!activeTrainSeatingState) return;
-      activeTrainSeatingState.viewMode = mode;
-      const mapBtn = document.getElementById('trainSeatingTab_map');
-      const listBtn = document.getElementById('trainSeatingTab_list');
-
-      if (mapBtn && listBtn) {
-        if (mode === 'map') {
-          mapBtn.className = 'px-3 py-1 rounded-lg bg-purple-600 text-white shadow-2xs font-extrabold flex items-center gap-1.5 transition';
-          listBtn.className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white font-bold flex items-center gap-1.5 transition';
-        } else {
-          listBtn.className = 'px-3 py-1 rounded-lg bg-purple-600 text-white shadow-2xs font-extrabold flex items-center gap-1.5 transition';
-          mapBtn.className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white font-bold flex items-center gap-1.5 transition';
-        }
+      if (activeTrainSeatingState.viewMode === '3d' && mode !== '3d') {
+        cleanup3DVirtualCoach();
       }
+      activeTrainSeatingState.viewMode = mode;
+      const tab3d = document.getElementById('trainSeatingTab_3d');
+      const tabMap = document.getElementById('trainSeatingTab_map');
+      const tabList = document.getElementById('trainSeatingTab_list');
+
+      const activeClass = 'px-3 py-1 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-2xs font-extrabold flex items-center gap-1.5 transition';
+      const inactiveClass = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white font-bold flex items-center gap-1.5 transition';
+
+      if (tab3d) tab3d.className = (mode === '3d') ? activeClass : inactiveClass;
+      if (tabMap) tabMap.className = (mode === 'map') ? activeClass : inactiveClass;
+      if (tabList) tabList.className = (mode === 'list') ? activeClass : inactiveClass;
+
       renderUserTrainSeatingModalContent();
     }
 
@@ -14727,14 +14728,533 @@
       const coachAllocations = allAllocations.filter(a => a.coach === currentCoach);
 
       if (viewMode === 'list') {
+        cleanup3DVirtualCoach();
         renderTrainCompanionsList(container, coachAllocations, userSeatNumber, searchQuery);
-      } else {
+      } else if (viewMode === 'map') {
+        cleanup3DVirtualCoach();
         renderTrainCoachVisualMap(container, coachAllocations, userSeatNumber, travelClass, currentCoach, searchQuery);
+      } else {
+        render3DVirtualTrainCoach(container, coachAllocations, userSeatNumber, travelClass, currentCoach);
       }
 
       if (window.lucide && typeof lucide.createIcons === 'function') {
         lucide.createIcons();
       }
+    }
+
+    // =========================================================================
+    // 3D VIRTUAL TRAIN COACH RENDERING ENGINE (THREE.JS)
+    // =========================================================================
+    let train3DScene = null;
+    let train3DCamera = null;
+    let train3DRenderer = null;
+    let train3DAnimId = null;
+    let train3DInteractiveMeshes = [];
+    let train3DUserPinMesh = null;
+    let train3DUserPinBaseY = 0;
+    let train3DBayCoords = [];
+    let train3DCamLerpTarget = null;
+    let train3DLookLerpTarget = null;
+    let train3DCurrentLookAt = { x: 0, y: 1.0, z: 0 };
+    let train3DSpherical = { radius: 5.5, theta: Math.PI / 4, phi: Math.PI / 3.2 };
+    let train3DTargetCenter = { x: 0, y: 1.0, z: 0 };
+    let train3DIsPointerDown = false;
+    let train3DPrevPointer = { x: 0, y: 0 };
+    let train3DPointerDownPos = { x: 0, y: 0 };
+    let train3DCurrentCoachData = null;
+
+    function cleanup3DVirtualCoach() {
+      if (train3DAnimId) {
+        cancelAnimationFrame(train3DAnimId);
+        train3DAnimId = null;
+      }
+      if (train3DRenderer) {
+        try {
+          train3DRenderer.dispose();
+          if (train3DRenderer.domElement && train3DRenderer.domElement.parentNode) {
+            train3DRenderer.domElement.parentNode.removeChild(train3DRenderer.domElement);
+          }
+        } catch (e) { }
+      }
+      train3DScene = null;
+      train3DCamera = null;
+      train3DRenderer = null;
+      train3DInteractiveMeshes = [];
+      train3DUserPinMesh = null;
+      train3DBayCoords = [];
+      train3DCamLerpTarget = null;
+      train3DLookLerpTarget = null;
+      train3DCurrentCoachData = null;
+    }
+
+    function create3DTextSprite(text, isUser = false) {
+      if (typeof document === 'undefined') return null;
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 128;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = isUser ? 'rgba(245, 158, 11, 0.95)' : 'rgba(15, 23, 42, 0.85)';
+      ctx.beginPath();
+      ctx.roundRect(8, 8, 240, 112, 28);
+      ctx.fill();
+      ctx.strokeStyle = isUser ? '#ffffff' : 'rgba(255,255,255,0.25)';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      ctx.fillStyle = isUser ? '#020617' : '#ffffff';
+      ctx.font = 'bold 36px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, 128, 64);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+      const sprite = new THREE.Sprite(material);
+      sprite.scale.set(0.65, 0.32, 1);
+      return sprite;
+    }
+
+    function focus3DUserSeat() {
+      if (!train3DCurrentCoachData || !train3DCurrentCoachData.userSeatNumber) return;
+      const userMesh = train3DInteractiveMeshes.find(m => m.userData && m.userData.seatNumber === train3DCurrentCoachData.userSeatNumber);
+      if (userMesh && train3DCamera) {
+        const p = userMesh.position;
+        const camX = p.x > 0 ? 0.15 : -0.15;
+        train3DCamLerpTarget = new THREE.Vector3(camX, p.y + 0.35, p.z + 0.85);
+        train3DLookLerpTarget = new THREE.Vector3(p.x, p.y + 0.1, p.z);
+      }
+    }
+
+    function set3DAisleWalkView() {
+      if (!train3DCamera || !train3DCurrentCoachData) return;
+      const coachLength = train3DCurrentCoachData.coachLength || 20;
+      train3DCamLerpTarget = new THREE.Vector3(0, 1.35, -coachLength / 2 + 1.2);
+      train3DLookLerpTarget = new THREE.Vector3(0, 1.35, coachLength / 2);
+    }
+
+    function set3DOverheadView() {
+      if (!train3DCamera || !train3DCurrentCoachData) return;
+      train3DCamLerpTarget = new THREE.Vector3(4.2, 4.8, 0);
+      train3DLookLerpTarget = new THREE.Vector3(0, 1.0, 0);
+      train3DSpherical.radius = 6.2;
+      train3DSpherical.theta = Math.PI / 4;
+      train3DSpherical.phi = Math.PI / 3.4;
+      train3DTargetCenter = { x: 0, y: 1.0, z: 0 };
+    }
+
+    function jump3DToBay(bayNum) {
+      if (!train3DBayCoords[bayNum] || !train3DCamera) return;
+      const b = train3DBayCoords[bayNum];
+      train3DCamLerpTarget = new THREE.Vector3(0, 1.45, b.z + 1.5);
+      train3DLookLerpTarget = new THREE.Vector3(0, 1.1, b.z);
+      train3DTargetCenter = { x: 0, y: 1.1, z: b.z };
+    }
+
+    function render3DVirtualTrainCoach(container, allocations, userSeatNumber, travelClass, currentCoach) {
+      cleanup3DVirtualCoach();
+
+      if (typeof THREE === 'undefined') {
+        container.innerHTML = `
+          <div class="p-12 text-center bg-slate-900 rounded-3xl border border-slate-800 text-slate-300 space-y-4">
+            <div class="w-12 h-12 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center mx-auto">
+              <i data-lucide="loader-2" class="w-6 h-6 animate-spin"></i>
+            </div>
+            <h4 class="font-bold text-base text-white">Loading 3D Virtual Engine...</h4>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto">
+              Initializing WebGL 3D graphics environment. If your network is slow, you can view the 2D Coach Map instantly.
+            </p>
+            <button type="button" onclick="setUserTrainSeatingTab('map')"
+              class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs shadow-md transition">
+              Switch to 2D Coach Map
+            </button>
+          </div>
+        `;
+        lucide.createIcons();
+        setTimeout(() => {
+          if (typeof THREE !== 'undefined' && activeTrainSeatingState && activeTrainSeatingState.viewMode === '3d') {
+            render3DVirtualTrainCoach(container, allocations, userSeatNumber, travelClass, currentCoach);
+          }
+        }, 1200);
+        return;
+      }
+
+      const maxAllocated = allocations.reduce((max, a) => Math.max(max, a.seatNumber || 0), 0);
+      let totalSeats = (travelClass === '2A') ? 46 : 72;
+      if (maxAllocated > 72) totalSeats = 80;
+      if (travelClass === '2A' && maxAllocated > 46) totalSeats = 54;
+
+      const baySize = (travelClass === '2A') ? 6 : 8;
+      const numBays = Math.ceil(totalSeats / baySize);
+      const baySpacing = 2.4;
+      const coachLength = numBays * baySpacing;
+      const coachWidth = 3.2;
+      const coachHeight = 2.5;
+
+      train3DCurrentCoachData = {
+        totalSeats,
+        numBays,
+        baySpacing,
+        coachLength,
+        coachWidth,
+        coachHeight,
+        userSeatNumber
+      };
+
+      const seatMap = new Map();
+      allocations.forEach(a => {
+        if (a.seatNumber) seatMap.set(a.seatNumber, a);
+      });
+
+      container.innerHTML = `
+        <div class="space-y-3">
+          <!-- 3D Header Toolbar -->
+          <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-white flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-400/30 flex items-center justify-center font-bold">
+                <i data-lucide="box" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <p class="font-bold text-white text-xs">3D Virtual Train Coach • <strong class="text-amber-300">Coach ${currentCoach}</strong></p>
+                <p class="text-[11px] text-slate-400">Interactive 360° Perspective • Touch / Drag to rotate • Pinch / Scroll to zoom</p>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              ${userSeatNumber ? `
+                <button type="button" onclick="focus3DUserSeat()"
+                  class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md transition">
+                  <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
+                  <span>Focus My Seat (${userSeatNumber})</span>
+                </button>
+              ` : ''}
+              <button type="button" onclick="set3DAisleWalkView()"
+                class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs flex items-center gap-1.5 transition">
+                <i data-lucide="footprints" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span>Aisle Walk</span>
+              </button>
+              <button type="button" onclick="set3DOverheadView()"
+                class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs flex items-center gap-1.5 transition">
+                <i data-lucide="maximize" class="w-3.5 h-3.5 text-blue-400"></i>
+                <span>Top 3D View</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 3D Canvas Viewport Wrap with overlays -->
+          <div class="relative w-full h-[450px] sm:h-[550px] rounded-3xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl">
+            <div id="virtualTrain3DCanvasWrap" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
+
+            <div class="absolute top-3 left-3 px-3 py-1.5 rounded-xl bg-slate-900/80 backdrop-blur-md border border-white/10 text-white text-[11px] font-bold flex items-center gap-2 pointer-events-none">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              <span>Train Engine ➔ Forward</span>
+            </div>
+
+            <!-- Quick Bay Jumper Strip -->
+            <div class="absolute bottom-3 inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 p-1.5 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-white/10 flex items-center gap-1.5 overflow-x-auto max-w-full scrollbar-none shadow-xl">
+              <span class="text-[10px] font-extrabold uppercase text-slate-400 px-2 shrink-0">Bays:</span>
+              <div id="virtualTrain3DBayButtons" class="flex items-center gap-1"></div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      lucide.createIcons();
+
+      const canvasWrap = document.getElementById('virtualTrain3DCanvasWrap');
+      const bayButtonsWrap = document.getElementById('virtualTrain3DBayButtons');
+      if (!canvasWrap) return;
+
+      if (bayButtonsWrap) {
+        let bayBtnsHtml = '';
+        for (let b = 1; b <= numBays; b++) {
+          const bayStart = (b - 1) * baySize + 1;
+          const bayEnd = Math.min(b * baySize, totalSeats);
+          const isUserBay = userSeatNumber && (userSeatNumber >= bayStart && userSeatNumber <= bayEnd);
+          bayBtnsHtml += `
+            <button type="button" onclick="jump3DToBay(${b})"
+              class="px-2.5 py-1 rounded-xl text-xs font-bold transition shrink-0 ${
+                isUserBay
+                  ? 'bg-amber-400 text-slate-950 font-black shadow-sm'
+                  : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+              }">
+              Bay ${b} ${isUserBay ? '★' : ''}
+            </button>
+          `;
+        }
+        bayButtonsWrap.innerHTML = bayBtnsHtml;
+      }
+
+      const width = canvasWrap.clientWidth || 800;
+      const height = canvasWrap.clientHeight || 500;
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0f172a);
+      scene.fog = new THREE.FogExp2(0x0f172a, 0.03);
+      train3DScene = scene;
+
+      const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 80);
+      train3DCamera = camera;
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.shadowMap.enabled = true;
+      train3DRenderer = renderer;
+      canvasWrap.appendChild(renderer.domElement);
+
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+      scene.add(ambientLight);
+
+      const floorGeo = new THREE.BoxGeometry(coachWidth, 0.08, coachLength);
+      const floorMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+      const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+      floorMesh.position.set(0, 0, 0);
+      scene.add(floorMesh);
+
+      const aisleGeo = new THREE.BoxGeometry(0.72, 0.09, coachLength);
+      const aisleMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+      const aisleMesh = new THREE.Mesh(aisleGeo, aisleMat);
+      aisleMesh.position.set(0, 0.01, 0);
+      scene.add(aisleMesh);
+
+      const ceilingGeo = new THREE.BoxGeometry(coachWidth, 0.08, coachLength);
+      const ceilingMat = new THREE.MeshLambertMaterial({ color: 0x0f172a });
+      const ceilingMesh = new THREE.Mesh(ceilingGeo, ceilingMat);
+      ceilingMesh.position.set(0, coachHeight, 0);
+      scene.add(ceilingMesh);
+
+      const lightBarGeo = new THREE.BoxGeometry(0.24, 0.04, coachLength);
+      const lightBarMat = new THREE.MeshBasicMaterial({ color: 0xfffaed });
+      const lightBarMesh = new THREE.Mesh(lightBarGeo, lightBarMat);
+      lightBarMesh.position.set(0, coachHeight - 0.04, 0);
+      scene.add(lightBarMesh);
+
+      const wallMat = new THREE.MeshLambertMaterial({ color: 0x1e293b, side: THREE.DoubleSide });
+      const glassMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.25 });
+
+      train3DInteractiveMeshes = [];
+      train3DBayCoords = [];
+
+      for (let b = 1; b <= numBays; b++) {
+        const bayZ = -coachLength / 2 + (b - 0.5) * baySpacing;
+        train3DBayCoords[b] = { x: 0, y: 1.1, z: bayZ };
+
+        const bayLight = new THREE.PointLight(0xfff7ed, 0.75, 4.5);
+        bayLight.position.set(0, coachHeight - 0.2, bayZ);
+        scene.add(bayLight);
+
+        const partWallZ = -coachLength / 2 + (b - 1) * baySpacing;
+        const partGeo = new THREE.BoxGeometry(coachWidth, coachHeight, 0.05);
+        const partMesh = new THREE.Mesh(partGeo, wallMat);
+        partMesh.position.set(0, coachHeight / 2, partWallZ);
+        scene.add(partMesh);
+
+        const winGeo = new THREE.PlaneGeometry(1.0, 0.65);
+        const leftWin = new THREE.Mesh(winGeo, glassMat);
+        leftWin.position.set(-coachWidth / 2 + 0.02, 1.25, bayZ);
+        leftWin.rotation.y = Math.PI / 2;
+        scene.add(leftWin);
+
+        const rightWin = new THREE.Mesh(winGeo, glassMat);
+        rightWin.position.set(coachWidth / 2 - 0.02, 1.25, bayZ);
+        rightWin.rotation.y = -Math.PI / 2;
+        scene.add(rightWin);
+
+        const bayStart = (b - 1) * baySize + 1;
+        const berthDef = [
+          { offset: 0, type: 'LB', x: -1.05, y: 0.45, z: bayZ - 0.6, w: 1.15, h: 0.12, d: 0.55 },
+          { offset: 1, type: 'MB', x: -1.05, y: 1.25, z: bayZ - 0.6, w: 1.15, h: 0.08, d: 0.55 },
+          { offset: 2, type: 'UB', x: -1.05, y: 1.95, z: bayZ - 0.6, w: 1.15, h: 0.08, d: 0.55 },
+          { offset: 3, type: 'LB', x: -1.05, y: 0.45, z: bayZ + 0.6, w: 1.15, h: 0.12, d: 0.55 },
+          { offset: 4, type: 'MB', x: -1.05, y: 1.25, z: bayZ + 0.6, w: 1.15, h: 0.08, d: 0.55 },
+          { offset: 5, type: 'UB', x: -1.05, y: 1.95, z: bayZ + 0.6, w: 1.15, h: 0.08, d: 0.55 },
+          { offset: 6, type: 'SL', x: 1.1, y: 0.45, z: bayZ, w: 0.6, h: 0.12, d: 1.7 },
+          { offset: 7, type: 'SU', x: 1.1, y: 1.85, z: bayZ, w: 0.6, h: 0.08, d: 1.7 }
+        ];
+
+        berthDef.forEach(def => {
+          const seatNum = bayStart + def.offset;
+          if (seatNum > totalSeats) return;
+
+          const alloc = seatMap.get(seatNum);
+          const isUser = userSeatNumber && userSeatNumber === seatNum;
+          const berthType = alloc ? alloc.berthType : def.type;
+
+          let berthColor = 0x334155;
+          let emissiveColor = 0x000000;
+          let emissiveInt = 0;
+
+          if (isUser) {
+            berthColor = 0xf59e0b;
+            emissiveColor = 0xb45309;
+            emissiveInt = 0.4;
+          } else if (alloc && alloc.studentName) {
+            berthColor = 0x059669;
+            emissiveColor = 0x047857;
+            emissiveInt = 0.2;
+          }
+
+          const bMat = new THREE.MeshLambertMaterial({
+            color: berthColor,
+            emissive: emissiveColor,
+            emissiveIntensity: emissiveInt
+          });
+
+          const bGeo = new THREE.BoxGeometry(def.w, def.h, def.d);
+          const bMesh = new THREE.Mesh(bGeo, bMat);
+          bMesh.position.set(def.x, def.y, def.z);
+          scene.add(bMesh);
+
+          const pillowMat = new THREE.MeshLambertMaterial({ color: 0xf8fafc });
+          const pillowGeo = new THREE.BoxGeometry(0.35, 0.07, 0.25);
+          const pillowMesh = new THREE.Mesh(pillowGeo, pillowMat);
+          pillowMesh.position.set(def.x - 0.35, def.y + def.h / 2 + 0.04, def.z);
+          scene.add(pillowMesh);
+
+          bMesh.userData = {
+            seatNumber: seatNum,
+            berthType: berthType,
+            alloc: alloc || null,
+            isUserSeat: isUser,
+            studentName: alloc ? alloc.studentName : '',
+            studentDept: alloc ? alloc.studentDept : '',
+            studentPhone: alloc ? alloc.studentPhone : ''
+          };
+          train3DInteractiveMeshes.push(bMesh);
+
+          if (isUser) {
+            const pinGeo = new THREE.OctahedronGeometry(0.18, 0);
+            const pinMat = new THREE.MeshBasicMaterial({ color: 0xfef08a, wireframe: false });
+            const pinMesh = new THREE.Mesh(pinGeo, pinMat);
+            train3DUserPinBaseY = def.y + 0.55;
+            pinMesh.position.set(def.x, train3DUserPinBaseY, def.z);
+            scene.add(pinMesh);
+            train3DUserPinMesh = pinMesh;
+
+            const userLight = new THREE.PointLight(0xf59e0b, 1.2, 2.5);
+            userLight.position.set(def.x, def.y + 0.45, def.z);
+            scene.add(userLight);
+
+            const sprite = create3DTextSprite(`★ YOU (${seatNum} ${berthType})`, true);
+            if (sprite) {
+              sprite.position.set(def.x, def.y + 0.82, def.z);
+              scene.add(sprite);
+            }
+          } else if (alloc && alloc.studentName) {
+            const firstName = alloc.studentName.split(' ')[0] || 'Student';
+            const sprite = create3DTextSprite(`${seatNum} ${firstName}`, false);
+            if (sprite) {
+              sprite.position.set(def.x, def.y + 0.38, def.z);
+              scene.add(sprite);
+            }
+          }
+        });
+      }
+
+      if (userSeatNumber) {
+        focus3DUserSeat();
+      } else {
+        set3DOverheadView();
+      }
+
+      canvasWrap.onpointerdown = (e) => {
+        train3DIsPointerDown = true;
+        train3DPrevPointer = { x: e.clientX, y: e.clientY };
+        train3DPointerDownPos = { x: e.clientX, y: e.clientY };
+        train3DCamLerpTarget = null;
+        train3DLookLerpTarget = null;
+      };
+
+      window.onpointermove = (e) => {
+        if (!train3DIsPointerDown || !train3DCamera) return;
+        const dx = e.clientX - train3DPrevPointer.x;
+        const dy = e.clientY - train3DPrevPointer.y;
+        train3DPrevPointer = { x: e.clientX, y: e.clientY };
+
+        train3DSpherical.theta -= dx * 0.007;
+        train3DSpherical.phi = Math.max(0.12, Math.min(Math.PI / 2 - 0.05, train3DSpherical.phi + dy * 0.007));
+      };
+
+      window.onpointerup = (e) => {
+        if (!train3DIsPointerDown) return;
+        train3DIsPointerDown = false;
+
+        const dist = Math.hypot(e.clientX - train3DPointerDownPos.x, e.clientY - train3DPointerDownPos.y);
+        if (dist < 6 && renderer && camera) {
+          const rect = renderer.domElement.getBoundingClientRect();
+          const mouse = new THREE.Vector2(
+            ((e.clientX - rect.left) / rect.width) * 2 - 1,
+            -((e.clientY - rect.top) / rect.height) * 2 + 1
+          );
+
+          const raycaster = new THREE.Raycaster();
+          raycaster.setFromCamera(mouse, camera);
+          const intersects = raycaster.intersectObjects(train3DInteractiveMeshes);
+
+          if (intersects.length > 0) {
+            const hit = intersects[0].object;
+            const data = hit.userData;
+            if (data) {
+              const encodedData = encodeURIComponent(JSON.stringify({
+                seatNumber: data.seatNumber,
+                berthType: data.berthType,
+                coach: currentCoach,
+                studentName: data.studentName || '',
+                studentDept: data.studentDept || '',
+                studentPhone: data.studentPhone || ''
+              }));
+              openSeatDetailsPopup(encodedData);
+            }
+          }
+        }
+      };
+
+      canvasWrap.onwheel = (e) => {
+        e.preventDefault();
+        train3DCamLerpTarget = null;
+        train3DSpherical.radius = Math.max(1.5, Math.min(18.0, train3DSpherical.radius + e.deltaY * 0.005));
+      };
+
+      const handleResize = () => {
+        if (!canvasWrap || !train3DCamera || !train3DRenderer) return;
+        const w = canvasWrap.clientWidth || 800;
+        const h = canvasWrap.clientHeight || 500;
+        train3DCamera.aspect = w / h;
+        train3DCamera.updateProjectionMatrix();
+        train3DRenderer.setSize(w, h);
+      };
+      window.addEventListener('resize', handleResize);
+
+      const animate = () => {
+        train3DAnimId = requestAnimationFrame(animate);
+
+        if (train3DUserPinMesh) {
+          train3DUserPinMesh.rotation.y += 0.035;
+          train3DUserPinMesh.position.y = train3DUserPinBaseY + Math.sin(Date.now() * 0.005) * 0.06;
+        }
+
+        if (train3DCamLerpTarget && camera) {
+          camera.position.lerp(train3DCamLerpTarget, 0.08);
+          if (train3DLookLerpTarget) {
+            train3DCurrentLookAt.x += (train3DLookLerpTarget.x - train3DCurrentLookAt.x) * 0.08;
+            train3DCurrentLookAt.y += (train3DLookLerpTarget.y - train3DCurrentLookAt.y) * 0.08;
+            train3DCurrentLookAt.z += (train3DLookLerpTarget.z - train3DCurrentLookAt.z) * 0.08;
+            camera.lookAt(train3DCurrentLookAt.x, train3DCurrentLookAt.y, train3DCurrentLookAt.z);
+          }
+          if (camera.position.distanceTo(train3DCamLerpTarget) < 0.05) {
+            train3DCamLerpTarget = null;
+          }
+        } else if (camera) {
+          const sinPhiRadius = train3DSpherical.radius * Math.sin(train3DSpherical.phi);
+          camera.position.x = train3DTargetCenter.x + sinPhiRadius * Math.sin(train3DSpherical.theta);
+          camera.position.y = train3DTargetCenter.y + train3DSpherical.radius * Math.cos(train3DSpherical.phi);
+          camera.position.z = train3DTargetCenter.z + sinPhiRadius * Math.cos(train3DSpherical.theta);
+          camera.lookAt(train3DTargetCenter.x, train3DTargetCenter.y, train3DTargetCenter.z);
+        }
+
+        renderer.render(scene, camera);
+      };
+
+      animate();
     }
 
     function renderTrainCoachVisualMap(container, allocations, userSeatNumber, travelClass, coachName, searchQuery) {
@@ -17427,6 +17947,11 @@ Guidelines:
       handleUserTrainSeatingSearch,
       openSeatDetailsPopup,
       closeSeatInspectorPopup,
+      focus3DUserSeat,
+      set3DAisleWalkView,
+      set3DOverheadView,
+      jump3DToBay,
+      cleanup3DVirtualCoach,
       copyPNRToClipboard,
       shareUserTrainTicketWhatsApp,
       openRapidApiConfigModal,
