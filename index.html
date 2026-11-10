@@ -16833,40 +16833,25 @@
                 </p>
               </div>
             </div>
-            <button
-              type="button"
-              onclick="openLiveTrainTrackerModal('${ta.trainNumber}', '${ta.trainName}', '${ta.dateOfJourney || ''}', '${ta.departureTime || ''}', '${ta.fromStation || ''}', '${ta.toStation || ''}')"
-              class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md transition shrink-0"
-            >
-              <i data-lucide="radio" class="w-3.5 h-3.5 text-emerald-300 animate-pulse"></i>
-              <span>Live Train Location</span>
-            </button>
-          </div>
-
-          <!-- Visual Train Seating Arrangement Option Banner -->
-          <div class="p-3.5 rounded-2xl bg-black/40 border border-purple-400/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-400/30 flex items-center justify-center font-black text-xs shrink-0">
-                <i data-lucide="layout-grid" class="w-4 h-4 text-amber-300"></i>
-              </div>
-              <div>
-                <p class="text-xs font-black text-purple-200 flex items-center gap-1.5">
-                  <span>Visual Train Seating Arrangement</span>
-                  <span class="text-[10px] text-amber-300 font-bold">• Coach ${ta.coach || '-'}, Seat ${ta.seatNumber || '-'} (${berthName})</span>
-                </p>
-                <p class="text-[11px] text-slate-300">
-                  Interactive 2D physical seating layout with berths, window orientation &amp; companions.
-                </p>
-              </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onclick="openUserNearSeatsModal('${ta.pnrNumber}', '${ta.coach || ''}', '${ta.seatNumber || ''}', '${isReturn ? 'return' : 'onward'}', 'map')"
+                class="px-3.5 py-2 rounded-xl bg-purple-600/70 hover:bg-purple-600 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm transition"
+                title="View Train Seating Layout & Companions"
+              >
+                <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-purple-200"></i>
+                <span>Seating Map</span>
+              </button>
+              <button
+                type="button"
+                onclick="openLiveTrainTrackerModal('${ta.trainNumber}', '${ta.trainName}', '${ta.dateOfJourney || ''}', '${ta.departureTime || ''}', '${ta.fromStation || ''}', '${ta.toStation || ''}')"
+                class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md transition"
+              >
+                <i data-lucide="radio" class="w-3.5 h-3.5 text-emerald-300 animate-pulse"></i>
+                <span>Live Location</span>
+              </button>
             </div>
-            <button
-              type="button"
-              onclick="openUserNearSeatsModal('${ta.pnrNumber}', '${ta.coach || ''}', '${ta.seatNumber || ''}', '${isReturn ? 'return' : 'onward'}', 'map')"
-              class="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-violet-600 hover:from-purple-500 hover:to-violet-500 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md transition shrink-0"
-            >
-              <i data-lucide="eye" class="w-3.5 h-3.5 text-amber-300"></i>
-              <span>View Seating Arrangement</span>
-            </button>
           </div>
 
           <!-- Status & Actions Strip -->
@@ -16883,7 +16868,7 @@
               ` : ''}
             </div>
 
-            <div class="flex items-center gap-2 flex-wrap">
+            <div class="flex items-center gap-2">
               <button
                 type="button"
                 onclick="openLiveTrainTrackerModal('${ta.trainNumber}', '${ta.trainName}', '${ta.dateOfJourney || ''}', '${ta.departureTime || ''}', '${ta.fromStation || ''}', '${ta.toStation || ''}')"
@@ -16891,15 +16876,6 @@
               >
                 <i data-lucide="map-pin" class="w-4 h-4 text-amber-400"></i>
                 <span>Live Route Halts</span>
-              </button>
-              <button
-                type="button"
-                onclick="openUserNearSeatsModal('${ta.pnrNumber}', '${ta.coach || ''}', '${ta.seatNumber || ''}', '${isReturn ? 'return' : 'onward'}', 'map')"
-                class="px-3.5 py-2.5 rounded-xl bg-purple-600/60 hover:bg-purple-600 text-purple-200 hover:text-white border border-purple-400/30 font-extrabold text-xs flex items-center justify-center gap-1.5 transition shadow-sm"
-                title="View Visual Seating Arrangement & Compartment Layout"
-              >
-                <i data-lucide="layout-grid" class="w-4 h-4 text-amber-300"></i>
-                <span>Seating Layout</span>
               </button>
               <button
                 type="button"
