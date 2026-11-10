@@ -3198,6 +3198,150 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL: VISUAL TRAIN COACH SEATING ARRANGEMENT & COMPANIONS                -->
+  <!-- ========================================================================= -->
+  <div id="userTrainSeatingModal"
+    class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-md flex flex-col no-print">
+    <!-- Top Navigation Bar -->
+    <div class="flex items-center justify-between px-4 sm:px-6 py-3.5 bg-slate-900 border-b border-slate-800 shrink-0">
+      <div class="flex items-center gap-3">
+        <button type="button" onclick="closeUserTrainSeatingModal()"
+          class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition flex items-center justify-center shrink-0">
+          <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        </button>
+        <div class="w-9 h-9 rounded-xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-400 shrink-0">
+          <i data-lucide="layout-grid" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 id="trainSeatingModalTitle" class="font-display font-extrabold text-sm sm:text-base text-white truncate">
+              Train Seating Arrangement
+            </h3>
+            <span id="trainSeatingJourneyBadge" class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-blue-500/30 text-blue-200 border border-blue-400/30">
+              Onward
+            </span>
+          </div>
+          <p id="trainSeatingModalSubtitle" class="text-[11px] text-slate-400">
+            Physical Coach Layout &amp; Seat Allocation
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button type="button" onclick="closeUserTrainSeatingModal()"
+          class="w-9 h-9 rounded-xl bg-white/10 hover:bg-rose-500/30 text-slate-400 hover:text-white transition flex items-center justify-center">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Subheader: Coach Tabs, View Switcher & Search -->
+    <div class="px-4 sm:px-6 py-3 bg-slate-900/90 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-3 shrink-0">
+      <!-- Coach Tabs -->
+      <div id="trainSeatingCoachTabs" class="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+        <!-- Rendered dynamically (e.g. Coach S5, S6) -->
+      </div>
+
+      <!-- Controls: View Mode Tabs & Search -->
+      <div class="flex items-center gap-2.5 flex-1 sm:flex-initial justify-end">
+        <!-- View Mode Switcher -->
+        <div class="inline-flex items-center p-1 rounded-xl bg-slate-800 border border-slate-700/80 text-xs font-bold">
+          <button type="button" id="trainSeatingTab_map" onclick="setUserTrainSeatingTab('map')"
+            class="px-3 py-1 rounded-lg bg-purple-600 text-white shadow-2xs font-extrabold flex items-center gap-1.5 transition">
+            <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+            <span>Visual Coach Map</span>
+          </button>
+          <button type="button" id="trainSeatingTab_list" onclick="setUserTrainSeatingTab('list')"
+            class="px-3 py-1 rounded-lg text-slate-400 hover:text-white font-bold flex items-center gap-1.5 transition">
+            <i data-lucide="users" class="w-3.5 h-3.5"></i>
+            <span>Companions List</span>
+          </button>
+        </div>
+
+        <!-- Search Input -->
+        <div class="relative w-44 sm:w-56">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="trainSeatingSearchInput" oninput="handleUserTrainSeatingSearch(this.value)"
+            placeholder="Search seat, name..."
+            class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700/80 text-white placeholder:text-slate-500 text-xs focus:outline-none focus:ring-1 focus:ring-purple-500" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Scrollable Coach Seating Content Area -->
+    <div class="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-950/50">
+      <div class="max-w-4xl mx-auto space-y-5">
+        <!-- Seating Legend -->
+        <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-slate-900/80 border border-slate-800 text-xs text-slate-300">
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="flex items-center gap-1.5 font-bold">
+              <span class="w-3.5 h-3.5 rounded-md bg-amber-400 border border-amber-300 shadow-sm"></span>
+              <span class="text-amber-300 font-extrabold">Your Seat</span>
+            </span>
+            <span class="flex items-center gap-1.5 font-bold">
+              <span class="w-3.5 h-3.5 rounded-md bg-emerald-600 border border-emerald-500"></span>
+              <span>Allocated Student</span>
+            </span>
+            <span class="flex items-center gap-1.5 font-bold">
+              <span class="w-3.5 h-3.5 rounded-md bg-slate-800 border border-slate-700"></span>
+              <span class="text-slate-400">Other / Available</span>
+            </span>
+          </div>
+          <div class="text-[11px] text-slate-400 flex items-center gap-2">
+            <span>LB = Lower Berth</span>
+            <span>•</span>
+            <span>MB = Middle</span>
+            <span>•</span>
+            <span>UB = Upper</span>
+            <span>•</span>
+            <span>SL = Side Lower</span>
+            <span>•</span>
+            <span>SU = Side Upper</span>
+          </div>
+        </div>
+
+        <!-- Dynamic Container for Map or List -->
+        <div id="trainSeatingBodyContainer" class="space-y-4">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SEAT INSPECTION POPUP -->
+  <div id="seatDetailsPopupModal"
+    class="fixed inset-0 z-60 hidden bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div class="p-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div id="seatPopupIconBox" class="w-10 h-10 rounded-2xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300 font-black text-sm">
+            41
+          </div>
+          <div>
+            <h4 id="seatPopupTitle" class="font-display font-extrabold text-base text-white">Coach S5 • Seat 41</h4>
+            <p id="seatPopupBerthDesc" class="text-xs text-amber-300 font-bold">Middle Berth (MB)</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeSeatInspectorPopup()"
+          class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition flex items-center justify-center">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div id="seatPopupContent" class="p-5 space-y-3.5 text-xs text-slate-700">
+        <!-- Populated dynamically -->
+      </div>
+
+      <div class="p-3 bg-slate-50 border-t border-slate-100 flex justify-end">
+        <button type="button" onclick="closeSeatInspectorPopup()"
+          class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold text-xs transition">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: ADMIN LOGIN -->
   <div id="adminLoginModal"
     class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
@@ -14255,7 +14399,9 @@
               <p class="text-[10px] font-extrabold uppercase tracking-wider text-amber-300">Coach</p>
               <p class="font-mono text-2xl font-black text-white mt-1">${ta.coach || '-'}</p>
             </div>
-            <div class="bg-black/40 rounded-2xl p-3.5 border border-white/15 text-center">
+            <div class="bg-black/40 rounded-2xl p-3.5 border border-white/15 text-center cursor-pointer hover:border-amber-400/60 hover:bg-black/60 transition group"
+                 onclick="openUserTrainSeatingModal('${ta.pnrNumber}', '${ta.coach || ''}', '${ta.seatNumber || ''}', '${isReturn ? 'return' : 'onward'}')"
+                 title="Click to view Visual Seating Arrangement">
               <p class="text-[10px] font-extrabold uppercase tracking-wider text-amber-300">Seat / Berth</p>
               <p class="font-mono text-2xl font-black text-amber-400 mt-1">${ta.seatNumber || '-'}</p>
             </div>
@@ -14326,6 +14472,15 @@
             <div class="flex items-center gap-2">
               <button
                 type="button"
+                onclick="openUserTrainSeatingModal('${ta.pnrNumber}', '${ta.coach || ''}', '${ta.seatNumber || ''}', '${isReturn ? 'return' : 'onward'}')"
+                class="px-3.5 py-2.5 rounded-xl bg-purple-600/50 hover:bg-purple-600 text-purple-200 hover:text-white border border-purple-400/30 font-extrabold text-xs flex items-center justify-center gap-1.5 transition"
+                title="View Visual Seating Arrangement Inside Train Coach"
+              >
+                <i data-lucide="layout-grid" class="w-4 h-4 text-purple-300"></i>
+                <span>Seating Layout</span>
+              </button>
+              <button
+                type="button"
                 onclick="openLiveTrainTrackerModal('${ta.trainNumber}', '${ta.trainName}', '${ta.dateOfJourney || ''}', '${ta.departureTime || ''}', '${ta.fromStation || ''}', '${ta.toStation || ''}')"
                 class="px-3.5 py-2.5 rounded-xl bg-indigo-600/50 hover:bg-indigo-600 text-indigo-200 hover:text-white border border-indigo-400/30 font-extrabold text-xs flex items-center justify-center gap-1.5 transition"
               >
@@ -14344,6 +14499,544 @@
           </div>
         </div>
       `;
+    }
+
+    // =========================================================================
+    // VISUAL TRAIN COACH SEATING ARRANGEMENT & COMPANIONS EXPLORER
+    // =========================================================================
+    let activeTrainSeatingState = null;
+
+    function computeCoachBayNumber(seatNum, jClass) {
+      const n = parseInt(seatNum, 10);
+      if (isNaN(n) || n <= 0) return 1;
+      const baySize = (jClass === '2A') ? 6 : 8;
+      return Math.floor((n - 1) / baySize) + 1;
+    }
+
+    function computeBerthType(seatNum, jClass = 'SL') {
+      const n = parseInt(seatNum, 10);
+      if (isNaN(n) || n <= 0) return 'LB';
+      if (jClass === '2A') {
+        const mod = n % 6;
+        if (mod === 1 || mod === 3) return 'LB';
+        if (mod === 2 || mod === 4) return 'UB';
+        if (mod === 5) return 'SL';
+        return 'SU';
+      }
+      const mod = n % 8;
+      if (mod === 1 || mod === 4) return 'LB';
+      if (mod === 2 || mod === 5) return 'MB';
+      if (mod === 3 || mod === 6) return 'UB';
+      if (mod === 7) return 'SL';
+      return 'SU';
+    }
+
+    function openUserTrainSeatingModal(pnrNumber, userCoach, userSeatNumber, journeyType = 'onward', initialTab = 'map') {
+      const modal = document.getElementById('userTrainSeatingModal');
+      if (!modal) return;
+
+      activeTrainSeatingState = {
+        pnrNumber: pnrNumber || '',
+        userCoach: (userCoach || '').trim().toUpperCase(),
+        userSeatNumber: parseInt(userSeatNumber, 10) || null,
+        selectedCoach: (userCoach || '').trim().toUpperCase(),
+        journeyType: journeyType || 'onward',
+        viewMode: initialTab || 'map',
+        searchQuery: ''
+      };
+
+      setUserTrainSeatingTab(activeTrainSeatingState.viewMode);
+      renderUserTrainSeatingModalContent();
+
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+
+      if (activeTrainSeatingState.userSeatNumber) {
+        setTimeout(() => {
+          const el = document.getElementById(`trainBerthTile_${activeTrainSeatingState.userSeatNumber}`);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 250);
+      }
+    }
+
+    function closeUserTrainSeatingModal() {
+      const modal = document.getElementById('userTrainSeatingModal');
+      if (modal) modal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function setUserTrainSeatingTab(mode) {
+      if (!activeTrainSeatingState) return;
+      activeTrainSeatingState.viewMode = mode;
+      const mapBtn = document.getElementById('trainSeatingTab_map');
+      const listBtn = document.getElementById('trainSeatingTab_list');
+
+      if (mapBtn && listBtn) {
+        if (mode === 'map') {
+          mapBtn.className = 'px-3 py-1 rounded-lg bg-purple-600 text-white shadow-2xs font-extrabold flex items-center gap-1.5 transition';
+          listBtn.className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white font-bold flex items-center gap-1.5 transition';
+        } else {
+          listBtn.className = 'px-3 py-1 rounded-lg bg-purple-600 text-white shadow-2xs font-extrabold flex items-center gap-1.5 transition';
+          mapBtn.className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white font-bold flex items-center gap-1.5 transition';
+        }
+      }
+      renderUserTrainSeatingModalContent();
+    }
+
+    function selectUserTrainCoach(coach) {
+      if (!activeTrainSeatingState) return;
+      activeTrainSeatingState.selectedCoach = coach;
+      renderUserTrainSeatingModalContent();
+    }
+
+    function handleUserTrainSeatingSearch(val) {
+      if (!activeTrainSeatingState) return;
+      activeTrainSeatingState.searchQuery = (val || '').trim().toLowerCase();
+      renderUserTrainSeatingModalContent();
+    }
+
+    function renderUserTrainSeatingModalContent() {
+      if (!activeTrainSeatingState) return;
+      const container = document.getElementById('trainSeatingBodyContainer');
+      const coachTabsWrap = document.getElementById('trainSeatingCoachTabs');
+      const modalTitle = document.getElementById('trainSeatingModalTitle');
+      const modalSubtitle = document.getElementById('trainSeatingModalSubtitle');
+      const journeyBadge = document.getElementById('trainSeatingJourneyBadge');
+      if (!container) return;
+
+      const { pnrNumber, userCoach, userSeatNumber, journeyType, viewMode, searchQuery } = activeTrainSeatingState;
+
+      if (journeyBadge) {
+        journeyBadge.textContent = journeyType === 'return' ? '🔄 Return Journey' : '🚂 Onward Journey';
+        journeyBadge.className = journeyType === 'return'
+          ? 'text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-purple-500/30 text-purple-200 border border-purple-400/30'
+          : 'text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-blue-500/30 text-blue-200 border border-blue-400/30';
+      }
+
+      const targetRecord = pnrRecords.find(r => r.pnrNumber === pnrNumber);
+      const trainNum = targetRecord ? targetRecord.trainNumber : null;
+      const trainName = targetRecord ? targetRecord.trainName : 'Train Service';
+      const travelClass = targetRecord ? (targetRecord.journeyClass || 'SL') : 'SL';
+
+      const matchingRecords = trainNum
+        ? pnrRecords.filter(r => r.trainNumber === trainNum && (r.journeyType || 'onward') === journeyType)
+        : (targetRecord ? [targetRecord] : pnrRecords.filter(r => (r.journeyType || 'onward') === journeyType));
+
+      const allAllocations = [];
+      const seenStudentIds = new Set();
+
+      matchingRecords.forEach(rec => {
+        (rec.passengerMappings || []).forEach(m => {
+          const student = (typeof payments !== 'undefined' && m.assignedUserId)
+            ? payments.find(p => p.id === m.assignedUserId)
+            : null;
+          const assignedId = m.assignedUserId || (student ? student.id : null);
+          if (assignedId) seenStudentIds.add(assignedId);
+
+          allAllocations.push({
+            pnrNumber: rec.pnrNumber,
+            trainNumber: rec.trainNumber,
+            trainName: rec.trainName,
+            journeyClass: rec.journeyClass || 'SL',
+            coach: m.coach ? String(m.coach).trim().toUpperCase() : '',
+            seatNumber: m.seatNumber ? parseInt(m.seatNumber, 10) : null,
+            berthType: m.berthType || computeBerthType(m.seatNumber, rec.journeyClass || 'SL'),
+            berthName: m.berthType ? (BERTH_MAP[m.berthType] || m.berthType) : '',
+            ticketStatus: m.ticketStatus || 'CNF',
+            assignedUserId: assignedId,
+            studentName: m.assignedUserName || (student ? student.studentName : ''),
+            studentDept: student ? (student.department || '') : '',
+            studentPhone: student ? (student.phone || '') : ''
+          });
+        });
+      });
+
+      if (typeof payments !== 'undefined') {
+        payments.forEach(p => {
+          if (seenStudentIds.has(p.id)) return;
+          const alloc = (journeyType === 'return') ? p.returnTrainAllocation : p.trainAllocation;
+          if (alloc && alloc.coach && alloc.seatNumber) {
+            if (!trainNum || alloc.trainNumber === trainNum || alloc.pnrNumber === pnrNumber) {
+              seenStudentIds.add(p.id);
+              allAllocations.push({
+                pnrNumber: alloc.pnrNumber || pnrNumber,
+                trainNumber: alloc.trainNumber || trainNum || '',
+                trainName: alloc.trainName || trainName,
+                journeyClass: alloc.journeyClass || 'SL',
+                coach: String(alloc.coach).trim().toUpperCase(),
+                seatNumber: parseInt(alloc.seatNumber, 10) || null,
+                berthType: alloc.berthType || computeBerthType(alloc.seatNumber, alloc.journeyClass || 'SL'),
+                berthName: alloc.berthType ? (BERTH_MAP[alloc.berthType] || alloc.berthType) : '',
+                ticketStatus: alloc.ticketStatus || 'CNF',
+                assignedUserId: p.id,
+                studentName: p.studentName || '',
+                studentDept: p.department || '',
+                studentPhone: p.phone || ''
+              });
+            }
+          }
+        });
+      }
+
+      const distinctCoaches = Array.from(new Set(allAllocations.map(a => a.coach).filter(Boolean))).sort();
+      if (!activeTrainSeatingState.selectedCoach && distinctCoaches.length > 0) {
+        activeTrainSeatingState.selectedCoach = (userCoach && distinctCoaches.includes(userCoach))
+          ? userCoach
+          : distinctCoaches[0];
+      }
+      const currentCoach = activeTrainSeatingState.selectedCoach || userCoach || 'S5';
+
+      if (modalTitle) {
+        modalTitle.textContent = `${trainName} (${trainNum || pnrNumber})`;
+      }
+      if (modalSubtitle) {
+        const yourDesc = (userCoach && userSeatNumber)
+          ? `Your Seat: Coach ${userCoach}, Berth ${userSeatNumber}`
+          : 'Seat Pending Allocation';
+        modalSubtitle.textContent = `Coach ${currentCoach} • ${yourDesc}`;
+      }
+
+      if (coachTabsWrap) {
+        if (distinctCoaches.length <= 1) {
+          coachTabsWrap.innerHTML = `<span class="px-3 py-1 rounded-xl bg-purple-600/30 border border-purple-400/40 text-purple-200 font-extrabold text-xs">Coach ${currentCoach}</span>`;
+        } else {
+          coachTabsWrap.innerHTML = distinctCoaches.map(c => {
+            const isActive = c === currentCoach;
+            const isUser = c === userCoach;
+            return `
+              <button type="button" onclick="selectUserTrainCoach('${c}')"
+                class="px-3 py-1 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 ${
+                  isActive
+                    ? 'bg-purple-600 text-white shadow-sm border border-purple-400'
+                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
+                }">
+                <span>Coach ${c}</span>
+                ${isUser ? '<span class="w-2 h-2 rounded-full bg-amber-400" title="Your Coach"></span>' : ''}
+              </button>
+            `;
+          }).join('');
+        }
+      }
+
+      const coachAllocations = allAllocations.filter(a => a.coach === currentCoach);
+
+      if (viewMode === 'list') {
+        renderTrainCompanionsList(container, coachAllocations, userSeatNumber, searchQuery);
+      } else {
+        renderTrainCoachVisualMap(container, coachAllocations, userSeatNumber, travelClass, currentCoach, searchQuery);
+      }
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function renderTrainCoachVisualMap(container, allocations, userSeatNumber, travelClass, coachName, searchQuery) {
+      const maxAllocated = allocations.reduce((max, a) => Math.max(max, a.seatNumber || 0), 0);
+      let totalSeats = (travelClass === '2A') ? 46 : 72;
+      if (maxAllocated > 72) totalSeats = 80;
+      if (travelClass === '2A' && maxAllocated > 46) totalSeats = 54;
+
+      const baySize = (travelClass === '2A') ? 6 : 8;
+      const numBays = Math.ceil(totalSeats / baySize);
+
+      const seatMap = new Map();
+      allocations.forEach(a => {
+        if (a.seatNumber) seatMap.set(a.seatNumber, a);
+      });
+
+      let html = `
+        <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-white flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2">
+            <i data-lucide="train" class="w-4 h-4 text-purple-400"></i>
+            <span class="font-bold text-slate-200">Coach <strong class="text-white">${coachName}</strong> (${CLASS_MAP[travelClass] || travelClass})</span>
+          </div>
+          <div class="flex items-center gap-2 text-slate-400 font-mono text-[11px]">
+            <span>Train Engine Direction</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+      `;
+
+      for (let bay = 1; bay <= numBays; bay++) {
+        const bayStart = (bay - 1) * baySize + 1;
+        const bayEnd = Math.min(bay * baySize, totalSeats);
+
+        let bayMatchesSearch = true;
+        if (searchQuery) {
+          bayMatchesSearch = false;
+          for (let s = bayStart; s <= bayEnd; s++) {
+            const alloc = seatMap.get(s);
+            if (String(s).includes(searchQuery)) bayMatchesSearch = true;
+            if (alloc && (
+              (alloc.studentName && alloc.studentName.toLowerCase().includes(searchQuery)) ||
+              (alloc.studentDept && alloc.studentDept.toLowerCase().includes(searchQuery)) ||
+              (alloc.studentPhone && alloc.studentPhone.includes(searchQuery))
+            )) {
+              bayMatchesSearch = true;
+            }
+          }
+        }
+
+        if (!bayMatchesSearch) continue;
+
+        const hasUserSeat = userSeatNumber && (userSeatNumber >= bayStart && userSeatNumber <= bayEnd);
+
+        html += `
+          <div class="p-4 rounded-3xl bg-slate-900/90 border ${hasUserSeat ? 'border-amber-400/80 shadow-lg shadow-amber-500/10' : 'border-slate-800'} space-y-3">
+            <div class="flex items-center justify-between text-xs border-b border-slate-800/80 pb-2">
+              <div class="flex items-center gap-2">
+                <span class="font-extrabold text-white text-xs px-2 py-0.5 rounded-lg bg-slate-800 border border-slate-700">
+                  Bay ${bay}
+                </span>
+                <span class="text-slate-400 font-mono text-[11px]">Berths ${bayStart} - ${bayEnd}</span>
+                ${hasUserSeat ? '<span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-400 text-slate-950">★ Your Bay</span>' : ''}
+              </div>
+              <span class="text-[11px] text-slate-500 flex items-center gap-1">
+                <i data-lucide="app-window" class="w-3.5 h-3.5 text-blue-400"></i>
+                <span>Window Sides</span>
+              </span>
+            </div>
+
+            <div class="space-y-2">
+              <!-- Top Row: Main Compartment Window & Berths -->
+              <div class="flex items-center gap-2">
+                <div class="w-6 text-center text-slate-500 shrink-0" title="Compartment Window Side">
+                  <i data-lucide="app-window" class="w-4 h-4 text-blue-400 mx-auto"></i>
+                </div>
+                <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 flex-1">
+                  ${renderBerthTile(bayStart, seatMap, userSeatNumber, travelClass)}
+                  ${renderBerthTile(bayStart + 1, seatMap, userSeatNumber, travelClass)}
+                  ${renderBerthTile(bayStart + 2, seatMap, userSeatNumber, travelClass)}
+                  ${travelClass !== '2A' ? renderBerthTile(bayStart + 3, seatMap, userSeatNumber, travelClass) : ''}
+                  ${travelClass !== '2A' ? renderBerthTile(bayStart + 4, seatMap, userSeatNumber, travelClass) : ''}
+                  ${travelClass !== '2A' ? renderBerthTile(bayStart + 5, seatMap, userSeatNumber, travelClass) : ''}
+                </div>
+              </div>
+
+              <!-- Central Walking Aisle -->
+              <div class="py-1 px-8 rounded-xl bg-slate-950/70 border border-slate-800/60 text-center text-[10px] font-bold text-slate-500 flex items-center justify-center gap-2">
+                <div class="h-px bg-slate-800 flex-1"></div>
+                <span>🚶 Central Walking Aisle / Corridor</span>
+                <div class="h-px bg-slate-800 flex-1"></div>
+              </div>
+
+              <!-- Bottom Row: Side Window & Side Berths -->
+              <div class="flex items-center gap-2">
+                <div class="w-6 text-center text-slate-500 shrink-0" title="Side Window">
+                  <i data-lucide="app-window" class="w-4 h-4 text-emerald-400 mx-auto"></i>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 flex-1">
+                  ${travelClass === '2A' ? `
+                    ${renderBerthTile(bayStart + 4, seatMap, userSeatNumber, travelClass)}
+                    ${renderBerthTile(bayStart + 5, seatMap, userSeatNumber, travelClass)}
+                  ` : `
+                    ${renderBerthTile(bayStart + 6, seatMap, userSeatNumber, travelClass)}
+                    ${renderBerthTile(bayStart + 7, seatMap, userSeatNumber, travelClass)}
+                  `}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    function renderBerthTile(seatNum, seatMap, userSeatNum, travelClass) {
+      if (!seatNum) return '';
+      const alloc = seatMap.get(seatNum);
+      const isUserSeat = userSeatNum && userSeatNum === seatNum;
+      const berthType = alloc ? alloc.berthType : computeBerthType(seatNum, travelClass);
+      const berthShort = berthType || 'LB';
+      const berthTitle = BERTH_MAP[berthShort] || berthShort;
+
+      let bgClass = 'bg-slate-800/80 border-slate-700/80 hover:border-slate-500 text-slate-300';
+      let badgeHtml = '';
+
+      if (isUserSeat) {
+        bgClass = 'bg-amber-400 text-slate-950 border-amber-300 shadow-md shadow-amber-500/20 ring-2 ring-amber-300/60 animate-pulse';
+        badgeHtml = '<span class="text-[9px] font-black uppercase px-1.5 py-0.2 rounded bg-slate-950 text-amber-300 mt-0.5">YOU</span>';
+      } else if (alloc && alloc.studentName) {
+        bgClass = 'bg-emerald-950/70 border-emerald-500/50 hover:border-emerald-400 text-emerald-100';
+        badgeHtml = `<span class="text-[9px] font-extrabold truncate max-w-full text-emerald-300 mt-0.5 block">${escapeHtml(alloc.studentName.split(' ')[0])}</span>`;
+      }
+
+      const encodedData = alloc ? encodeURIComponent(JSON.stringify(alloc)) : encodeURIComponent(JSON.stringify({
+        seatNumber: seatNum,
+        berthType: berthShort,
+        berthName: berthTitle,
+        studentName: '',
+        studentDept: '',
+        studentPhone: ''
+      }));
+
+      return `
+        <div id="trainBerthTile_${seatNum}"
+          onclick="openSeatDetailsPopup('${encodedData}')"
+          class="p-2.5 rounded-2xl border text-center cursor-pointer transition flex flex-col items-center justify-center min-h-[64px] ${bgClass}"
+          title="Seat ${seatNum} - ${berthTitle} ${alloc && alloc.studentName ? `(${alloc.studentName})` : ''}">
+          <div class="flex items-center justify-between w-full px-1">
+            <span class="text-[10px] font-black uppercase opacity-75">${berthShort}</span>
+            <span class="font-mono text-sm font-black">${seatNum}</span>
+          </div>
+          ${badgeHtml}
+        </div>
+      `;
+    }
+
+    function renderTrainCompanionsList(container, allocations, userSeatNumber, searchQuery) {
+      let filtered = allocations.slice().sort((a, b) => (a.seatNumber || 0) - (b.seatNumber || 0));
+      if (searchQuery) {
+        filtered = filtered.filter(a => {
+          const name = (a.studentName || '').toLowerCase();
+          const dept = (a.studentDept || '').toLowerCase();
+          const phone = (a.studentPhone || '');
+          const seat = String(a.seatNumber || '');
+          return name.includes(searchQuery) || dept.includes(searchQuery) || phone.includes(searchQuery) || seat.includes(searchQuery);
+        });
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center bg-slate-900 rounded-3xl border border-slate-800 text-slate-400 text-xs">
+            <i data-lucide="users" class="w-8 h-8 text-slate-600 mx-auto mb-2"></i>
+            <p class="font-bold text-slate-300">No companions matching "${escapeHtml(searchQuery)}"</p>
+          </div>
+        `;
+        return;
+      }
+
+      const html = `
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          ${filtered.map(a => {
+            const isUser = userSeatNumber && userSeatNumber === a.seatNumber;
+            const berthName = a.berthName || BERTH_MAP[a.berthType] || a.berthType || 'Berth';
+            return `
+              <div class="p-3.5 rounded-2xl border ${
+                isUser
+                  ? 'bg-gradient-to-br from-amber-500/20 to-slate-900 border-amber-400 text-white shadow-md'
+                  : 'bg-slate-900/90 border-slate-800 text-slate-200'
+              } space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="px-2 py-0.5 rounded-lg text-xs font-mono font-black ${
+                    isUser ? 'bg-amber-400 text-slate-950' : 'bg-purple-500/20 text-purple-300 border border-purple-400/30'
+                  }">
+                    Coach ${a.coach || '-'} • Seat ${a.seatNumber || '-'}
+                  </span>
+                  <span class="text-[10px] font-bold text-slate-400 uppercase">${berthName}</span>
+                </div>
+                <div>
+                  <h5 class="font-extrabold text-sm text-white truncate flex items-center gap-1.5">
+                    <span>${escapeHtml(a.studentName || 'Unassigned')}</span>
+                    ${isUser ? '<span class="text-[10px] font-black text-amber-300">(You)</span>' : ''}
+                  </h5>
+                  <p class="text-[11px] text-slate-400 truncate mt-0.5">${escapeHtml(a.studentDept || 'Student')}</p>
+                </div>
+                ${a.studentPhone ? `
+                  <div class="pt-2 border-t border-slate-800 flex items-center justify-between text-xs">
+                    <span class="font-mono text-slate-400">${a.studentPhone}</span>
+                    <a href="tel:${a.studentPhone}" class="px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white transition font-bold text-[11px] flex items-center gap-1">
+                      <i data-lucide="phone" class="w-3 h-3"></i>
+                      <span>Call</span>
+                    </a>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+
+      container.innerHTML = html;
+    }
+
+    function openSeatDetailsPopup(encodedData) {
+      try {
+        const data = JSON.parse(decodeURIComponent(encodedData));
+        const modal = document.getElementById('seatDetailsPopupModal');
+        const iconBox = document.getElementById('seatPopupIconBox');
+        const title = document.getElementById('seatPopupTitle');
+        const berthDesc = document.getElementById('seatPopupBerthDesc');
+        const content = document.getElementById('seatPopupContent');
+        if (!modal) return;
+
+        if (iconBox) iconBox.textContent = data.seatNumber || '-';
+        if (title) title.textContent = `Seat ${data.seatNumber || '-'} (${data.coach || activeTrainSeatingState?.selectedCoach || 'Coach'})`;
+        if (berthDesc) berthDesc.textContent = `${BERTH_MAP[data.berthType] || data.berthType || 'Berth'} (${data.berthType || ''})`;
+
+        const isUser = activeTrainSeatingState && activeTrainSeatingState.userSeatNumber === data.seatNumber;
+
+        if (content) {
+          if (data.studentName) {
+            content.innerHTML = `
+              <div class="p-3 rounded-2xl ${isUser ? 'bg-amber-50 border border-amber-200 text-amber-900' : 'bg-slate-50 border border-slate-200 text-slate-900'} space-y-1">
+                <p class="text-[10px] font-extrabold uppercase text-slate-400">Occupant Student</p>
+                <h5 class="text-sm font-extrabold flex items-center gap-1.5">
+                  <span>${escapeHtml(data.studentName)}</span>
+                  ${isUser ? '<span class="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[10px] font-black">★ You</span>' : ''}
+                </h5>
+                <p class="text-xs text-slate-600 font-medium">${escapeHtml(data.studentDept || 'Department not specified')}</p>
+              </div>
+
+              ${data.studentPhone ? `
+                <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-200">
+                  <div>
+                    <p class="text-[10px] font-extrabold uppercase text-slate-400">Contact Number</p>
+                    <p class="font-mono font-bold text-slate-800 text-xs mt-0.5">${data.studentPhone}</p>
+                  </div>
+                  <a href="tel:${data.studentPhone}" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center gap-1 shadow-sm transition">
+                    <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+                    <span>Call</span>
+                  </a>
+                </div>
+              ` : ''}
+
+              <div class="p-3 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-900 space-y-1">
+                <p class="text-[10px] font-extrabold uppercase text-indigo-600">Berth Physical Position</p>
+                <p class="font-bold text-xs">
+                  ${(data.berthType === 'SL' || data.berthType === 'LB') ? '🪟 Direct Window Side' : 'Aisle Side Berth'} • ${BERTH_MAP[data.berthType] || data.berthType}
+                </p>
+              </div>
+            `;
+          } else {
+            content.innerHTML = `
+              <div class="p-4 text-center rounded-2xl bg-slate-50 border border-slate-200 text-slate-500 space-y-1">
+                <p class="font-bold text-xs text-slate-700">Seat ${data.seatNumber} is Unallocated</p>
+                <p class="text-[11px] text-slate-400">No student from this trip roster is assigned to this berth.</p>
+              </div>
+              <div class="p-3 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-900 space-y-1">
+                <p class="text-[10px] font-extrabold uppercase text-indigo-600">Berth Physical Position</p>
+                <p class="font-bold text-xs">
+                  ${(data.berthType === 'SL' || data.berthType === 'LB') ? '🪟 Direct Window Side' : 'Aisle Side Berth'} • ${BERTH_MAP[data.berthType] || data.berthType}
+                </p>
+              </div>
+            `;
+          }
+        }
+
+        modal.classList.remove('hidden');
+        if (window.lucide && typeof lucide.createIcons === 'function') {
+          lucide.createIcons();
+        }
+      } catch (e) {
+        console.error('Error opening seat details popup:', e);
+      }
+    }
+
+    function closeSeatInspectorPopup() {
+      const modal = document.getElementById('seatDetailsPopupModal');
+      if (modal) modal.classList.add('hidden');
     }
 
     function renderUserTrainTicketCard(participant) {
@@ -16727,6 +17420,13 @@ Guidelines:
       handleRefreshPNRStatus,
       handleDeletePNRRecord,
       renderUserTrainTicketCard,
+      openUserTrainSeatingModal,
+      closeUserTrainSeatingModal,
+      setUserTrainSeatingTab,
+      selectUserTrainCoach,
+      handleUserTrainSeatingSearch,
+      openSeatDetailsPopup,
+      closeSeatInspectorPopup,
       copyPNRToClipboard,
       shareUserTrainTicketWhatsApp,
       openRapidApiConfigModal,
