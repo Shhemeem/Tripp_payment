@@ -1814,7 +1814,7 @@
 
         <!-- Saved PNR Records Roster -->
         <div class="expressive-card border border-slate-200 rounded-3xl p-5 sm:p-6 space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-3">
             <div>
               <h4 class="font-display font-extrabold text-base text-slate-900 flex items-center gap-2">
                 <i data-lucide="layers" class="w-4 h-4 text-amber-600"></i>
@@ -1826,6 +1826,37 @@
                 Track status across passenger batches. Use "Refresh Status" to sync latest chart preparation, coach, and
                 berth updates to assigned students.
               </p>
+            </div>
+
+            <!-- Filter & Search Toolbar for Admin PNR Roster -->
+            <div class="flex flex-wrap items-center gap-2.5">
+              <!-- Onward / Return Journey Filter Pills -->
+              <div class="inline-flex items-center bg-slate-100 p-1 rounded-xl text-xs font-bold border border-slate-200">
+                <button type="button" id="adminPnrFilterBtn_all" onclick="setPnrRosterJourneyFilter('all')"
+                  class="px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-2xs font-extrabold transition">
+                  All
+                </button>
+                <button type="button" id="adminPnrFilterBtn_onward" onclick="setPnrRosterJourneyFilter('onward')"
+                  class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-bold transition flex items-center gap-1">
+                  <span>🚂 Onward</span>
+                </button>
+                <button type="button" id="adminPnrFilterBtn_return" onclick="setPnrRosterJourneyFilter('return')"
+                  class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-bold transition flex items-center gap-1">
+                  <span>🔄 Return</span>
+                </button>
+              </div>
+
+              <!-- Student Name Search Input -->
+              <div class="relative w-full sm:w-60">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                <input type="text" id="adminPnrStudentSearchInput" oninput="handleAdminPnrStudentSearch(this.value)"
+                  placeholder="Search student, seat, phone..."
+                  class="w-full pl-8 pr-7 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                <button type="button" id="adminPnrSearchClearBtn" onclick="clearAdminPnrStudentSearch()"
+                  class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                  <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -14061,11 +14092,93 @@
       }
     }
 
+    let currentPnrRosterJourneyFilter = 'all';
+    let currentPnrRosterSearchQuery = '';
+
+    function setPnrRosterJourneyFilter(filter) {
+      currentPnrRosterJourneyFilter = filter || 'all';
+      const btnAll = document.getElementById('adminPnrFilterBtn_all');
+      const btnOnward = document.getElementById('adminPnrFilterBtn_onward');
+      const btnReturn = document.getElementById('adminPnrFilterBtn_return');
+
+      const activeClass = 'px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-2xs font-extrabold transition';
+      const inactiveClass = 'px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-bold transition flex items-center gap-1';
+
+      if (btnAll) btnAll.className = (filter === 'all') ? activeClass : 'px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-bold transition';
+      if (btnOnward) btnOnward.className = (filter === 'onward') ? activeClass + ' text-blue-700 flex items-center gap-1' : inactiveClass;
+      if (btnReturn) btnReturn.className = (filter === 'return') ? activeClass + ' text-purple-700 flex items-center gap-1' : inactiveClass;
+
+      renderSavedPNRRecords();
+    }
+
+    function handleAdminPnrStudentSearch(val) {
+      currentPnrRosterSearchQuery = (val || '').trim().toLowerCase();
+      const clearBtn = document.getElementById('adminPnrSearchClearBtn');
+      if (clearBtn) {
+        if (currentPnrRosterSearchQuery) {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+        }
+      }
+      renderSavedPNRRecords();
+    }
+
+    function clearAdminPnrStudentSearch() {
+      const input = document.getElementById('adminPnrStudentSearchInput');
+      if (input) input.value = '';
+      handleAdminPnrStudentSearch('');
+    }
+
     function renderSavedPNRRecords() {
       const container = document.getElementById('savedPnrListContainer');
       const badge = document.getElementById('savedPnrCountBadge');
-      if (badge) badge.textContent = pnrRecords.length;
       if (!container) return;
+
+      const journeyFilter = currentPnrRosterJourneyFilter || 'all';
+      const searchQuery = currentPnrRosterSearchQuery || '';
+
+      // 1. Filter by journeyType (onward / return)
+      let filteredRecords = (journeyFilter === 'all')
+        ? pnrRecords
+        : pnrRecords.filter(r => (r.journeyType || 'onward') === journeyFilter);
+
+      // 2. Filter by search query (student name, phone, seat, coach, PNR, train)
+      if (searchQuery) {
+        filteredRecords = filteredRecords.filter(record => {
+          const pnrMatch = (record.pnrNumber || '').toLowerCase().includes(searchQuery);
+          const trainMatch = (record.trainName || '').toLowerCase().includes(searchQuery) ||
+                             (record.trainNumber || '').toLowerCase().includes(searchQuery);
+          const stationMatch = (record.fromStation || '').toLowerCase().includes(searchQuery) ||
+                               (record.toStation || '').toLowerCase().includes(searchQuery);
+
+          const studentMatch = (record.passengerMappings || []).some(m => {
+            const nameMatch = (m.assignedUserName || '').toLowerCase().includes(searchQuery);
+            const seatMatch = (m.seatNumber && String(m.seatNumber).toLowerCase().includes(searchQuery)) ||
+                              (m.coach && String(m.coach).toLowerCase().includes(searchQuery));
+            let phoneMatch = false;
+            let deptMatch = false;
+            if (typeof payments !== 'undefined' && m.assignedUserId) {
+              const st = payments.find(p => p.id === m.assignedUserId);
+              if (st) {
+                if (st.phone && st.phone.includes(searchQuery)) phoneMatch = true;
+                if (st.department && st.department.toLowerCase().includes(searchQuery)) deptMatch = true;
+              }
+            }
+            return nameMatch || seatMatch || phoneMatch || deptMatch;
+          });
+
+          return pnrMatch || trainMatch || stationMatch || studentMatch;
+        });
+      }
+
+      if (badge) {
+        if (journeyFilter === 'all' && !searchQuery) {
+          badge.textContent = pnrRecords.length;
+        } else {
+          badge.textContent = `${filteredRecords.length} of ${pnrRecords.length}`;
+        }
+      }
 
       if (pnrRecords.length === 0) {
         container.innerHTML = `
@@ -14083,7 +14196,29 @@
         return;
       }
 
-      container.innerHTML = pnrRecords.map(record => {
+      if (filteredRecords.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200 space-y-2">
+            <div class="w-10 h-10 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center mx-auto mb-2">
+              <i data-lucide="search-x" class="w-5 h-5"></i>
+            </div>
+            <p class="text-sm font-bold text-slate-700">No matching PNR records found</p>
+            <p class="text-xs text-slate-400 max-w-xs mx-auto">
+              No results for journey filter "${journeyFilter}" ${searchQuery ? `and search query "${escapeHtml(searchQuery)}"` : ''}.
+            </p>
+            <div class="pt-2">
+              <button type="button" onclick="setPnrRosterJourneyFilter('all'); clearAdminPnrStudentSearch();"
+                class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition">
+                Reset Filter &amp; Search
+              </button>
+            </div>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = filteredRecords.map(record => {
         const mappings = record.passengerMappings || [];
         const assignedCount = mappings.filter(m => m.assignedUserId).length;
         const lastSyncedStr = record.lastSyncedAt
@@ -14095,8 +14230,18 @@
           if (m.ticketStatus === 'RAC') statusBadgeClass = 'bg-amber-100 text-amber-800';
           if (m.ticketStatus === 'WL') statusBadgeClass = 'bg-rose-100 text-rose-800';
 
+          const isSlotMatch = searchQuery && (
+            (m.assignedUserName && m.assignedUserName.toLowerCase().includes(searchQuery)) ||
+            (m.seatNumber && String(m.seatNumber).toLowerCase().includes(searchQuery)) ||
+            (m.coach && String(m.coach).toLowerCase().includes(searchQuery))
+          );
+
+          const slotCardClass = isSlotMatch
+            ? 'p-3 rounded-xl border-2 border-amber-400 bg-amber-50/90 space-y-1.5 shadow-sm ring-2 ring-amber-300/60'
+            : 'p-3 rounded-xl border border-slate-200 bg-white space-y-1.5 shadow-2xs';
+
           return `
-            <div class="p-3 rounded-xl border border-slate-200 bg-white space-y-1.5 shadow-2xs">
+            <div class="${slotCardClass}">
               <div class="flex items-center justify-between text-xs">
                 <span class="font-mono font-bold text-slate-500">Slot #${m.passengerIndex}</span>
                 <span class="px-2 py-0.5 rounded-full text-[10px] font-black ${statusBadgeClass}">
@@ -14763,7 +14908,30 @@
     let train3DPointerDownPos = { x: 0, y: 0 };
     let train3DCurrentCoachData = null;
 
+    let train3DMoveTimer = null;
+    let train3DControlPadCompact = false;
+    let train3DControlPadDock = 'bottom-right';
+
+    function stop3DContinuousMove() {
+      if (train3DMoveTimer) {
+        clearInterval(train3DMoveTimer);
+        train3DMoveTimer = null;
+      }
+    }
+
+    let train3DResizeHandler = null;
+    let train3DKeyHandler = null;
+
     function cleanup3DVirtualCoach() {
+      stop3DContinuousMove();
+      if (train3DResizeHandler) {
+        window.removeEventListener('resize', train3DResizeHandler);
+        train3DResizeHandler = null;
+      }
+      if (train3DKeyHandler) {
+        window.removeEventListener('keydown', train3DKeyHandler);
+        train3DKeyHandler = null;
+      }
       if (train3DAnimId) {
         cancelAnimationFrame(train3DAnimId);
         train3DAnimId = null;
@@ -14847,6 +15015,174 @@
       train3DCamLerpTarget = new THREE.Vector3(0, 1.45, b.z + 1.5);
       train3DLookLerpTarget = new THREE.Vector3(0, 1.1, b.z);
       train3DTargetCenter = { x: 0, y: 1.1, z: b.z };
+    }
+
+    function execute3DMoveAction(action, isContinuous = false) {
+      if (!train3DCamera || !train3DCurrentCoachData) return;
+      const step = isContinuous ? 0.12 : 0.45;
+      const turnStep = isContinuous ? 0.04 : 0.14;
+      const pitchStep = isContinuous ? 0.03 : 0.10;
+      const zoomStep = isContinuous ? 0.25 : 0.7;
+
+      train3DCamLerpTarget = null;
+      train3DLookLerpTarget = null;
+
+      const forwardX = -Math.sin(train3DSpherical.theta);
+      const forwardZ = -Math.cos(train3DSpherical.theta);
+      const rightX = Math.cos(train3DSpherical.theta);
+      const rightZ = -Math.sin(train3DSpherical.theta);
+
+      const maxZ = ((train3DCurrentCoachData.coachLength || 20) / 2) - 0.4;
+
+      switch (action) {
+        case 'forward':
+          train3DTargetCenter.x += forwardX * step;
+          train3DTargetCenter.z += forwardZ * step;
+          break;
+        case 'backward':
+          train3DTargetCenter.x -= forwardX * step;
+          train3DTargetCenter.z -= forwardZ * step;
+          break;
+        case 'stepLeft':
+          train3DTargetCenter.x -= rightX * step;
+          train3DTargetCenter.z -= rightZ * step;
+          break;
+        case 'stepRight':
+          train3DTargetCenter.x += rightX * step;
+          train3DTargetCenter.z += rightZ * step;
+          break;
+        case 'turnLeft':
+          train3DSpherical.theta -= turnStep;
+          break;
+        case 'turnRight':
+          train3DSpherical.theta += turnStep;
+          break;
+        case 'lookUp':
+          train3DSpherical.phi = Math.max(0.12, train3DSpherical.phi - pitchStep);
+          break;
+        case 'lookDown':
+          train3DSpherical.phi = Math.min(Math.PI / 2 - 0.05, train3DSpherical.phi + pitchStep);
+          break;
+        case 'zoomIn':
+          train3DSpherical.radius = Math.max(1.2, train3DSpherical.radius - zoomStep);
+          break;
+        case 'zoomOut':
+          train3DSpherical.radius = Math.min(18.0, train3DSpherical.radius + zoomStep);
+          break;
+        case 'reset':
+          if (train3DCurrentCoachData && train3DCurrentCoachData.userSeatNumber) {
+            focus3DUserSeat();
+          } else {
+            set3DOverheadView();
+          }
+          return;
+      }
+
+      train3DTargetCenter.x = Math.max(-1.3, Math.min(1.3, train3DTargetCenter.x));
+      train3DTargetCenter.z = Math.max(-maxZ, Math.min(maxZ, train3DTargetCenter.z));
+    }
+
+    function start3DContinuousMove(action) {
+      execute3DMoveAction(action);
+      stop3DContinuousMove();
+      train3DMoveTimer = setInterval(() => {
+        execute3DMoveAction(action, true);
+      }, 45);
+    }
+
+    function toggle3DControlPadCompact() {
+      train3DControlPadCompact = !train3DControlPadCompact;
+      const pad = document.getElementById('virtualTrain3DControlPad');
+      const body = document.getElementById('virtualTrain3DControlPadBody');
+      const toggleIcon = document.getElementById('virtualTrain3DCompactToggleIcon');
+      if (!pad || !body) return;
+
+      if (train3DControlPadCompact) {
+        body.classList.add('hidden');
+        if (toggleIcon) toggleIcon.setAttribute('data-lucide', 'maximize-2');
+      } else {
+        body.classList.remove('hidden');
+        if (toggleIcon) toggleIcon.setAttribute('data-lucide', 'minimize-2');
+      }
+      lucide.createIcons();
+    }
+
+    function dock3DControlPad(corner) {
+      const pad = document.getElementById('virtualTrain3DControlPad');
+      if (!pad) return;
+
+      const docks = ['bottom-right', 'bottom-left', 'top-right', 'top-left'];
+      if (!corner) {
+        const nextIdx = (docks.indexOf(train3DControlPadDock) + 1) % docks.length;
+        train3DControlPadDock = docks[nextIdx];
+      } else {
+        train3DControlPadDock = corner;
+      }
+
+      pad.style.left = '';
+      pad.style.right = '';
+      pad.style.top = '';
+      pad.style.bottom = '';
+
+      if (train3DControlPadDock === 'bottom-right') {
+        pad.style.right = '12px';
+        pad.style.bottom = '64px';
+      } else if (train3DControlPadDock === 'bottom-left') {
+        pad.style.left = '12px';
+        pad.style.bottom = '64px';
+      } else if (train3DControlPadDock === 'top-right') {
+        pad.style.right = '12px';
+        pad.style.top = '12px';
+      } else if (train3DControlPadDock === 'top-left') {
+        pad.style.left = '12px';
+        pad.style.top = '48px';
+      }
+    }
+
+    function init3DControlPadDrag(e) {
+      const pad = document.getElementById('virtualTrain3DControlPad');
+      const container = pad ? pad.parentElement : null;
+      if (!pad || !container) return;
+
+      const startX = e.clientX || (e.touches && e.touches[0].clientX);
+      const startY = e.clientY || (e.touches && e.touches[0].clientY);
+      const padRect = pad.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+
+      const initialLeft = padRect.left - containerRect.left;
+      const initialTop = padRect.top - containerRect.top;
+
+      const onPointerMove = (ev) => {
+        const curX = ev.clientX || (ev.touches && ev.touches[0].clientX);
+        const curY = ev.clientY || (ev.touches && ev.touches[0].clientY);
+        if (curX === undefined || curY === undefined) return;
+
+        let newLeft = initialLeft + (curX - startX);
+        let newTop = initialTop + (curY - startY);
+
+        const maxLeft = containerRect.width - pad.offsetWidth - 8;
+        const maxTop = containerRect.height - pad.offsetHeight - 8;
+
+        newLeft = Math.max(8, Math.min(maxLeft, newLeft));
+        newTop = Math.max(8, Math.min(maxTop, newTop));
+
+        pad.style.left = `${newLeft}px`;
+        pad.style.top = `${newTop}px`;
+        pad.style.right = 'auto';
+        pad.style.bottom = 'auto';
+      };
+
+      const onPointerUp = () => {
+        window.removeEventListener('pointermove', onPointerMove);
+        window.removeEventListener('pointerup', onPointerUp);
+        window.removeEventListener('touchmove', onPointerMove);
+        window.removeEventListener('touchend', onPointerUp);
+      };
+
+      window.addEventListener('pointermove', onPointerMove);
+      window.addEventListener('pointerup', onPointerUp);
+      window.addEventListener('touchmove', onPointerMove, { passive: false });
+      window.addEventListener('touchend', onPointerUp);
     }
 
     function render3DVirtualTrainCoach(container, allocations, userSeatNumber, travelClass, currentCoach) {
@@ -14946,6 +15282,118 @@
             <div class="absolute top-3 left-3 px-3 py-1.5 rounded-xl bg-slate-900/80 backdrop-blur-md border border-white/10 text-white text-[11px] font-bold flex items-center gap-2 pointer-events-none">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
               <span>Train Engine ➔ Forward</span>
+            </div>
+
+            <!-- Draggable & Movable 3D Navigation Control Pad Interface -->
+            <div id="virtualTrain3DControlPad"
+              class="absolute bottom-16 right-3 sm:bottom-16 sm:right-4 z-20 bg-slate-900/90 backdrop-blur-md border border-white/15 rounded-2xl shadow-2xl p-2.5 text-white w-44 sm:w-48 transition-opacity select-none">
+              
+              <!-- Draggable Header Handle -->
+              <div id="virtualTrain3DControlPadHeader" onpointerdown="init3DControlPadDrag(event)"
+                class="flex items-center justify-between pb-1.5 border-b border-white/10 cursor-move text-slate-300">
+                <div class="flex items-center gap-1.5 font-extrabold text-[11px] text-white">
+                  <i data-lucide="grip-vertical" class="w-3.5 h-3.5 text-slate-400"></i>
+                  <span>Move Controls</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button type="button" onclick="dock3DControlPad()" title="Cycle Position Corner"
+                    class="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition">
+                    <i data-lucide="move" class="w-3 h-3"></i>
+                  </button>
+                  <button type="button" onclick="toggle3DControlPadCompact()" title="Minimize / Expand"
+                    class="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition">
+                    <i id="virtualTrain3DCompactToggleIcon" data-lucide="minimize-2" class="w-3 h-3"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Pad Body with Movement Buttons -->
+              <div id="virtualTrain3DControlPadBody" class="space-y-2 pt-2">
+                <!-- D-pad cross for Walking & Strafing -->
+                <div class="grid grid-cols-3 gap-1 w-28 mx-auto">
+                  <div></div>
+                  <button type="button"
+                    onpointerdown="start3DContinuousMove('forward')" onpointerup="stop3DContinuousMove()" onpointerleave="stop3DContinuousMove()"
+                    class="p-2 rounded-xl bg-slate-800 hover:bg-amber-500 hover:text-slate-950 active:scale-95 transition flex items-center justify-center text-xs font-bold shadow-sm"
+                    title="Walk Forward">
+                    <i data-lucide="arrow-up" class="w-4 h-4"></i>
+                  </button>
+                  <div></div>
+
+                  <button type="button"
+                    onpointerdown="start3DContinuousMove('stepLeft')" onpointerup="stop3DContinuousMove()" onpointerleave="stop3DContinuousMove()"
+                    class="p-2 rounded-xl bg-slate-800 hover:bg-amber-500 hover:text-slate-950 active:scale-95 transition flex items-center justify-center text-xs font-bold shadow-sm"
+                    title="Step Left">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                  </button>
+                  <button type="button" onclick="execute3DMoveAction('reset')"
+                    class="p-2 rounded-xl bg-slate-700 hover:bg-purple-600 active:scale-95 transition flex items-center justify-center text-[10px] font-black shadow-sm"
+                    title="Reset Focus">
+                    <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <button type="button"
+                    onpointerdown="start3DContinuousMove('stepRight')" onpointerup="stop3DContinuousMove()" onpointerleave="stop3DContinuousMove()"
+                    class="p-2 rounded-xl bg-slate-800 hover:bg-amber-500 hover:text-slate-950 active:scale-95 transition flex items-center justify-center text-xs font-bold shadow-sm"
+                    title="Step Right">
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                  </button>
+
+                  <div></div>
+                  <button type="button"
+                    onpointerdown="start3DContinuousMove('backward')" onpointerup="stop3DContinuousMove()" onpointerleave="stop3DContinuousMove()"
+                    class="p-2 rounded-xl bg-slate-800 hover:bg-amber-500 hover:text-slate-950 active:scale-95 transition flex items-center justify-center text-xs font-bold shadow-sm"
+                    title="Walk Backward">
+                    <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                  </button>
+                  <div></div>
+                </div>
+
+                <!-- Rotation & Look Buttons -->
+                <div class="grid grid-cols-4 gap-1 pt-1.5 border-t border-white/10 text-slate-300">
+                  <button type="button"
+                    onpointerdown="start3DContinuousMove('turnLeft')" onpointerup="stop3DContinuousMove()" onpointerleave="stop3DContinuousMove()"
+                    class="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 hover:text-white active:scale-95 transition flex items-center justify-center text-xs"
+                    title="Turn Left">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <button type="button"
+                    onpointerdown="start3DContinuousMove('lookUp')" onpointerup="stop3DContinuousMove()" onpointerleave="stop3DContinuousMove()"
+                    class="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 hover:text-white active:scale-95 transition flex items-center justify-center text-xs"
+                    title="Look Up">
+                    <i data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <button type="button"
+                    onpointerdown="start3DContinuousMove('lookDown')" onpointerup="stop3DContinuousMove()" onpointerleave="stop3DContinuousMove()"
+                    class="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 hover:text-white active:scale-95 transition flex items-center justify-center text-xs"
+                    title="Look Down">
+                    <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <button type="button"
+                    onpointerdown="start3DContinuousMove('turnRight')" onpointerup="stop3DContinuousMove()" onpointerleave="stop3DContinuousMove()"
+                    class="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 hover:text-white active:scale-95 transition flex items-center justify-center text-xs"
+                    title="Turn Right">
+                    <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+
+                <!-- Zoom In/Out -->
+                <div class="grid grid-cols-2 gap-1 text-slate-300">
+                  <button type="button"
+                    onpointerdown="start3DContinuousMove('zoomIn')" onpointerup="stop3DContinuousMove()" onpointerleave="stop3DContinuousMove()"
+                    class="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 hover:text-white active:scale-95 transition flex items-center justify-center gap-1 text-[11px] font-bold"
+                    title="Zoom In">
+                    <i data-lucide="zoom-in" class="w-3 h-3"></i>
+                    <span>In</span>
+                  </button>
+                  <button type="button"
+                    onpointerdown="start3DContinuousMove('zoomOut')" onpointerup="stop3DContinuousMove()" onpointerleave="stop3DContinuousMove()"
+                    class="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 hover:text-white active:scale-95 transition flex items-center justify-center gap-1 text-[11px] font-bold"
+                    title="Zoom Out">
+                    <i data-lucide="zoom-out" class="w-3 h-3"></i>
+                    <span>Out</span>
+                  </button>
+                </div>
+              </div>
             </div>
 
             <!-- Quick Bay Jumper Strip -->
@@ -15222,7 +15670,36 @@
         train3DCamera.updateProjectionMatrix();
         train3DRenderer.setSize(w, h);
       };
+      train3DResizeHandler = handleResize;
       window.addEventListener('resize', handleResize);
+
+      const handleKeyDown = (e) => {
+        if (!activeTrainSeatingState || activeTrainSeatingState.viewMode !== '3d') return;
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
+        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+          e.preventDefault();
+          execute3DMoveAction('forward');
+        } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+          e.preventDefault();
+          execute3DMoveAction('backward');
+        } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+          e.preventDefault();
+          execute3DMoveAction('stepLeft');
+        } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+          e.preventDefault();
+          execute3DMoveAction('stepRight');
+        } else if (e.key === 'q' || e.key === 'Q') {
+          execute3DMoveAction('turnLeft');
+        } else if (e.key === 'e' || e.key === 'E') {
+          execute3DMoveAction('turnRight');
+        } else if (e.key === '+' || e.key === '=') {
+          execute3DMoveAction('zoomIn');
+        } else if (e.key === '-' || e.key === '_') {
+          execute3DMoveAction('zoomOut');
+        }
+      };
+      train3DKeyHandler = handleKeyDown;
+      window.addEventListener('keydown', handleKeyDown);
 
       const animate = () => {
         train3DAnimId = requestAnimationFrame(animate);
@@ -17936,6 +18413,9 @@ Guidelines:
       clearPassengerSlotAssignment,
       handleSavePNRAllocationSubmit,
       renderSavedPNRRecords,
+      setPnrRosterJourneyFilter,
+      handleAdminPnrStudentSearch,
+      clearAdminPnrStudentSearch,
       renderRailwayManagerUI,
       handleRefreshPNRStatus,
       handleDeletePNRRecord,
@@ -17951,6 +18431,12 @@ Guidelines:
       set3DAisleWalkView,
       set3DOverheadView,
       jump3DToBay,
+      execute3DMoveAction,
+      start3DContinuousMove,
+      stop3DContinuousMove,
+      toggle3DControlPadCompact,
+      dock3DControlPad,
+      init3DControlPadDrag,
       cleanup3DVirtualCoach,
       copyPNRToClipboard,
       shareUserTrainTicketWhatsApp,
