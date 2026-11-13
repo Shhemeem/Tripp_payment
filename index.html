@@ -1109,7 +1109,7 @@
                   in real-time.</p>
               </div>
             </div>
-            <button type="button" onclick="openLiveTrainTrackerModal('12617', 'MANGLADWEEP EXP')"
+            <button type="button" onclick="openLiveTrainTrackerModal('12617', 'MANGLADWEEP EXP', (window.tripConfig &amp;&amp; window.tripConfig.tripDate) ? window.tripConfig.tripDate : '2026-11-15', '04:25 PM', 'TIR - Tirur', 'AGC - Agra Cantt')"
               class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-sm transition">
               <i data-lucide="radio" class="w-3.5 h-3.5 text-emerald-400 animate-pulse"></i>
               <span>Track Train 12617 Live</span>
@@ -3161,7 +3161,7 @@
                 <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
                 <span>Official NTES (Govt)</span>
               </a>
-              <a id="liveTrackerIxigoLink" href="https://www.ixigo.com/trains/12617?orgn=TIR&dstn=AGC&departDate=2027-01-01&quota=GN#schedule" target="_blank"
+              <a id="liveTrackerIxigoLink" href="https://www.ixigo.com/trains/12617?orgn=TIR&dstn=AGC&departDate=2026-11-15&quota=GN#schedule" target="_blank"
                 rel="noopener"
                 class="px-3 py-1.5 rounded-xl bg-indigo-700 hover:bg-indigo-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition">
                 <i data-lucide="compass" class="w-3.5 h-3.5"></i>
@@ -5130,17 +5130,25 @@
           <input type="text" id="rapidApiHostInput" placeholder="irctc1.p.rapidapi.com" value="irctc1.p.rapidapi.com"
             class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
         </div>
+        <p id="rapidApiTestStatus" class="hidden text-xs p-2.5 rounded-xl bg-slate-50 border border-slate-200/80"></p>
       </div>
 
-      <div class="flex items-center justify-end gap-2 pt-2">
-        <button type="button" onclick="closeRapidApiConfigModal()"
-          class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold transition">
-          Cancel
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
+        <button type="button" id="rapidApiTestBtn" onclick="testRapidApiConnection()"
+          class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-2xs">
+          <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>Test API Connection</span>
         </button>
-        <button type="button" onclick="saveRapidApiConfig()"
-          class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-extrabold shadow-sm transition">
-          Save Settings
-        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="closeRapidApiConfigModal()"
+            class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold transition">
+            Cancel
+          </button>
+          <button type="button" onclick="saveRapidApiConfig()"
+            class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-extrabold shadow-sm transition">
+            Save Settings
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -13066,27 +13074,51 @@
 
     function parseJourneyDate(dateStr) {
       if (!dateStr) return null;
+      if (dateStr instanceof Date) return isNaN(dateStr.getTime()) ? null : dateStr;
       const s = String(dateStr).trim();
-      let d = new Date(s);
-      if (!isNaN(d.getTime())) return d;
-      
-      const dmyMatch = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
-      if (dmyMatch) {
-        const day = parseInt(dmyMatch[1], 10);
-        const month = parseInt(dmyMatch[2], 10) - 1;
-        const year = parseInt(dmyMatch[3], 10);
-        d = new Date(year, month, day);
-        if (!isNaN(d.getTime())) return d;
-      }
-      
+
+      // Check YYYY-MM-DD or YYYY/MM/DD first so it parses in local time rather than UTC!
       const ymdMatch = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
       if (ymdMatch) {
         const year = parseInt(ymdMatch[1], 10);
         const month = parseInt(ymdMatch[2], 10) - 1;
         const day = parseInt(ymdMatch[3], 10);
-        d = new Date(year, month, day);
+        const d = new Date(year, month, day);
         if (!isNaN(d.getTime())) return d;
       }
+
+      // Check DD-MM-YYYY or DD/MM/YYYY
+      const dmyMatch = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+      if (dmyMatch) {
+        const day = parseInt(dmyMatch[1], 10);
+        const month = parseInt(dmyMatch[2], 10) - 1;
+        const year = parseInt(dmyMatch[3], 10);
+        const d = new Date(year, month, day);
+        if (!isNaN(d.getTime())) return d;
+      }
+
+      // Named month formats: e.g. 15 Nov 2026, 15-Nov-2026, Nov 15, 2026, 19 Nov 2026
+      const monthNames = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+      const namedMatch = s.match(/(\d{1,2})[\s-]+([a-z]{3})[\w]*[\s-]+(\d{4})/i) || s.match(/([a-z]{3})[\w]*[\s-]+(\d{1,2})[,\s-]+(\d{4})/i);
+      if (namedMatch) {
+        let day, mStr, year;
+        if (isNaN(parseInt(namedMatch[1], 10))) {
+          mStr = namedMatch[1].toLowerCase().slice(0, 3);
+          day = parseInt(namedMatch[2], 10);
+          year = parseInt(namedMatch[3], 10);
+        } else {
+          day = parseInt(namedMatch[1], 10);
+          mStr = namedMatch[2].toLowerCase().slice(0, 3);
+          year = parseInt(namedMatch[3], 10);
+        }
+        if (monthNames[mStr] !== undefined) {
+          const d = new Date(year, monthNames[mStr], day);
+          if (!isNaN(d.getTime())) return d;
+        }
+      }
+
+      let d = new Date(s);
+      if (!isNaN(d.getTime())) return d;
       return null;
     }
 
@@ -13100,6 +13132,41 @@
       return `${day} ${month} ${year}`;
     }
 
+    function toIsoDateString(dateInput) {
+      const d = dateInput instanceof Date ? dateInput : parseJourneyDate(dateInput);
+      if (!d || isNaN(d.getTime())) return '';
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function formatDisplayTime(timeStr) {
+      if (!timeStr) return '--:--';
+      const s = String(timeStr).trim();
+      if (s === '--:--' || s === '-' || !s) return '--:--';
+      const m = s.match(/^(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM|am|pm)?$/i);
+      if (!m) return s;
+      let h = parseInt(m[1], 10);
+      const min = m[2];
+      let mer = (m[3] || '').toUpperCase();
+      if (!mer) {
+        mer = h >= 12 ? 'PM' : 'AM';
+        if (h > 12) h -= 12;
+        if (h === 0) h = 12;
+      }
+      const hStr = String(h).padStart(2, '0');
+      return `${hStr}:${min} ${mer}`;
+    }
+
+    function computeReturnTripDate() {
+      const d = parseJourneyDate(tripConfig.tripDate || '2026-11-15');
+      if (!d) return '2026-11-19';
+      const ret = new Date(d);
+      ret.setDate(ret.getDate() + 4);
+      return toIsoDateString(ret);
+    }
+
     function computeArrivalDate(depDateStr, arrDateStr, depTimeStr, arrTimeStr, trainNumber = '') {
       if (arrDateStr) {
         const parsed = parseJourneyDate(arrDateStr);
@@ -13109,7 +13176,7 @@
       if (!depDate) return depDateStr || '';
 
       let dayOffset = 0;
-      const tn = String(trainNumber).trim();
+      const tn = String(trainNumber || '').trim();
       if (tn === '12617' || tn === '12618' || tn === '12625' || tn === '12626') {
         dayOffset = 2; // Arrives Day 3 (2 days later)
       } else {
@@ -13192,6 +13259,8 @@
 
     function getMockPNRDetails(pnrNumber) {
       const pnrStr = String(pnrNumber).trim();
+      const tripDoj = tripConfig.tripDate || '2026-11-15';
+      const returnDoj = computeReturnTripDate();
       const mockDatabase = {
         '4447386706': {
           pnrNumber: '4447386706',
@@ -13199,11 +13268,12 @@
           trainName: 'MANGLADWEEP EXP',
           fromStation: 'TIR - Tirur',
           toStation: 'AGC - Agra Cantt',
-          dateOfJourney: 'Jan 1, 2027',
-          arrivalDate: 'Jan 3, 2027',
-          departureTime: '16:25',
-          arrivalTime: '09:55',
+          dateOfJourney: tripDoj,
+          arrivalDate: computeArrivalDate(tripDoj, null, '04:25 PM', '09:55 AM', '12617'),
+          departureTime: '04:25 PM',
+          arrivalTime: '09:55 AM',
           journeyClass: 'SL',
+          journeyType: 'onward',
           chartPrepared: false,
           quota: 'GN',
           ticketFare: 6030,
@@ -13225,10 +13295,12 @@
           trainName: 'MANGLADWEEP EXP',
           fromStation: 'TIR - Tirur',
           toStation: 'AGC - Agra Cantt',
-          dateOfJourney: 'Jan 1, 2027',
-          departureTime: '16:25',
-          arrivalTime: '09:55',
+          dateOfJourney: tripDoj,
+          arrivalDate: computeArrivalDate(tripDoj, null, '04:25 PM', '09:55 AM', '12617'),
+          departureTime: '04:25 PM',
+          arrivalTime: '09:55 AM',
           journeyClass: 'SL',
+          journeyType: 'onward',
           chartPrepared: false,
           quota: 'GN',
           ticketFare: 6030,
@@ -13244,16 +13316,45 @@
             { passengerIndex: 6, bookingStatus: 'CNF/S6/38/UB', currentStatus: 'CNF/S6/38/UB', coach: 'S6', seatNumber: '38', berthType: 'UB', berthName: 'Upper Berth', age: 22, gender: 'M', quota: 'GN', fare: 1005 }
           ]
         },
+        '5247386129': {
+          pnrNumber: '5247386129',
+          trainNumber: '12618',
+          trainName: 'MANGLADWEEP EXP (Return)',
+          fromStation: 'AGC - Agra Cantt',
+          toStation: 'TIR - Tirur',
+          dateOfJourney: returnDoj,
+          arrivalDate: computeArrivalDate(returnDoj, null, '11:50 AM', '04:48 AM', '12618'),
+          departureTime: '11:50 AM',
+          arrivalTime: '04:48 AM',
+          journeyClass: 'SL',
+          journeyType: 'return',
+          chartPrepared: false,
+          quota: 'GN',
+          ticketFare: 6030,
+          bookingFare: 6030,
+          distance: '2415 km',
+          expectedPlatform: '1',
+          passengers: [
+            { passengerIndex: 1, bookingStatus: 'CNF/S4/18/LB', currentStatus: 'CNF/S4/18/LB', coach: 'S4', seatNumber: '18', berthType: 'LB', berthName: 'Lower Berth', age: 21, gender: 'M', quota: 'GN', fare: 1005 },
+            { passengerIndex: 2, bookingStatus: 'CNF/S4/19/MB', currentStatus: 'CNF/S4/19/MB', coach: 'S4', seatNumber: '19', berthType: 'MB', berthName: 'Middle Berth', age: 22, gender: 'M', quota: 'GN', fare: 1005 },
+            { passengerIndex: 3, bookingStatus: 'CNF/S4/20/UB', currentStatus: 'CNF/S4/20/UB', coach: 'S4', seatNumber: '20', berthType: 'UB', berthName: 'Upper Berth', age: 21, gender: 'M', quota: 'GN', fare: 1005 },
+            { passengerIndex: 4, bookingStatus: 'CNF/S4/21/LB', currentStatus: 'CNF/S4/21/LB', coach: 'S4', seatNumber: '21', berthType: 'LB', berthName: 'Lower Berth', age: 20, gender: 'F', quota: 'GN', fare: 1005 },
+            { passengerIndex: 5, bookingStatus: 'CNF/S4/22/MB', currentStatus: 'CNF/S4/22/MB', coach: 'S4', seatNumber: '22', berthType: 'MB', berthName: 'Middle Berth', age: 23, gender: 'M', quota: 'GN', fare: 1005 },
+            { passengerIndex: 6, bookingStatus: 'CNF/S4/23/UB', currentStatus: 'CNF/S4/23/UB', coach: 'S4', seatNumber: '23', berthType: 'UB', berthName: 'Upper Berth', age: 22, gender: 'M', quota: 'GN', fare: 1005 }
+          ]
+        },
         '4512890341': {
           pnrNumber: '4512890341',
           trainNumber: '12617',
           trainName: 'Mangala Lakshadweep Express',
           fromStation: 'CLT - Kozhikode',
           toStation: 'MAO - Madgaon',
-          dateOfJourney: tripConfig.tripDate || '2026-11-15',
-          departureTime: '03:10',
-          arrivalTime: '13:00',
+          dateOfJourney: tripDoj,
+          arrivalDate: computeArrivalDate(tripDoj, null, '03:10 AM', '01:00 PM', '12617'),
+          departureTime: '03:10 AM',
+          arrivalTime: '01:00 PM',
           journeyClass: 'SL',
+          journeyType: 'onward',
           chartPrepared: false,
           quota: 'GN',
           ticketFare: 4200,
@@ -13274,10 +13375,12 @@
           trainName: 'Netravati Express',
           fromStation: 'CLT - Kozhikode',
           toStation: 'MAO - Madgaon',
-          dateOfJourney: tripConfig.tripDate || '2026-11-15',
-          departureTime: '18:55',
-          arrivalTime: '05:40',
+          dateOfJourney: tripDoj,
+          arrivalDate: computeArrivalDate(tripDoj, null, '06:55 PM', '05:40 AM', '16346'),
+          departureTime: '06:55 PM',
+          arrivalTime: '05:40 AM',
           journeyClass: 'SL',
+          journeyType: 'onward',
           chartPrepared: false,
           quota: 'GN',
           ticketFare: 2800,
@@ -13296,10 +13399,12 @@
           trainName: 'Kerala Superfast Express',
           fromStation: 'ERS - Ernakulam Jn',
           toStation: 'NDLS - New Delhi',
-          dateOfJourney: tripConfig.tripDate || '2026-11-15',
-          departureTime: '11:15',
-          arrivalTime: '13:40',
+          dateOfJourney: tripDoj,
+          arrivalDate: computeArrivalDate(tripDoj, null, '11:15 AM', '01:40 PM', '12625'),
+          departureTime: '11:15 AM',
+          arrivalTime: '01:40 PM',
           journeyClass: '3A',
+          journeyType: 'onward',
           chartPrepared: true,
           quota: 'GN',
           ticketFare: 4900,
@@ -13318,10 +13423,11 @@
 
       // Procedural mock generation for any 10-digit PNR
       const trainOptions = [
-        { num: '12617', name: 'Mangala Lakshadweep Exp', from: 'CLT - Kozhikode', to: 'MAO - Madgaon', dep: '03:10', arr: '13:00' },
-        { num: '16346', name: 'Netravati Express', from: 'CLT - Kozhikode', to: 'MAO - Madgaon', dep: '18:55', arr: '05:40' },
-        { num: '12217', name: 'Kochuveli Sampark Kranti', from: 'KGQ - Kasaragod', to: 'MAO - Madgaon', dep: '14:20', arr: '20:15' },
-        { num: '22633', name: 'Nizamuddin Express', from: 'SRR - Shoranur Jn', to: 'MAO - Madgaon', dep: '21:05', arr: '07:30' }
+        { num: '12617', name: 'Mangala Lakshadweep Exp', from: 'TIR - Tirur', to: 'AGC - Agra Cantt', dep: '04:25 PM', arr: '09:55 AM' },
+        { num: '12618', name: 'Mangala Lakshadweep Exp (Return)', from: 'AGC - Agra Cantt', to: 'TIR - Tirur', dep: '11:50 AM', arr: '04:48 AM' },
+        { num: '16346', name: 'Netravati Express', from: 'CLT - Kozhikode', to: 'MAO - Madgaon', dep: '06:55 PM', arr: '05:40 AM' },
+        { num: '12217', name: 'Kochuveli Sampark Kranti', from: 'KGQ - Kasaragod', to: 'MAO - Madgaon', dep: '02:20 PM', arr: '08:15 PM' },
+        { num: '22633', name: 'Nizamuddin Express', from: 'SRR - Shoranur Jn', to: 'MAO - Madgaon', dep: '09:05 PM', arr: '07:30 AM' }
       ];
       const seed = parseInt(pnrStr.slice(-2), 10) || 12;
       const train = trainOptions[seed % trainOptions.length];
@@ -13355,10 +13461,12 @@
         trainName: train.name,
         fromStation: train.from,
         toStation: train.to,
-        dateOfJourney: tripConfig.tripDate || '2026-11-15',
+        dateOfJourney: train.num === '12618' ? returnDoj : tripDoj,
+        arrivalDate: computeArrivalDate(train.num === '12618' ? returnDoj : tripDoj, null, train.dep, train.arr, train.num),
         departureTime: train.dep,
         arrivalTime: train.arr,
         journeyClass: 'SL',
+        journeyType: train.num === '12618' ? 'return' : 'onward',
         chartPrepared: seed % 2 === 0,
         quota: 'GN',
         ticketFare: passengerCount * 1005,
@@ -13424,17 +13532,17 @@
           const json = await response.json();
           const data = json.data || json;
 
-          const rawPassengers = data.passengerList || data.passengers || data.PassengerStatus || [];
-          const totalFare = Number(data.ticketFare || data.bookingFare || data.totalFare || 0);
+          const rawPassengers = data.passengerList || data.passengers || data.passenger_list || data.passenger_details || data.PassengerStatus || [];
+          const totalFare = Number(data.ticketFare || data.bookingFare || data.totalFare || data.ticket_fare || data.booking_fare || 0);
           const perPersonFare = (totalFare && rawPassengers.length) ? Math.round(totalFare / rawPassengers.length) : '';
 
           if (rawPassengers.length > 0) {
             const parsedPassengers = rawPassengers.map((p, idx) => {
-              const rawBooking = p.bookingStatusDetails || p.bookingStatus || p.BookingStatus || '';
-              const rawCurrent = p.currentStatusDetails || p.currentStatus || p.CurrentStatus || '';
-              const fallbackCoach = p.bookingCoachId || p.currentCoachId || p.coach || p.bookingCoach || p.currentCoach || '';
-              const fallbackBerth = p.bookingBerthNo || p.currentBerthNo || p.seatNumber || '';
-              const fallbackBerthType = p.bookingBerthCode || p.currentBerthCode || p.berthType || '';
+              const rawBooking = p.bookingStatusDetails || p.bookingStatus || p.BookingStatus || p.booking_status || '';
+              const rawCurrent = p.currentStatusDetails || p.currentStatus || p.CurrentStatus || p.current_status || '';
+              const fallbackCoach = p.bookingCoachId || p.currentCoachId || p.coach || p.bookingCoach || p.currentCoach || p.coach_id || p.booking_coach_id || '';
+              const fallbackBerth = p.bookingBerthNo || p.currentBerthNo || p.seatNumber || p.berth_no || p.booking_berth_no || '';
+              const fallbackBerthType = p.bookingBerthCode || p.currentBerthCode || p.berthType || p.berth_code || p.booking_berth_code || '';
 
               const parsed = parsePassengerStatus(
                 rawBooking,
@@ -13445,7 +13553,7 @@
               );
 
               return {
-                passengerIndex: p.passengerIndex || p.passengerSerialNumber || (idx + 1),
+                passengerIndex: p.passengerIndex || p.passengerSerialNumber || p.passenger_serial_number || (idx + 1),
                 bookingStatus: parsed.bookingStatus,
                 currentStatus: parsed.currentStatus,
                 status: parsed.status,
@@ -13453,17 +13561,17 @@
                 seatNumber: parsed.seatNumber,
                 berthType: parsed.berthType,
                 berthName: parsed.berthName || (parsed.berthType ? (BERTH_MAP[parsed.berthType] || parsed.berthType) : 'Berth'),
-                age: p.passengerAge || p.age || p.Age || '',
-                gender: p.passengerGender || p.gender || p.Gender || '',
-                quota: p.passengerQuota || p.bookingQuota || p.quota || data.quota || 'GN',
-                fare: p.passengerFare || p.bookingFare || p.fare || perPersonFare || '',
-                nationality: p.passengerNationality || 'IN'
+                age: p.passengerAge || p.age || p.Age || p.passenger_age || '',
+                gender: p.passengerGender || p.gender || p.Gender || p.passenger_gender || '',
+                quota: p.passengerQuota || p.bookingQuota || p.quota || p.booking_quota || data.quota || 'GN',
+                fare: p.passengerFare || p.bookingFare || p.fare || p.passenger_fare || perPersonFare || '',
+                nationality: p.passengerNationality || p.nationality || 'IN'
               };
             });
 
-            let dojStr = String(data.dateOfJourney || data.doj || tripConfig.tripDate || '');
-            let depTimeStr = String(data.departureTime || data.fromTime || '--:--');
-            let arrTimeStr = String(data.arrivalTime || data.toTime || '--:--');
+            let dojStr = String(data.dateOfJourney || data.doj || data.date_of_journey || data.boarding_date || data.travel_date || tripConfig.tripDate || '2026-11-15');
+            let depTimeStr = String(data.departureTime || data.fromTime || data.departure_time || data.dep_time || data.src_departure_time || '--:--');
+            let arrTimeStr = String(data.arrivalTime || data.toTime || data.arrival_time || data.arr_time || data.dest_arrival_time || '--:--');
 
             if (dojStr && (dojStr.includes('AM') || dojStr.includes('PM') || dojStr.includes(':'))) {
               const m = dojStr.match(/^(.+?)\s+(\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM|am|pm)?)$/i);
@@ -13473,40 +13581,55 @@
               }
             }
 
-            if (data.arrivalDate) {
-              const m = String(data.arrivalDate).match(/^(.+?)\s+(\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM|am|pm)?)$/i);
+            if (data.arrivalDate || data.arrival_date) {
+              const m = String(data.arrivalDate || data.arrival_date).match(/^(.+?)\s+(\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM|am|pm)?)$/i);
               if (m && arrTimeStr === '--:--') {
                 arrTimeStr = m[2].trim();
               }
             }
 
+            const formattedDoj = formatDisplayDate(dojStr);
+            const formattedDepTime = formatDisplayTime(depTimeStr);
+            const formattedArrTime = formatDisplayTime(arrTimeStr);
+            const trainNumberStr = String(data.trainNumber || data.trainNo || data.train_number || data.train_no || '');
+            const trainNameStr = String(data.trainName || data.train_name || 'Indian Railways Train');
+            const fromStationStr = String(data.fromStation || data.sourceStation || data.source_station || data.boardingPoint || data.from || 'Origin');
+            const toStationStr = String(data.toStation || data.destinationStation || data.destination_station || data.reservationUpto || data.to || 'Destination');
+
             const isChartPrep = data.chartStatus === 'Chart Prepared' || Boolean(data.chartPrepared || data.chartStatus === 'CHART PREPARED');
 
             return {
               pnrNumber: pnr,
-              trainNumber: String(data.trainNumber || data.trainNo || ''),
-              trainName: String(data.trainName || 'Indian Railways Train'),
-              fromStation: String(data.fromStation || data.sourceStation || data.boardingPoint || 'Origin'),
-              toStation: String(data.toStation || data.destinationStation || data.reservationUpto || 'Destination'),
-              dateOfJourney: dojStr,
-              arrivalDate: data.arrivalDate ? formatDisplayDate(data.arrivalDate) : computeArrivalDate(dojStr, null, depTimeStr, arrTimeStr, data.trainNumber || data.trainNo),
-              departureTime: depTimeStr,
-              arrivalTime: arrTimeStr,
-              journeyClass: String(data.journeyClass || data.class || 'SL'),
+              trainNumber: trainNumberStr,
+              trainName: trainNameStr,
+              fromStation: fromStationStr,
+              toStation: toStationStr,
+              dateOfJourney: formattedDoj,
+              arrivalDate: (data.arrivalDate || data.arrival_date)
+                ? formatDisplayDate(data.arrivalDate || data.arrival_date)
+                : computeArrivalDate(formattedDoj, null, formattedDepTime, formattedArrTime, trainNumberStr),
+              departureTime: formattedDepTime,
+              arrivalTime: formattedArrTime,
+              journeyClass: String(data.journeyClass || data.class || data.journey_class || 'SL'),
+              journeyType: trainNumberStr === '12618' ? 'return' : 'onward',
               chartPrepared: isChartPrep,
-              quota: data.quota || 'GN',
+              quota: data.quota || data.booking_quota || 'GN',
               ticketFare: totalFare || data.ticketFare || data.bookingFare || '',
               bookingFare: data.bookingFare || data.ticketFare || '',
-              distance: data.distance ? `${data.distance} km` : '',
-              expectedPlatform: data.expectedPlatformLocation || data.platform || '',
+              distance: (data.distance || data.total_distance) ? `${data.distance || data.total_distance} km` : '',
+              expectedPlatform: data.expectedPlatformLocation || data.platform || data.platform_number || '',
               isLiveApi: true,
               passengers: parsedPassengers
             };
           } else {
             apiErrorReason = json.message || (data && data.message) || 'IRCTC Live API returned 0 active passenger slots or flushed record.';
           }
+        } else if (response && response.status === 429) {
+          apiErrorReason = 'RapidAPI Monthly Quota Limit Reached (HTTP 429). Upgrade key in settings or use Realistic Simulation.';
+        } else if (response && (response.status === 401 || response.status === 403)) {
+          apiErrorReason = `RapidAPI Key Unauthorized (HTTP ${response.status}). Check X-RapidAPI-Key in settings.`;
         } else {
-          apiErrorReason = response ? `API HTTP ${response.status}` : (lastErr ? lastErr.message : 'Network timeout');
+          apiErrorReason = response ? `API HTTP ${response.status}: ${response.statusText || 'Error'}` : (lastErr ? lastErr.message : 'Network timeout');
         }
       } catch (err) {
         apiErrorReason = err.message || 'API query error';
@@ -13516,9 +13639,9 @@
       console.warn(`Live IRCTC query notice for PNR ${pnr}:`, apiErrorReason);
       const fallbackData = getMockPNRDetails(pnr);
       fallbackData.isLiveApi = false;
-      fallbackData.dataSourceNotice = apiErrorReason.includes('quota')
-        ? 'RapidAPI Quota Limit (Realistic Allocation Loaded)'
-        : (apiErrorReason || 'Flushed IRCTC Record (Realistic Allocation Loaded)');
+      fallbackData.dataSourceNotice = apiErrorReason.includes('Quota') || apiErrorReason.includes('429')
+        ? 'RapidAPI Quota Limit (Realistic Timetable Loaded)'
+        : (apiErrorReason || 'Flushed IRCTC Record (Realistic Timetable Loaded)');
       return fallbackData;
     }
 
@@ -13721,8 +13844,8 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center text-xs">
               <div class="bg-black/30 rounded-xl p-3 border border-white/5">
                 <p class="text-[10px] uppercase font-bold text-slate-400">Boarding Origin</p>
-                <p class="font-bold text-sm text-white">${pnr.fromStation}</p>
-                <p class="text-amber-300 font-mono text-xs font-bold mt-0.5">Dep: ${pnr.departureTime}</p>
+                <p class="font-bold text-sm text-white" id="pnrSummaryFromStation">${pnr.fromStation}</p>
+                <p class="text-amber-300 font-mono text-xs font-bold mt-0.5" id="pnrSummaryDepTime">Dep: ${formatDisplayTime(pnr.departureTime)} • ${formatDisplayDate(pnr.dateOfJourney)}</p>
               </div>
               <div class="text-center hidden sm:block">
                 <div class="flex items-center justify-center gap-2 text-slate-400 font-bold">
@@ -13730,12 +13853,93 @@
                   <i data-lucide="arrow-right" class="w-4 h-4 text-amber-400"></i>
                   <div class="h-0.5 w-12 bg-white/20"></div>
                 </div>
-                <p class="text-[10px] text-slate-300 mt-1 font-mono">${pnr.dateOfJourney}</p>
+                <p class="text-[10px] text-slate-300 mt-1 font-mono" id="pnrSummaryRouteDates">${formatDisplayDate(pnr.dateOfJourney)} ➔ ${computeArrivalDate(pnr.dateOfJourney, pnr.arrivalDate, pnr.departureTime, pnr.arrivalTime, pnr.trainNumber)}</p>
               </div>
               <div class="bg-black/30 rounded-xl p-3 border border-white/5 text-left sm:text-right">
                 <p class="text-[10px] uppercase font-bold text-slate-400">Destination Station</p>
-                <p class="font-bold text-sm text-white">${pnr.toStation}</p>
-                <p class="text-emerald-300 font-mono text-xs font-bold mt-0.5">Arr: ${pnr.arrivalTime}</p>
+                <p class="font-bold text-sm text-white" id="pnrSummaryToStation">${pnr.toStation}</p>
+                <p class="text-emerald-300 font-mono text-xs font-bold mt-0.5" id="pnrSummaryArrTime">Arr: ${formatDisplayTime(pnr.arrivalTime)} • ${computeArrivalDate(pnr.dateOfJourney, pnr.arrivalDate, pnr.departureTime, pnr.arrivalTime, pnr.trainNumber)}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Train Date, Timing & Station Adjustment Panel -->
+          <div class="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/70 pb-2.5">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
+                  <i data-lucide="calendar-clock" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h6 class="font-display font-bold text-xs text-slate-900">Train Date, Timing &amp; Station Details</h6>
+                  <p class="text-[11px] text-slate-500">Verify and adjust train timetable. Changes automatically sync to student boarding passes.</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <button type="button" onclick="syncPnrWithTripDate()"
+                  class="px-2.5 py-1 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 text-xs font-extrabold border border-amber-300 transition flex items-center gap-1">
+                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-600"></i>
+                  <span>Sync with Trip Date (${tripConfig.tripDate || '2026-11-15'})</span>
+                </button>
+                <button type="button" onclick="setReturnTrainPreset()"
+                  class="px-2.5 py-1 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 text-purple-900 text-xs font-extrabold border border-purple-300 transition flex items-center gap-1">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-purple-600"></i>
+                  <span>Preset Return Train (12618)</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Date of Journey</label>
+                <input type="date" id="pnrEditDojInput" value="${toIsoDateString(pnr.dateOfJourney)}"
+                  onchange="updatePnrFetchedField('dateOfJourney', this.value)"
+                  class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Departure Time</label>
+                <input type="text" id="pnrEditDepTimeInput" value="${pnr.departureTime}"
+                  oninput="updatePnrFetchedField('departureTime', this.value)"
+                  placeholder="e.g. 04:25 PM or 16:25"
+                  class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Arrival Time</label>
+                <input type="text" id="pnrEditArrTimeInput" value="${pnr.arrivalTime}"
+                  oninput="updatePnrFetchedField('arrivalTime', this.value)"
+                  placeholder="e.g. 09:55 AM"
+                  class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Boarding Origin</label>
+                <input type="text" id="pnrEditFromInput" value="${pnr.fromStation}"
+                  oninput="updatePnrFetchedField('fromStation', this.value)"
+                  placeholder="e.g. TIR - Tirur"
+                  class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-1 border-t border-slate-200/60">
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Destination Station</label>
+                <input type="text" id="pnrEditToInput" value="${pnr.toStation}"
+                  oninput="updatePnrFetchedField('toStation', this.value)"
+                  placeholder="e.g. AGC - Agra Cantt"
+                  class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Train Number</label>
+                <input type="text" id="pnrEditTrainNumInput" value="${pnr.trainNumber}"
+                  oninput="updatePnrFetchedField('trainNumber', this.value)"
+                  placeholder="e.g. 12617"
+                  class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Train Name</label>
+                <input type="text" id="pnrEditTrainNameInput" value="${pnr.trainName}"
+                  oninput="updatePnrFetchedField('trainName', this.value)"
+                  placeholder="e.g. MANGLADWEEP EXP"
+                  class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
               </div>
             </div>
           </div>
@@ -13826,6 +14030,55 @@
       `;
 
       lucide.createIcons();
+    }
+
+    function updatePnrFetchedField(field, value) {
+      if (!activeFetchedPnrData) return;
+      activeFetchedPnrData[field] = value;
+      if (field === 'dateOfJourney' || field === 'departureTime' || field === 'arrivalTime' || field === 'trainNumber') {
+        activeFetchedPnrData.arrivalDate = computeArrivalDate(
+          activeFetchedPnrData.dateOfJourney,
+          null,
+          activeFetchedPnrData.departureTime,
+          activeFetchedPnrData.arrivalTime,
+          activeFetchedPnrData.trainNumber
+        );
+      }
+      const depEl = document.getElementById('pnrSummaryDepTime');
+      if (depEl) depEl.textContent = `Dep: ${formatDisplayTime(activeFetchedPnrData.departureTime)} • ${formatDisplayDate(activeFetchedPnrData.dateOfJourney)}`;
+      const arrEl = document.getElementById('pnrSummaryArrTime');
+      if (arrEl) arrEl.textContent = `Arr: ${formatDisplayTime(activeFetchedPnrData.arrivalTime)} • ${computeArrivalDate(activeFetchedPnrData.dateOfJourney, activeFetchedPnrData.arrivalDate, activeFetchedPnrData.departureTime, activeFetchedPnrData.arrivalTime, activeFetchedPnrData.trainNumber)}`;
+      const fromEl = document.getElementById('pnrSummaryFromStation');
+      if (fromEl) fromEl.textContent = activeFetchedPnrData.fromStation;
+      const toEl = document.getElementById('pnrSummaryToStation');
+      if (toEl) toEl.textContent = activeFetchedPnrData.toStation;
+      const routeEl = document.getElementById('pnrSummaryRouteDates');
+      if (routeEl) routeEl.textContent = `${formatDisplayDate(activeFetchedPnrData.dateOfJourney)} ➔ ${computeArrivalDate(activeFetchedPnrData.dateOfJourney, activeFetchedPnrData.arrivalDate, activeFetchedPnrData.departureTime, activeFetchedPnrData.arrivalTime, activeFetchedPnrData.trainNumber)}`;
+    }
+
+    function syncPnrWithTripDate() {
+      if (!activeFetchedPnrData) return;
+      const targetDate = tripConfig.tripDate || '2026-11-15';
+      activeFetchedPnrData.dateOfJourney = targetDate;
+      activeFetchedPnrData.arrivalDate = computeArrivalDate(targetDate, null, activeFetchedPnrData.departureTime, activeFetchedPnrData.arrivalTime, activeFetchedPnrData.trainNumber);
+      renderPNRFetchedSummaryAndSlots();
+      showToast(`Train date synchronized with Trip Date: ${formatDisplayDate(targetDate)}`);
+    }
+
+    function setReturnTrainPreset() {
+      if (!activeFetchedPnrData) return;
+      const returnDate = computeReturnTripDate();
+      activeFetchedPnrData.trainNumber = '12618';
+      activeFetchedPnrData.trainName = 'MANGLADWEEP EXP (Return)';
+      activeFetchedPnrData.fromStation = 'AGC - Agra Cantt';
+      activeFetchedPnrData.toStation = 'TIR - Tirur';
+      activeFetchedPnrData.dateOfJourney = returnDate;
+      activeFetchedPnrData.departureTime = '11:50 AM';
+      activeFetchedPnrData.arrivalTime = '04:48 AM';
+      activeFetchedPnrData.arrivalDate = computeArrivalDate(returnDate, null, '11:50 AM', '04:48 AM', '12618');
+      activeFetchedPnrData.journeyType = 'return';
+      renderPNRFetchedSummaryAndSlots();
+      showToast(`Applied Return Train (12618 AGC ➔ TIR) on ${formatDisplayDate(returnDate)}!`);
     }
 
     function handleSelectPassengerStudent(slotIdx, studentId) {
@@ -13997,7 +14250,30 @@
           };
         });
 
-        const journeyType = document.getElementById('pnrJourneyTypeSelect')?.value || 'onward';
+        const journeyType = document.getElementById('pnrJourneyTypeSelect')?.value || pnr.journeyType || 'onward';
+        const rawDoj = document.getElementById('pnrEditDojInput')?.value || pnr.dateOfJourney || tripConfig.tripDate || '2026-11-15';
+        const rawDepTime = document.getElementById('pnrEditDepTimeInput')?.value || pnr.departureTime || '04:25 PM';
+        const rawArrTime = document.getElementById('pnrEditArrTimeInput')?.value || pnr.arrivalTime || '09:55 AM';
+        const fromStation = (document.getElementById('pnrEditFromInput')?.value || pnr.fromStation || 'TIR - Tirur').trim();
+        const toStation = (document.getElementById('pnrEditToInput')?.value || pnr.toStation || 'AGC - Agra Cantt').trim();
+        const trainNumber = (document.getElementById('pnrEditTrainNumInput')?.value || pnr.trainNumber || '12617').trim();
+        const trainName = (document.getElementById('pnrEditTrainNameInput')?.value || pnr.trainName || 'MANGLADWEEP EXP').trim();
+
+        const dateOfJourney = formatDisplayDate(rawDoj);
+        const departureTime = formatDisplayTime(rawDepTime);
+        const arrivalTime = formatDisplayTime(rawArrTime);
+        const arrivalDate = computeArrivalDate(dateOfJourney, null, departureTime, arrivalTime, trainNumber);
+
+        pnr.journeyType = journeyType;
+        pnr.dateOfJourney = dateOfJourney;
+        pnr.departureTime = departureTime;
+        pnr.arrivalTime = arrivalTime;
+        pnr.arrivalDate = arrivalDate;
+        pnr.fromStation = fromStation;
+        pnr.toStation = toStation;
+        pnr.trainNumber = trainNumber;
+        pnr.trainName = trainName;
+
         const pnrDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'pnr_records', pnr.pnrNumber);
         batch.set(pnrDocRef, {
           pnrNumber: pnr.pnrNumber,
@@ -14006,6 +14282,7 @@
           fromStation: pnr.fromStation,
           toStation: pnr.toStation,
           dateOfJourney: pnr.dateOfJourney,
+          arrivalDate: pnr.arrivalDate,
           departureTime: pnr.departureTime,
           arrivalTime: pnr.arrivalTime,
           journeyClass: pnr.journeyClass,
@@ -16461,13 +16738,89 @@
 
       if (key) {
         localStorage.setItem('trippay_rapidapi_key', key);
+        localStorage.setItem('trippay_rapidapi_key_override', 'true');
+        USE_MOCK_PNR = false;
       } else {
         localStorage.removeItem('trippay_rapidapi_key');
+        localStorage.removeItem('trippay_rapidapi_key_override');
       }
       localStorage.setItem('trippay_rapidapi_host', host);
 
-      showToast('RapidAPI settings saved!');
+      showToast('RapidAPI settings saved! Live query priority active.');
       closeRapidApiConfigModal();
+    }
+
+    async function testRapidApiConnection() {
+      const keyInput = document.getElementById('rapidApiKeyInput');
+      const hostInput = document.getElementById('rapidApiHostInput');
+      const statusEl = document.getElementById('rapidApiTestStatus');
+      const testBtn = document.getElementById('rapidApiTestBtn');
+
+      const key = (keyInput ? keyInput.value : '').trim();
+      const host = (hostInput ? hostInput.value : '').trim() || 'irctc1.p.rapidapi.com';
+
+      if (!key) {
+        if (statusEl) {
+          statusEl.classList.remove('hidden');
+          statusEl.className = 'text-xs font-bold text-amber-600 block mt-2';
+          statusEl.textContent = 'Please enter a RapidAPI Key to test.';
+        }
+        return;
+      }
+
+      if (testBtn) {
+        testBtn.disabled = true;
+        testBtn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin inline"></i> Testing Connection...';
+      }
+      if (statusEl) {
+        statusEl.classList.remove('hidden');
+        statusEl.className = 'text-xs font-bold text-slate-500 block mt-2';
+        statusEl.textContent = 'Connecting to RapidAPI ' + host + '...';
+      }
+
+      try {
+        let testUrl = `https://${host}/api/v3/getPNRStatus?pnrNumber=4447386706`;
+        if (host.includes('irctc-indian-railway-pnr-status')) {
+          testUrl = `https://${host}/getPNRStatus/4447386706`;
+        }
+
+        const res = await fetch(testUrl, {
+          method: 'GET',
+          headers: {
+            'x-rapidapi-key': key,
+            'x-rapidapi-host': host
+          }
+        });
+
+        if (res.ok) {
+          if (statusEl) {
+            statusEl.className = 'text-xs font-black text-emerald-600 block mt-2';
+            statusEl.textContent = '✓ RapidAPI Connection Successful! Live IRCTC API is ready to query.';
+          }
+          showToast('RapidAPI connection verified successfully!');
+        } else if (res.status === 429) {
+          if (statusEl) {
+            statusEl.className = 'text-xs font-bold text-amber-600 block mt-2';
+            statusEl.textContent = '⚠️ HTTP 429: Monthly Quota Limit reached on this RapidAPI plan. The app will automatically use simulated realistic train records.';
+          }
+        } else {
+          if (statusEl) {
+            statusEl.className = 'text-xs font-bold text-rose-600 block mt-2';
+            statusEl.textContent = `HTTP ${res.status}: ${res.statusText || 'Error'}. Please verify your key.`;
+          }
+        }
+      } catch (err) {
+        if (statusEl) {
+          statusEl.className = 'text-xs font-bold text-rose-600 block mt-2';
+          statusEl.textContent = 'Network or CORS issue: ' + err.message;
+        }
+      } finally {
+        if (testBtn) {
+          testBtn.disabled = false;
+          testBtn.innerHTML = '<i data-lucide="zap" class="w-3.5 h-3.5 inline text-amber-500"></i> Test API Connection';
+        }
+        lucide.createIcons();
+      }
     }
 
     // =========================================================================
@@ -16476,22 +16829,14 @@
     let activeTrackedTrainNumber = '12617';
     let activeTrackedTrainName = 'MANGLADWEEP EXP';
 
-
     function computeHaltDateString(baseDate, dayNum = 1) {
       if (!baseDate) return '';
       try {
-        let d = new Date(baseDate);
-        if (isNaN(d.getTime())) {
-          // Try parse DD-MM-YYYY or DD MMM YYYY
-          const parts = String(baseDate).split(/[- /]/);
-          if (parts.length === 3) {
-            d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-          }
-        }
-        if (isNaN(d.getTime())) return '';
+        const d = parseJourneyDate(baseDate);
+        if (!d || isNaN(d.getTime())) return '';
         // Add days (day 1 = 0 added, day 2 = 1 added, day 3 = 2 added)
         d.setDate(d.getDate() + (Math.max(1, Number(dayNum) || 1) - 1));
-        return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        return formatDisplayDate(d);
       } catch (e) {
         return '';
       }
@@ -16642,7 +16987,8 @@
       }
 
       // Compute exact calendar date string for each halt if journey date is present
-      const effectiveDoj = doj || tripConfig.tripDate || '2027-01-01';
+      const effectiveDoj = doj || tripConfig.tripDate || '2026-11-15';
+      const effectiveDojIso = toIsoDateString(effectiveDoj) || '2026-11-15';
       rawList = rawList.map(s => ({
         ...s,
         haltDate: computeHaltDateString(effectiveDoj, s.day)
@@ -16710,8 +17056,8 @@
           railyatri: `https://www.railyatri.in/live-train-status/${trainNumber}`,
           ntes: 'https://enquiry.indianrail.gov.in/mntes/',
           ixigo: String(trainNumber).trim() === '12617'
-            ? 'https://www.ixigo.com/trains/12617?orgn=TIR&dstn=AGC&departDate=2027-01-01&quota=GN#schedule'
-            : `https://www.ixigo.com/trains/${trainNumber}?orgn=TIR&dstn=AGC&departDate=2027-01-01&quota=GN#schedule`,
+            ? `https://www.ixigo.com/trains/12617?orgn=TIR&dstn=AGC&departDate=${encodeURIComponent(effectiveDojIso)}&quota=GN#schedule`
+            : `https://www.ixigo.com/trains/${trainNumber}?orgn=TIR&dstn=AGC&departDate=${encodeURIComponent(effectiveDojIso)}&quota=GN#schedule`,
           confirmtkt: `https://www.confirmtkt.com/train-running-status/${trainNumber}`,
           gmaps: String(trainNumber).trim() === '12617'
             ? 'https://www.google.com/maps/place/Tirur+Railway+station/@10.9178753,75.9191822,17z/data=!3m1!4b1!4m6!3m5!1s0x3ba7b1005888fc01:0x8c5f18eb69bf0386!8m2!3d10.9178753!4d75.9217571!16s%2Fg%2F11ybtystt1?entry=ttu&g_ep=EgoyMDI2MTAyOC4wIKXMDSoASAFQAw%3D%3D'
@@ -17011,13 +17357,13 @@
     let activeTrackedFromStation = '';
     let activeTrackedToStation = '';
 
-    function openLiveTrainTrackerModal(trainNo, trainName, doj = '', depTime = '', fromStation = '', toStation = '') {
+    function openLiveTrainTrackerModal(trainNo = '12617', trainName = 'MANGLADWEEP EXP', doj = '', depTime = '', fromStation = '', toStation = '') {
       activeTrackedTrainNumber = String(trainNo || '12617').trim();
-      activeTrackedTrainName = String(trainName || 'MANGLADWEEP EXP').trim();
-      activeTrackedJourneyDate = doj || '';
-      activeTrackedDepTime = depTime || '';
-      activeTrackedFromStation = fromStation || '';
-      activeTrackedToStation = toStation || '';
+      activeTrackedTrainName = String(trainName || (activeTrackedTrainNumber === '12618' ? 'MANGLADWEEP EXP (Return)' : 'MANGLADWEEP EXP')).trim();
+      activeTrackedJourneyDate = doj || (activeTrackedTrainNumber === '12618' ? computeReturnTripDate() : (tripConfig.tripDate || '2026-11-15'));
+      activeTrackedDepTime = depTime || (activeTrackedTrainNumber === '12618' ? '11:50 AM' : '04:25 PM');
+      activeTrackedFromStation = fromStation || (activeTrackedTrainNumber === '12618' ? 'AGC - Agra Cantt' : 'TIR - Tirur');
+      activeTrackedToStation = toStation || (activeTrackedTrainNumber === '12618' ? 'TIR - Tirur' : 'AGC - Agra Cantt');
 
       const modal = document.getElementById('liveTrainTrackerModal');
       if (!modal) return;
@@ -17039,14 +17385,10 @@
 
       const ixigoLink = document.getElementById('liveTrackerIxigoLink');
       if (ixigoLink) {
-        if (activeTrackedTrainNumber === '12617') {
-          ixigoLink.href = 'https://www.ixigo.com/trains/12617?orgn=TIR&dstn=AGC&departDate=2027-01-01&quota=GN#schedule';
-        } else {
-          const from = activeTrackedFromStation || 'TIR';
-          const to = activeTrackedToStation || 'AGC';
-          const dep = activeTrackedJourneyDate || '2027-01-01';
-          ixigoLink.href = `https://www.ixigo.com/trains/${encodeURIComponent(activeTrackedTrainNumber)}?orgn=${encodeURIComponent(from)}&dstn=${encodeURIComponent(to)}&departDate=${encodeURIComponent(dep)}&quota=GN#schedule`;
-        }
+        const depIso = toIsoDateString(activeTrackedJourneyDate) || '2026-11-15';
+        const fromCode = (activeTrackedFromStation.split(/[- ]/)[0] || 'TIR').trim();
+        const toCode = (activeTrackedToStation.split(/[- ]/)[0] || 'AGC').trim();
+        ixigoLink.href = `https://www.ixigo.com/trains/${encodeURIComponent(activeTrackedTrainNumber)}?orgn=${encodeURIComponent(fromCode)}&dstn=${encodeURIComponent(toCode)}&departDate=${encodeURIComponent(depIso)}&quota=GN#schedule`;
       }
 
       const gmapsLink = document.getElementById('liveTrackerGmapsLink');
@@ -18443,6 +18785,15 @@ Guidelines:
       openRapidApiConfigModal,
       closeRapidApiConfigModal,
       saveRapidApiConfig,
+      testRapidApiConnection,
+      updatePnrFetchedField,
+      syncPnrWithTripDate,
+      setReturnTrainPreset,
+      toIsoDateString,
+      formatDisplayTime,
+      computeReturnTripDate,
+      parseJourneyDate,
+      formatDisplayDate,
       openTripAdminAssignmentModal,
       closeTripAdminAssignmentModal,
       saveTripAdminAssignments,
