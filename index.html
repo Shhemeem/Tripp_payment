@@ -1109,11 +1109,18 @@
                   in real-time.</p>
               </div>
             </div>
-            <button type="button" onclick="openLiveTrainTrackerModal('12617', 'MANGLADWEEP EXP', (window.tripConfig &amp;&amp; window.tripConfig.tripDate) ? window.tripConfig.tripDate : '2026-11-15', '04:25 PM', 'TIR - Tirur', 'AGC - Agra Cantt')"
-              class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-sm transition">
-              <i data-lucide="radio" class="w-3.5 h-3.5 text-emerald-400 animate-pulse"></i>
-              <span>Track Train 12617 Live</span>
-            </button>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="openLiveTrainTrackerModal('12617', 'MANGLADWEEP EXP', (window.tripConfig &amp;&amp; window.tripConfig.tripDate) ? window.tripConfig.tripDate : '2026-11-15', '04:25 PM', 'TIR - Tirur', 'AGC - Agra Cantt')"
+                class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-sm transition">
+                <i data-lucide="radio" class="w-3.5 h-3.5 text-emerald-400 animate-pulse"></i>
+                <span>Track 12617 (Onward)</span>
+              </button>
+              <button type="button" onclick="openLiveTrainTrackerModal('12618', 'MANGLADWEEP EXP (Return)', computeReturnTripDate(), '08:25 AM', 'AGC - Agra Cantt', 'TIR - Tirur')"
+                class="px-4 py-2.5 rounded-xl bg-indigo-900 hover:bg-indigo-800 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-sm transition">
+                <i data-lucide="repeat" class="w-3.5 h-3.5 text-purple-300"></i>
+                <span>Track 12618 (Return)</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -3104,6 +3111,32 @@
     <!-- Scrollable Content -->
     <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
       <div class="max-w-3xl mx-auto space-y-5">
+
+        <!-- Train Selector & Quick Switch Bar -->
+        <div class="expressive-card rounded-2xl p-3 sm:p-4 bg-slate-900/90 border border-slate-800 text-white shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+            <span class="text-[11px] font-extrabold uppercase text-slate-400 shrink-0">Trip Train:</span>
+            <button type="button" onclick="openLiveTrainTrackerModal('12617', 'MANGLADWEEP EXP', (window.tripConfig &amp;&amp; window.tripConfig.tripDate) ? window.tripConfig.tripDate : '2026-11-15', '04:25 PM', 'TIR - Tirur', 'AGC - Agra Cantt')"
+              class="px-3 py-1.5 rounded-xl text-xs font-black bg-amber-500/20 text-amber-300 border border-amber-400/40 hover:bg-amber-500/30 transition flex items-center gap-1.5 shrink-0">
+              <i data-lucide="train" class="w-3.5 h-3.5 text-amber-400"></i>
+              <span>12617 Onward (TIR ➔ AGC)</span>
+            </button>
+            <button type="button" onclick="openLiveTrainTrackerModal('12618', 'MANGLADWEEP EXP (Return)', computeReturnTripDate(), '08:25 AM', 'AGC - Agra Cantt', 'TIR - Tirur')"
+              class="px-3 py-1.5 rounded-xl text-xs font-black bg-indigo-500/20 text-indigo-300 border border-indigo-400/40 hover:bg-indigo-500/30 transition flex items-center gap-1.5 shrink-0">
+              <i data-lucide="repeat" class="w-3.5 h-3.5 text-indigo-400"></i>
+              <span>12618 Return (AGC ➔ TIR)</span>
+            </button>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <input type="text" id="liveTrackerTrainSearchInput" maxlength="5" placeholder="Train No (e.g. 12617)"
+              class="px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-xs font-mono font-bold text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-amber-500 w-28 sm:w-32" />
+            <button type="button" onclick="handleTrackCustomTrainSubmit()"
+              class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition flex items-center gap-1">
+              <i data-lucide="search" class="w-3 h-3"></i>
+              <span>Track</span>
+            </button>
+          </div>
+        </div>
 
         <!-- Live Status Hero Card -->
         <div
@@ -5394,7 +5427,7 @@
               <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
             </summary>
             <div class="mt-2.5 pt-2.5 border-t border-slate-100 text-slate-600 text-xs leading-relaxed space-y-1">
-              <p>Train 12617 departs <strong>Ernakulam Jn (ERS)</strong> at 13:25 and travels via <strong>Tirur (TIR) at 15:39</strong>, Kozhikode (CLT) at 16:27, Kannur, Mangaluru Jn, Goa (Madgaon), Panvel (Mumbai), Nashik Road, Bhopal, Jhansi, Gwalior, and reaches <strong>Agra Cantt (AGC) at 10:40</strong> on Day 3 before terminating at Hazrat Nizamuddin (NZM) at 13:35.</p>
+              <p>Train 12617 departs <strong>Ernakulam Jn (ERS)</strong> at 13:25 and travels via <strong>Tirur (TIR) at 16:25 (04:25 PM)</strong>, Kozhikode (CLT) at 17:15, Kannur (CAN) at 18:40, Mangaluru Jn at 21:30, Goa (Madgaon) at 03:10 (Day 2), Panvel (Mumbai) at 12:30 (Day 2), Nashik Road at 16:40 (Day 2), Bhopal at 02:55 (Day 3), Jhansi at 06:38, Gwalior at 07:52, and reaches <strong>Agra Cantt (AGC) at 09:55 AM</strong> on Day 3 before terminating at Hazrat Nizamuddin (NZM) at 13:35.</p>
               <p class="text-[11px] text-indigo-600">You can also view the full route &amp; halts timeline in the "Train Route &amp; Timings" tab!</p>
             </div>
           </details>
@@ -13323,9 +13356,9 @@
           fromStation: 'AGC - Agra Cantt',
           toStation: 'TIR - Tirur',
           dateOfJourney: returnDoj,
-          arrivalDate: computeArrivalDate(returnDoj, null, '11:50 AM', '04:48 AM', '12618'),
-          departureTime: '11:50 AM',
-          arrivalTime: '04:48 AM',
+          arrivalDate: computeArrivalDate(returnDoj, null, '08:25 AM', '02:48 AM', '12618'),
+          departureTime: '08:25 AM',
+          arrivalTime: '02:48 AM',
           journeyClass: 'SL',
           journeyType: 'return',
           chartPrepared: false,
@@ -13350,16 +13383,16 @@
           fromStation: 'CLT - Kozhikode',
           toStation: 'MAO - Madgaon',
           dateOfJourney: tripDoj,
-          arrivalDate: computeArrivalDate(tripDoj, null, '03:10 AM', '01:00 PM', '12617'),
-          departureTime: '03:10 AM',
-          arrivalTime: '01:00 PM',
+          arrivalDate: computeArrivalDate(tripDoj, null, '05:15 PM', '03:00 AM', '12617'),
+          departureTime: '05:15 PM',
+          arrivalTime: '03:00 AM',
           journeyClass: 'SL',
           journeyType: 'onward',
           chartPrepared: false,
           quota: 'GN',
           ticketFare: 4200,
           bookingFare: 4200,
-          distance: '510 km',
+          distance: '653 km',
           passengers: [
             { passengerIndex: 1, bookingStatus: 'CNF/S4/32/LB', currentStatus: 'CNF/S4/32/LB', coach: 'S4', seatNumber: '32', berthType: 'LB', berthName: 'Lower Berth', age: 21, gender: 'M', quota: 'GN', fare: 700 },
             { passengerIndex: 2, bookingStatus: 'CNF/S4/33/MB', currentStatus: 'CNF/S4/33/MB', coach: 'S4', seatNumber: '33', berthType: 'MB', berthName: 'Middle Berth', age: 22, gender: 'M', quota: 'GN', fare: 700 },
@@ -13424,7 +13457,7 @@
       // Procedural mock generation for any 10-digit PNR
       const trainOptions = [
         { num: '12617', name: 'Mangala Lakshadweep Exp', from: 'TIR - Tirur', to: 'AGC - Agra Cantt', dep: '04:25 PM', arr: '09:55 AM' },
-        { num: '12618', name: 'Mangala Lakshadweep Exp (Return)', from: 'AGC - Agra Cantt', to: 'TIR - Tirur', dep: '11:50 AM', arr: '04:48 AM' },
+        { num: '12618', name: 'Mangala Lakshadweep Exp (Return)', from: 'AGC - Agra Cantt', to: 'TIR - Tirur', dep: '08:25 AM', arr: '02:48 AM' },
         { num: '16346', name: 'Netravati Express', from: 'CLT - Kozhikode', to: 'MAO - Madgaon', dep: '06:55 PM', arr: '05:40 AM' },
         { num: '12217', name: 'Kochuveli Sampark Kranti', from: 'KGQ - Kasaragod', to: 'MAO - Madgaon', dep: '02:20 PM', arr: '08:15 PM' },
         { num: '22633', name: 'Nizamuddin Express', from: 'SRR - Shoranur Jn', to: 'MAO - Madgaon', dep: '09:05 PM', arr: '07:30 AM' }
@@ -13588,13 +13621,32 @@
               }
             }
 
-            const formattedDoj = formatDisplayDate(dojStr);
-            const formattedDepTime = formatDisplayTime(depTimeStr);
-            const formattedArrTime = formatDisplayTime(arrTimeStr);
+            let formattedDoj = formatDisplayDate(dojStr);
+            let formattedDepTime = formatDisplayTime(depTimeStr);
+            let formattedArrTime = formatDisplayTime(arrTimeStr);
             const trainNumberStr = String(data.trainNumber || data.trainNo || data.train_number || data.train_no || '');
-            const trainNameStr = String(data.trainName || data.train_name || 'Indian Railways Train');
-            const fromStationStr = String(data.fromStation || data.sourceStation || data.source_station || data.boardingPoint || data.from || 'Origin');
-            const toStationStr = String(data.toStation || data.destinationStation || data.destination_station || data.reservationUpto || data.to || 'Destination');
+            let trainNameStr = String(data.trainName || data.train_name || 'Indian Railways Train');
+            let fromStationStr = String(data.fromStation || data.sourceStation || data.source_station || data.boardingPoint || data.from || 'Origin');
+            let toStationStr = String(data.toStation || data.destinationStation || data.destination_station || data.reservationUpto || data.to || 'Destination');
+
+            // Ensure proper official Indian Railways timings if API omitted halt times
+            if (trainNumberStr === '12617') {
+              if (!trainNameStr || trainNameStr === 'Indian Railways Train') trainNameStr = 'MANGLADWEEP EXP';
+              if (formattedDepTime === '--:--') {
+                formattedDepTime = (fromStationStr.includes('ERS')) ? '01:25 PM' : '04:25 PM';
+              }
+              if (formattedArrTime === '--:--') {
+                formattedArrTime = (toStationStr.includes('NZM')) ? '01:35 PM' : '09:55 AM';
+              }
+            } else if (trainNumberStr === '12618') {
+              if (!trainNameStr || trainNameStr === 'Indian Railways Train') trainNameStr = 'MANGLADWEEP EXP (Return)';
+              if (formattedDepTime === '--:--') {
+                formattedDepTime = (fromStationStr.includes('NZM')) ? '05:35 AM' : '08:25 AM';
+              }
+              if (formattedArrTime === '--:--') {
+                formattedArrTime = (toStationStr.includes('ERS')) ? '07:30 AM' : '02:48 AM';
+              }
+            }
 
             const isChartPrep = data.chartStatus === 'Chart Prepared' || Boolean(data.chartPrepared || data.chartStatus === 'CHART PREPARED');
 
@@ -14073,9 +14125,9 @@
       activeFetchedPnrData.fromStation = 'AGC - Agra Cantt';
       activeFetchedPnrData.toStation = 'TIR - Tirur';
       activeFetchedPnrData.dateOfJourney = returnDate;
-      activeFetchedPnrData.departureTime = '11:50 AM';
-      activeFetchedPnrData.arrivalTime = '04:48 AM';
-      activeFetchedPnrData.arrivalDate = computeArrivalDate(returnDate, null, '11:50 AM', '04:48 AM', '12618');
+      activeFetchedPnrData.departureTime = '08:25 AM';
+      activeFetchedPnrData.arrivalTime = '02:48 AM';
+      activeFetchedPnrData.arrivalDate = computeArrivalDate(returnDate, null, '08:25 AM', '02:48 AM', '12618');
       activeFetchedPnrData.journeyType = 'return';
       renderPNRFetchedSummaryAndSlots();
       showToast(`Applied Return Train (12618 AGC ➔ TIR) on ${formatDisplayDate(returnDate)}!`);
@@ -16842,6 +16894,52 @@
       }
     }
 
+    const activeTrainScheduleCache = {};
+
+    async function fetchTrainScheduleFromApi(trainNo) {
+      const train = String(trainNo || '').trim();
+      if (!train) return null;
+      if (activeTrainScheduleCache[train]) return activeTrainScheduleCache[train];
+
+      const apiKey = localStorage.getItem('trippay_rapidapi_key');
+      const apiHost = localStorage.getItem('trippay_rapidapi_host') || 'irctc1.p.rapidapi.com';
+      if (!apiKey) return null;
+
+      try {
+        let url = `https://${apiHost}/api/v1/getTrainSchedule?trainNo=${encodeURIComponent(train)}`;
+        if (apiHost.includes('irctc-indian-railway-pnr-status')) {
+          url = `https://${apiHost}/getTrainSchedule/${encodeURIComponent(train)}`;
+        }
+        const res = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'x-rapidapi-key': apiKey,
+            'x-rapidapi-host': apiHost
+          }
+        });
+        if (res.ok) {
+          const json = await res.json();
+          const route = (json.data && (json.data.route || json.data.schedule || json.data.stationList)) || json.route || json.schedule || [];
+          if (Array.isArray(route) && route.length > 0) {
+            const mapped = route.map(st => ({
+              code: st.stationCode || st.code || st.station_code || 'STN',
+              name: st.stationName || st.name || st.station_name || 'Station',
+              arr: formatDisplayTime(st.arrivalTime || st.arr || st.arr_time || '--:--'),
+              dep: formatDisplayTime(st.departureTime || st.dep || st.dep_time || '--:--'),
+              day: Number(st.dayCount || st.day || 1),
+              dist: Number(st.distance || st.dist || 0),
+              pf: String(st.platform || st.pf || '1')
+            }));
+            activeTrainScheduleCache[train] = mapped;
+            return mapped;
+          }
+        }
+      } catch (e) {
+        console.warn('Live train schedule API query notice:', e.message);
+      }
+      return null;
+    }
+
     function getTrainScheduleAndLiveStatus(trainNo, customName = '', doj = '', depTime = '', fromStation = '', toStation = '') {
       const trainNumber = String(trainNo || '12617').trim();
       const trainName = customName || (trainNumber === '12617' ? 'MANGLADWEEP EXP' : `Express Train ${trainNumber}`);
@@ -16911,78 +17009,110 @@
 
       // Official Indian Railways IRCTC Schedule for 12618 (Return: NZM to ERS)
       const STATIONS_12618_FULL = [
-        { code: 'NZM', name: 'Hazrat Nizamuddin (Delhi)', arr: 'Source', dep: '09:15 AM', day: 1, dist: 0, pf: '6', note: 'Train Origin' },
-        { code: 'MTJ', name: 'Mathura Jn', arr: '10:48 AM', dep: '10:50 AM', day: 1, dist: 134, pf: '1' },
-        { code: 'AGC', name: 'Agra Cantt', arr: '11:45 AM', dep: '11:50 AM', day: 1, dist: 188, pf: '1', note: '★ Tour Return Boarding' },
-        { code: 'DHO', name: 'Dholpur Jn', arr: '12:28 PM', dep: '12:30 PM', day: 1, dist: 240, pf: '1' },
-        { code: 'MRA', name: 'Morena', arr: '12:54 PM', dep: '12:56 PM', day: 1, dist: 267, pf: '2' },
-        { code: 'GWL', name: 'Gwalior Jn', arr: '01:15 PM', dep: '01:17 PM', day: 1, dist: 306, pf: '2' },
-        { code: 'VGLJ', name: 'V Lakshmibai Jhansi', arr: '02:40 PM', dep: '02:48 PM', day: 1, dist: 403, pf: '3' },
-        { code: 'BINA', name: 'Bina Jn', arr: '04:35 PM', dep: '04:40 PM', day: 1, dist: 542, pf: '3' },
-        { code: 'BPL', name: 'Bhopal Jn', arr: '06:45 PM', dep: '06:55 PM', day: 1, dist: 695, pf: '1' },
-        { code: 'ET', name: 'Itarsi Jn', arr: '08:45 PM', dep: '08:50 PM', day: 1, dist: 787, pf: '1' },
-        { code: 'KNW', name: 'Khandwa Jn', arr: '11:17 PM', dep: '11:20 PM', day: 1, dist: 971, pf: '2' },
-        { code: 'BAU', name: 'Burhanpur', arr: '12:08 AM', dep: '12:10 AM', day: 2, dist: 1040, pf: '2' },
-        { code: 'BSL', name: 'Bhusaval Jn', arr: '01:05 AM', dep: '01:10 AM', day: 2, dist: 1090, pf: '4' },
-        { code: 'MMR', name: 'Manmad Jn', arr: '03:30 AM', dep: '03:35 AM', day: 2, dist: 1274, pf: '2' },
-        { code: 'NK', name: 'Nashik Road', arr: '04:40 AM', dep: '04:45 AM', day: 2, dist: 1347, pf: '3' },
-        { code: 'IGP', name: 'Igatpuri', arr: '05:40 AM', dep: '05:45 AM', day: 2, dist: 1398, pf: '1' },
-        { code: 'KYN', name: 'Kalyan Jn', arr: '07:47 AM', dep: '07:50 AM', day: 2, dist: 1479, pf: '5' },
-        { code: 'PNVL', name: 'Panvel (Mumbai)', arr: '08:35 AM', dep: '08:40 AM', day: 2, dist: 1513, pf: '7' },
-        { code: 'MNI', name: 'Mangaon', arr: '10:10 AM', dep: '10:12 AM', day: 2, dist: 1618, pf: '1' },
-        { code: 'KHED', name: 'Khed', arr: '11:30 AM', dep: '11:32 AM', day: 2, dist: 1686, pf: '1' },
-        { code: 'CHI', name: 'Chiplun', arr: '12:00 PM', dep: '12:02 PM', day: 2, dist: 1716, pf: '1' },
-        { code: 'RN', name: 'Ratnagiri', arr: '02:15 PM', dep: '02:20 PM', day: 2, dist: 1791, pf: '2' },
-        { code: 'KKW', name: 'Kankavali', arr: '04:30 PM', dep: '04:32 PM', day: 2, dist: 1902, pf: '1' },
-        { code: 'KUDL', name: 'Kudal', arr: '04:58 PM', dep: '05:00 PM', day: 2, dist: 1930, pf: '1' },
-        { code: 'SWV', name: 'Sawantwadi Road', arr: '05:22 PM', dep: '05:24 PM', day: 2, dist: 1951, pf: '1' },
-        { code: 'THVM', name: 'Thivim', arr: '06:00 PM', dep: '06:02 PM', day: 2, dist: 1980, pf: '1' },
-        { code: 'KRMI', name: 'Karmali', arr: '06:22 PM', dep: '06:24 PM', day: 2, dist: 1998, pf: '1' },
-        { code: 'MAO', name: 'Madgaon Jn (Goa)', arr: '07:00 PM', dep: '07:10 PM', day: 2, dist: 2027, pf: '1' },
-        { code: 'KAWR', name: 'Karwar', arr: '08:20 PM', dep: '08:22 PM', day: 2, dist: 2087, pf: '1' },
-        { code: 'GOK', name: 'Gokarna Road', arr: '08:46 PM', dep: '08:48 PM', day: 2, dist: 2123, pf: '1' },
-        { code: 'KTTA', name: 'Kumta', arr: '09:08 PM', dep: '09:10 PM', day: 2, dist: 2142, pf: '1' },
-        { code: 'MRDW', name: 'Murdeshwar', arr: '09:44 PM', dep: '09:46 PM', day: 2, dist: 2182, pf: '1' },
-        { code: 'BTJL', name: 'Bhatkal', arr: '10:04 PM', dep: '10:06 PM', day: 2, dist: 2197, pf: '1' },
-        { code: 'BYNR', name: 'Byndoor Mookambika Rd', arr: '10:24 PM', dep: '10:26 PM', day: 2, dist: 2212, pf: '1' },
-        { code: 'KUDA', name: 'Kundapura', arr: '10:56 PM', dep: '10:58 PM', day: 2, dist: 2246, pf: '1' },
-        { code: 'UD', name: 'Udupi', arr: '11:10 PM', dep: '11:12 PM', day: 2, dist: 2278, pf: '2' },
-        { code: 'MULK', name: 'Mulki', arr: '11:48 PM', dep: '11:50 PM', day: 2, dist: 2311, pf: '1' },
-        { code: 'SL', name: 'Surathkal', arr: '12:02 AM', dep: '12:04 AM', day: 3, dist: 2320, pf: '1' },
-        { code: 'MAJN', name: 'Mangaluru Jn', arr: '12:45 AM', dep: '12:50 AM', day: 3, dist: 2340, pf: '2' },
-        { code: 'KGQ', name: 'Kasaragod', arr: '01:34 AM', dep: '01:35 AM', day: 3, dist: 2387, pf: '1' },
-        { code: 'KZE', name: 'Kanhangad', arr: '01:54 AM', dep: '01:55 AM', day: 3, dist: 2410, pf: '1' },
-        { code: 'NLE', name: 'Nileshwar', arr: '02:04 AM', dep: '02:05 AM', day: 3, dist: 2420, pf: '1' },
-        { code: 'PAY', name: 'Payyanur', arr: '02:24 AM', dep: '02:25 AM', day: 3, dist: 2439, pf: '1' },
-        { code: 'PAZ', name: 'Payangadi', arr: '02:39 AM', dep: '02:40 AM', day: 3, dist: 2451, pf: '1' },
-        { code: 'CAN', name: 'Kannur', arr: '02:47 AM', dep: '02:50 AM', day: 3, dist: 2473, pf: '2' },
-        { code: 'TLY', name: 'Thalassery', arr: '03:14 AM', dep: '03:15 AM', day: 3, dist: 2494, pf: '1' },
-        { code: 'BDJ', name: 'Vadakara', arr: '03:34 AM', dep: '03:35 AM', day: 3, dist: 2516, pf: '1' },
-        { code: 'QLD', name: 'Quilandi (Koyilandy)', arr: '03:54 AM', dep: '03:55 AM', day: 3, dist: 2538, pf: '1' },
-        { code: 'CLT', name: 'Kozhikode Main', arr: '04:07 AM', dep: '04:10 AM', day: 3, dist: 2562, pf: '1' },
-        { code: 'FK', name: 'Ferok', arr: '04:24 AM', dep: '04:25 AM', day: 3, dist: 2572, pf: '1' },
-        { code: 'PGI', name: 'Parappanangadi', arr: '04:39 AM', dep: '04:40 AM', day: 3, dist: 2588, pf: '1' },
-        { code: 'TIR', name: 'Tirur', arr: '04:48 AM', dep: '04:50 AM', day: 3, dist: 2603, pf: '2', note: '★ Student Return Arrival Station' },
-        { code: 'KTU', name: 'Kuttippuram', arr: '05:09 AM', dep: '05:10 AM', day: 3, dist: 2618, pf: '1' },
-        { code: 'PTB', name: 'Pattambi', arr: '05:29 AM', dep: '05:30 AM', day: 3, dist: 2637, pf: '1' },
-        { code: 'SRR', name: 'Shoranur Jn', arr: '05:45 AM', dep: '05:50 AM', day: 3, dist: 2648, pf: '6' },
-        { code: 'TCR', name: 'Thrissur', arr: '06:32 AM', dep: '06:35 AM', day: 3, dist: 2681, pf: '1' },
-        { code: 'AWY', name: 'Aluva', arr: '07:28 AM', dep: '07:30 AM', day: 3, dist: 2736, pf: '1' },
-        { code: 'ERS', name: 'Ernakulam Jn', arr: '08:20 AM', dep: 'Terminus', day: 3, dist: 2755, pf: '4', note: 'Train Terminus' }
+        { code: 'NZM', name: 'Hazrat Nizamuddin (Delhi)', arr: 'Source', dep: '05:35 AM', day: 1, dist: 0, pf: '6', note: 'Train Origin' },
+        { code: 'MTJ', name: 'Mathura Jn', arr: '07:08 AM', dep: '07:10 AM', day: 1, dist: 134, pf: '1' },
+        { code: 'AGC', name: 'Agra Cantt', arr: '08:20 AM', dep: '08:25 AM', day: 1, dist: 188, pf: '1', note: '★ Tour Return Boarding Station' },
+        { code: 'DHO', name: 'Dholpur Jn', arr: '09:05 AM', dep: '09:07 AM', day: 1, dist: 240, pf: '1' },
+        { code: 'MRA', name: 'Morena', arr: '09:30 AM', dep: '09:32 AM', day: 1, dist: 267, pf: '2' },
+        { code: 'GWL', name: 'Gwalior Jn', arr: '09:41 AM', dep: '09:43 AM', day: 1, dist: 306, pf: '2' },
+        { code: 'VGLJ', name: 'V Lakshmibai Jhansi', arr: '11:20 AM', dep: '11:28 AM', day: 1, dist: 403, pf: '3' },
+        { code: 'BINA', name: 'Bina Jn', arr: '01:25 PM', dep: '01:30 PM', day: 1, dist: 542, pf: '3' },
+        { code: 'BPL', name: 'Bhopal Jn', arr: '03:15 PM', dep: '03:20 PM', day: 1, dist: 695, pf: '1' },
+        { code: 'ET', name: 'Itarsi Jn', arr: '05:00 PM', dep: '05:05 PM', day: 1, dist: 787, pf: '1' },
+        { code: 'KNW', name: 'Khandwa Jn', arr: '07:18 PM', dep: '07:20 PM', day: 1, dist: 971, pf: '2' },
+        { code: 'BAU', name: 'Burhanpur', arr: '08:08 PM', dep: '08:10 PM', day: 1, dist: 1040, pf: '2' },
+        { code: 'BSL', name: 'Bhusaval Jn', arr: '09:20 PM', dep: '09:25 PM', day: 1, dist: 1090, pf: '4' },
+        { code: 'MMR', name: 'Manmad Jn', arr: '11:58 PM', dep: '12:00 AM', day: 1, dist: 1274, pf: '2' },
+        { code: 'NK', name: 'Nashik Road', arr: '01:25 AM', dep: '01:30 AM', day: 2, dist: 1347, pf: '3' },
+        { code: 'IGP', name: 'Igatpuri', arr: '02:40 AM', dep: '02:45 AM', day: 2, dist: 1398, pf: '1' },
+        { code: 'KYN', name: 'Kalyan Jn', arr: '04:32 AM', dep: '04:35 AM', day: 2, dist: 1479, pf: '5' },
+        { code: 'PNVL', name: 'Panvel (Mumbai)', arr: '05:25 AM', dep: '05:30 AM', day: 2, dist: 1513, pf: '7' },
+        { code: 'MNI', name: 'Mangaon', arr: '07:10 AM', dep: '07:12 AM', day: 2, dist: 1618, pf: '1' },
+        { code: 'KHED', name: 'Khed', arr: '08:30 AM', dep: '08:32 AM', day: 2, dist: 1686, pf: '1' },
+        { code: 'CHI', name: 'Chiplun', arr: '09:00 AM', dep: '09:02 AM', day: 2, dist: 1716, pf: '1' },
+        { code: 'RN', name: 'Ratnagiri', arr: '11:15 AM', dep: '11:20 AM', day: 2, dist: 1791, pf: '2' },
+        { code: 'KKW', name: 'Kankavali', arr: '01:30 PM', dep: '01:32 PM', day: 2, dist: 1902, pf: '1' },
+        { code: 'KUDL', name: 'Kudal', arr: '01:58 PM', dep: '02:00 PM', day: 2, dist: 1930, pf: '1' },
+        { code: 'SWV', name: 'Sawantwadi Road', arr: '02:22 PM', dep: '02:24 PM', day: 2, dist: 1951, pf: '1' },
+        { code: 'THVM', name: 'Thivim', arr: '03:00 PM', dep: '03:02 PM', day: 2, dist: 1980, pf: '1' },
+        { code: 'KRMI', name: 'Karmali', arr: '03:22 PM', dep: '03:24 PM', day: 2, dist: 1998, pf: '1' },
+        { code: 'MAO', name: 'Madgaon Jn (Goa)', arr: '04:05 PM', dep: '04:15 PM', day: 2, dist: 2027, pf: '1' },
+        { code: 'KAWR', name: 'Karwar', arr: '05:20 PM', dep: '05:22 PM', day: 2, dist: 2087, pf: '1' },
+        { code: 'GOK', name: 'Gokarna Road', arr: '05:46 PM', dep: '05:48 PM', day: 2, dist: 2123, pf: '1' },
+        { code: 'KTTA', name: 'Kumta', arr: '06:08 PM', dep: '06:10 PM', day: 2, dist: 2142, pf: '1' },
+        { code: 'MRDW', name: 'Murdeshwar', arr: '06:44 PM', dep: '06:46 PM', day: 2, dist: 2182, pf: '1' },
+        { code: 'BTJL', name: 'Bhatkal', arr: '07:04 PM', dep: '07:06 PM', day: 2, dist: 2197, pf: '1' },
+        { code: 'BYNR', name: 'Byndoor Mookambika Rd', arr: '07:24 PM', dep: '07:26 PM', day: 2, dist: 2212, pf: '1' },
+        { code: 'KUDA', name: 'Kundapura', arr: '07:56 PM', dep: '07:58 PM', day: 2, dist: 2246, pf: '1' },
+        { code: 'UD', name: 'Udupi', arr: '08:10 PM', dep: '08:12 PM', day: 2, dist: 2278, pf: '2' },
+        { code: 'MULK', name: 'Mulki', arr: '08:48 PM', dep: '08:50 PM', day: 2, dist: 2311, pf: '1' },
+        { code: 'SL', name: 'Surathkal', arr: '09:02 PM', dep: '09:04 PM', day: 2, dist: 2320, pf: '1' },
+        { code: 'MAJN', name: 'Mangaluru Jn', arr: '10:15 PM', dep: '10:20 PM', day: 2, dist: 2340, pf: '2' },
+        { code: 'KGQ', name: 'Kasaragod', arr: '11:04 PM', dep: '11:05 PM', day: 2, dist: 2387, pf: '1' },
+        { code: 'KZE', name: 'Kanhangad', arr: '11:24 PM', dep: '11:25 PM', day: 2, dist: 2410, pf: '1' },
+        { code: 'NLE', name: 'Nileshwar', arr: '11:34 PM', dep: '11:35 PM', day: 2, dist: 2420, pf: '1' },
+        { code: 'PAY', name: 'Payyanur', arr: '11:54 PM', dep: '11:55 PM', day: 2, dist: 2439, pf: '1' },
+        { code: 'PAZ', name: 'Payangadi', arr: '12:09 AM', dep: '12:10 AM', day: 3, dist: 2451, pf: '1' },
+        { code: 'CAN', name: 'Kannur', arr: '12:57 AM', dep: '01:00 AM', day: 3, dist: 2473, pf: '2' },
+        { code: 'TLY', name: 'Thalassery', arr: '01:24 AM', dep: '01:25 AM', day: 3, dist: 2494, pf: '1' },
+        { code: 'BDJ', name: 'Vadakara', arr: '01:44 AM', dep: '01:45 AM', day: 3, dist: 2516, pf: '1' },
+        { code: 'QLD', name: 'Quilandi (Koyilandy)', arr: '02:04 AM', dep: '02:05 AM', day: 3, dist: 2538, pf: '1' },
+        { code: 'CLT', name: 'Kozhikode Main', arr: '02:07 AM', dep: '02:10 AM', day: 3, dist: 2562, pf: '1' },
+        { code: 'FK', name: 'Ferok', arr: '02:24 AM', dep: '02:25 AM', day: 3, dist: 2572, pf: '1' },
+        { code: 'PGI', name: 'Parappanangadi', arr: '02:39 AM', dep: '02:40 AM', day: 3, dist: 2588, pf: '1' },
+        { code: 'TIR', name: 'Tirur', arr: '02:48 AM', dep: '02:50 AM', day: 3, dist: 2603, pf: '2', note: '★ Student Return Arrival Station' },
+        { code: 'KTU', name: 'Kuttippuram', arr: '03:09 AM', dep: '03:10 AM', day: 3, dist: 2618, pf: '1' },
+        { code: 'PTB', name: 'Pattambi', arr: '03:29 AM', dep: '03:30 AM', day: 3, dist: 2637, pf: '1' },
+        { code: 'SRR', name: 'Shoranur Jn', arr: '03:55 AM', dep: '04:00 AM', day: 3, dist: 2648, pf: '6' },
+        { code: 'TCR', name: 'Thrissur', arr: '04:50 AM', dep: '04:53 AM', day: 3, dist: 2681, pf: '1' },
+        { code: 'AWY', name: 'Aluva', arr: '06:08 AM', dep: '06:10 AM', day: 3, dist: 2736, pf: '1' },
+        { code: 'ERS', name: 'Ernakulam Jn', arr: '07:30 AM', dep: 'Terminus', day: 3, dist: 2755, pf: '4', note: 'Train Terminus' }
       ];
 
       // Prepare raw stations for requested train
       let rawList;
-      if (trainNumber === '12617') {
+      if (activeTrainScheduleCache[trainNumber] && activeTrainScheduleCache[trainNumber].length > 0) {
+        rawList = activeTrainScheduleCache[trainNumber];
+      } else if (trainNumber === '12617') {
         rawList = STATIONS_12617_FULL;
       } else if (trainNumber === '12618') {
         rawList = STATIONS_12618_FULL;
+      } else if (trainNumber === '12625') {
+        rawList = [
+          { code: 'ERS', name: 'Ernakulam Jn', arr: 'Source', dep: '11:15 AM', day: 1, dist: 0, pf: '1', note: 'Train Origin' },
+          { code: 'TCR', name: 'Thrissur', arr: '12:20 PM', dep: '12:23 PM', day: 1, dist: 75, pf: '2' },
+          { code: 'SRR', name: 'Shoranur Jn', arr: '01:10 PM', dep: '01:15 PM', day: 1, dist: 107, pf: '6' },
+          { code: 'CLT', name: 'Kozhikode Main', arr: '02:40 PM', dep: '02:45 PM', day: 1, dist: 193, pf: '3' },
+          { code: 'CAN', name: 'Kannur', arr: '04:10 PM', dep: '04:15 PM', day: 1, dist: 283, pf: '1' },
+          { code: 'MAJN', name: 'Mangaluru Jn', arr: '06:50 PM', dep: '06:55 PM', day: 1, dist: 415, pf: '1' },
+          { code: 'MAO', name: 'Madgaon Jn (Goa)', arr: '11:30 PM', dep: '11:40 PM', day: 1, dist: 846, pf: '2' },
+          { code: 'PNVL', name: 'Panvel (Mumbai)', arr: '08:45 AM', dep: '08:50 AM', day: 2, dist: 1543, pf: '5' },
+          { code: 'BPL', name: 'Bhopal Jn', arr: '09:40 PM', dep: '09:45 PM', day: 2, dist: 2375, pf: '2' },
+          { code: 'AGC', name: 'Agra Cantt', arr: '05:30 AM', dep: '05:35 AM', day: 3, dist: 2882, pf: '3' },
+          { code: 'NDLS', name: 'New Delhi', arr: '09:15 AM', dep: 'Terminus', day: 3, dist: 3069, pf: '5', note: 'Train Terminus' }
+        ];
+      } else if (trainNumber === '16346') {
+        rawList = [
+          { code: 'TVC', name: 'Thiruvananthapuram Central', arr: 'Source', dep: '09:15 AM', day: 1, dist: 0, pf: '1' },
+          { code: 'ERS', name: 'Ernakulam Jn', arr: '01:45 PM', dep: '01:50 PM', day: 1, dist: 220, pf: '1' },
+          { code: 'SRR', name: 'Shoranur Jn', arr: '04:00 PM', dep: '04:05 PM', day: 1, dist: 327, pf: '5' },
+          { code: 'TIR', name: 'Tirur', arr: '04:54 PM', dep: '04:55 PM', day: 1, dist: 372, pf: '1' },
+          { code: 'CLT', name: 'Kozhikode Main', arr: '05:40 PM', dep: '05:45 PM', day: 1, dist: 413, pf: '3' },
+          { code: 'CAN', name: 'Kannur', arr: '07:20 PM', dep: '07:25 PM', day: 1, dist: 502, pf: '1' },
+          { code: 'MAJN', name: 'Mangaluru Jn', arr: '09:55 PM', dep: '10:00 PM', day: 1, dist: 635, pf: '1' },
+          { code: 'MAO', name: 'Madgaon Jn (Goa)', arr: '04:20 AM', dep: '04:30 AM', day: 2, dist: 1065, pf: '1' },
+          { code: 'LTT', name: 'Lokmanya Tilak Terminus (Mumbai)', arr: '05:00 PM', dep: 'Terminus', day: 2, dist: 1800, pf: '4' }
+        ];
       } else {
         rawList = [
-          { code: 'CLT', name: 'Kozhikode Main', arr: 'Source', dep: '03:10 AM', day: 1, dist: 0, pf: '1' },
-          { code: 'CAN', name: 'Kannur', arr: '04:15 AM', dep: '04:20 AM', day: 1, dist: 89, pf: '2' },
-          { code: 'KGQ', name: 'Kasaragod', arr: '05:30 AM', dep: '05:32 AM', day: 1, dist: 175, pf: '1' },
-          { code: 'MAO', name: 'Madgaon Junction', arr: '11:45 AM', dep: 'Terminus', day: 1, dist: 450, pf: '2' }
+          { code: 'TIR', name: 'Tirur', arr: 'Source', dep: '04:25 PM', day: 1, dist: 0, pf: '1', note: 'Departure Station' },
+          { code: 'CLT', name: 'Kozhikode Main', arr: '05:12 PM', dep: '05:15 PM', day: 1, dist: 41, pf: '3' },
+          { code: 'CAN', name: 'Kannur', arr: '06:39 PM', dep: '06:42 PM', day: 1, dist: 131, pf: '1' },
+          { code: 'MAJN', name: 'Mangaluru Jn', arr: '09:25 PM', dep: '09:30 PM', day: 1, dist: 263, pf: '1' },
+          { code: 'MAO', name: 'Madgaon Jn (Goa)', arr: '03:00 AM', dep: '03:10 AM', day: 2, dist: 694, pf: '2' },
+          { code: 'PNVL', name: 'Panvel (Mumbai)', arr: '12:27 PM', dep: '12:30 PM', day: 2, dist: 1391, pf: '5' },
+          { code: 'AGC', name: 'Agra Cantt', arr: '09:55 AM', dep: '10:00 AM', day: 3, dist: 2730, pf: '3', note: 'Destination Station' },
+          { code: 'NZM', name: 'Hazrat Nizamuddin', arr: '01:35 PM', dep: 'Terminus', day: 3, dist: 2917, pf: '4' }
         ];
       }
 
@@ -17055,13 +17185,15 @@
           whereismytrain: `https://whereismytrain.org.in/?trainNo=${trainNumber}`,
           railyatri: `https://www.railyatri.in/live-train-status/${trainNumber}`,
           ntes: 'https://enquiry.indianrail.gov.in/mntes/',
-          ixigo: String(trainNumber).trim() === '12617'
-            ? `https://www.ixigo.com/trains/12617?orgn=TIR&dstn=AGC&departDate=${encodeURIComponent(effectiveDojIso)}&quota=GN#schedule`
+          ixigo: String(trainNumber).trim() === '12618'
+            ? `https://www.ixigo.com/trains/12618?orgn=AGC&dstn=TIR&departDate=${encodeURIComponent(effectiveDojIso)}&quota=GN#schedule`
             : `https://www.ixigo.com/trains/${trainNumber}?orgn=TIR&dstn=AGC&departDate=${encodeURIComponent(effectiveDojIso)}&quota=GN#schedule`,
           confirmtkt: `https://www.confirmtkt.com/train-running-status/${trainNumber}`,
           gmaps: String(trainNumber).trim() === '12617'
             ? 'https://www.google.com/maps/place/Tirur+Railway+station/@10.9178753,75.9191822,17z/data=!3m1!4b1!4m6!3m5!1s0x3ba7b1005888fc01:0x8c5f18eb69bf0386!8m2!3d10.9178753!4d75.9217571!16s%2Fg%2F11ybtystt1?entry=ttu&g_ep=EgoyMDI2MTAyOC4wIKXMDSoASAFQAw%3D%3D'
-            : `https://www.google.com/maps/search/Indian+Railways+Train+${trainNumber}+live+location`
+            : (String(trainNumber).trim() === '12618'
+              ? 'https://www.google.com/maps/place/Agra+Cantt+railway+station/@27.1578328,78.0006764,17z'
+              : `https://www.google.com/maps/search/Indian+Railways+Train+${trainNumber}+live+location`)
         }
       };
     }
@@ -17361,7 +17493,7 @@
       activeTrackedTrainNumber = String(trainNo || '12617').trim();
       activeTrackedTrainName = String(trainName || (activeTrackedTrainNumber === '12618' ? 'MANGLADWEEP EXP (Return)' : 'MANGLADWEEP EXP')).trim();
       activeTrackedJourneyDate = doj || (activeTrackedTrainNumber === '12618' ? computeReturnTripDate() : (tripConfig.tripDate || '2026-11-15'));
-      activeTrackedDepTime = depTime || (activeTrackedTrainNumber === '12618' ? '11:50 AM' : '04:25 PM');
+      activeTrackedDepTime = depTime || (activeTrackedTrainNumber === '12618' ? '08:25 AM' : '04:25 PM');
       activeTrackedFromStation = fromStation || (activeTrackedTrainNumber === '12618' ? 'AGC - Agra Cantt' : 'TIR - Tirur');
       activeTrackedToStation = toStation || (activeTrackedTrainNumber === '12618' ? 'TIR - Tirur' : 'AGC - Agra Cantt');
 
@@ -17400,9 +17532,55 @@
         }
       }
 
+      // Fetch live schedule in background if RapidAPI key is configured
+      if (typeof localStorage !== 'undefined' && localStorage.getItem('trippay_rapidapi_key') && !activeTrainScheduleCache[activeTrackedTrainNumber]) {
+        fetchTrainScheduleFromApi(activeTrackedTrainNumber).then(res => {
+          if (res && res.length > 0) renderLiveTrainTimeline();
+        }).catch(() => {});
+      }
+
       renderLiveTrainTimeline();
       modal.classList.remove('hidden');
       lucide.createIcons();
+    }
+
+    function handleTrackCustomTrainSubmit() {
+      const input = document.getElementById('liveTrackerTrainSearchInput');
+      const val = (input ? input.value : '').trim();
+      if (!val || !/^\d{4,5}$/.test(val)) {
+        showToast('Please enter a valid 4 or 5-digit Indian Railways train number.');
+        return;
+      }
+      let tName = `Express Train ${val}`;
+      let fromSt = 'Origin Station';
+      let toSt = 'Destination Station';
+      let depTime = '10:00 AM';
+      let doj = tripConfig.tripDate || '2026-11-15';
+      if (val === '12617') {
+        tName = 'MANGLADWEEP EXP';
+        fromSt = 'TIR - Tirur';
+        toSt = 'AGC - Agra Cantt';
+        depTime = '04:25 PM';
+        doj = tripConfig.tripDate || '2026-11-15';
+      } else if (val === '12618') {
+        tName = 'MANGLADWEEP EXP (Return)';
+        fromSt = 'AGC - Agra Cantt';
+        toSt = 'TIR - Tirur';
+        depTime = '08:25 AM';
+        doj = computeReturnTripDate();
+      } else if (val === '12625') {
+        tName = 'Kerala Superfast Express';
+        fromSt = 'ERS - Ernakulam Jn';
+        toSt = 'NDLS - New Delhi';
+        depTime = '11:15 AM';
+      } else if (val === '16346') {
+        tName = 'Netravati Express';
+        fromSt = 'CLT - Kozhikode';
+        toSt = 'MAO - Madgaon';
+        depTime = '06:55 PM';
+      }
+      openLiveTrainTrackerModal(val, tName, doj, depTime, fromSt, toSt);
+      showToast(`Loaded live route and timetable for Train ${val} (${tName})`);
     }
 
     function closeLiveTrainTrackerModal() {
@@ -17971,7 +18149,7 @@
           id: 'welcome-1',
           sender: 'bot',
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          text: `👋 **Welcome to TripPay AI Assistant!**\n\nI can help you with anything regarding **${escapeHtml(activeTrip.tripTitle)}**:\n- 🚆 **Train 12617 Mangala Lakshadweep Express** route & halts (Tirur TIR 15:39 ➔ Agra Cantt AGC 10:40 Day 3)\n- 💳 **₹0 advance registration** & payment steps\n- 🎟️ Official **Boarding Passes** & PDF downloads\n- 💺 **PNR seat allocation** & live status\n- 💡 **Suggestions & Feedback** directly for the Trip Boss.\n\nHow can I help you today?`
+          text: `👋 **Welcome to TripPay AI Assistant!**\n\nI can help you with anything regarding **${escapeHtml(activeTrip.tripTitle)}**:\n- 🚆 **Train 12617 Mangala Lakshadweep Express** route & halts (Tirur TIR 04:25 PM ➔ Agra Cantt AGC 09:55 AM Day 3)\n- 🔄 **Train 12618 Return Journey** (Agra Cantt AGC 08:25 AM ➔ Tirur TIR 02:48 AM Day 3)\n- 💳 **₹0 advance registration** & payment steps\n- 🎟️ Official **Boarding Passes** & PDF downloads\n- 💺 **PNR seat allocation** & live status\n- 💡 **Suggestions & Feedback** directly for the Trip Boss.\n\nHow can I help you today?`
         }
       ];
       renderAiChatMessages();
@@ -18253,7 +18431,7 @@
 Key Trip Information:
 - Package Cost: ₹${activeTrip.tripAmount}
 - Advance Fee: ₹${activeTrip.advanceAmount} (Zero ₹0 advance payment registration is fully supported and allowed! Students can register without paying immediately and pay in installments later).
-- Train Journey: Train 12617 Mangala Lakshadweep Express. Primary college boarding station: Tirur (TIR) departing at 15:39 on Day 1. Halts at Kozhikode (16:27), Kannur (17:52), Mangaluru, Madgaon (Goa), Panvel (Mumbai), Nashik Road, Bhopal, Jhansi, Gwalior, arrives Agra Cantt (AGC) at 10:40 AM Day 3 for the Taj Mahal tour.
+- Train Journey: Onward Train 12617 Mangala Lakshadweep Express. Primary college boarding station: Tirur (TIR) departing at 16:25 (04:25 PM) on Day 1 (${formatDisplayDate(tripConfig.tripDate || '2026-11-15')}). Halts at Kozhikode (17:15), Kannur (18:40), Mangaluru Jn (21:30), Madgaon Goa (03:10 Day 2), Panvel Mumbai (12:30 Day 2), Nashik Road (16:40 Day 2), Bhopal (02:55 Day 3), Jhansi (06:38 Day 3), Gwalior (07:52 Day 3), arrives Agra Cantt (AGC) at 09:55 AM Day 3 for the Taj Mahal tour. Return Train is Train 12618 Mangala Lakshadweep Express (Return) departing Agra Cantt at 08:25 AM Day 1 and arriving Tirur at 02:48 AM Day 3.
 - Boarding Passes: Official tickets with verifiable QR codes, barcodes, and PDF print engines can be accessed in "Your Passes & Tickets".
 - Seat Allocation: Coordinated via railway PNR and mapped directly to student boarding passes.
 - Suggestions & Feedback: There is a strictly confidential channel (Suggestions & Feedback tab) sent ONLY to the Trip Boss.
@@ -18412,9 +18590,9 @@ Guidelines:
         receiverName: tripConfig.receiverName || 'Trip Coordinator'
       };
 
-      // 1. Train 12617 & Station Halts & Timings
-      if (q.includes('12617') || q.includes('train') || q.includes('halt') || q.includes('timing') || q.includes('schedule') || q.includes('tirur') || q.includes('agra') || q.includes('nizamuddin') || q.includes('route')) {
-        return `🚆 **Train 12617 - Mangala Lakshadweep Superfast Express Details:**\n\n- **Route:** Ernakulam Jn (ERS) ➔ Hazrat Nizamuddin (NZM)\n- **Key Halts & Timings:**\n  • **Tirur (TIR):** Departs at **15:39 (3:39 PM)** on Day 1 (Our primary college boarding halt!)\n  • **Kozhikode (CLT):** 16:27\n  • **Kannur (CAN):** 17:52\n  • **Mangaluru Jn (MAJN):** 20:00\n  • **Madgaon Goa (MAO):** 01:15 (Day 2)\n  • **Panvel / Mumbai (PNVL):** 13:25 (Day 2)\n  • **Nashik Road (NK):** 17:50 (Day 2)\n  • **Bhopal (BPL):** 02:40 (Day 3)\n  • **Jhansi (VGLJ):** 06:20 (Day 3)\n  • **Gwalior (GWL):** 07:45 (Day 3)\n  • **Agra Cantt (AGC):** Arrives at **10:40 AM** on Day 3 (Taj Mahal Tour Destination)\n  • **Hazrat Nizamuddin (NZM):** 13:35\n\n💡 You can track live halt updates anytime from the **"Live Route & Halts"** button on the home screen!`;
+      // 1. Train 12617 & 12618 Station Halts & Timings
+      if (q.includes('12617') || q.includes('12618') || q.includes('train') || q.includes('halt') || q.includes('timing') || q.includes('schedule') || q.includes('tirur') || q.includes('agra') || q.includes('nizamuddin') || q.includes('route')) {
+        return `🚆 **Official Indian Railways IRCTC Train Details & Timings:**\n\n**1. Onward Journey: Train 12617 (Mangala Lakshadweep Superfast Express)**\n- **Route:** Ernakulam Jn (ERS) ➔ Hazrat Nizamuddin (NZM)\n- **College Boarding:** **Tirur (TIR)** Departs at **04:25 PM (16:25)** on Day 1 (${formatDisplayDate(tripConfig.tripDate || '2026-11-15')})\n- **Tour Destination:** **Agra Cantt (AGC)** Arrives at **09:55 AM** on Day 3 (${computeArrivalDate(tripConfig.tripDate || '2026-11-15', null, '04:25 PM', '09:55 AM', '12617')})\n- **Key Halts:** Kozhikode (05:15 PM) • Kannur (06:40 PM) • Mangaluru Jn (09:30 PM) • Madgaon Goa (03:10 AM Day 2) • Panvel / Mumbai (12:30 PM Day 2) • Nashik Road (04:40 PM Day 2) • Bhopal (02:55 AM Day 3) • Jhansi (06:38 AM Day 3) • Gwalior (07:52 AM Day 3) • Agra Cantt (09:55 AM Day 3)\n\n**2. Return Journey: Train 12618 (Mangala Lakshadweep Superfast Express Return)**\n- **Route:** Hazrat Nizamuddin (NZM) ➔ Ernakulam Jn (ERS)\n- **Return Boarding:** **Agra Cantt (AGC)** Departs at **08:25 AM** on Day 1 (${formatDisplayDate(computeReturnTripDate())})\n- **College Arrival:** **Tirur (TIR)** Arrives at **02:48 AM** on Day 3\n- **Key Halts:** Gwalior (09:43 AM) • Jhansi (11:28 AM) • Bhopal (03:20 PM) • Itarsi (05:05 PM) • Bhusaval (09:25 PM) • Nashik Road (01:30 AM Day 2) • Panvel / Mumbai (05:30 AM Day 2) • Madgaon Goa (04:15 PM Day 2) • Mangaluru Jn (10:20 PM Day 2) • Kannur (01:00 AM Day 3) • Kozhikode (02:10 AM Day 3) • Tirur (02:48 AM Day 3)\n\n💡 You can track live train running status, GPS & all 57 halts anytime from the **"Track Train Live"** button on the home screen!`;
       }
 
       // 2. Advance / Zero fee / ₹0 Registration / Payment
@@ -18730,6 +18908,8 @@ Guidelines:
       closeLiveTrainTrackerModal,
       refreshLiveTrainStatus,
       getTrainScheduleAndLiveStatus,
+      handleTrackCustomTrainSubmit,
+      fetchTrainScheduleFromApi,
       searchRailwayStation,
       getMockStationResults,
       handleSearchStationSubmit,
