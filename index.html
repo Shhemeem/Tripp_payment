@@ -740,11 +740,48 @@
               </button>
             </div>
 
+            <!-- Student Profile Photo Upload -->
+            <div class="p-3.5 bg-gradient-to-r from-emerald-50/70 to-teal-50/50 rounded-2xl border border-emerald-100 flex items-center gap-4">
+              <div class="relative shrink-0">
+                <div id="regPhotoPreviewContainer" class="w-16 h-16 rounded-2xl bg-white border-2 border-dashed border-emerald-300 flex items-center justify-center overflow-hidden shadow-xs">
+                  <div id="regPhotoPlaceholder" class="text-center text-slate-400">
+                    <i data-lucide="camera" class="w-6 h-6 mx-auto text-emerald-500"></i>
+                    <span class="text-[9px] font-bold block uppercase tracking-wider text-slate-500 mt-0.5">Photo</span>
+                  </div>
+                  <img id="regPhotoPreviewImg" class="w-full h-full object-cover hidden" alt="Student Preview" />
+                </div>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-2">
+                  <label class="block text-xs font-extrabold text-slate-800">Student ID / Passport Photo</label>
+                  <button type="button" id="btnRemoveRegPhoto" onclick="removeRegistrationPhoto()" class="hidden text-[10px] font-bold text-rose-600 hover:text-rose-700 underline">
+                    Remove
+                  </button>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-0.5 leading-tight">Optional passport/ID photo for your verified digital boarding pass.</p>
+                <div class="mt-2 flex items-center gap-2">
+                  <input type="file" id="inpPhotoFile" accept="image/*" class="hidden" onchange="handleRegistrationPhotoChange(event)" />
+                  <button type="button" onclick="document.getElementById('inpPhotoFile').click()" class="px-3 py-1 rounded-xl bg-white border border-emerald-300 text-emerald-700 hover:bg-emerald-50 text-xs font-bold transition flex items-center gap-1.5 shadow-xs">
+                    <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                    <span>Select Photo</span>
+                  </button>
+                  <span id="regPhotoFileName" class="text-[11px] text-slate-400 truncate max-w-[140px]">No file chosen</span>
+                </div>
+              </div>
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              <div class="sm:col-span-2">
+              <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">Student Full Name *</label>
                 <input type="text" id="inpName" required oninput="updateDynamicUpiLinks()"
                   placeholder="e.g., Muhammed Sinan"
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-medium text-slate-900" />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Student ID / Roll No</label>
+                <input type="text" id="inpStudentId"
+                  placeholder="e.g., BCA-2024-042"
                   class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-medium text-slate-900" />
               </div>
 
@@ -755,9 +792,53 @@
               </div>
 
               <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp / Phone *</label>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Batch / Academic Year</label>
+                <select id="inpBatch"
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-semibold text-slate-900">
+                  <option value="3rd Year (2023-2026)" selected>3rd Year (2023-2026)</option>
+                  <option value="2nd Year (2024-2027)">2nd Year (2024-2027)</option>
+                  <option value="1st Year (2025-2028)">1st Year (2025-2028)</option>
+                  <option value="Final Year (2022-2025)">Final Year (2022-2025)</option>
+                  <option value="PG 1st Year">PG 1st Year</option>
+                  <option value="PG 2nd Year">PG 2nd Year</option>
+                  <option value="Faculty / Coordinator">Faculty / Coordinator</option>
+                  <option value="General Batch">General Batch</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp / Mobile *</label>
                 <input type="tel" id="inpPhone" required inputmode="numeric" placeholder="10-digit mobile number"
                   class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-medium text-slate-900" />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Blood Group</label>
+                <select id="inpBloodGroup"
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-semibold text-slate-900">
+                  <option value="" selected>Select Blood Group (Optional)</option>
+                  <option value="O+">O+</option>
+                  <option value="A+">A+</option>
+                  <option value="B+">B+</option>
+                  <option value="AB+">AB+</option>
+                  <option value="O-">O-</option>
+                  <option value="A-">A-</option>
+                  <option value="B-">B-</option>
+                  <option value="AB-">AB-</option>
+                </select>
+              </div>
+
+              <div class="sm:col-span-2 p-3 bg-slate-50 rounded-2xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 mb-1">Emergency Contact Person</label>
+                  <input type="text" id="inpEmergencyContactName" placeholder="Guardian / Parent Name"
+                    class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 focus:border-emerald-500 focus:outline-none text-xs text-slate-900" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 mb-1">Emergency Contact Phone</label>
+                  <input type="tel" id="inpEmergencyContactPhone" inputmode="numeric" placeholder="Guardian 10-digit Mobile"
+                    class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 focus:border-emerald-500 focus:outline-none text-xs text-slate-900" />
+                </div>
               </div>
 
               <div>
@@ -946,17 +1027,26 @@
         <div
           class="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-5 sm:p-7 shadow-lg border border-indigo-800/40">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-              <div class="w-12 h-12 rounded-2xl bg-white p-0.5 shadow-md shrink-0 overflow-hidden">
-                <img id="pDashLogoImg"
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFi3ISGVLtcfjKcyZ1e0JtiIJHb4P1OTjldSIj3H5zNg&s=10"
-                  alt="TripPay Logo" class="w-full h-full object-cover rounded-[14px]" />
+            <div class="flex items-center gap-3.5">
+              <div id="pDashAvatarContainer" class="w-14 h-14 rounded-2xl bg-white/10 p-0.5 border border-white/20 shadow-md shrink-0 overflow-hidden flex items-center justify-center">
+                <span id="pDashAvatarPlaceholder" class="font-display font-black text-xl text-emerald-400">ST</span>
               </div>
               <div>
-                <span
-                  class="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 mb-0.5">
-                  Verified Trip Participant
-                </span>
+                <div class="flex items-center gap-2 flex-wrap mb-1">
+                  <span
+                    class="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    Verified Trip Participant
+                  </span>
+                  <span id="pDashStudentIdBadge" class="hidden text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-white/20 text-white border border-white/20">
+                    ID: -
+                  </span>
+                  <span id="pDashBatchBadge" class="hidden text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">
+                    -
+                  </span>
+                  <span id="pDashBloodGroupBadge" class="hidden text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-rose-500/30 text-rose-200 border border-rose-400/30">
+                    🩸 -
+                  </span>
+                </div>
                 <h3 id="pDashName" class="font-display font-extrabold text-xl sm:text-2xl">-</h3>
                 <p class="text-xs text-slate-300">
                   <span id="pDashDept">-</span> • Phone: <span id="pDashPhone" class="font-mono font-bold">-</span>
@@ -1416,6 +1506,11 @@
               </button>
             </div>
           </div>
+        </div>
+
+        <!-- Quick Department Filter Pills -->
+        <div id="dashDeptPillsContainer" class="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 no-scrollbar">
+          <!-- Dynamically populated by renderDeptFilterPills() -->
         </div>
 
         <!-- Students Container -->
@@ -2405,42 +2500,43 @@
 
           <!-- 2. Passenger & Payment Details Body -->
           <div style="padding: 20px 24px; background:#ffffff; display:flex; flex-direction:column; gap:16px;">
-            <!-- Passenger Primary Row -->
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; align-items:center;">
-              <div style="grid-column: span 1;">
-                <p
-                  style="font-size:9px; font-family:monospace; text-transform:uppercase; letter-spacing:0.1em; color:#94a3b8; font-weight:700; margin:0 0 3px;">
-                  Passenger Name</p>
-                <p id="bpStudentName"
-                  style="font-family:'Plus Jakarta Sans',sans-serif; font-size:16px; font-weight:800; color:#0f172a; margin:0; word-break:break-word; overflow-wrap:break-word; line-height:1.25;">
+            <!-- Passenger Primary Row with Photo ID -->
+            <div style="display:flex; align-items:center; gap:16px; border-bottom:1px solid #f1f5f9; padding-bottom:14px; flex-wrap:wrap;">
+              <!-- Student Photo Avatar Box -->
+              <div id="bpPhotoContainer" style="width:68px; height:68px; border-radius:16px; overflow:hidden; border:2px solid #e2e8f0; background:#f8fafc; display:flex; align-items:center; justify-content:center; shrink-0; box-shadow:0 2px 6px rgba(0,0,0,0.06);">
+                <span id="bpPhotoPlaceholder" style="font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:800; color:#059669;">ST</span>
+              </div>
+
+              <!-- Passenger Identity & Academic Meta -->
+              <div style="flex:1; min-width:200px;">
+                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:3px;">
+                  <span id="bpStudentIdBadge" style="display:none; font-family:monospace; font-size:10px; font-weight:800; background:#0f172a; color:#fff; padding:2px 7px; border-radius:6px; letter-spacing:0.05em;">
+                    ID: -
+                  </span>
+                  <span id="bpBatchYear" style="display:none; font-size:10px; font-weight:700; background:#f1f5f9; color:#475569; padding:2px 7px; border-radius:6px; border:1px solid #e2e8f0;">
+                    -
+                  </span>
+                  <span id="bpBloodGroupBadge" style="display:none; font-size:10px; font-weight:800; background:#fee2e2; color:#b91c1c; padding:2px 7px; border-radius:6px; border:1px solid #fecaca;">
+                    🩸 -
+                  </span>
+                </div>
+                <h4 id="bpStudentName" style="font-family:'Plus Jakarta Sans',sans-serif; font-size:17px; font-weight:800; color:#0f172a; margin:0 0 2px; line-height:1.2;">
                   Muhammed Sinan
+                </h4>
+                <p style="font-size:12px; color:#475569; margin:0; font-weight:600;">
+                  <span id="bpDepartment" style="color:#059669; font-weight:800;">BCA</span> • <span id="bpPhone" style="font-family:monospace; font-weight:700; color:#334155;">+91 9876543210</span>
+                </p>
+                <p id="bpEmergencyContact" style="display:none; font-size:10px; color:#64748b; margin:2px 0 0; font-weight:600;">
+                  Emergency: <span id="bpEmergencyContactDetails" class="font-bold text-slate-800">-</span>
                 </p>
               </div>
-              <div>
-                <p
-                  style="font-size:9px; font-family:monospace; text-transform:uppercase; letter-spacing:0.1em; color:#94a3b8; font-weight:700; margin:0 0 3px;">
-                  Department</p>
-                <p id="bpDepartment"
-                  style="font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:800; color:#059669; margin:0; overflow-wrap:break-word;">
-                  BCA
+
+              <!-- 6-Digit Access Pass Badge -->
+              <div style="background:linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); border:1px solid #c7d2fe; border-radius:18px; padding:8px 14px; text-align:center; min-width:110px; shrink-0;">
+                <p style="font-size:8px; font-family:monospace; text-transform:uppercase; letter-spacing:0.15em; color:#4f46e5; font-weight:800; margin:0 0 2px;">
+                  Security Pass
                 </p>
-              </div>
-              <div>
-                <p
-                  style="font-size:9px; font-family:monospace; text-transform:uppercase; letter-spacing:0.1em; color:#94a3b8; font-weight:700; margin:0 0 3px;">
-                  WhatsApp / Mobile</p>
-                <p id="bpPhone"
-                  style="font-family:monospace; font-size:13px; font-weight:700; color:#1e293b; margin:0;">
-                  +91 9876543210
-                </p>
-              </div>
-              <div
-                style="background:rgba(238,242,255,0.9); border:1px solid #c7d2fe; border-radius:16px; padding:8px 10px; text-align:center;">
-                <p
-                  style="font-size:8px; font-family:monospace; text-transform:uppercase; letter-spacing:0.15em; color:#4f46e5; font-weight:800; margin:0 0 3px;">
-                  6-Digit Access Pass</p>
-                <p id="bpAccessCode"
-                  style="font-family:monospace; font-size:20px; font-weight:800; color:#3730a3; letter-spacing:0.15em; margin:0;">
+                <p id="bpAccessCode" style="font-family:monospace; font-size:22px; font-weight:900; color:#3730a3; letter-spacing:0.15em; margin:0;">
                   748291
                 </p>
               </div>
@@ -4383,22 +4479,99 @@
       <form onsubmit="handleAdminSaveStudentSubmit(event)" class="space-y-3.5">
         <input type="hidden" id="editStudentId" />
 
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Student Full Name *</label>
-          <input type="text" id="editName" required placeholder="Student Name"
-            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 font-medium" />
+        <!-- Student Photo Preview & Upload Box -->
+        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center gap-3">
+          <div id="editPhotoPreviewContainer" class="w-14 h-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+            <span id="editPhotoPlaceholder" class="font-display font-black text-emerald-600 text-base">ST</span>
+            <img id="editPhotoPreviewImg" class="w-full h-full object-cover hidden" alt="Student Preview" />
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-800">Student Profile Photo</span>
+              <button type="button" id="btnRemoveEditPhoto" onclick="removeAdminEditPhoto()" class="hidden text-[10px] font-bold text-rose-600 hover:text-rose-700 underline">
+                Remove
+              </button>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-0.5">Passport-style photo displayed on Boarding Pass</p>
+            <div class="mt-1.5 flex items-center gap-2">
+              <input type="file" id="editPhotoFileInput" accept="image/*" class="hidden" onchange="handleAdminEditPhotoChange(event)" />
+              <button type="button" onclick="document.getElementById('editPhotoFileInput').click()" class="px-2.5 py-1 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 text-[11px] font-bold flex items-center gap-1 shadow-xs">
+                <i data-lucide="camera" class="w-3 h-3 text-emerald-600"></i>
+                <span>Choose Photo</span>
+              </button>
+              <span id="editPhotoStatusText" class="text-[10px] text-slate-400 truncate max-w-[120px]">No photo</span>
+            </div>
+          </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Student Full Name *</label>
+            <input type="text" id="editName" required placeholder="Student Name"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 font-medium" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Student ID / Roll No</label>
+            <input type="text" id="editStudentIdNumber" placeholder="e.g., BCA-2024-042"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 font-medium" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Department *</label>
             <select id="editDept" required
               class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900"></select>
           </div>
           <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Batch / Academic Year</label>
+            <select id="editBatch"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800">
+              <option value="3rd Year (2023-2026)">3rd Year (2023-2026)</option>
+              <option value="2nd Year (2024-2027)">2nd Year (2024-2027)</option>
+              <option value="1st Year (2025-2028)">1st Year (2025-2028)</option>
+              <option value="Final Year (2022-2025)">Final Year (2022-2025)</option>
+              <option value="PG 1st Year">PG 1st Year</option>
+              <option value="PG 2nd Year">PG 2nd Year</option>
+              <option value="Faculty / Coordinator">Faculty / Coordinator</option>
+              <option value="General Batch">General Batch</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Phone Number *</label>
             <input type="tel" id="editPhone" required inputmode="numeric" placeholder="10-digit Mobile"
               class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Blood Group</label>
+            <select id="editBloodGroup"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800">
+              <option value="">Not Specified</option>
+              <option value="O+">O+</option>
+              <option value="A+">A+</option>
+              <option value="B+">B+</option>
+              <option value="AB+">AB+</option>
+              <option value="O-">O-</option>
+              <option value="A-">A-</option>
+              <option value="B-">B-</option>
+              <option value="AB-">AB-</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 mb-1">Emergency Contact Person</label>
+            <input type="text" id="editEmergencyName" placeholder="Guardian Name"
+              class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-900" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 mb-1">Emergency Phone Number</label>
+            <input type="tel" id="editEmergencyPhone" inputmode="numeric" placeholder="Emergency Mobile"
+              class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-900" />
           </div>
         </div>
 
@@ -5777,6 +5950,165 @@
     }
     let activeShareTargetTripId = currentTripId;
 
+    // =========================================================================
+    // STUDENT IDENTITY, PHOTO AVATARS & CLIENT-SIDE COMPRESSION ENGINE
+    // =========================================================================
+    let activeRegisteredPhotoDataUrl = null;
+    let activeAdminEditPhotoDataUrl = null;
+
+    async function compressImageFileToDataUrl(file, maxWidth = 260, maxHeight = 260, quality = 0.82) {
+      return new Promise((resolve, reject) => {
+        if (!file || !file.type || !file.type.startsWith('image/')) {
+          return reject(new Error('Selected file is not a valid image.'));
+        }
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('Failed to read image file.'));
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onerror = () => reject(new Error('Failed to process image data.'));
+          img.onload = () => {
+            let width = img.width;
+            let height = img.height;
+            if (width > maxWidth || height > maxHeight) {
+              if (width > height) {
+                height = Math.round((height * maxWidth) / width);
+                width = maxWidth;
+              } else {
+                width = Math.round((width * maxHeight) / height);
+                height = maxHeight;
+              }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, width);
+            canvas.height = Math.max(1, height);
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            try {
+              const webpData = canvas.toDataURL('image/webp', quality);
+              if (webpData && webpData.startsWith('data:image/webp')) {
+                return resolve(webpData);
+              }
+            } catch (_) {}
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function getStudentInitialsAvatar(name = 'Student', sizeClass = 'w-9 h-9', textClass = 'text-xs') {
+      const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+      const initials = parts.length >= 2
+        ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+        : (parts[0] ? parts[0].slice(0, 2).toUpperCase() : 'ST');
+      const gradients = [
+        'from-emerald-500 to-teal-600',
+        'from-blue-500 to-indigo-600',
+        'from-violet-500 to-purple-600',
+        'from-amber-500 to-orange-600',
+        'from-rose-500 to-pink-600',
+        'from-cyan-500 to-blue-600'
+      ];
+      let sum = 0;
+      for (let i = 0; i < (name || '').length; i++) sum += name.charCodeAt(i);
+      const grad = gradients[sum % gradients.length];
+      return `<div class="${sizeClass} rounded-2xl bg-gradient-to-tr ${grad} text-white font-display font-extrabold flex items-center justify-center shrink-0 shadow-xs select-none ${textClass}">${escapeHtml(initials)}</div>`;
+    }
+
+    function getStudentAvatarHtml(student, sizeClass = 'w-9 h-9', textClass = 'text-xs') {
+      if (student && student.photoUrl) {
+        return `<img src="${student.photoUrl}" alt="${escapeHtml(student.studentName || 'Student')}" class="${sizeClass} rounded-2xl object-cover border border-slate-200 shadow-xs shrink-0" onerror="this.onerror=null;this.parentElement.innerHTML=getStudentInitialsAvatar('${escapeHtml(student.studentName || 'S')}', '${sizeClass}', '${textClass}');" />`;
+      }
+      return getStudentInitialsAvatar(student ? student.studentName : 'S', sizeClass, textClass);
+    }
+
+    async function handleRegistrationPhotoChange(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      try {
+        showToast('Compressing photo...', 'info');
+        const dataUrl = await compressImageFileToDataUrl(file, 260, 260, 0.82);
+        activeRegisteredPhotoDataUrl = dataUrl;
+        const imgEl = document.getElementById('regPhotoPreviewImg');
+        const phEl = document.getElementById('regPhotoPlaceholder');
+        const fnEl = document.getElementById('regPhotoFileName');
+        const btnRem = document.getElementById('btnRemoveRegPhoto');
+        if (imgEl && phEl) {
+          imgEl.src = dataUrl;
+          imgEl.classList.remove('hidden');
+          phEl.classList.add('hidden');
+        }
+        if (fnEl) fnEl.textContent = file.name || 'Photo selected';
+        if (btnRem) btnRem.classList.remove('hidden');
+        showToast('Photo ready for boarding pass!', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to process photo. Please choose another image.', 'error');
+      }
+    }
+
+    function removeRegistrationPhoto() {
+      activeRegisteredPhotoDataUrl = null;
+      const inp = document.getElementById('inpPhotoFile');
+      if (inp) inp.value = '';
+      const imgEl = document.getElementById('regPhotoPreviewImg');
+      const phEl = document.getElementById('regPhotoPlaceholder');
+      const fnEl = document.getElementById('regPhotoFileName');
+      const btnRem = document.getElementById('btnRemoveRegPhoto');
+      if (imgEl && phEl) {
+        imgEl.src = '';
+        imgEl.classList.add('hidden');
+        phEl.classList.remove('hidden');
+      }
+      if (fnEl) fnEl.textContent = 'No file chosen';
+      if (btnRem) btnRem.classList.add('hidden');
+    }
+
+    async function handleAdminEditPhotoChange(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      try {
+        showToast('Compressing photo...', 'info');
+        const dataUrl = await compressImageFileToDataUrl(file, 260, 260, 0.82);
+        activeAdminEditPhotoDataUrl = dataUrl;
+        const imgEl = document.getElementById('editPhotoPreviewImg');
+        const phEl = document.getElementById('editPhotoPlaceholder');
+        const statEl = document.getElementById('editPhotoStatusText');
+        const btnRem = document.getElementById('btnRemoveEditPhoto');
+        if (imgEl && phEl) {
+          imgEl.src = dataUrl;
+          imgEl.classList.remove('hidden');
+          phEl.classList.add('hidden');
+        }
+        if (statEl) statEl.textContent = file.name || 'Photo selected';
+        if (btnRem) btnRem.classList.remove('hidden');
+        showToast('Photo uploaded for student!', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to process photo.', 'error');
+      }
+    }
+
+    function removeAdminEditPhoto() {
+      activeAdminEditPhotoDataUrl = '';
+      const inp = document.getElementById('editPhotoFileInput');
+      if (inp) inp.value = '';
+      const imgEl = document.getElementById('editPhotoPreviewImg');
+      const phEl = document.getElementById('editPhotoPlaceholder');
+      const statEl = document.getElementById('editPhotoStatusText');
+      const btnRem = document.getElementById('btnRemoveEditPhoto');
+      if (imgEl && phEl) {
+        imgEl.src = '';
+        imgEl.classList.add('hidden');
+        phEl.classList.remove('hidden');
+      }
+      if (statEl) statEl.textContent = 'Photo removed';
+      if (btnRem) btnRem.classList.add('hidden');
+    }
+
     let tripConfig = {
       tripTitle: 'Annual College Industrial & Leisure Trip',
       destination: 'Munnar, Vagamon & Kochi',
@@ -6628,6 +6960,60 @@
       document.getElementById('bpDepartment').textContent = student.department || '-';
       document.getElementById('bpPhone').textContent = `+91 ${normalizePhone(student.phone)}`;
       document.getElementById('bpAccessCode').textContent = student.accessCode || 'PENDING';
+
+      // Render Student Photo / Avatar on Boarding Pass
+      const bpPhotoContainer = document.getElementById('bpPhotoContainer');
+      if (bpPhotoContainer) {
+        if (student.photoUrl) {
+          bpPhotoContainer.innerHTML = `<img src="${student.photoUrl}" alt="${escapeHtml(student.studentName || 'Student')}" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<span style=\\'font-family:Plus Jakarta Sans,sans-serif; font-size:22px; font-weight:800; color:#059669;\\'>${escapeHtml((student.studentName||'ST').slice(0,2).toUpperCase())}</span>';" />`;
+        } else {
+          const initials = (student.studentName || 'ST').trim().split(/\s+/).map(p => p[0]).join('').slice(0, 2).toUpperCase() || 'ST';
+          bpPhotoContainer.innerHTML = `<span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:800; color:#059669;">${escapeHtml(initials)}</span>`;
+        }
+      }
+
+      // Render ID, Batch, Blood Group & Emergency Badges
+      const bpStudentIdBadge = document.getElementById('bpStudentIdBadge');
+      if (bpStudentIdBadge) {
+        if (student.studentId) {
+          bpStudentIdBadge.style.display = 'inline-block';
+          bpStudentIdBadge.textContent = `ID: ${student.studentId}`;
+        } else {
+          bpStudentIdBadge.style.display = 'none';
+        }
+      }
+
+      const bpBatchYear = document.getElementById('bpBatchYear');
+      if (bpBatchYear) {
+        if (student.batchYear) {
+          bpBatchYear.style.display = 'inline-block';
+          bpBatchYear.textContent = student.batchYear;
+        } else {
+          bpBatchYear.style.display = 'none';
+        }
+      }
+
+      const bpBloodGroupBadge = document.getElementById('bpBloodGroupBadge');
+      if (bpBloodGroupBadge) {
+        if (student.bloodGroup) {
+          bpBloodGroupBadge.style.display = 'inline-block';
+          bpBloodGroupBadge.textContent = `🩸 ${student.bloodGroup}`;
+        } else {
+          bpBloodGroupBadge.style.display = 'none';
+        }
+      }
+
+      const bpEmergencyContact = document.getElementById('bpEmergencyContact');
+      const bpEmergencyContactDetails = document.getElementById('bpEmergencyContactDetails');
+      if (bpEmergencyContact && bpEmergencyContactDetails) {
+        if (student.emergencyContactName || student.emergencyContactPhone) {
+          bpEmergencyContact.style.display = 'block';
+          const parts = [student.emergencyContactName, student.emergencyContactPhone ? `+91 ${student.emergencyContactPhone}` : ''].filter(Boolean);
+          bpEmergencyContactDetails.textContent = parts.join(' • ');
+        } else {
+          bpEmergencyContact.style.display = 'none';
+        }
+      }
 
       document.getElementById('bpTotalFee').textContent = formatINR(totalFee);
       document.getElementById('bpAmountPaid').textContent = formatINR(paid);
@@ -7767,9 +8153,15 @@
     async function handleStudentFormSubmit(e) {
       e.preventDefault();
       const studentName = document.getElementById('inpName').value.trim();
+      const studentId = (document.getElementById('inpStudentId')?.value || '').trim();
       const department = document.getElementById('inpDept').value.trim() || (tripConfig.departments[0] || 'General');
+      const batchYear = document.getElementById('inpBatch')?.value || '';
       const rawPhone = document.getElementById('inpPhone').value.trim();
       const cleanPhone = normalizePhone(rawPhone);
+      const bloodGroup = document.getElementById('inpBloodGroup')?.value || '';
+      const emergencyContactName = (document.getElementById('inpEmergencyContactName')?.value || '').trim();
+      const emergencyContactPhone = normalizePhone(document.getElementById('inpEmergencyContactPhone')?.value || '');
+      const photoUrl = activeRegisteredPhotoDataUrl || '';
       const rawAmtVal = document.getElementById('inpAmount')?.value;
       const amountPaid = (rawAmtVal !== '' && rawAmtVal !== null && !isNaN(Number(rawAmtVal))) ? Math.max(0, Number(rawAmtVal)) : (Number(tripConfig.advanceAmount) || 500);
       const paymentApp = document.getElementById('inpApp').value || 'Google Pay';
@@ -7796,7 +8188,7 @@
           const updatedRemarks = `${existingRecord.remarks ? existingRecord.remarks + ' + ' : ''}Paid ${formatINR(amountPaid)} via ${paymentApp}${userRemarks ? ' (' + userRemarks + ')' : ''}`;
 
           const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', existingRecord.id);
-          await updateDoc(docRef, {
+          const updatePayload = {
             tripId: existingRecord.tripId || currentTripId,
             studentName,
             department,
@@ -7806,7 +8198,16 @@
             remarks: updatedRemarks,
             status: 'Pending Verification',
             createdDateStr: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
-          });
+          };
+
+          if (studentId) updatePayload.studentId = studentId;
+          if (batchYear) updatePayload.batchYear = batchYear;
+          if (bloodGroup) updatePayload.bloodGroup = bloodGroup;
+          if (emergencyContactName) updatePayload.emergencyContactName = emergencyContactName;
+          if (emergencyContactPhone) updatePayload.emergencyContactPhone = emergencyContactPhone;
+          if (photoUrl) updatePayload.photoUrl = photoUrl;
+
+          await updateDoc(docRef, updatePayload);
 
           logSecurityEvent('PAYMENT_UPDATE', cleanPhone, `Added payment of ₹${amountPaid}`);
 
@@ -7830,8 +8231,14 @@
             tripId: currentTripId,
             receiptCode: 'TRP-' + Date.now().toString().slice(-6),
             studentName,
+            studentId,
             department,
+            batchYear,
             phone: cleanPhone,
+            bloodGroup,
+            emergencyContactName,
+            emergencyContactPhone,
+            photoUrl,
             amountPaid,
             paymentApp,
             remarks: userRemarks || (amountPaid === 0 ? 'Registered (Pay Balance Later)' : (balanceDue > 0 ? `Advance Paid (${formatINR(amountPaid)})` : 'Full Fee Paid')),
@@ -7868,6 +8275,7 @@
         }
 
         document.getElementById('studentPayForm').reset();
+        removeRegistrationPhoto();
         renderDepartmentDropdowns();
         selectPaymentPreset('advance');
       } catch (err) {
@@ -8547,6 +8955,47 @@
       document.getElementById('pDashDept').textContent = loggedInParticipant.department;
       document.getElementById('pDashPhone').textContent = loggedInParticipant.phone;
 
+      // Update Participant Avatar & Academic Meta Badges
+      const avatarBox = document.getElementById('pDashAvatarContainer');
+      if (avatarBox) {
+        if (loggedInParticipant.photoUrl) {
+          avatarBox.innerHTML = `<img src="${loggedInParticipant.photoUrl}" alt="${escapeHtml(loggedInParticipant.studentName || 'Student')}" class="w-full h-full object-cover rounded-[14px]" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\\'font-display font-black text-xl text-emerald-400\\'>${escapeHtml((loggedInParticipant.studentName||'ST').slice(0,2).toUpperCase())}</span>';" />`;
+        } else {
+          const initials = (loggedInParticipant.studentName || 'ST').trim().slice(0, 2).toUpperCase();
+          avatarBox.innerHTML = `<span class="font-display font-black text-xl text-emerald-400">${escapeHtml(initials)}</span>`;
+        }
+      }
+
+      const idBadge = document.getElementById('pDashStudentIdBadge');
+      if (idBadge) {
+        if (loggedInParticipant.studentId) {
+          idBadge.textContent = `ID: ${loggedInParticipant.studentId}`;
+          idBadge.classList.remove('hidden');
+        } else {
+          idBadge.classList.add('hidden');
+        }
+      }
+
+      const batchBadge = document.getElementById('pDashBatchBadge');
+      if (batchBadge) {
+        if (loggedInParticipant.batchYear) {
+          batchBadge.textContent = loggedInParticipant.batchYear;
+          batchBadge.classList.remove('hidden');
+        } else {
+          batchBadge.classList.add('hidden');
+        }
+      }
+
+      const bloodBadge = document.getElementById('pDashBloodGroupBadge');
+      if (bloodBadge) {
+        if (loggedInParticipant.bloodGroup) {
+          bloodBadge.textContent = `🩸 ${loggedInParticipant.bloodGroup}`;
+          bloodBadge.classList.remove('hidden');
+        } else {
+          bloodBadge.classList.add('hidden');
+        }
+      }
+
       const totalFee = Number(tripConfig.tripAmount) || 1500;
       const due = getBalanceDue(loggedInParticipant);
 
@@ -9161,20 +9610,47 @@
       renderDashboard();
     }
 
+    function setDashboardDeptFilter(dept = 'All') {
+      window.activeDeptFilter = dept;
+      const deptSelect = document.getElementById('dashDeptFilter');
+      if (deptSelect) deptSelect.value = dept;
+      renderDashboard();
+    }
+
     function updateDeptFilterOptions() {
       const deptSelect = document.getElementById('dashDeptFilter');
-      if (!deptSelect) return;
-      const curVal = deptSelect.value || window.activeDeptFilter || 'All';
+      const curVal = window.activeDeptFilter || (deptSelect ? deptSelect.value : 'All') || 'All';
       const uniqueDepts = Array.from(new Set([...(tripConfig.departments || []), ...payments.map(p => p.department).filter(Boolean)])).sort();
 
-      const newHtml = `<option value="All">All Departments</option>` +
-        uniqueDepts.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+      if (deptSelect) {
+        const newHtml = `<option value="All">All Departments</option>` +
+          uniqueDepts.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
 
-      if (deptSelect.innerHTML !== newHtml) {
-        deptSelect.innerHTML = newHtml;
+        if (deptSelect.innerHTML !== newHtml) {
+          deptSelect.innerHTML = newHtml;
+        }
         if (uniqueDepts.includes(curVal) || curVal === 'All') {
           deptSelect.value = curVal;
         }
+      }
+
+      // Render one-tap Department Quick Filter Pills
+      const pillsBox = document.getElementById('dashDeptPillsContainer');
+      if (pillsBox) {
+        const allDepts = ['All', ...uniqueDepts];
+        pillsBox.innerHTML = allDepts.map(d => {
+          const isActive = (d === curVal);
+          const count = d === 'All' ? payments.length : payments.filter(p => p.department === d).length;
+          return `
+            <button type="button" onclick="setDashboardDeptFilter('${escapeHtml(d)}')"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${isActive
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'}">
+              <span>${escapeHtml(d)}</span>
+              <span class="text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'} font-extrabold font-mono">${count}</span>
+            </button>
+          `;
+        }).join('');
       }
     }
 
@@ -9218,6 +9694,11 @@
         const matchSearch =
           !query ||
           (p.studentName || '').toLowerCase().includes(query) ||
+          (p.studentId || '').toLowerCase().includes(query) ||
+          (p.batchYear || '').toLowerCase().includes(query) ||
+          (p.bloodGroup || '').toLowerCase().includes(query) ||
+          (p.emergencyContactName || '').toLowerCase().includes(query) ||
+          (p.emergencyContactPhone || '').includes(query) ||
           (p.phone || '').includes(query) ||
           (p.department || '').toLowerCase().includes(query) ||
           (p.receiptCode || '').toLowerCase().includes(query) ||
@@ -9246,21 +9727,32 @@
         const bal = getBalanceDue(s);
         const isVer = s.status === 'Verified';
         const isBoarded = Boolean(s.boarded);
+        const avatarHtml = getStudentAvatarHtml(s, 'w-10 h-10', 'text-xs');
         return `
           <tr class="hover:bg-slate-50/80 transition group">
             <td class="py-3.5 px-4 font-mono text-xs text-slate-400 font-bold">${idx + 1}</td>
             <td class="py-3.5 px-4">
-              <span class="font-bold text-slate-900 block text-sm">${escapeHtml(s.studentName)}</span>
-              <span class="font-mono text-[10px] text-slate-400">${escapeHtml(s.receiptCode)} • ${escapeHtml(s.createdDateStr || '')}</span>
+              <div class="flex items-center gap-3">
+                ${avatarHtml}
+                <div class="min-w-0">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="font-bold text-slate-900 text-sm leading-tight">${escapeHtml(s.studentName)}</span>
+                    ${s.studentId ? `<span class="font-mono text-[10px] font-extrabold bg-slate-900 text-white px-1.5 py-0.2 rounded-md">ID: ${escapeHtml(s.studentId)}</span>` : ''}
+                    ${s.bloodGroup ? `<span class="text-[10px] font-extrabold bg-rose-50 text-rose-700 border border-rose-200 px-1.5 py-0.2 rounded-md">🩸 ${escapeHtml(s.bloodGroup)}</span>` : ''}
+                  </div>
+                  <span class="font-mono text-[10px] text-slate-400 block mt-0.5">${escapeHtml(s.receiptCode)} • ${escapeHtml(s.createdDateStr || '')}${s.batchYear ? ` • ${escapeHtml(s.batchYear)}` : ''}</span>
+                </div>
+              </div>
             </td>
             <td class="py-3.5 px-4">
-              <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">${escapeHtml(s.department)}</span>
+              <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 block truncate max-w-[140px]">${escapeHtml(s.department)}</span>
             </td>
             <td class="py-3.5 px-4">
               <a href="https://wa.me/91${normalizePhone(s.phone)}" target="_blank" class="text-xs font-bold text-emerald-700 hover:underline flex items-center gap-1">
                 <i data-lucide="message-circle" class="w-3.5 h-3.5 text-[#25D366]"></i>
-                <span>${escapeHtml(s.phone)}</span>
+                <span class="font-mono">${escapeHtml(s.phone)}</span>
               </a>
+              ${s.emergencyContactPhone ? `<span class="text-[10px] text-slate-400 block mt-0.5">SOS: ${escapeHtml(s.emergencyContactPhone)}</span>` : ''}
             </td>
             <td class="py-3.5 px-4">
               <span class="font-display font-extrabold text-emerald-700 block">${formatINR(s.amountPaid)}</span>
@@ -9323,24 +9815,30 @@
         `;
       }).join('');
 
-      // Mobile Cards View — modern premium card with all boarding pass operations
+      // Mobile Cards View — modern premium card with all boarding pass operations & photo avatar
       mContainer.innerHTML = filtered.map(s => {
         const bal = getBalanceDue(s);
         const isVer = s.status === 'Verified';
         const isBoarded = Boolean(s.boarded);
+        const avatarHtml = getStudentAvatarHtml(s, 'w-12 h-12', 'text-sm');
         return `
           <div class="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden transition hover:shadow-md">
             <!-- Card Header -->
             <div class="flex items-start justify-between px-4 pt-4 pb-3">
-              <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-2 flex-wrap mb-1">
-                  <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${isVer ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}">
-                    ${isVer ? '✅ Verified' : '⏳ Pending'}
-                  </span>
-                  ${isBoarded ? `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">🚌 Boarded</span>` : ''}
+              <div class="flex items-start gap-3 min-w-0 flex-1">
+                ${avatarHtml}
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-1.5 flex-wrap mb-1">
+                    <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${isVer ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}">
+                      ${isVer ? '✅ Verified' : '⏳ Pending'}
+                    </span>
+                    ${isBoarded ? `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">🚌 Boarded</span>` : ''}
+                    ${s.studentId ? `<span class="text-[10px] font-mono font-extrabold px-1.5 py-0.5 rounded bg-slate-900 text-white">ID: ${escapeHtml(s.studentId)}</span>` : ''}
+                    ${s.bloodGroup ? `<span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200">🩸 ${escapeHtml(s.bloodGroup)}</span>` : ''}
+                  </div>
+                  <h4 class="font-bold text-slate-900 text-base leading-tight truncate">${escapeHtml(s.studentName)}</h4>
+                  <p class="text-xs text-slate-400 mt-0.5">${escapeHtml(s.department)} • <span class="font-mono">${escapeHtml(s.receiptCode)}</span>${s.batchYear ? ` • ${escapeHtml(s.batchYear)}` : ''}</p>
                 </div>
-                <h4 class="font-bold text-slate-900 text-base leading-tight truncate">${escapeHtml(s.studentName)}</h4>
-                <p class="text-xs text-slate-400 mt-0.5">${escapeHtml(s.department)} • <span class="font-mono">${escapeHtml(s.receiptCode)}</span></p>
               </div>
               <div class="text-right ml-3 shrink-0">
                 <p class="font-display font-extrabold text-lg text-emerald-600 leading-tight">${formatINR(s.amountPaid)}</p>
@@ -10083,33 +10581,89 @@
     // ADMIN STUDENT MODAL
     function openManualAddModal() {
       renderDepartmentDropdowns();
+      activeAdminEditPhotoDataUrl = null;
       document.getElementById('adminEditModalTitle').textContent = 'Add Student Record';
       document.getElementById('editStudentId').value = '';
       document.getElementById('editName').value = '';
+      document.getElementById('editStudentIdNumber').value = '';
+      document.getElementById('editBatch').value = '3rd Year (2023-2026)';
       document.getElementById('editPhone').value = '';
+      document.getElementById('editBloodGroup').value = '';
+      document.getElementById('editEmergencyName').value = '';
+      document.getElementById('editEmergencyPhone').value = '';
       document.getElementById('editAmountPaid').value = tripConfig.tripAmount;
       document.getElementById('editApp').value = 'Google Pay';
       document.getElementById('editStatus').value = 'Verified';
       document.getElementById('editRemarks').value = 'Added by Admin';
+
+      const imgEl = document.getElementById('editPhotoPreviewImg');
+      const phEl = document.getElementById('editPhotoPlaceholder');
+      const statEl = document.getElementById('editPhotoStatusText');
+      const btnRem = document.getElementById('btnRemoveEditPhoto');
+      if (imgEl && phEl) {
+        imgEl.src = '';
+        imgEl.classList.add('hidden');
+        phEl.classList.remove('hidden');
+        phEl.textContent = 'ST';
+      }
+      if (statEl) statEl.textContent = 'No photo';
+      if (btnRem) btnRem.classList.add('hidden');
+
       updateAdminModalBalanceText();
       document.getElementById('adminEditPaymentModal').classList.remove('hidden');
+      lucide.createIcons();
     }
 
     function openAdminEditModal(id) {
       const st = payments.find(p => p.id === id);
       if (!st) return;
       renderDepartmentDropdowns();
+      activeAdminEditPhotoDataUrl = st.photoUrl || '';
       document.getElementById('adminEditModalTitle').textContent = `Edit ${st.studentName}`;
       document.getElementById('editStudentId').value = st.id;
-      document.getElementById('editName').value = st.studentName;
-      document.getElementById('editDept').value = st.department;
-      document.getElementById('editPhone').value = st.phone;
-      document.getElementById('editAmountPaid').value = st.amountPaid;
+      document.getElementById('editName').value = st.studentName || '';
+      document.getElementById('editStudentIdNumber').value = st.studentId || '';
+      document.getElementById('editDept').value = st.department || '';
+      document.getElementById('editBatch').value = st.batchYear || '3rd Year (2023-2026)';
+      document.getElementById('editPhone').value = st.phone || '';
+      document.getElementById('editBloodGroup').value = st.bloodGroup || '';
+      document.getElementById('editEmergencyName').value = st.emergencyContactName || '';
+      document.getElementById('editEmergencyPhone').value = st.emergencyContactPhone || '';
+      document.getElementById('editAmountPaid').value = st.amountPaid || 0;
       document.getElementById('editApp').value = st.paymentApp || 'Google Pay';
       document.getElementById('editStatus').value = st.status || 'Verified';
       document.getElementById('editRemarks').value = st.remarks || '';
+
+      const imgEl = document.getElementById('editPhotoPreviewImg');
+      const phEl = document.getElementById('editPhotoPlaceholder');
+      const statEl = document.getElementById('editPhotoStatusText');
+      const btnRem = document.getElementById('btnRemoveEditPhoto');
+
+      if (st.photoUrl) {
+        if (imgEl) {
+          imgEl.src = st.photoUrl;
+          imgEl.classList.remove('hidden');
+        }
+        if (phEl) phEl.classList.add('hidden');
+        if (statEl) statEl.textContent = 'Photo attached';
+        if (btnRem) btnRem.classList.remove('hidden');
+      } else {
+        if (imgEl) {
+          imgEl.src = '';
+          imgEl.classList.add('hidden');
+        }
+        if (phEl) {
+          phEl.classList.remove('hidden');
+          const initials = (st.studentName || 'ST').trim().slice(0, 2).toUpperCase();
+          phEl.textContent = initials;
+        }
+        if (statEl) statEl.textContent = 'No photo';
+        if (btnRem) btnRem.classList.add('hidden');
+      }
+
       updateAdminModalBalanceText();
       document.getElementById('adminEditPaymentModal').classList.remove('hidden');
+      lucide.createIcons();
     }
 
     function fillFullFeeInAdminModal() {
@@ -10141,11 +10695,21 @@
         accessCode = generateSecureAccessCode();
       }
 
+      const photoUrl = (activeAdminEditPhotoDataUrl !== null && activeAdminEditPhotoDataUrl !== undefined)
+        ? activeAdminEditPhotoDataUrl
+        : (existing?.photoUrl || '');
+
       const data = {
         tripId: existing?.tripId || currentTripId,
         studentName: document.getElementById('editName').value.trim(),
+        studentId: document.getElementById('editStudentIdNumber').value.trim(),
         department: document.getElementById('editDept').value,
+        batchYear: document.getElementById('editBatch').value,
         phone: normalizePhone(document.getElementById('editPhone').value),
+        bloodGroup: document.getElementById('editBloodGroup').value,
+        emergencyContactName: document.getElementById('editEmergencyName').value.trim(),
+        emergencyContactPhone: normalizePhone(document.getElementById('editEmergencyPhone').value),
+        photoUrl,
         amountPaid: Number(document.getElementById('editAmountPaid').value) || 0,
         paymentApp: document.getElementById('editApp').value,
         status: document.getElementById('editStatus').value,
@@ -10170,6 +10734,7 @@
         }
         closeAdminEditModal();
       } catch (err) {
+        console.error(err);
         showToast('Save failed.', 'error');
       }
     }
@@ -18914,6 +19479,14 @@ Guidelines:
 
     // Attach globals to window
     Object.assign(window, {
+      compressImageFileToDataUrl,
+      getStudentInitialsAvatar,
+      getStudentAvatarHtml,
+      handleRegistrationPhotoChange,
+      removeRegistrationPhoto,
+      handleAdminEditPhotoChange,
+      removeAdminEditPhoto,
+      setDashboardDeptFilter,
       toggleAppFullscreen,
       updateFullscreenState,
       openPaymentReceiptForStudent,
