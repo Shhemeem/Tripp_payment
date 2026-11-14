@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -1782,23 +1782,27 @@
               <span class="text-slate-500 font-bold">Quick Test PNRs:</span>
               <button type="button" onclick="fillSamplePNR('4447386706')"
                 class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-mono font-bold hover:bg-emerald-500 shadow-2xs transition">
-                4447386706 (Live S5 6-Berth CNF)
+                4447386706 (Onward 12617 S5 CNF)
               </button>
               <button type="button" onclick="fillSamplePNR('4147386985')"
                 class="px-2.5 py-1 rounded-lg bg-slate-700 text-white font-mono font-bold hover:bg-slate-600 shadow-2xs transition">
-                4147386985 (Live S6 6-Berth CNF)
+                4147386985 (Onward 12617 S6 CNF)
+              </button>
+              <button type="button" onclick="fillSamplePNR('5247386129')"
+                class="px-2.5 py-1 rounded-lg bg-purple-700 text-white font-mono font-bold hover:bg-purple-600 shadow-2xs transition">
+                5247386129 (Return 12618 S4 CNF)
               </button>
               <button type="button" onclick="fillSamplePNR('4512890341')"
                 class="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 font-mono font-bold hover:bg-amber-100 transition">
-                4512890341 (3 CNF Sleeper)
+                4512890341 (12617 S4 4-Berth)
               </button>
               <button type="button" onclick="fillSamplePNR('2458910243')"
                 class="px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-800 font-mono font-bold hover:bg-indigo-100 transition">
-                2458910243 (RAC & Waitlist)
+                2458910243 (12617 RAC &amp; WL)
               </button>
               <button type="button" onclick="fillSamplePNR('8349120485')"
                 class="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 font-mono font-bold hover:bg-emerald-100 transition">
-                8349120485 (AC 3 Tier Charted)
+                8349120485 (12617 AC 3-Tier)
               </button>
             </div>
           </form>
@@ -3020,16 +3024,19 @@
           <div class="flex flex-wrap items-center gap-1.5 text-xs">
             <span class="text-slate-400 font-bold text-[11px]">Quick Samples:</span>
             <button type="button" onclick="fillUserPNRSearch('4447386706')" class="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold hover:bg-emerald-100 transition">
-              Sample 1 (12617 S5 6-Berth)
+              12617 S5 6-Berth
             </button>
             <button type="button" onclick="fillUserPNRSearch('4147386985')" class="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-bold hover:bg-slate-200 transition">
-              Sample 2 (12617 S6 6-Berth)
+              12617 S6 6-Berth
+            </button>
+            <button type="button" onclick="fillUserPNRSearch('5247386129')" class="px-2 py-0.5 rounded-lg bg-purple-50 text-purple-800 border border-purple-200 text-[11px] font-bold hover:bg-purple-100 transition">
+              12618 Return S4 6-Berth
             </button>
             <button type="button" onclick="fillUserPNRSearch('4512890341')" class="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-bold hover:bg-slate-200 transition">
-              Sample 3 (Sleeper CNF)
+              12617 S4 Sleeper
             </button>
             <button type="button" onclick="fillUserPNRSearch('2458910243')" class="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-bold hover:bg-slate-200 transition">
-              Sample 4 (RAC &amp; WL)
+              12617 RAC &amp; WL
             </button>
           </div>
         </form>
@@ -13346,73 +13353,74 @@
         '4512890341': {
           pnrNumber: '4512890341',
           trainNumber: '12617',
-          trainName: 'Mangala Lakshadweep Express',
-          fromStation: 'CLT - Kozhikode',
-          toStation: 'MAO - Madgaon',
+          trainName: 'MANGLADWEEP EXP',
+          fromStation: 'TIR - Tirur',
+          toStation: 'AGC - Agra Cantt',
           dateOfJourney: tripDoj,
-          arrivalDate: computeArrivalDate(tripDoj, null, '05:15 PM', '03:00 AM', '12617'),
-          departureTime: '05:15 PM',
-          arrivalTime: '03:00 AM',
+          arrivalDate: computeArrivalDate(tripDoj, null, '04:25 PM', '09:55 AM', '12617'),
+          departureTime: '04:25 PM',
+          arrivalTime: '09:55 AM',
           journeyClass: 'SL',
           journeyType: 'onward',
           chartPrepared: false,
           quota: 'GN',
-          ticketFare: 4200,
-          bookingFare: 4200,
-          distance: '653 km',
+          ticketFare: 4020,
+          bookingFare: 4020,
+          distance: '2730 km',
+          expectedPlatform: '1',
           passengers: [
-            { passengerIndex: 1, bookingStatus: 'CNF/S4/32/LB', currentStatus: 'CNF/S4/32/LB', coach: 'S4', seatNumber: '32', berthType: 'LB', berthName: 'Lower Berth', age: 21, gender: 'M', quota: 'GN', fare: 700 },
-            { passengerIndex: 2, bookingStatus: 'CNF/S4/33/MB', currentStatus: 'CNF/S4/33/MB', coach: 'S4', seatNumber: '33', berthType: 'MB', berthName: 'Middle Berth', age: 22, gender: 'M', quota: 'GN', fare: 700 },
-            { passengerIndex: 3, bookingStatus: 'CNF/S4/34/UB', currentStatus: 'CNF/S4/34/UB', coach: 'S4', seatNumber: '34', berthType: 'UB', berthName: 'Upper Berth', age: 20, gender: 'F', quota: 'GN', fare: 700 },
-            { passengerIndex: 4, bookingStatus: 'CNF/S4/35/SL', currentStatus: 'CNF/S4/35/SL', coach: 'S4', seatNumber: '35', berthType: 'SL', berthName: 'Side Lower', age: 23, gender: 'M', quota: 'GN', fare: 700 },
-            { passengerIndex: 5, bookingStatus: 'CNF/S4/36/SU', currentStatus: 'CNF/S4/36/SU', coach: 'S4', seatNumber: '36', berthType: 'SU', berthName: 'Side Upper', age: 21, gender: 'F', quota: 'GN', fare: 700 },
-            { passengerIndex: 6, bookingStatus: 'CNF/S4/37/LB', currentStatus: 'CNF/S4/37/LB', coach: 'S4', seatNumber: '37', berthType: 'LB', berthName: 'Lower Berth', age: 22, gender: 'M', quota: 'GN', fare: 700 }
+            { passengerIndex: 1, bookingStatus: 'CNF/S4/32/LB', currentStatus: 'CNF/S4/32/LB', coach: 'S4', seatNumber: '32', berthType: 'LB', berthName: 'Lower Berth', age: 21, gender: 'M', quota: 'GN', fare: 1005 },
+            { passengerIndex: 2, bookingStatus: 'CNF/S4/33/MB', currentStatus: 'CNF/S4/33/MB', coach: 'S4', seatNumber: '33', berthType: 'MB', berthName: 'Middle Berth', age: 22, gender: 'M', quota: 'GN', fare: 1005 },
+            { passengerIndex: 3, bookingStatus: 'CNF/S4/34/UB', currentStatus: 'CNF/S4/34/UB', coach: 'S4', seatNumber: '34', berthType: 'UB', berthName: 'Upper Berth', age: 20, gender: 'F', quota: 'GN', fare: 1005 },
+            { passengerIndex: 4, bookingStatus: 'CNF/S4/35/SL', currentStatus: 'CNF/S4/35/SL', coach: 'S4', seatNumber: '35', berthType: 'SL', berthName: 'Side Lower', age: 23, gender: 'M', quota: 'GN', fare: 1005 }
           ]
         },
         '2458910243': {
           pnrNumber: '2458910243',
-          trainNumber: '16346',
-          trainName: 'Netravati Express',
-          fromStation: 'CLT - Kozhikode',
-          toStation: 'MAO - Madgaon',
+          trainNumber: '12617',
+          trainName: 'MANGLADWEEP EXP',
+          fromStation: 'TIR - Tirur',
+          toStation: 'AGC - Agra Cantt',
           dateOfJourney: tripDoj,
-          arrivalDate: computeArrivalDate(tripDoj, null, '06:55 PM', '05:40 AM', '16346'),
-          departureTime: '06:55 PM',
-          arrivalTime: '05:40 AM',
+          arrivalDate: computeArrivalDate(tripDoj, null, '04:25 PM', '09:55 AM', '12617'),
+          departureTime: '04:25 PM',
+          arrivalTime: '09:55 AM',
           journeyClass: 'SL',
           journeyType: 'onward',
           chartPrepared: false,
           quota: 'GN',
-          ticketFare: 2800,
-          bookingFare: 2800,
-          distance: '510 km',
+          ticketFare: 4020,
+          bookingFare: 4020,
+          distance: '2730 km',
+          expectedPlatform: '1',
           passengers: [
-            { passengerIndex: 1, bookingStatus: 'CNF/S6/14/LB', currentStatus: 'CNF/S6/14/LB', coach: 'S6', seatNumber: '14', berthType: 'LB', berthName: 'Lower Berth', age: 22, gender: 'M', quota: 'GN', fare: 700 },
-            { passengerIndex: 2, bookingStatus: 'CNF/S6/15/MB', currentStatus: 'CNF/S6/15/MB', coach: 'S6', seatNumber: '15', berthType: 'MB', berthName: 'Middle Berth', age: 21, gender: 'M', quota: 'GN', fare: 700 },
-            { passengerIndex: 3, bookingStatus: 'RAC/22', currentStatus: 'RAC/14', coach: '', seatNumber: 'RAC 14', berthType: '', berthName: 'RAC', age: 20, gender: 'F', quota: 'GN', fare: 700 },
-            { passengerIndex: 4, bookingStatus: 'WL/45', currentStatus: 'WL/18', coach: '', seatNumber: 'WL 18', berthType: '', berthName: 'Waitlist', age: 23, gender: 'M', quota: 'GN', fare: 700 }
+            { passengerIndex: 1, bookingStatus: 'CNF/S3/14/LB', currentStatus: 'CNF/S3/14/LB', coach: 'S3', seatNumber: '14', berthType: 'LB', berthName: 'Lower Berth', age: 22, gender: 'M', quota: 'GN', fare: 1005 },
+            { passengerIndex: 2, bookingStatus: 'CNF/S3/15/MB', currentStatus: 'CNF/S3/15/MB', coach: 'S3', seatNumber: '15', berthType: 'MB', berthName: 'Middle Berth', age: 21, gender: 'M', quota: 'GN', fare: 1005 },
+            { passengerIndex: 3, bookingStatus: 'RAC/22', currentStatus: 'RAC/14', coach: '', seatNumber: 'RAC 14', berthType: '', berthName: 'RAC', age: 20, gender: 'F', quota: 'GN', fare: 1005 },
+            { passengerIndex: 4, bookingStatus: 'WL/45', currentStatus: 'WL/18', coach: '', seatNumber: 'WL 18', berthType: '', berthName: 'Waitlist', age: 23, gender: 'M', quota: 'GN', fare: 1005 }
           ]
         },
         '8349120485': {
           pnrNumber: '8349120485',
-          trainNumber: '12625',
-          trainName: 'Kerala Superfast Express',
-          fromStation: 'ERS - Ernakulam Jn',
-          toStation: 'NDLS - New Delhi',
+          trainNumber: '12617',
+          trainName: 'MANGLADWEEP EXP',
+          fromStation: 'TIR - Tirur',
+          toStation: 'AGC - Agra Cantt',
           dateOfJourney: tripDoj,
-          arrivalDate: computeArrivalDate(tripDoj, null, '11:15 AM', '01:40 PM', '12625'),
-          departureTime: '11:15 AM',
-          arrivalTime: '01:40 PM',
+          arrivalDate: computeArrivalDate(tripDoj, null, '04:25 PM', '09:55 AM', '12617'),
+          departureTime: '04:25 PM',
+          arrivalTime: '09:55 AM',
           journeyClass: '3A',
           journeyType: 'onward',
           chartPrepared: true,
           quota: 'GN',
-          ticketFare: 4900,
-          bookingFare: 4900,
-          distance: '2800 km',
+          ticketFare: 5200,
+          bookingFare: 5200,
+          distance: '2730 km',
+          expectedPlatform: '1',
           passengers: [
-            { passengerIndex: 1, bookingStatus: 'CNF/B2/18/LB', currentStatus: 'CNF/B2/18/LB', coach: 'B2', seatNumber: '18', berthType: 'LB', berthName: 'Lower Berth', age: 22, gender: 'M', quota: 'GN', fare: 2450 },
-            { passengerIndex: 2, bookingStatus: 'CNF/B2/21/UB', currentStatus: 'CNF/B2/21/UB', coach: 'B2', seatNumber: '21', berthType: 'UB', berthName: 'Upper Berth', age: 21, gender: 'F', quota: 'GN', fare: 2450 }
+            { passengerIndex: 1, bookingStatus: 'CNF/B2/18/LB', currentStatus: 'CNF/B2/18/LB', coach: 'B2', seatNumber: '18', berthType: 'LB', berthName: 'Lower Berth', age: 22, gender: 'M', quota: 'GN', fare: 2600 },
+            { passengerIndex: 2, bookingStatus: 'CNF/B2/21/UB', currentStatus: 'CNF/B2/21/UB', coach: 'B2', seatNumber: '21', berthType: 'UB', berthName: 'Upper Berth', age: 21, gender: 'F', quota: 'GN', fare: 2600 }
           ]
         }
       };
@@ -13421,25 +13429,23 @@
         return JSON.parse(JSON.stringify(mockDatabase[pnrStr]));
       }
 
-      // Procedural mock generation for any 10-digit PNR
-      const trainOptions = [
-        { num: '12617', name: 'Mangala Lakshadweep Exp', from: 'TIR - Tirur', to: 'AGC - Agra Cantt', dep: '04:25 PM', arr: '09:55 AM' },
-        { num: '12618', name: 'Mangala Lakshadweep Exp (Return)', from: 'AGC - Agra Cantt', to: 'TIR - Tirur', dep: '08:25 AM', arr: '02:48 AM' },
-        { num: '16346', name: 'Netravati Express', from: 'CLT - Kozhikode', to: 'MAO - Madgaon', dep: '06:55 PM', arr: '05:40 AM' },
-        { num: '12217', name: 'Kochuveli Sampark Kranti', from: 'KGQ - Kasaragod', to: 'MAO - Madgaon', dep: '02:20 PM', arr: '08:15 PM' },
-        { num: '22633', name: 'Nizamuddin Express', from: 'SRR - Shoranur Jn', to: 'MAO - Madgaon', dep: '09:05 PM', arr: '07:30 AM' }
-      ];
+      // Procedural fallback generation for any 10-digit PNR
+      // Automatically synchronizes to the college trip trains (12617 onward or 12618 return)
+      const isReturnPattern = pnrStr.startsWith('5') || pnrStr.startsWith('6') || pnrStr.startsWith('7');
+      const train = isReturnPattern
+        ? { num: '12618', name: 'MANGLADWEEP EXP (Return)', from: 'AGC - Agra Cantt', to: 'TIR - Tirur', dep: '08:25 AM', arr: '02:48 AM', doj: returnDoj, type: 'return' }
+        : { num: '12617', name: 'MANGLADWEEP EXP', from: 'TIR - Tirur', to: 'AGC - Agra Cantt', dep: '04:25 PM', arr: '09:55 AM', doj: tripDoj, type: 'onward' };
+
       const seed = parseInt(pnrStr.slice(-2), 10) || 12;
-      const train = trainOptions[seed % trainOptions.length];
-      const coachCode = 'S' + ((seed % 7) + 1);
-      const startSeat = ((seed * 3) % 65) + 1;
+      const coachCode = 'S' + ((seed % 6) + 2); // S2 to S7
+      const startSeat = ((seed * 4) % 60) + 1;
       const passengerCount = (seed % 4) + 2; // 2 to 5 passengers
-      const berths = ['LB', 'MB', 'UB', 'SL', 'SU', 'WS'];
+      const berths = ['LB', 'MB', 'UB', 'LB', 'MB', 'UB', 'SL', 'SU'];
 
       const passengers = [];
       for (let i = 0; i < passengerCount; i++) {
         const seat = startSeat + i;
-        const bType = berths[i % berths.length];
+        const bType = berths[(seat - 1) % berths.length] || 'LB';
         passengers.push({
           passengerIndex: i + 1,
           bookingStatus: `CNF/${coachCode}/${seat}/${bType}`,
@@ -13448,8 +13454,8 @@
           seatNumber: String(seat),
           berthType: bType,
           berthName: BERTH_MAP[bType] || 'Berth',
-          age: 20 + (i % 4),
-          gender: i % 2 === 0 ? 'M' : 'F',
+          age: 20 + ((seed + i) % 4),
+          gender: (seed + i) % 2 === 0 ? 'M' : 'F',
           quota: 'GN',
           fare: 1005
         });
@@ -13461,19 +13467,45 @@
         trainName: train.name,
         fromStation: train.from,
         toStation: train.to,
-        dateOfJourney: train.num === '12618' ? returnDoj : tripDoj,
-        arrivalDate: computeArrivalDate(train.num === '12618' ? returnDoj : tripDoj, null, train.dep, train.arr, train.num),
+        dateOfJourney: train.doj,
+        arrivalDate: computeArrivalDate(train.doj, null, train.dep, train.arr, train.num),
         departureTime: train.dep,
         arrivalTime: train.arr,
         journeyClass: 'SL',
-        journeyType: train.num === '12618' ? 'return' : 'onward',
+        journeyType: train.type,
         chartPrepared: seed % 2 === 0,
         quota: 'GN',
         ticketFare: passengerCount * 1005,
         bookingFare: passengerCount * 1005,
         distance: '2730 km',
+        expectedPlatform: '1',
         passengers
       };
+    }
+
+    function normalizeStationName(raw, isOrigin = true, trainNo = '12617') {
+      const s = String(raw || '').trim();
+      const upper = s.toUpperCase();
+      if (!s || upper === 'ORIGIN' || upper === 'DESTINATION' || upper === '--') {
+        if (trainNo === '12618') {
+          return isOrigin ? 'AGC - Agra Cantt' : 'TIR - Tirur';
+        }
+        return isOrigin ? 'TIR - Tirur' : 'AGC - Agra Cantt';
+      }
+      if (upper === 'TIR' || upper.includes('TIRUR')) return 'TIR - Tirur';
+      if (upper === 'AGC' || upper.includes('AGRA')) return 'AGC - Agra Cantt';
+      if (upper === 'ERS' || upper.includes('ERNAKULAM')) return 'ERS - Ernakulam Jn';
+      if (upper === 'NZM' || upper.includes('NIZAMUDDIN')) return 'NZM - Hazrat Nizamuddin';
+      if (upper === 'CLT' || upper.includes('KOZHIKODE') || upper.includes('CALICUT')) return 'CLT - Kozhikode';
+      if (upper === 'CAN' || upper.includes('KANNUR')) return 'CAN - Kannur';
+      if (upper === 'MAO' || upper.includes('MADGAON') || upper.includes('GOA')) return 'MAO - Madgaon';
+      if (upper === 'BPL' || upper.includes('BHOPAL')) return 'BPL - Bhopal Jn';
+      if (upper === 'GWL' || upper.includes('GWALIOR')) return 'GWL - Gwalior';
+      if (upper === 'JHS' || upper === 'VGLJ' || upper.includes('JHANSI')) return 'VGLJ - Jhansi';
+      if (upper === 'PNVL' || upper.includes('PANVEL')) return 'PNVL - Panvel';
+      if (upper === 'BSL' || upper.includes('BHUSAVAL')) return 'BSL - Bhusaval';
+      if (upper === 'NK' || upper.includes('NASHIK')) return 'NK - Nashik Road';
+      return s;
     }
 
     async function fetchPNRDetails(pnrNumber, customKey = '', customHost = '') {
@@ -13530,7 +13562,7 @@
 
         if (response && response.ok) {
           const json = await response.json();
-          const data = json.data || json;
+          const data = json.data || json.response || json.body || json.result || json;
 
           const rawPassengers = data.passengerList || data.passengers || data.passenger_list || data.passenger_details || data.PassengerStatus || [];
           const totalFare = Number(data.ticketFare || data.bookingFare || data.totalFare || data.ticket_fare || data.booking_fare || 0);
@@ -13591,26 +13623,35 @@
             let formattedDoj = formatDisplayDate(dojStr);
             let formattedDepTime = formatDisplayTime(depTimeStr);
             let formattedArrTime = formatDisplayTime(arrTimeStr);
-            const trainNumberStr = String(data.trainNumber || data.trainNo || data.train_number || data.train_no || '');
-            let trainNameStr = String(data.trainName || data.train_name || 'Indian Railways Train');
-            let fromStationStr = String(data.fromStation || data.sourceStation || data.source_station || data.boardingPoint || data.from || 'Origin');
-            let toStationStr = String(data.toStation || data.destinationStation || data.destination_station || data.reservationUpto || data.to || 'Destination');
+            let trainNumberStr = String(data.TrainNo || data.trainNumber || data.trainNo || data.train_number || data.train_no || '').trim();
+            let trainNameStr = String(data.TrainName || data.trainName || data.train_name || '').trim();
+            let fromStationStr = String(data.BoardingStationName || data.sourceStationName || data.sourceStation || data.source_station || data.boardingPoint || data.fromStation || data.From || data.from || 'Origin').trim();
+            let toStationStr = String(data.ReservationUptoName || data.destinationStationName || data.destinationStation || data.destination_station || data.reservationUpto || data.toStation || data.To || data.to || 'Destination').trim();
 
-            // Ensure proper official Indian Railways timings if API omitted halt times
-            if (trainNumberStr === '12617') {
+            fromStationStr = normalizeStationName(fromStationStr, true, trainNumberStr);
+            toStationStr = normalizeStationName(toStationStr, false, trainNumberStr);
+
+            // Ensure proper official Indian Railways timings and college trip synchronization
+            if (trainNumberStr === '12617' || (!trainNumberStr && (fromStationStr.includes('TIR') || toStationStr.includes('AGC')))) {
+              trainNumberStr = '12617';
               if (!trainNameStr || trainNameStr === 'Indian Railways Train') trainNameStr = 'MANGLADWEEP EXP';
-              if (formattedDepTime === '--:--') {
+              if (fromStationStr === 'Origin' || !fromStationStr) fromStationStr = 'TIR - Tirur';
+              if (toStationStr === 'Destination' || !toStationStr) toStationStr = 'AGC - Agra Cantt';
+              if (formattedDepTime === '--:--' || !formattedDepTime) {
                 formattedDepTime = (fromStationStr.includes('ERS')) ? '01:25 PM' : '04:25 PM';
               }
-              if (formattedArrTime === '--:--') {
+              if (formattedArrTime === '--:--' || !formattedArrTime) {
                 formattedArrTime = (toStationStr.includes('NZM')) ? '01:35 PM' : '09:55 AM';
               }
-            } else if (trainNumberStr === '12618') {
+            } else if (trainNumberStr === '12618' || (!trainNumberStr && (fromStationStr.includes('AGC') || toStationStr.includes('TIR')))) {
+              trainNumberStr = '12618';
               if (!trainNameStr || trainNameStr === 'Indian Railways Train') trainNameStr = 'MANGLADWEEP EXP (Return)';
-              if (formattedDepTime === '--:--') {
+              if (fromStationStr === 'Origin' || !fromStationStr) fromStationStr = 'AGC - Agra Cantt';
+              if (toStationStr === 'Destination' || !toStationStr) toStationStr = 'TIR - Tirur';
+              if (formattedDepTime === '--:--' || !formattedDepTime) {
                 formattedDepTime = (fromStationStr.includes('NZM')) ? '05:35 AM' : '08:25 AM';
               }
-              if (formattedArrTime === '--:--') {
+              if (formattedArrTime === '--:--' || !formattedArrTime) {
                 formattedArrTime = (toStationStr.includes('ERS')) ? '07:30 AM' : '02:48 AM';
               }
             }
@@ -13635,8 +13676,8 @@
               quota: data.quota || data.booking_quota || 'GN',
               ticketFare: totalFare || data.ticketFare || data.bookingFare || '',
               bookingFare: data.bookingFare || data.ticketFare || '',
-              distance: (data.distance || data.total_distance) ? `${data.distance || data.total_distance} km` : '',
-              expectedPlatform: data.expectedPlatformLocation || data.platform || data.platform_number || '',
+              distance: (data.distance || data.total_distance) ? `${data.distance || data.total_distance} km` : '2730 km',
+              expectedPlatform: data.expectedPlatformLocation || data.platform || data.platform_number || '1',
               isLiveApi: true,
               passengers: parsedPassengers
             };
@@ -13878,6 +13919,87 @@
                 <p class="text-[10px] uppercase font-bold text-slate-400">Destination Station</p>
                 <p class="font-bold text-sm text-white" id="pnrSummaryToStation">${pnr.toStation}</p>
                 <p class="text-emerald-300 font-mono text-xs font-bold mt-0.5" id="pnrSummaryArrTime">Arr: ${formatDisplayTime(pnr.arrivalTime)} • ${computeArrivalDate(pnr.dateOfJourney, pnr.arrivalDate, pnr.departureTime, pnr.arrivalTime, pnr.trainNumber)}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Train Date, Timing & Station Adjustment Panel -->
+          <div class="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/70 pb-2.5">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
+                  <i data-lucide="calendar-clock" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h6 class="font-display font-bold text-xs text-slate-900">Train Date, Timing &amp; Station Details</h6>
+                  <p class="text-[11px] text-slate-500">Verify and adjust train timetable. Changes automatically sync to student boarding passes.</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <button type="button" onclick="syncPnrWithTripDate()"
+                  class="px-2.5 py-1 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 text-xs font-extrabold border border-amber-300 transition flex items-center gap-1">
+                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-600"></i>
+                  <span>Sync with Trip Date (${tripConfig.tripDate || '2026-11-15'})</span>
+                </button>
+                <button type="button" onclick="setReturnTrainPreset()"
+                  class="px-2.5 py-1 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 text-purple-900 text-xs font-extrabold border border-purple-300 transition flex items-center gap-1">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-purple-600"></i>
+                  <span>Preset Return Train (12618)</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Date of Journey</label>
+                <input type="date" id="pnrEditDojInput" value="${toIsoDateString(pnr.dateOfJourney)}"
+                  onchange="updatePnrFetchedField('dateOfJourney', this.value)"
+                  class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Departure Time</label>
+                <input type="text" id="pnrEditDepTimeInput" value="${pnr.departureTime}"
+                  oninput="updatePnrFetchedField('departureTime', this.value)"
+                  placeholder="e.g. 04:25 PM or 16:25"
+                  class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Arrival Time</label>
+                <input type="text" id="pnrEditArrTimeInput" value="${pnr.arrivalTime}"
+                  oninput="updatePnrFetchedField('arrivalTime', this.value)"
+                  placeholder="e.g. 09:55 AM"
+                  class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Boarding Origin</label>
+                <input type="text" id="pnrEditFromInput" value="${pnr.fromStation}"
+                  oninput="updatePnrFetchedField('fromStation', this.value)"
+                  placeholder="e.g. TIR - Tirur"
+                  class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-1 border-t border-slate-200/60">
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Destination Station</label>
+                <input type="text" id="pnrEditToInput" value="${pnr.toStation}"
+                  oninput="updatePnrFetchedField('toStation', this.value)"
+                  placeholder="e.g. AGC - Agra Cantt"
+                  class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Train Number</label>
+                <input type="text" id="pnrEditTrainNumInput" value="${pnr.trainNumber}"
+                  oninput="updatePnrFetchedField('trainNumber', this.value)"
+                  placeholder="e.g. 12617"
+                  class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1">Train Name</label>
+                <input type="text" id="pnrEditTrainNameInput" value="${pnr.trainName}"
+                  oninput="updatePnrFetchedField('trainName', this.value)"
+                  placeholder="e.g. MANGLADWEEP EXP"
+                  class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
               </div>
             </div>
           </div>
@@ -14266,6 +14388,7 @@
                 dateOfJourney: pnr.dateOfJourney,
                 departureTime: pnr.departureTime,
                 arrivalTime: pnr.arrivalTime,
+                arrivalDate: pnr.arrivalDate,
                 journeyClass: pnr.journeyClass,
                 journeyType: journeyType,
                 passengerSlot: m.passengerIndex,
@@ -14606,6 +14729,15 @@
         batch.update(pnrDocRef, {
           chartPrepared: freshDetails.chartPrepared,
           lastSyncedAt: now,
+          trainNumber: freshDetails.trainNumber || record.trainNumber,
+          trainName: freshDetails.trainName || record.trainName,
+          fromStation: freshDetails.fromStation || record.fromStation,
+          toStation: freshDetails.toStation || record.toStation,
+          dateOfJourney: freshDetails.dateOfJourney || record.dateOfJourney,
+          departureTime: freshDetails.departureTime || record.departureTime,
+          arrivalTime: freshDetails.arrivalTime || record.arrivalTime,
+          arrivalDate: freshDetails.arrivalDate || record.arrivalDate,
+          journeyClass: freshDetails.journeyClass || record.journeyClass,
           passengerMappings: updatedMappings
         });
 
@@ -14620,7 +14752,17 @@
               [`${targetField}.coach`]: m.coach,
               [`${targetField}.seatNumber`]: m.seatNumber,
               [`${targetField}.berthType`]: m.berthType,
+              [`${targetField}.berthName`]: m.berthName || (m.berthType ? (BERTH_MAP[m.berthType] || m.berthType) : 'Standard'),
               [`${targetField}.chartPrepared`]: freshDetails.chartPrepared,
+              [`${targetField}.trainNumber`]: freshDetails.trainNumber || record.trainNumber,
+              [`${targetField}.trainName`]: freshDetails.trainName || record.trainName,
+              [`${targetField}.fromStation`]: freshDetails.fromStation || record.fromStation,
+              [`${targetField}.toStation`]: freshDetails.toStation || record.toStation,
+              [`${targetField}.dateOfJourney`]: freshDetails.dateOfJourney || record.dateOfJourney,
+              [`${targetField}.departureTime`]: freshDetails.departureTime || record.departureTime,
+              [`${targetField}.arrivalTime`]: freshDetails.arrivalTime || record.arrivalTime,
+              [`${targetField}.arrivalDate`]: freshDetails.arrivalDate || record.arrivalDate,
+              [`${targetField}.journeyClass`]: freshDetails.journeyClass || record.journeyClass,
               [`${targetField}.updatedAt`]: now
             });
           }
