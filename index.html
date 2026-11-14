@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -740,48 +740,11 @@
               </button>
             </div>
 
-            <!-- Student Profile Photo Upload -->
-            <div class="p-3.5 bg-gradient-to-r from-emerald-50/70 to-teal-50/50 rounded-2xl border border-emerald-100 flex items-center gap-4">
-              <div class="relative shrink-0">
-                <div id="regPhotoPreviewContainer" class="w-16 h-16 rounded-2xl bg-white border-2 border-dashed border-emerald-300 flex items-center justify-center overflow-hidden shadow-xs">
-                  <div id="regPhotoPlaceholder" class="text-center text-slate-400">
-                    <i data-lucide="camera" class="w-6 h-6 mx-auto text-emerald-500"></i>
-                    <span class="text-[9px] font-bold block uppercase tracking-wider text-slate-500 mt-0.5">Photo</span>
-                  </div>
-                  <img id="regPhotoPreviewImg" class="w-full h-full object-cover hidden" alt="Student Preview" />
-                </div>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between gap-2">
-                  <label class="block text-xs font-extrabold text-slate-800">Student ID / Passport Photo</label>
-                  <button type="button" id="btnRemoveRegPhoto" onclick="removeRegistrationPhoto()" class="hidden text-[10px] font-bold text-rose-600 hover:text-rose-700 underline">
-                    Remove
-                  </button>
-                </div>
-                <p class="text-[11px] text-slate-500 mt-0.5 leading-tight">Optional passport/ID photo for your verified digital boarding pass.</p>
-                <div class="mt-2 flex items-center gap-2">
-                  <input type="file" id="inpPhotoFile" accept="image/*" class="hidden" onchange="handleRegistrationPhotoChange(event)" />
-                  <button type="button" onclick="document.getElementById('inpPhotoFile').click()" class="px-3 py-1 rounded-xl bg-white border border-emerald-300 text-emerald-700 hover:bg-emerald-50 text-xs font-bold transition flex items-center gap-1.5 shadow-xs">
-                    <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-                    <span>Select Photo</span>
-                  </button>
-                  <span id="regPhotoFileName" class="text-[11px] text-slate-400 truncate max-w-[140px]">No file chosen</span>
-                </div>
-              </div>
-            </div>
-
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              <div>
+              <div class="sm:col-span-2">
                 <label class="block text-xs font-bold text-slate-700 mb-1">Student Full Name *</label>
                 <input type="text" id="inpName" required oninput="updateDynamicUpiLinks()"
                   placeholder="e.g., Muhammed Sinan"
-                  class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-medium text-slate-900" />
-              </div>
-
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Student ID / Roll No</label>
-                <input type="text" id="inpStudentId"
-                  placeholder="e.g., BCA-2024-042"
                   class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-medium text-slate-900" />
               </div>
 
@@ -792,53 +755,9 @@
               </div>
 
               <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Batch / Academic Year</label>
-                <select id="inpBatch"
-                  class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-semibold text-slate-900">
-                  <option value="3rd Year (2023-2026)" selected>3rd Year (2023-2026)</option>
-                  <option value="2nd Year (2024-2027)">2nd Year (2024-2027)</option>
-                  <option value="1st Year (2025-2028)">1st Year (2025-2028)</option>
-                  <option value="Final Year (2022-2025)">Final Year (2022-2025)</option>
-                  <option value="PG 1st Year">PG 1st Year</option>
-                  <option value="PG 2nd Year">PG 2nd Year</option>
-                  <option value="Faculty / Coordinator">Faculty / Coordinator</option>
-                  <option value="General Batch">General Batch</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp / Mobile *</label>
+                <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp / Phone *</label>
                 <input type="tel" id="inpPhone" required inputmode="numeric" placeholder="10-digit mobile number"
                   class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-medium text-slate-900" />
-              </div>
-
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Blood Group</label>
-                <select id="inpBloodGroup"
-                  class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-semibold text-slate-900">
-                  <option value="" selected>Select Blood Group (Optional)</option>
-                  <option value="O+">O+</option>
-                  <option value="A+">A+</option>
-                  <option value="B+">B+</option>
-                  <option value="AB+">AB+</option>
-                  <option value="O-">O-</option>
-                  <option value="A-">A-</option>
-                  <option value="B-">B-</option>
-                  <option value="AB-">AB-</option>
-                </select>
-              </div>
-
-              <div class="sm:col-span-2 p-3 bg-slate-50 rounded-2xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label class="block text-[11px] font-bold text-slate-600 mb-1">Emergency Contact Person</label>
-                  <input type="text" id="inpEmergencyContactName" placeholder="Guardian / Parent Name"
-                    class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 focus:border-emerald-500 focus:outline-none text-xs text-slate-900" />
-                </div>
-                <div>
-                  <label class="block text-[11px] font-bold text-slate-600 mb-1">Emergency Contact Phone</label>
-                  <input type="tel" id="inpEmergencyContactPhone" inputmode="numeric" placeholder="Guardian 10-digit Mobile"
-                    class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 focus:border-emerald-500 focus:outline-none text-xs text-slate-900" />
-                </div>
               </div>
 
               <div>
@@ -1027,26 +946,17 @@
         <div
           class="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-5 sm:p-7 shadow-lg border border-indigo-800/40">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div class="flex items-center gap-3.5">
-              <div id="pDashAvatarContainer" class="w-14 h-14 rounded-2xl bg-white/10 p-0.5 border border-white/20 shadow-md shrink-0 overflow-hidden flex items-center justify-center">
-                <span id="pDashAvatarPlaceholder" class="font-display font-black text-xl text-emerald-400">ST</span>
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-white p-0.5 shadow-md shrink-0 overflow-hidden">
+                <img id="pDashLogoImg"
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFi3ISGVLtcfjKcyZ1e0JtiIJHb4P1OTjldSIj3H5zNg&s=10"
+                  alt="TripPay Logo" class="w-full h-full object-cover rounded-[14px]" />
               </div>
               <div>
-                <div class="flex items-center gap-2 flex-wrap mb-1">
-                  <span
-                    class="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    Verified Trip Participant
-                  </span>
-                  <span id="pDashStudentIdBadge" class="hidden text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-white/20 text-white border border-white/20">
-                    ID: -
-                  </span>
-                  <span id="pDashBatchBadge" class="hidden text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">
-                    -
-                  </span>
-                  <span id="pDashBloodGroupBadge" class="hidden text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-rose-500/30 text-rose-200 border border-rose-400/30">
-                    🩸 -
-                  </span>
-                </div>
+                <span
+                  class="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 mb-0.5">
+                  Verified Trip Participant
+                </span>
                 <h3 id="pDashName" class="font-display font-extrabold text-xl sm:text-2xl">-</h3>
                 <p class="text-xs text-slate-300">
                   <span id="pDashDept">-</span> • Phone: <span id="pDashPhone" class="font-mono font-bold">-</span>
@@ -1508,11 +1418,6 @@
           </div>
         </div>
 
-        <!-- Quick Department Filter Pills -->
-        <div id="dashDeptPillsContainer" class="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 no-scrollbar">
-          <!-- Dynamically populated by renderDeptFilterPills() -->
-        </div>
-
         <!-- Students Container -->
         <div class="expressive-card border border-slate-200 rounded-3xl overflow-hidden p-3 sm:p-0">
           <div id="emptyStateBox" class="hidden p-12 text-center space-y-3">
@@ -1911,46 +1816,119 @@
         <!-- Fetched Train Summary & Passenger Slot Mapping Card -->
         <div id="pnrFetchedResultContainer" class="hidden space-y-5"></div>
 
-        <!-- Saved PNR Records Roster -->
+        <!-- Saved PNR Records Roster & Advanced Railway Management Suite -->
         <div class="expressive-card border border-slate-200 rounded-3xl p-5 sm:p-6 space-y-4">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-100 pb-3">
             <div>
-              <h4 class="font-display font-extrabold text-base text-slate-900 flex items-center gap-2">
-                <i data-lucide="layers" class="w-4 h-4 text-amber-600"></i>
-                <span>Assigned PNR Records for this Trip</span>
-                <span id="savedPnrCountBadge"
-                  class="ml-1 px-2 py-0.5 rounded-full text-xs bg-amber-100 text-amber-800 font-bold">0</span>
-              </h4>
-              <p class="text-xs text-slate-500">
-                Track status across passenger batches. Use "Refresh Status" to sync latest chart preparation, coach, and
-                berth updates to assigned students.
+              <div class="flex items-center gap-2 flex-wrap">
+                <h4 class="font-display font-extrabold text-base text-slate-900 flex items-center gap-2">
+                  <i data-lucide="layers" class="w-4 h-4 text-amber-600"></i>
+                  <span>Trip Railway & Seat Management Suite</span>
+                  <span id="savedPnrCountBadge"
+                    class="ml-1 px-2 py-0.5 rounded-full text-xs bg-amber-100 text-amber-800 font-bold">0</span>
+                </h4>
+                <button type="button" onclick="toggleUnassignedAuditDrawer()" id="btnAuditUnassignedPassengers"
+                  class="px-2.5 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition flex items-center gap-1.5 shadow-2xs">
+                  <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-rose-600"></i>
+                  <span>Unassigned:</span>
+                  <span id="unassignedPassengersCountBadge" class="font-mono font-extrabold bg-rose-200 text-rose-900 px-1.5 py-0.2 rounded-md text-[10px]">0</span>
+                </button>
+              </div>
+              <p class="text-xs text-slate-500 mt-1">
+                Full lifecycle railway seat management: coach grouping, visual berth arrangements, IRCTC ticket PDFs, and unassigned passenger audit.
               </p>
             </div>
 
-            <!-- Filter & Search Toolbar for Admin PNR Roster -->
-            <div class="flex flex-wrap items-center gap-2.5">
-              <!-- Onward / Return Journey Filter Pills -->
-              <div class="inline-flex items-center bg-slate-100 p-1 rounded-xl text-xs font-bold border border-slate-200">
+            <!-- Global Actions: PDF & Excel Coach Export -->
+            <div class="flex items-center gap-2 flex-wrap">
+              <button type="button" onclick="exportRailwayCoachManifestPDF()"
+                class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs transition"
+                title="Export print-ready IRCTC style Coach Passenger Manifest (PDF)">
+                <i data-lucide="file-text" class="w-3.5 h-3.5 text-amber-400"></i>
+                <span>Export Coach Manifest (PDF)</span>
+              </button>
+              <button type="button" onclick="exportRailwayCoachListExcel()"
+                class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs transition"
+                title="Export complete Coach-wise Passenger List to Excel / CSV">
+                <i data-lucide="download" class="w-3.5 h-3.5 text-white"></i>
+                <span>Export Coach List (Excel)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- View Mode Switcher Toolbar -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+            <div class="inline-flex items-center bg-slate-100 p-1 rounded-xl text-xs font-bold border border-slate-200">
+              <button type="button" id="railViewTab_batches" onclick="setRailwayViewMode('batches')"
+                class="px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-2xs font-extrabold transition flex items-center gap-1.5">
+                <i data-lucide="layers" class="w-3.5 h-3.5 text-amber-600"></i>
+                <span>PNR Batches</span>
+              </button>
+              <button type="button" id="railViewTab_coaches" onclick="setRailwayViewMode('coaches')"
+                class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 font-bold transition flex items-center gap-1.5">
+                <i data-lucide="users" class="w-3.5 h-3.5"></i>
+                <span>Coach Grouping</span>
+              </button>
+              <button type="button" id="railViewTab_visual" onclick="setRailwayViewMode('visual_map')"
+                class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 font-bold transition flex items-center gap-1.5">
+                <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                <span>Visual Berth Map</span>
+              </button>
+            </div>
+
+            <!-- Filter Toolbar: Journey, Status, Coach, and Multi-field Search -->
+            <div class="flex flex-wrap items-center gap-2">
+              <!-- Journey Filter -->
+              <div class="inline-flex items-center bg-slate-100 p-0.5 rounded-xl text-xs font-bold border border-slate-200">
                 <button type="button" id="adminPnrFilterBtn_all" onclick="setPnrRosterJourneyFilter('all')"
-                  class="px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-2xs font-extrabold transition">
+                  class="px-2 py-1 rounded-lg bg-white text-slate-900 shadow-2xs font-extrabold transition">
                   All
                 </button>
                 <button type="button" id="adminPnrFilterBtn_onward" onclick="setPnrRosterJourneyFilter('onward')"
-                  class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-bold transition flex items-center gap-1">
+                  class="px-2 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-bold transition flex items-center gap-1">
                   <span>🚂 Onward</span>
                 </button>
                 <button type="button" id="adminPnrFilterBtn_return" onclick="setPnrRosterJourneyFilter('return')"
-                  class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-bold transition flex items-center gap-1">
+                  class="px-2 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-bold transition flex items-center gap-1">
                   <span>🔄 Return</span>
                 </button>
               </div>
 
-              <!-- Student Name Search Input -->
-              <div class="relative w-full sm:w-60">
+              <!-- Status Filter Pills -->
+              <div class="inline-flex items-center bg-slate-100 p-0.5 rounded-xl text-xs font-bold border border-slate-200">
+                <button type="button" id="adminPnrStatusFilterBtn_all" onclick="setRailwayStatusFilter('all')"
+                  class="px-2 py-1 rounded-lg bg-white text-slate-900 shadow-2xs font-extrabold transition">
+                  All Status
+                </button>
+                <button type="button" id="adminPnrStatusFilterBtn_cnf" onclick="setRailwayStatusFilter('CNF')"
+                  class="px-2 py-1 rounded-lg text-emerald-700 hover:text-emerald-900 font-bold transition flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span>CNF</span>
+                </button>
+                <button type="button" id="adminPnrStatusFilterBtn_rac" onclick="setRailwayStatusFilter('RAC')"
+                  class="px-2 py-1 rounded-lg text-amber-700 hover:text-amber-900 font-bold transition flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                  <span>RAC</span>
+                </button>
+                <button type="button" id="adminPnrStatusFilterBtn_wl" onclick="setRailwayStatusFilter('WL')"
+                  class="px-2 py-1 rounded-lg text-rose-700 hover:text-rose-900 font-bold transition flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                  <span>WL</span>
+                </button>
+              </div>
+
+              <!-- Coach Filter Dropdown -->
+              <select id="adminPnrCoachFilterSelect" onchange="setRailwayCoachFilter(this.value)"
+                class="bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-700 shadow-2xs focus:outline-none focus:ring-1 focus:ring-amber-500">
+                <option value="all">All Coaches</option>
+              </select>
+
+              <!-- Unified Multi-Field Search Input -->
+              <div class="relative w-full sm:w-56">
                 <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
                 <input type="text" id="adminPnrStudentSearchInput" oninput="handleAdminPnrStudentSearch(this.value)"
-                  placeholder="Search student, seat, phone..."
-                  class="w-full pl-8 pr-7 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                  placeholder="Search name, PNR, coach, seat #..."
+                  class="w-full pl-8 pr-7 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs" />
                 <button type="button" id="adminPnrSearchClearBtn" onclick="clearAdminPnrStudentSearch()"
                   class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
                   <i data-lucide="x" class="w-3.5 h-3.5"></i>
@@ -1959,8 +1937,58 @@
             </div>
           </div>
 
+          <!-- Collapsible Unassigned Passengers Audit Drawer -->
+          <div id="unassignedAuditDrawer" class="hidden p-4 rounded-2xl bg-gradient-to-br from-rose-50/70 via-white to-amber-50/40 border border-rose-200 space-y-3.5 animate-in fade-in duration-200">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rose-100 pb-2.5">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold">
+                  <i data-lucide="user-x" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h5 class="font-display font-extrabold text-sm text-slate-900">Unassigned Passengers Audit</h5>
+                  <p class="text-[11px] text-slate-500">Registered participants who lack onward or return railway ticket allocations</p>
+                </div>
+              </div>
+
+              <!-- Unassigned Filter Pills -->
+              <div class="inline-flex items-center bg-white p-0.5 rounded-xl text-[11px] font-bold border border-rose-200 shadow-2xs">
+                <button type="button" id="unassignedFilterBtn_all" onclick="setUnassignedAuditFilter('all')"
+                  class="px-2.5 py-1 rounded-lg bg-rose-600 text-white font-extrabold transition">
+                  All Missing (<span id="unassignedMetric_all">0</span>)
+                </button>
+                <button type="button" id="unassignedFilterBtn_onward" onclick="setUnassignedAuditFilter('onward')"
+                  class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-rose-700 font-bold transition">
+                  No Onward (<span id="unassignedMetric_onward">0</span>)
+                </button>
+                <button type="button" id="unassignedFilterBtn_return" onclick="setUnassignedAuditFilter('return')"
+                  class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-rose-700 font-bold transition">
+                  No Return (<span id="unassignedMetric_return">0</span>)
+                </button>
+              </div>
+            </div>
+
+            <!-- Unassigned Student List Container -->
+            <div id="unassignedStudentsListContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 max-h-72 overflow-y-auto pr-1">
+              <!-- Dynamically populated by renderUnassignedAuditDrawer() -->
+            </div>
+          </div>
+
+          <!-- Hidden File Input for PNR Ticket PDF Upload -->
+          <input type="file" id="pnrTicketPdfFileInput" accept=".pdf,image/*" onchange="handlePnrTicketPdfFileSelected(event)" class="hidden" />
+
+          <!-- VIEW 1: Saved PNR Records Roster (Batch View) -->
           <div id="savedPnrListContainer" class="space-y-4">
             <!-- Dynamic saved PNR cards or empty state -->
+          </div>
+
+          <!-- VIEW 2: Coach-Wise Passenger Grouping View -->
+          <div id="coachGroupingContainer" class="hidden space-y-4">
+            <!-- Populated dynamically by renderCoachGroupingView() -->
+          </div>
+
+          <!-- VIEW 3: Visual Coach Berth Map (2D Bay Layout) -->
+          <div id="visualCoachMapContainer" class="hidden space-y-4">
+            <!-- Populated dynamically by renderVisualCoachMapView() -->
           </div>
         </div>
 
@@ -2500,43 +2528,42 @@
 
           <!-- 2. Passenger & Payment Details Body -->
           <div style="padding: 20px 24px; background:#ffffff; display:flex; flex-direction:column; gap:16px;">
-            <!-- Passenger Primary Row with Photo ID -->
-            <div style="display:flex; align-items:center; gap:16px; border-bottom:1px solid #f1f5f9; padding-bottom:14px; flex-wrap:wrap;">
-              <!-- Student Photo Avatar Box -->
-              <div id="bpPhotoContainer" style="width:68px; height:68px; border-radius:16px; overflow:hidden; border:2px solid #e2e8f0; background:#f8fafc; display:flex; align-items:center; justify-content:center; shrink-0; box-shadow:0 2px 6px rgba(0,0,0,0.06);">
-                <span id="bpPhotoPlaceholder" style="font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:800; color:#059669;">ST</span>
-              </div>
-
-              <!-- Passenger Identity & Academic Meta -->
-              <div style="flex:1; min-width:200px;">
-                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:3px;">
-                  <span id="bpStudentIdBadge" style="display:none; font-family:monospace; font-size:10px; font-weight:800; background:#0f172a; color:#fff; padding:2px 7px; border-radius:6px; letter-spacing:0.05em;">
-                    ID: -
-                  </span>
-                  <span id="bpBatchYear" style="display:none; font-size:10px; font-weight:700; background:#f1f5f9; color:#475569; padding:2px 7px; border-radius:6px; border:1px solid #e2e8f0;">
-                    -
-                  </span>
-                  <span id="bpBloodGroupBadge" style="display:none; font-size:10px; font-weight:800; background:#fee2e2; color:#b91c1c; padding:2px 7px; border-radius:6px; border:1px solid #fecaca;">
-                    🩸 -
-                  </span>
-                </div>
-                <h4 id="bpStudentName" style="font-family:'Plus Jakarta Sans',sans-serif; font-size:17px; font-weight:800; color:#0f172a; margin:0 0 2px; line-height:1.2;">
+            <!-- Passenger Primary Row -->
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; align-items:center;">
+              <div style="grid-column: span 1;">
+                <p
+                  style="font-size:9px; font-family:monospace; text-transform:uppercase; letter-spacing:0.1em; color:#94a3b8; font-weight:700; margin:0 0 3px;">
+                  Passenger Name</p>
+                <p id="bpStudentName"
+                  style="font-family:'Plus Jakarta Sans',sans-serif; font-size:16px; font-weight:800; color:#0f172a; margin:0; word-break:break-word; overflow-wrap:break-word; line-height:1.25;">
                   Muhammed Sinan
-                </h4>
-                <p style="font-size:12px; color:#475569; margin:0; font-weight:600;">
-                  <span id="bpDepartment" style="color:#059669; font-weight:800;">BCA</span> • <span id="bpPhone" style="font-family:monospace; font-weight:700; color:#334155;">+91 9876543210</span>
-                </p>
-                <p id="bpEmergencyContact" style="display:none; font-size:10px; color:#64748b; margin:2px 0 0; font-weight:600;">
-                  Emergency: <span id="bpEmergencyContactDetails" class="font-bold text-slate-800">-</span>
                 </p>
               </div>
-
-              <!-- 6-Digit Access Pass Badge -->
-              <div style="background:linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); border:1px solid #c7d2fe; border-radius:18px; padding:8px 14px; text-align:center; min-width:110px; shrink-0;">
-                <p style="font-size:8px; font-family:monospace; text-transform:uppercase; letter-spacing:0.15em; color:#4f46e5; font-weight:800; margin:0 0 2px;">
-                  Security Pass
+              <div>
+                <p
+                  style="font-size:9px; font-family:monospace; text-transform:uppercase; letter-spacing:0.1em; color:#94a3b8; font-weight:700; margin:0 0 3px;">
+                  Department</p>
+                <p id="bpDepartment"
+                  style="font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:800; color:#059669; margin:0; overflow-wrap:break-word;">
+                  BCA
                 </p>
-                <p id="bpAccessCode" style="font-family:monospace; font-size:22px; font-weight:900; color:#3730a3; letter-spacing:0.15em; margin:0;">
+              </div>
+              <div>
+                <p
+                  style="font-size:9px; font-family:monospace; text-transform:uppercase; letter-spacing:0.1em; color:#94a3b8; font-weight:700; margin:0 0 3px;">
+                  WhatsApp / Mobile</p>
+                <p id="bpPhone"
+                  style="font-family:monospace; font-size:13px; font-weight:700; color:#1e293b; margin:0;">
+                  +91 9876543210
+                </p>
+              </div>
+              <div
+                style="background:rgba(238,242,255,0.9); border:1px solid #c7d2fe; border-radius:16px; padding:8px 10px; text-align:center;">
+                <p
+                  style="font-size:8px; font-family:monospace; text-transform:uppercase; letter-spacing:0.15em; color:#4f46e5; font-weight:800; margin:0 0 3px;">
+                  6-Digit Access Pass</p>
+                <p id="bpAccessCode"
+                  style="font-family:monospace; font-size:20px; font-weight:800; color:#3730a3; letter-spacing:0.15em; margin:0;">
                   748291
                 </p>
               </div>
@@ -3477,6 +3504,69 @@
       <div class="p-3 bg-slate-50 border-t border-slate-100 flex justify-end">
         <button type="button" onclick="closeSeatInspectorPopup()"
           class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold text-xs transition">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ORIGINAL TRAIN TICKET PDF VIEWER & DOWNLOAD -->
+  <div id="ticketPdfViewerModal" class="fixed inset-0 z-60 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 no-print">
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div class="px-5 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center text-amber-400 shrink-0">
+            <i data-lucide="file-text" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 id="ticketPdfModalTitle" class="font-display font-extrabold text-sm sm:text-base text-white">Original Train e-Ticket</h3>
+            <p id="ticketPdfModalSubtitle" class="text-xs text-slate-400 font-mono">PNR: -</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" id="ticketPdfModalDownloadBtn" class="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black flex items-center gap-1.5 shadow-sm transition">
+            <i data-lucide="download" class="w-4 h-4 text-slate-950"></i>
+            <span>Download Ticket</span>
+          </button>
+          <button type="button" onclick="closeTicketPdfViewerModal()" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 flex items-center justify-center transition">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+      <div class="flex-1 bg-slate-100 p-2 sm:p-4 overflow-hidden relative">
+        <iframe id="ticketPdfViewerFrame" class="w-full h-full rounded-2xl border border-slate-200 bg-white" src="" frameborder="0"></iframe>
+        <div id="ticketPdfFallbackBox" class="hidden w-full h-full overflow-auto flex items-center justify-center bg-slate-900 p-4 rounded-2xl">
+          <img id="ticketPdfFallbackImg" src="" alt="Train Ticket Preview" class="max-w-full max-h-full object-contain rounded-xl" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADMIN COACH BERTH INSPECTOR POPOVER -->
+  <div id="adminBerthInspectorModal" class="fixed inset-0 z-60 hidden bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div class="p-5 bg-gradient-to-r from-amber-600 to-amber-700 text-white flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div id="adminBerthPopupSeatBadge" class="w-11 h-11 rounded-2xl bg-white/20 border border-white/30 flex items-center justify-center text-white font-black text-lg font-mono">
+            34
+          </div>
+          <div>
+            <h4 id="adminBerthPopupTitle" class="font-display font-extrabold text-base text-white">Coach S5 • Berth 34</h4>
+            <p id="adminBerthPopupDesc" class="text-xs text-amber-100 font-bold">Lower Berth (LB)</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeAdminBerthInspector()" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-white transition flex items-center justify-center">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div id="adminBerthPopupBody" class="p-5 space-y-3.5 text-xs text-slate-700">
+        <!-- Dynamically rendered -->
+      </div>
+
+      <div class="p-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+        <div id="adminBerthPopupPnrTag" class="text-[11px] font-mono font-bold text-slate-500">PNR: -</div>
+        <button type="button" onclick="closeAdminBerthInspector()" class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold text-xs transition">
           Close
         </button>
       </div>
@@ -4479,99 +4569,22 @@
       <form onsubmit="handleAdminSaveStudentSubmit(event)" class="space-y-3.5">
         <input type="hidden" id="editStudentId" />
 
-        <!-- Student Photo Preview & Upload Box -->
-        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center gap-3">
-          <div id="editPhotoPreviewContainer" class="w-14 h-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
-            <span id="editPhotoPlaceholder" class="font-display font-black text-emerald-600 text-base">ST</span>
-            <img id="editPhotoPreviewImg" class="w-full h-full object-cover hidden" alt="Student Preview" />
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-slate-800">Student Profile Photo</span>
-              <button type="button" id="btnRemoveEditPhoto" onclick="removeAdminEditPhoto()" class="hidden text-[10px] font-bold text-rose-600 hover:text-rose-700 underline">
-                Remove
-              </button>
-            </div>
-            <p class="text-[10px] text-slate-500 mt-0.5">Passport-style photo displayed on Boarding Pass</p>
-            <div class="mt-1.5 flex items-center gap-2">
-              <input type="file" id="editPhotoFileInput" accept="image/*" class="hidden" onchange="handleAdminEditPhotoChange(event)" />
-              <button type="button" onclick="document.getElementById('editPhotoFileInput').click()" class="px-2.5 py-1 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 text-[11px] font-bold flex items-center gap-1 shadow-xs">
-                <i data-lucide="camera" class="w-3 h-3 text-emerald-600"></i>
-                <span>Choose Photo</span>
-              </button>
-              <span id="editPhotoStatusText" class="text-[10px] text-slate-400 truncate max-w-[120px]">No photo</span>
-            </div>
-          </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Student Full Name *</label>
+          <input type="text" id="editName" required placeholder="Student Name"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 font-medium" />
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Student Full Name *</label>
-            <input type="text" id="editName" required placeholder="Student Name"
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 font-medium" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Student ID / Roll No</label>
-            <input type="text" id="editStudentIdNumber" placeholder="e.g., BCA-2024-042"
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 font-medium" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Department *</label>
             <select id="editDept" required
               class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900"></select>
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Batch / Academic Year</label>
-            <select id="editBatch"
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800">
-              <option value="3rd Year (2023-2026)">3rd Year (2023-2026)</option>
-              <option value="2nd Year (2024-2027)">2nd Year (2024-2027)</option>
-              <option value="1st Year (2025-2028)">1st Year (2025-2028)</option>
-              <option value="Final Year (2022-2025)">Final Year (2022-2025)</option>
-              <option value="PG 1st Year">PG 1st Year</option>
-              <option value="PG 2nd Year">PG 2nd Year</option>
-              <option value="Faculty / Coordinator">Faculty / Coordinator</option>
-              <option value="General Batch">General Batch</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Phone Number *</label>
             <input type="tel" id="editPhone" required inputmode="numeric" placeholder="10-digit Mobile"
               class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Blood Group</label>
-            <select id="editBloodGroup"
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800">
-              <option value="">Not Specified</option>
-              <option value="O+">O+</option>
-              <option value="A+">A+</option>
-              <option value="B+">B+</option>
-              <option value="AB+">AB+</option>
-              <option value="O-">O-</option>
-              <option value="A-">A-</option>
-              <option value="B-">B-</option>
-              <option value="AB-">AB-</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-[11px] font-bold text-slate-600 mb-1">Emergency Contact Person</label>
-            <input type="text" id="editEmergencyName" placeholder="Guardian Name"
-              class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-900" />
-          </div>
-          <div>
-            <label class="block text-[11px] font-bold text-slate-600 mb-1">Emergency Phone Number</label>
-            <input type="tel" id="editEmergencyPhone" inputmode="numeric" placeholder="Emergency Mobile"
-              class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-900" />
           </div>
         </div>
 
@@ -5950,165 +5963,6 @@
     }
     let activeShareTargetTripId = currentTripId;
 
-    // =========================================================================
-    // STUDENT IDENTITY, PHOTO AVATARS & CLIENT-SIDE COMPRESSION ENGINE
-    // =========================================================================
-    let activeRegisteredPhotoDataUrl = null;
-    let activeAdminEditPhotoDataUrl = null;
-
-    async function compressImageFileToDataUrl(file, maxWidth = 260, maxHeight = 260, quality = 0.82) {
-      return new Promise((resolve, reject) => {
-        if (!file || !file.type || !file.type.startsWith('image/')) {
-          return reject(new Error('Selected file is not a valid image.'));
-        }
-        const reader = new FileReader();
-        reader.onerror = () => reject(new Error('Failed to read image file.'));
-        reader.onload = (e) => {
-          const img = new Image();
-          img.onerror = () => reject(new Error('Failed to process image data.'));
-          img.onload = () => {
-            let width = img.width;
-            let height = img.height;
-            if (width > maxWidth || height > maxHeight) {
-              if (width > height) {
-                height = Math.round((height * maxWidth) / width);
-                width = maxWidth;
-              } else {
-                width = Math.round((width * maxHeight) / height);
-                height = maxHeight;
-              }
-            }
-            const canvas = document.createElement('canvas');
-            canvas.width = Math.max(1, width);
-            canvas.height = Math.max(1, height);
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            try {
-              const webpData = canvas.toDataURL('image/webp', quality);
-              if (webpData && webpData.startsWith('data:image/webp')) {
-                return resolve(webpData);
-              }
-            } catch (_) {}
-            resolve(canvas.toDataURL('image/jpeg', quality));
-          };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-
-    function getStudentInitialsAvatar(name = 'Student', sizeClass = 'w-9 h-9', textClass = 'text-xs') {
-      const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
-      const initials = parts.length >= 2
-        ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-        : (parts[0] ? parts[0].slice(0, 2).toUpperCase() : 'ST');
-      const gradients = [
-        'from-emerald-500 to-teal-600',
-        'from-blue-500 to-indigo-600',
-        'from-violet-500 to-purple-600',
-        'from-amber-500 to-orange-600',
-        'from-rose-500 to-pink-600',
-        'from-cyan-500 to-blue-600'
-      ];
-      let sum = 0;
-      for (let i = 0; i < (name || '').length; i++) sum += name.charCodeAt(i);
-      const grad = gradients[sum % gradients.length];
-      return `<div class="${sizeClass} rounded-2xl bg-gradient-to-tr ${grad} text-white font-display font-extrabold flex items-center justify-center shrink-0 shadow-xs select-none ${textClass}">${escapeHtml(initials)}</div>`;
-    }
-
-    function getStudentAvatarHtml(student, sizeClass = 'w-9 h-9', textClass = 'text-xs') {
-      if (student && student.photoUrl) {
-        return `<img src="${student.photoUrl}" alt="${escapeHtml(student.studentName || 'Student')}" class="${sizeClass} rounded-2xl object-cover border border-slate-200 shadow-xs shrink-0" onerror="this.onerror=null;this.parentElement.innerHTML=getStudentInitialsAvatar('${escapeHtml(student.studentName || 'S')}', '${sizeClass}', '${textClass}');" />`;
-      }
-      return getStudentInitialsAvatar(student ? student.studentName : 'S', sizeClass, textClass);
-    }
-
-    async function handleRegistrationPhotoChange(e) {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      try {
-        showToast('Compressing photo...', 'info');
-        const dataUrl = await compressImageFileToDataUrl(file, 260, 260, 0.82);
-        activeRegisteredPhotoDataUrl = dataUrl;
-        const imgEl = document.getElementById('regPhotoPreviewImg');
-        const phEl = document.getElementById('regPhotoPlaceholder');
-        const fnEl = document.getElementById('regPhotoFileName');
-        const btnRem = document.getElementById('btnRemoveRegPhoto');
-        if (imgEl && phEl) {
-          imgEl.src = dataUrl;
-          imgEl.classList.remove('hidden');
-          phEl.classList.add('hidden');
-        }
-        if (fnEl) fnEl.textContent = file.name || 'Photo selected';
-        if (btnRem) btnRem.classList.remove('hidden');
-        showToast('Photo ready for boarding pass!', 'success');
-      } catch (err) {
-        console.error(err);
-        showToast('Failed to process photo. Please choose another image.', 'error');
-      }
-    }
-
-    function removeRegistrationPhoto() {
-      activeRegisteredPhotoDataUrl = null;
-      const inp = document.getElementById('inpPhotoFile');
-      if (inp) inp.value = '';
-      const imgEl = document.getElementById('regPhotoPreviewImg');
-      const phEl = document.getElementById('regPhotoPlaceholder');
-      const fnEl = document.getElementById('regPhotoFileName');
-      const btnRem = document.getElementById('btnRemoveRegPhoto');
-      if (imgEl && phEl) {
-        imgEl.src = '';
-        imgEl.classList.add('hidden');
-        phEl.classList.remove('hidden');
-      }
-      if (fnEl) fnEl.textContent = 'No file chosen';
-      if (btnRem) btnRem.classList.add('hidden');
-    }
-
-    async function handleAdminEditPhotoChange(e) {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      try {
-        showToast('Compressing photo...', 'info');
-        const dataUrl = await compressImageFileToDataUrl(file, 260, 260, 0.82);
-        activeAdminEditPhotoDataUrl = dataUrl;
-        const imgEl = document.getElementById('editPhotoPreviewImg');
-        const phEl = document.getElementById('editPhotoPlaceholder');
-        const statEl = document.getElementById('editPhotoStatusText');
-        const btnRem = document.getElementById('btnRemoveEditPhoto');
-        if (imgEl && phEl) {
-          imgEl.src = dataUrl;
-          imgEl.classList.remove('hidden');
-          phEl.classList.add('hidden');
-        }
-        if (statEl) statEl.textContent = file.name || 'Photo selected';
-        if (btnRem) btnRem.classList.remove('hidden');
-        showToast('Photo uploaded for student!', 'success');
-      } catch (err) {
-        console.error(err);
-        showToast('Failed to process photo.', 'error');
-      }
-    }
-
-    function removeAdminEditPhoto() {
-      activeAdminEditPhotoDataUrl = '';
-      const inp = document.getElementById('editPhotoFileInput');
-      if (inp) inp.value = '';
-      const imgEl = document.getElementById('editPhotoPreviewImg');
-      const phEl = document.getElementById('editPhotoPlaceholder');
-      const statEl = document.getElementById('editPhotoStatusText');
-      const btnRem = document.getElementById('btnRemoveEditPhoto');
-      if (imgEl && phEl) {
-        imgEl.src = '';
-        imgEl.classList.add('hidden');
-        phEl.classList.remove('hidden');
-      }
-      if (statEl) statEl.textContent = 'Photo removed';
-      if (btnRem) btnRem.classList.add('hidden');
-    }
-
     let tripConfig = {
       tripTitle: 'Annual College Industrial & Leisure Trip',
       destination: 'Munnar, Vagamon & Kochi',
@@ -6960,60 +6814,6 @@
       document.getElementById('bpDepartment').textContent = student.department || '-';
       document.getElementById('bpPhone').textContent = `+91 ${normalizePhone(student.phone)}`;
       document.getElementById('bpAccessCode').textContent = student.accessCode || 'PENDING';
-
-      // Render Student Photo / Avatar on Boarding Pass
-      const bpPhotoContainer = document.getElementById('bpPhotoContainer');
-      if (bpPhotoContainer) {
-        if (student.photoUrl) {
-          bpPhotoContainer.innerHTML = `<img src="${student.photoUrl}" alt="${escapeHtml(student.studentName || 'Student')}" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<span style=\\'font-family:Plus Jakarta Sans,sans-serif; font-size:22px; font-weight:800; color:#059669;\\'>${escapeHtml((student.studentName||'ST').slice(0,2).toUpperCase())}</span>';" />`;
-        } else {
-          const initials = (student.studentName || 'ST').trim().split(/\s+/).map(p => p[0]).join('').slice(0, 2).toUpperCase() || 'ST';
-          bpPhotoContainer.innerHTML = `<span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:800; color:#059669;">${escapeHtml(initials)}</span>`;
-        }
-      }
-
-      // Render ID, Batch, Blood Group & Emergency Badges
-      const bpStudentIdBadge = document.getElementById('bpStudentIdBadge');
-      if (bpStudentIdBadge) {
-        if (student.studentId) {
-          bpStudentIdBadge.style.display = 'inline-block';
-          bpStudentIdBadge.textContent = `ID: ${student.studentId}`;
-        } else {
-          bpStudentIdBadge.style.display = 'none';
-        }
-      }
-
-      const bpBatchYear = document.getElementById('bpBatchYear');
-      if (bpBatchYear) {
-        if (student.batchYear) {
-          bpBatchYear.style.display = 'inline-block';
-          bpBatchYear.textContent = student.batchYear;
-        } else {
-          bpBatchYear.style.display = 'none';
-        }
-      }
-
-      const bpBloodGroupBadge = document.getElementById('bpBloodGroupBadge');
-      if (bpBloodGroupBadge) {
-        if (student.bloodGroup) {
-          bpBloodGroupBadge.style.display = 'inline-block';
-          bpBloodGroupBadge.textContent = `🩸 ${student.bloodGroup}`;
-        } else {
-          bpBloodGroupBadge.style.display = 'none';
-        }
-      }
-
-      const bpEmergencyContact = document.getElementById('bpEmergencyContact');
-      const bpEmergencyContactDetails = document.getElementById('bpEmergencyContactDetails');
-      if (bpEmergencyContact && bpEmergencyContactDetails) {
-        if (student.emergencyContactName || student.emergencyContactPhone) {
-          bpEmergencyContact.style.display = 'block';
-          const parts = [student.emergencyContactName, student.emergencyContactPhone ? `+91 ${student.emergencyContactPhone}` : ''].filter(Boolean);
-          bpEmergencyContactDetails.textContent = parts.join(' • ');
-        } else {
-          bpEmergencyContact.style.display = 'none';
-        }
-      }
 
       document.getElementById('bpTotalFee').textContent = formatINR(totalFee);
       document.getElementById('bpAmountPaid').textContent = formatINR(paid);
@@ -8153,15 +7953,9 @@
     async function handleStudentFormSubmit(e) {
       e.preventDefault();
       const studentName = document.getElementById('inpName').value.trim();
-      const studentId = (document.getElementById('inpStudentId')?.value || '').trim();
       const department = document.getElementById('inpDept').value.trim() || (tripConfig.departments[0] || 'General');
-      const batchYear = document.getElementById('inpBatch')?.value || '';
       const rawPhone = document.getElementById('inpPhone').value.trim();
       const cleanPhone = normalizePhone(rawPhone);
-      const bloodGroup = document.getElementById('inpBloodGroup')?.value || '';
-      const emergencyContactName = (document.getElementById('inpEmergencyContactName')?.value || '').trim();
-      const emergencyContactPhone = normalizePhone(document.getElementById('inpEmergencyContactPhone')?.value || '');
-      const photoUrl = activeRegisteredPhotoDataUrl || '';
       const rawAmtVal = document.getElementById('inpAmount')?.value;
       const amountPaid = (rawAmtVal !== '' && rawAmtVal !== null && !isNaN(Number(rawAmtVal))) ? Math.max(0, Number(rawAmtVal)) : (Number(tripConfig.advanceAmount) || 500);
       const paymentApp = document.getElementById('inpApp').value || 'Google Pay';
@@ -8188,7 +7982,7 @@
           const updatedRemarks = `${existingRecord.remarks ? existingRecord.remarks + ' + ' : ''}Paid ${formatINR(amountPaid)} via ${paymentApp}${userRemarks ? ' (' + userRemarks + ')' : ''}`;
 
           const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', existingRecord.id);
-          const updatePayload = {
+          await updateDoc(docRef, {
             tripId: existingRecord.tripId || currentTripId,
             studentName,
             department,
@@ -8198,16 +7992,7 @@
             remarks: updatedRemarks,
             status: 'Pending Verification',
             createdDateStr: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
-          };
-
-          if (studentId) updatePayload.studentId = studentId;
-          if (batchYear) updatePayload.batchYear = batchYear;
-          if (bloodGroup) updatePayload.bloodGroup = bloodGroup;
-          if (emergencyContactName) updatePayload.emergencyContactName = emergencyContactName;
-          if (emergencyContactPhone) updatePayload.emergencyContactPhone = emergencyContactPhone;
-          if (photoUrl) updatePayload.photoUrl = photoUrl;
-
-          await updateDoc(docRef, updatePayload);
+          });
 
           logSecurityEvent('PAYMENT_UPDATE', cleanPhone, `Added payment of ₹${amountPaid}`);
 
@@ -8231,14 +8016,8 @@
             tripId: currentTripId,
             receiptCode: 'TRP-' + Date.now().toString().slice(-6),
             studentName,
-            studentId,
             department,
-            batchYear,
             phone: cleanPhone,
-            bloodGroup,
-            emergencyContactName,
-            emergencyContactPhone,
-            photoUrl,
             amountPaid,
             paymentApp,
             remarks: userRemarks || (amountPaid === 0 ? 'Registered (Pay Balance Later)' : (balanceDue > 0 ? `Advance Paid (${formatINR(amountPaid)})` : 'Full Fee Paid')),
@@ -8275,7 +8054,6 @@
         }
 
         document.getElementById('studentPayForm').reset();
-        removeRegistrationPhoto();
         renderDepartmentDropdowns();
         selectPaymentPreset('advance');
       } catch (err) {
@@ -8955,47 +8733,6 @@
       document.getElementById('pDashDept').textContent = loggedInParticipant.department;
       document.getElementById('pDashPhone').textContent = loggedInParticipant.phone;
 
-      // Update Participant Avatar & Academic Meta Badges
-      const avatarBox = document.getElementById('pDashAvatarContainer');
-      if (avatarBox) {
-        if (loggedInParticipant.photoUrl) {
-          avatarBox.innerHTML = `<img src="${loggedInParticipant.photoUrl}" alt="${escapeHtml(loggedInParticipant.studentName || 'Student')}" class="w-full h-full object-cover rounded-[14px]" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\\'font-display font-black text-xl text-emerald-400\\'>${escapeHtml((loggedInParticipant.studentName||'ST').slice(0,2).toUpperCase())}</span>';" />`;
-        } else {
-          const initials = (loggedInParticipant.studentName || 'ST').trim().slice(0, 2).toUpperCase();
-          avatarBox.innerHTML = `<span class="font-display font-black text-xl text-emerald-400">${escapeHtml(initials)}</span>`;
-        }
-      }
-
-      const idBadge = document.getElementById('pDashStudentIdBadge');
-      if (idBadge) {
-        if (loggedInParticipant.studentId) {
-          idBadge.textContent = `ID: ${loggedInParticipant.studentId}`;
-          idBadge.classList.remove('hidden');
-        } else {
-          idBadge.classList.add('hidden');
-        }
-      }
-
-      const batchBadge = document.getElementById('pDashBatchBadge');
-      if (batchBadge) {
-        if (loggedInParticipant.batchYear) {
-          batchBadge.textContent = loggedInParticipant.batchYear;
-          batchBadge.classList.remove('hidden');
-        } else {
-          batchBadge.classList.add('hidden');
-        }
-      }
-
-      const bloodBadge = document.getElementById('pDashBloodGroupBadge');
-      if (bloodBadge) {
-        if (loggedInParticipant.bloodGroup) {
-          bloodBadge.textContent = `🩸 ${loggedInParticipant.bloodGroup}`;
-          bloodBadge.classList.remove('hidden');
-        } else {
-          bloodBadge.classList.add('hidden');
-        }
-      }
-
       const totalFee = Number(tripConfig.tripAmount) || 1500;
       const due = getBalanceDue(loggedInParticipant);
 
@@ -9610,47 +9347,20 @@
       renderDashboard();
     }
 
-    function setDashboardDeptFilter(dept = 'All') {
-      window.activeDeptFilter = dept;
-      const deptSelect = document.getElementById('dashDeptFilter');
-      if (deptSelect) deptSelect.value = dept;
-      renderDashboard();
-    }
-
     function updateDeptFilterOptions() {
       const deptSelect = document.getElementById('dashDeptFilter');
-      const curVal = window.activeDeptFilter || (deptSelect ? deptSelect.value : 'All') || 'All';
+      if (!deptSelect) return;
+      const curVal = deptSelect.value || window.activeDeptFilter || 'All';
       const uniqueDepts = Array.from(new Set([...(tripConfig.departments || []), ...payments.map(p => p.department).filter(Boolean)])).sort();
 
-      if (deptSelect) {
-        const newHtml = `<option value="All">All Departments</option>` +
-          uniqueDepts.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+      const newHtml = `<option value="All">All Departments</option>` +
+        uniqueDepts.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
 
-        if (deptSelect.innerHTML !== newHtml) {
-          deptSelect.innerHTML = newHtml;
-        }
+      if (deptSelect.innerHTML !== newHtml) {
+        deptSelect.innerHTML = newHtml;
         if (uniqueDepts.includes(curVal) || curVal === 'All') {
           deptSelect.value = curVal;
         }
-      }
-
-      // Render one-tap Department Quick Filter Pills
-      const pillsBox = document.getElementById('dashDeptPillsContainer');
-      if (pillsBox) {
-        const allDepts = ['All', ...uniqueDepts];
-        pillsBox.innerHTML = allDepts.map(d => {
-          const isActive = (d === curVal);
-          const count = d === 'All' ? payments.length : payments.filter(p => p.department === d).length;
-          return `
-            <button type="button" onclick="setDashboardDeptFilter('${escapeHtml(d)}')"
-              class="px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${isActive
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'}">
-              <span>${escapeHtml(d)}</span>
-              <span class="text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'} font-extrabold font-mono">${count}</span>
-            </button>
-          `;
-        }).join('');
       }
     }
 
@@ -9694,11 +9404,6 @@
         const matchSearch =
           !query ||
           (p.studentName || '').toLowerCase().includes(query) ||
-          (p.studentId || '').toLowerCase().includes(query) ||
-          (p.batchYear || '').toLowerCase().includes(query) ||
-          (p.bloodGroup || '').toLowerCase().includes(query) ||
-          (p.emergencyContactName || '').toLowerCase().includes(query) ||
-          (p.emergencyContactPhone || '').includes(query) ||
           (p.phone || '').includes(query) ||
           (p.department || '').toLowerCase().includes(query) ||
           (p.receiptCode || '').toLowerCase().includes(query) ||
@@ -9727,32 +9432,21 @@
         const bal = getBalanceDue(s);
         const isVer = s.status === 'Verified';
         const isBoarded = Boolean(s.boarded);
-        const avatarHtml = getStudentAvatarHtml(s, 'w-10 h-10', 'text-xs');
         return `
           <tr class="hover:bg-slate-50/80 transition group">
             <td class="py-3.5 px-4 font-mono text-xs text-slate-400 font-bold">${idx + 1}</td>
             <td class="py-3.5 px-4">
-              <div class="flex items-center gap-3">
-                ${avatarHtml}
-                <div class="min-w-0">
-                  <div class="flex items-center gap-1.5 flex-wrap">
-                    <span class="font-bold text-slate-900 text-sm leading-tight">${escapeHtml(s.studentName)}</span>
-                    ${s.studentId ? `<span class="font-mono text-[10px] font-extrabold bg-slate-900 text-white px-1.5 py-0.2 rounded-md">ID: ${escapeHtml(s.studentId)}</span>` : ''}
-                    ${s.bloodGroup ? `<span class="text-[10px] font-extrabold bg-rose-50 text-rose-700 border border-rose-200 px-1.5 py-0.2 rounded-md">🩸 ${escapeHtml(s.bloodGroup)}</span>` : ''}
-                  </div>
-                  <span class="font-mono text-[10px] text-slate-400 block mt-0.5">${escapeHtml(s.receiptCode)} • ${escapeHtml(s.createdDateStr || '')}${s.batchYear ? ` • ${escapeHtml(s.batchYear)}` : ''}</span>
-                </div>
-              </div>
+              <span class="font-bold text-slate-900 block text-sm">${escapeHtml(s.studentName)}</span>
+              <span class="font-mono text-[10px] text-slate-400">${escapeHtml(s.receiptCode)} • ${escapeHtml(s.createdDateStr || '')}</span>
             </td>
             <td class="py-3.5 px-4">
-              <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 block truncate max-w-[140px]">${escapeHtml(s.department)}</span>
+              <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">${escapeHtml(s.department)}</span>
             </td>
             <td class="py-3.5 px-4">
               <a href="https://wa.me/91${normalizePhone(s.phone)}" target="_blank" class="text-xs font-bold text-emerald-700 hover:underline flex items-center gap-1">
                 <i data-lucide="message-circle" class="w-3.5 h-3.5 text-[#25D366]"></i>
-                <span class="font-mono">${escapeHtml(s.phone)}</span>
+                <span>${escapeHtml(s.phone)}</span>
               </a>
-              ${s.emergencyContactPhone ? `<span class="text-[10px] text-slate-400 block mt-0.5">SOS: ${escapeHtml(s.emergencyContactPhone)}</span>` : ''}
             </td>
             <td class="py-3.5 px-4">
               <span class="font-display font-extrabold text-emerald-700 block">${formatINR(s.amountPaid)}</span>
@@ -9815,30 +9509,24 @@
         `;
       }).join('');
 
-      // Mobile Cards View — modern premium card with all boarding pass operations & photo avatar
+      // Mobile Cards View — modern premium card with all boarding pass operations
       mContainer.innerHTML = filtered.map(s => {
         const bal = getBalanceDue(s);
         const isVer = s.status === 'Verified';
         const isBoarded = Boolean(s.boarded);
-        const avatarHtml = getStudentAvatarHtml(s, 'w-12 h-12', 'text-sm');
         return `
           <div class="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden transition hover:shadow-md">
             <!-- Card Header -->
             <div class="flex items-start justify-between px-4 pt-4 pb-3">
-              <div class="flex items-start gap-3 min-w-0 flex-1">
-                ${avatarHtml}
-                <div class="min-w-0 flex-1">
-                  <div class="flex items-center gap-1.5 flex-wrap mb-1">
-                    <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${isVer ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}">
-                      ${isVer ? '✅ Verified' : '⏳ Pending'}
-                    </span>
-                    ${isBoarded ? `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">🚌 Boarded</span>` : ''}
-                    ${s.studentId ? `<span class="text-[10px] font-mono font-extrabold px-1.5 py-0.5 rounded bg-slate-900 text-white">ID: ${escapeHtml(s.studentId)}</span>` : ''}
-                    ${s.bloodGroup ? `<span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200">🩸 ${escapeHtml(s.bloodGroup)}</span>` : ''}
-                  </div>
-                  <h4 class="font-bold text-slate-900 text-base leading-tight truncate">${escapeHtml(s.studentName)}</h4>
-                  <p class="text-xs text-slate-400 mt-0.5">${escapeHtml(s.department)} • <span class="font-mono">${escapeHtml(s.receiptCode)}</span>${s.batchYear ? ` • ${escapeHtml(s.batchYear)}` : ''}</p>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 flex-wrap mb-1">
+                  <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${isVer ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}">
+                    ${isVer ? '✅ Verified' : '⏳ Pending'}
+                  </span>
+                  ${isBoarded ? `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">🚌 Boarded</span>` : ''}
                 </div>
+                <h4 class="font-bold text-slate-900 text-base leading-tight truncate">${escapeHtml(s.studentName)}</h4>
+                <p class="text-xs text-slate-400 mt-0.5">${escapeHtml(s.department)} • <span class="font-mono">${escapeHtml(s.receiptCode)}</span></p>
               </div>
               <div class="text-right ml-3 shrink-0">
                 <p class="font-display font-extrabold text-lg text-emerald-600 leading-tight">${formatINR(s.amountPaid)}</p>
@@ -10581,89 +10269,33 @@
     // ADMIN STUDENT MODAL
     function openManualAddModal() {
       renderDepartmentDropdowns();
-      activeAdminEditPhotoDataUrl = null;
       document.getElementById('adminEditModalTitle').textContent = 'Add Student Record';
       document.getElementById('editStudentId').value = '';
       document.getElementById('editName').value = '';
-      document.getElementById('editStudentIdNumber').value = '';
-      document.getElementById('editBatch').value = '3rd Year (2023-2026)';
       document.getElementById('editPhone').value = '';
-      document.getElementById('editBloodGroup').value = '';
-      document.getElementById('editEmergencyName').value = '';
-      document.getElementById('editEmergencyPhone').value = '';
       document.getElementById('editAmountPaid').value = tripConfig.tripAmount;
       document.getElementById('editApp').value = 'Google Pay';
       document.getElementById('editStatus').value = 'Verified';
       document.getElementById('editRemarks').value = 'Added by Admin';
-
-      const imgEl = document.getElementById('editPhotoPreviewImg');
-      const phEl = document.getElementById('editPhotoPlaceholder');
-      const statEl = document.getElementById('editPhotoStatusText');
-      const btnRem = document.getElementById('btnRemoveEditPhoto');
-      if (imgEl && phEl) {
-        imgEl.src = '';
-        imgEl.classList.add('hidden');
-        phEl.classList.remove('hidden');
-        phEl.textContent = 'ST';
-      }
-      if (statEl) statEl.textContent = 'No photo';
-      if (btnRem) btnRem.classList.add('hidden');
-
       updateAdminModalBalanceText();
       document.getElementById('adminEditPaymentModal').classList.remove('hidden');
-      lucide.createIcons();
     }
 
     function openAdminEditModal(id) {
       const st = payments.find(p => p.id === id);
       if (!st) return;
       renderDepartmentDropdowns();
-      activeAdminEditPhotoDataUrl = st.photoUrl || '';
       document.getElementById('adminEditModalTitle').textContent = `Edit ${st.studentName}`;
       document.getElementById('editStudentId').value = st.id;
-      document.getElementById('editName').value = st.studentName || '';
-      document.getElementById('editStudentIdNumber').value = st.studentId || '';
-      document.getElementById('editDept').value = st.department || '';
-      document.getElementById('editBatch').value = st.batchYear || '3rd Year (2023-2026)';
-      document.getElementById('editPhone').value = st.phone || '';
-      document.getElementById('editBloodGroup').value = st.bloodGroup || '';
-      document.getElementById('editEmergencyName').value = st.emergencyContactName || '';
-      document.getElementById('editEmergencyPhone').value = st.emergencyContactPhone || '';
-      document.getElementById('editAmountPaid').value = st.amountPaid || 0;
+      document.getElementById('editName').value = st.studentName;
+      document.getElementById('editDept').value = st.department;
+      document.getElementById('editPhone').value = st.phone;
+      document.getElementById('editAmountPaid').value = st.amountPaid;
       document.getElementById('editApp').value = st.paymentApp || 'Google Pay';
       document.getElementById('editStatus').value = st.status || 'Verified';
       document.getElementById('editRemarks').value = st.remarks || '';
-
-      const imgEl = document.getElementById('editPhotoPreviewImg');
-      const phEl = document.getElementById('editPhotoPlaceholder');
-      const statEl = document.getElementById('editPhotoStatusText');
-      const btnRem = document.getElementById('btnRemoveEditPhoto');
-
-      if (st.photoUrl) {
-        if (imgEl) {
-          imgEl.src = st.photoUrl;
-          imgEl.classList.remove('hidden');
-        }
-        if (phEl) phEl.classList.add('hidden');
-        if (statEl) statEl.textContent = 'Photo attached';
-        if (btnRem) btnRem.classList.remove('hidden');
-      } else {
-        if (imgEl) {
-          imgEl.src = '';
-          imgEl.classList.add('hidden');
-        }
-        if (phEl) {
-          phEl.classList.remove('hidden');
-          const initials = (st.studentName || 'ST').trim().slice(0, 2).toUpperCase();
-          phEl.textContent = initials;
-        }
-        if (statEl) statEl.textContent = 'No photo';
-        if (btnRem) btnRem.classList.add('hidden');
-      }
-
       updateAdminModalBalanceText();
       document.getElementById('adminEditPaymentModal').classList.remove('hidden');
-      lucide.createIcons();
     }
 
     function fillFullFeeInAdminModal() {
@@ -10695,21 +10327,11 @@
         accessCode = generateSecureAccessCode();
       }
 
-      const photoUrl = (activeAdminEditPhotoDataUrl !== null && activeAdminEditPhotoDataUrl !== undefined)
-        ? activeAdminEditPhotoDataUrl
-        : (existing?.photoUrl || '');
-
       const data = {
         tripId: existing?.tripId || currentTripId,
         studentName: document.getElementById('editName').value.trim(),
-        studentId: document.getElementById('editStudentIdNumber').value.trim(),
         department: document.getElementById('editDept').value,
-        batchYear: document.getElementById('editBatch').value,
         phone: normalizePhone(document.getElementById('editPhone').value),
-        bloodGroup: document.getElementById('editBloodGroup').value,
-        emergencyContactName: document.getElementById('editEmergencyName').value.trim(),
-        emergencyContactPhone: normalizePhone(document.getElementById('editEmergencyPhone').value),
-        photoUrl,
         amountPaid: Number(document.getElementById('editAmountPaid').value) || 0,
         paymentApp: document.getElementById('editApp').value,
         status: document.getElementById('editStatus').value,
@@ -10734,7 +10356,6 @@
         }
         closeAdminEditModal();
       } catch (err) {
-        console.error(err);
         showToast('Save failed.', 'error');
       }
     }
@@ -14957,6 +14578,8 @@
                 journeyClass: pnr.journeyClass,
                 journeyType: journeyType,
                 passengerSlot: m.passengerIndex,
+                bookingStatus: m.bookingStatus || m.ticketStatus || 'CNF',
+                currentStatus: m.currentStatus || m.ticketStatus || 'CNF',
                 ticketStatus: m.ticketStatus,
                 coach: m.coach,
                 seatNumber: m.seatNumber,
@@ -14998,33 +14621,178 @@
     let currentPnrRosterJourneyFilter = 'all';
     let currentPnrRosterSearchQuery = '';
 
-    function setPnrRosterJourneyFilter(filter) {
-      currentPnrRosterJourneyFilter = filter || 'all';
-      const btnAll = document.getElementById('adminPnrFilterBtn_all');
-      const btnOnward = document.getElementById('adminPnrFilterBtn_onward');
-      const btnReturn = document.getElementById('adminPnrFilterBtn_return');
+    // =========================================================================
+    // ADVANCED RAILWAY MANAGEMENT, COACH GROUPING & VISUAL BERTH SUITE
+    // =========================================================================
+    let currentRailwayViewMode = 'batches'; // 'batches', 'coaches', 'visual_map'
+    let currentRailwayStatusFilter = 'all'; // 'all', 'CNF', 'RAC', 'WL'
+    let currentRailwayCoachFilter = 'all'; // 'all' or specific coach 'S5'
+    let currentUnassignedAuditFilter = 'all'; // 'all', 'onward', 'return'
+    let activeVisualSelectedCoach = null;
+    let activeUploadPnrNumber = null;
 
-      const activeClass = 'px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-2xs font-extrabold transition';
-      const inactiveClass = 'px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-bold transition flex items-center gap-1';
+    function setRailwayViewMode(mode = 'batches') {
+      currentRailwayViewMode = mode;
+      const tabBatches = document.getElementById('railViewTab_batches');
+      const tabCoaches = document.getElementById('railViewTab_coaches');
+      const tabVisual = document.getElementById('railViewTab_visual');
 
-      if (btnAll) btnAll.className = (filter === 'all') ? activeClass : 'px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-bold transition';
-      if (btnOnward) btnOnward.className = (filter === 'onward') ? activeClass + ' text-blue-700 flex items-center gap-1' : inactiveClass;
-      if (btnReturn) btnReturn.className = (filter === 'return') ? activeClass + ' text-purple-700 flex items-center gap-1' : inactiveClass;
+      const batchContainer = document.getElementById('savedPnrListContainer');
+      const coachContainer = document.getElementById('coachGroupingContainer');
+      const visualContainer = document.getElementById('visualCoachMapContainer');
 
-      renderSavedPNRRecords();
+      if (tabBatches) tabBatches.className = `px-3 py-1.5 rounded-lg text-xs font-extrabold transition flex items-center gap-1.5 ${mode === 'batches' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900 font-bold'}`;
+      if (tabCoaches) tabCoaches.className = `px-3 py-1.5 rounded-lg text-xs font-extrabold transition flex items-center gap-1.5 ${mode === 'coaches' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900 font-bold'}`;
+      if (tabVisual) tabVisual.className = `px-3 py-1.5 rounded-lg text-xs font-extrabold transition flex items-center gap-1.5 ${mode === 'visual_map' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900 font-bold'}`;
+
+      if (batchContainer) batchContainer.classList.toggle('hidden', mode !== 'batches');
+      if (coachContainer) coachContainer.classList.toggle('hidden', mode !== 'coaches');
+      if (visualContainer) visualContainer.classList.toggle('hidden', mode !== 'visual_map');
+
+      renderRailwayViews();
+    }
+
+    function setRailwayStatusFilter(status = 'all') {
+      currentRailwayStatusFilter = status;
+      ['all', 'cnf', 'rac', 'wl'].forEach(s => {
+        const btn = document.getElementById(`adminPnrStatusFilterBtn_${s}`);
+        if (btn) {
+          if (s === status.toLowerCase()) {
+            btn.className = 'px-2 py-1 rounded-lg bg-white text-slate-900 shadow-2xs font-extrabold transition flex items-center gap-1';
+          } else {
+            btn.className = 'px-2 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-bold transition flex items-center gap-1';
+          }
+        }
+      });
+      renderRailwayViews();
+    }
+
+    function setRailwayCoachFilter(coach = 'all') {
+      currentRailwayCoachFilter = coach;
+      const select = document.getElementById('adminPnrCoachFilterSelect');
+      if (select && select.value !== coach) select.value = coach;
+      renderRailwayViews();
+    }
+
+    function updateCoachFilterDropdown() {
+      const select = document.getElementById('adminPnrCoachFilterSelect');
+      if (!select) return;
+      const coachesSet = new Set();
+      pnrRecords.forEach(r => {
+        (r.passengerMappings || []).forEach(m => {
+          if (m.coach && m.coach !== 'No Coach') coachesSet.add(m.coach.toUpperCase());
+        });
+      });
+      const coaches = Array.from(coachesSet).sort();
+      const cur = currentRailwayCoachFilter || 'all';
+      select.innerHTML = '<option value="all">All Coaches</option>' +
+        coaches.map(c => `<option value="${c}" ${c === cur ? 'selected' : ''}>Coach ${c}</option>`).join('');
+    }
+
+    function updateUnassignedCountBadge() {
+      const onwardMissing = payments.filter(p => !p.trainAllocation || !p.trainAllocation.pnrNumber).length;
+      const returnMissing = payments.filter(p => !p.returnTrainAllocation || !p.returnTrainAllocation.pnrNumber).length;
+      const anyMissing = payments.filter(p => (!p.trainAllocation || !p.trainAllocation.pnrNumber) || (!p.returnTrainAllocation || !p.returnTrainAllocation.pnrNumber)).length;
+
+      const countBadge = document.getElementById('unassignedPassengersCountBadge');
+      if (countBadge) countBadge.textContent = anyMissing;
+
+      const metricAll = document.getElementById('unassignedMetric_all');
+      if (metricAll) metricAll.textContent = anyMissing;
+      const metricOnward = document.getElementById('unassignedMetric_onward');
+      if (metricOnward) metricOnward.textContent = onwardMissing;
+      const metricReturn = document.getElementById('unassignedMetric_return');
+      if (metricReturn) metricReturn.textContent = returnMissing;
+    }
+
+    function toggleUnassignedAuditDrawer() {
+      const drawer = document.getElementById('unassignedAuditDrawer');
+      if (!drawer) return;
+      drawer.classList.toggle('hidden');
+      if (!drawer.classList.contains('hidden')) {
+        renderUnassignedAuditDrawer();
+      }
+    }
+
+    function setUnassignedAuditFilter(filter = 'all') {
+      currentUnassignedAuditFilter = filter;
+      ['all', 'onward', 'return'].forEach(f => {
+        const btn = document.getElementById(`unassignedFilterBtn_${f}`);
+        if (btn) {
+          if (f === filter) {
+            btn.className = 'px-2.5 py-1 rounded-lg bg-rose-600 text-white font-extrabold transition';
+          } else {
+            btn.className = 'px-2.5 py-1 rounded-lg text-slate-600 hover:text-rose-700 font-bold transition';
+          }
+        }
+      });
+      renderUnassignedAuditDrawer();
+    }
+
+    function renderUnassignedAuditDrawer() {
+      const container = document.getElementById('unassignedStudentsListContainer');
+      if (!container) return;
+
+      const unassigned = payments.filter(p => {
+        const missingOnward = !p.trainAllocation || !p.trainAllocation.pnrNumber;
+        const missingReturn = !p.returnTrainAllocation || !p.returnTrainAllocation.pnrNumber;
+        if (currentUnassignedAuditFilter === 'onward') return missingOnward;
+        if (currentUnassignedAuditFilter === 'return') return missingReturn;
+        return missingOnward || missingReturn;
+      });
+
+      if (unassigned.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full p-6 text-center text-xs font-bold text-emerald-700 bg-emerald-50 rounded-xl border border-emerald-200">
+            🎉 All registered participants have train ticket allocations for this journey selection!
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = unassigned.map(s => {
+        const missingOnward = !s.trainAllocation || !s.trainAllocation.pnrNumber;
+        const missingReturn = !s.returnTrainAllocation || !s.returnTrainAllocation.pnrNumber;
+        const avatarHtml = getStudentAvatarHtml(s, 'w-8 h-8', 'text-xs');
+        return `
+          <div class="p-2.5 rounded-xl border border-rose-200 bg-white flex items-center justify-between gap-2 shadow-2xs">
+            <div class="flex items-center gap-2 min-w-0">
+              ${avatarHtml}
+              <div class="min-w-0">
+                <h6 class="font-bold text-slate-900 text-xs truncate leading-tight">${escapeHtml(s.studentName)}</h6>
+                <p class="text-[10px] text-slate-500 truncate">${escapeHtml(s.department)} • ${escapeHtml(s.phone)}</p>
+                <div class="flex items-center gap-1 mt-0.5">
+                  ${missingOnward ? '<span class="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-rose-100 text-rose-800">No Onward</span>' : '<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800">Onward ✓</span>'}
+                  ${missingReturn ? '<span class="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-purple-100 text-purple-800">No Return</span>' : '<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800">Return ✓</span>'}
+                </div>
+              </div>
+            </div>
+            <button type="button" onclick="focusPnrAssignmentForStudent('${s.id}')"
+              class="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-[11px] font-extrabold shrink-0 shadow-2xs transition">
+              Assign
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function focusPnrAssignmentForStudent(studentId) {
+      const pnrSearch = document.getElementById('pnrSearchInput');
+      if (pnrSearch) {
+        pnrSearch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        pnrSearch.focus();
+      }
+      showToast('Enter 10-digit PNR above to fetch and map this student to an open slot.');
     }
 
     function handleAdminPnrStudentSearch(val) {
       currentPnrRosterSearchQuery = (val || '').trim().toLowerCase();
       const clearBtn = document.getElementById('adminPnrSearchClearBtn');
       if (clearBtn) {
-        if (currentPnrRosterSearchQuery) {
-          clearBtn.classList.remove('hidden');
-        } else {
-          clearBtn.classList.add('hidden');
-        }
+        if (currentPnrRosterSearchQuery) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
       }
-      renderSavedPNRRecords();
+      renderRailwayViews();
     }
 
     function clearAdminPnrStudentSearch() {
@@ -15033,12 +14801,47 @@
       handleAdminPnrStudentSearch('');
     }
 
+    function setPnrRosterJourneyFilter(journey) {
+      currentPnrRosterJourneyFilter = journey;
+      ['all', 'onward', 'return'].forEach(j => {
+        const btn = document.getElementById(`adminPnrFilterBtn_${j}`);
+        if (btn) {
+          if (j === journey) {
+            btn.className = 'px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-2xs font-extrabold transition';
+          } else {
+            btn.className = 'px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-bold transition flex items-center gap-1';
+          }
+        }
+      });
+      renderRailwayViews();
+    }
+
+    function renderRailwayViews() {
+      updateCoachFilterDropdown();
+      updateUnassignedCountBadge();
+
+      if (currentRailwayViewMode === 'batches') {
+        renderSavedPNRRecords();
+      } else if (currentRailwayViewMode === 'coaches') {
+        renderCoachGroupingView();
+      } else if (currentRailwayViewMode === 'visual_map') {
+        renderVisualCoachMapView();
+      }
+      lucide.createIcons();
+    }
+
+    function renderRailwayManagerUI() {
+      renderRailwayViews();
+    }
+
     function renderSavedPNRRecords() {
       const container = document.getElementById('savedPnrListContainer');
       const badge = document.getElementById('savedPnrCountBadge');
       if (!container) return;
 
       const journeyFilter = currentPnrRosterJourneyFilter || 'all';
+      const statusFilter = currentRailwayStatusFilter || 'all';
+      const coachFilter = (currentRailwayCoachFilter || 'all').toUpperCase();
       const searchQuery = currentPnrRosterSearchQuery || '';
 
       // 1. Filter by journeyType (onward / return)
@@ -15046,7 +14849,19 @@
         ? pnrRecords
         : pnrRecords.filter(r => (r.journeyType || 'onward') === journeyFilter);
 
-      // 2. Filter by search query (student name, phone, seat, coach, PNR, train)
+      // 2. Filter by status and coach across records
+      if (statusFilter !== 'all') {
+        filteredRecords = filteredRecords.filter(r =>
+          (r.passengerMappings || []).some(m => m.ticketStatus === statusFilter)
+        );
+      }
+      if (coachFilter !== 'ALL') {
+        filteredRecords = filteredRecords.filter(r =>
+          (r.passengerMappings || []).some(m => (m.coach || '').toUpperCase() === coachFilter)
+        );
+      }
+
+      // 3. Filter by search query (student name, phone, seat, coach, PNR, train)
       if (searchQuery) {
         filteredRecords = filteredRecords.filter(record => {
           const pnrMatch = (record.pnrNumber || '').toLowerCase().includes(searchQuery);
@@ -15076,7 +14891,7 @@
       }
 
       if (badge) {
-        if (journeyFilter === 'all' && !searchQuery) {
+        if (journeyFilter === 'all' && statusFilter === 'all' && coachFilter === 'ALL' && !searchQuery) {
           badge.textContent = pnrRecords.length;
         } else {
           badge.textContent = `${filteredRecords.length} of ${pnrRecords.length}`;
@@ -15107,12 +14922,12 @@
             </div>
             <p class="text-sm font-bold text-slate-700">No matching PNR records found</p>
             <p class="text-xs text-slate-400 max-w-xs mx-auto">
-              No results for journey filter "${journeyFilter}" ${searchQuery ? `and search query "${escapeHtml(searchQuery)}"` : ''}.
+              No results for active journey, status, or search filters.
             </p>
             <div class="pt-2">
-              <button type="button" onclick="setPnrRosterJourneyFilter('all'); clearAdminPnrStudentSearch();"
+              <button type="button" onclick="setPnrRosterJourneyFilter('all'); setRailwayStatusFilter('all'); setRailwayCoachFilter('all'); clearAdminPnrStudentSearch();"
                 class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition">
-                Reset Filter &amp; Search
+                Reset All Filters
               </button>
             </div>
           </div>
@@ -15158,9 +14973,15 @@
                 <span class="font-bold text-amber-800">${m.coach ? `${m.coach} / ${m.seatNumber}` : 'No Coach'}</span>
                 <span>${m.berthType ? (BERTH_MAP[m.berthType] || m.berthType) : '-'}</span>
               </div>
+              <div class="flex items-center justify-between text-[10px] font-mono text-slate-500 pt-0.5">
+                <span title="Booking Status">Bk: ${escapeHtml(m.bookingStatus || m.ticketStatus || 'CNF')}</span>
+                <span title="Current Status" class="font-bold text-slate-800">Cur: ${escapeHtml(m.currentStatus || m.ticketStatus || 'CNF')}</span>
+              </div>
             </div>
           `;
         }).join('');
+
+        const hasPdf = Boolean(record.ticketPdfUrl);
 
         return `
           <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-4">
@@ -15179,9 +15000,13 @@
                     User View: ${maskPNR(record.pnrNumber)} (${hashPNR(record.pnrNumber)})
                   </span>
                   ${record.journeyType === 'return'
-            ? '<span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-900 border border-purple-200">🔄 Return Journey</span>'
-            : '<span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-blue-100 text-blue-900 border border-blue-200">🚂 Onward Journey</span>'
-          }
+                    ? '<span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-900 border border-purple-200">🔄 Return Journey</span>'
+                    : '<span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-blue-100 text-blue-900 border border-blue-200">🚂 Onward Journey</span>'
+                  }
+                  ${hasPdf
+                    ? '<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-100 text-indigo-900 border border-indigo-200 flex items-center gap-1"><i data-lucide="file-check-2" class="w-3 h-3 text-indigo-600"></i> e-Ticket Attached</span>'
+                    : ''
+                  }
                 </div>
                 <p class="text-xs text-slate-500 mt-1">
                   ${record.fromStation} (${record.departureTime}) ➔ ${record.toStation} (${record.arrivalTime}) • ${record.dateOfJourney}
@@ -15190,13 +15015,52 @@
 
               <div class="flex flex-wrap items-center gap-2">
                 ${record.chartPrepared
-            ? `<span class="px-2.5 py-1 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  ? `<span class="px-2.5 py-1 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
                       Chart Prepared ✓
                      </span>`
-            : `<span class="px-2.5 py-1 rounded-full text-[11px] font-black bg-amber-100 text-amber-800 border border-amber-300">
+                  : `<span class="px-2.5 py-1 rounded-full text-[11px] font-black bg-amber-100 text-amber-800 border border-amber-300">
                       Chart Pending ⏳
                      </span>`
-          }
+                }
+
+                <!-- e-Ticket PDF Management Buttons -->
+                ${hasPdf ? `
+                  <button
+                    type="button"
+                    onclick="previewTicketPdf('${record.pnrNumber}')"
+                    class="px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold flex items-center gap-1 shadow-2xs transition"
+                    title="Preview attached IRCTC e-Ticket PDF"
+                  >
+                    <i data-lucide="file-text" class="w-3.5 h-3.5 text-indigo-600"></i>
+                    <span>Preview PDF</span>
+                  </button>
+                  <button
+                    type="button"
+                    onclick="downloadTicketPdf('${record.pnrNumber}')"
+                    class="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                    title="Download original e-Ticket PDF"
+                  >
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <button
+                    type="button"
+                    onclick="triggerPnrTicketPdfUpload('${record.pnrNumber}')"
+                    class="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+                    title="Replace PDF"
+                  >
+                    <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                  </button>
+                ` : `
+                  <button
+                    type="button"
+                    onclick="triggerPnrTicketPdfUpload('${record.pnrNumber}')"
+                    class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold flex items-center gap-1 transition"
+                    title="Upload original IRCTC ticket PDF or image"
+                  >
+                    <i data-lucide="upload" class="w-3.5 h-3.5 text-slate-500"></i>
+                    <span>Attach PDF</span>
+                  </button>
+                `}
 
                 <!-- Edit / Reassign Seats Button -->
                 <button
@@ -15250,9 +15114,732 @@
       lucide.createIcons();
     }
 
-    function renderRailwayManagerUI() {
-      renderSavedPNRRecords();
+    // COACH-WISE PASSENGER GROUPING VIEW
+    function renderCoachGroupingView() {
+      const container = document.getElementById('coachGroupingContainer');
+      if (!container) return;
+
+      const coachMap = {};
+      pnrRecords.forEach(record => {
+        if (currentPnrRosterJourneyFilter !== 'all' && (record.journeyType || 'onward') !== currentPnrRosterJourneyFilter) return;
+
+        (record.passengerMappings || []).forEach(m => {
+          if (currentRailwayStatusFilter !== 'all' && m.ticketStatus !== currentRailwayStatusFilter) return;
+
+          const coachName = (m.coach && m.coach !== 'No Coach') ? m.coach.toUpperCase() : 'WAITLIST / UNASSIGNED';
+          if (currentRailwayCoachFilter !== 'all' && coachName !== currentRailwayCoachFilter.toUpperCase()) return;
+
+          if (currentPnrRosterSearchQuery) {
+            const q = currentPnrRosterSearchQuery;
+            const nameM = (m.assignedUserName || '').toLowerCase().includes(q);
+            const pnrM = (record.pnrNumber || '').includes(q);
+            const coachM = coachName.toLowerCase().includes(q);
+            const seatM = String(m.seatNumber) === q;
+            const phoneM = (m.assignedUserPhone || '').includes(q);
+            if (!nameM && !pnrM && !coachM && !seatM && !phoneM) return;
+          }
+
+          if (!coachMap[coachName]) coachMap[coachName] = [];
+          coachMap[coachName].push({
+            ...m,
+            pnrNumber: record.pnrNumber,
+            trainNumber: record.trainNumber,
+            trainName: record.trainName,
+            journeyType: record.journeyType || 'onward',
+            fromStation: record.fromStation,
+            toStation: record.toStation,
+            dateOfJourney: record.dateOfJourney,
+            departureTime: record.departureTime,
+            arrivalTime: record.arrivalTime
+          });
+        });
+      });
+
+      const coachKeys = Object.keys(coachMap).sort();
+
+      if (coachKeys.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+            <i data-lucide="users" class="w-8 h-8 text-slate-400 mx-auto mb-2"></i>
+            <h5 class="text-sm font-bold text-slate-700">No Passengers Found</h5>
+            <p class="text-xs text-slate-400 mt-1">No passenger seats match the active filter criteria.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = coachKeys.map(coachName => {
+        const list = coachMap[coachName];
+        list.sort((a, b) => {
+          const numA = parseInt(String(a.seatNumber).replace(/\D/g, ''), 10) || 999;
+          const numB = parseInt(String(b.seatNumber).replace(/\D/g, ''), 10) || 999;
+          return numA - numB;
+        });
+
+        const cnfCount = list.filter(p => p.ticketStatus === 'CNF').length;
+        const racCount = list.filter(p => p.ticketStatus === 'RAC').length;
+        const wlCount = list.filter(p => p.ticketStatus === 'WL').length;
+
+        const rowsHtml = list.map(p => {
+          const student = payments.find(st => st.id === p.assignedUserId);
+          const avatarHtml = getStudentAvatarHtml(student, 'w-8 h-8', 'text-xs');
+          const statusBadge = p.ticketStatus === 'CNF'
+            ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800">CNF</span>'
+            : (p.ticketStatus === 'RAC'
+              ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-800">RAC</span>'
+              : '<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-800">WL</span>');
+
+          return `
+            <tr class="hover:bg-slate-50 transition border-b border-slate-100 text-xs">
+              <td class="py-2.5 px-3 font-mono font-bold text-amber-900">${escapeHtml(p.seatNumber || '-')}</td>
+              <td class="py-2.5 px-3 font-bold text-slate-700">${escapeHtml(p.berthType ? (BERTH_MAP[p.berthType] || p.berthType) : '-')}</td>
+              <td class="py-2.5 px-3">
+                <div class="flex items-center gap-2">
+                  ${avatarHtml}
+                  <div>
+                    <span class="font-bold text-slate-900 block">${escapeHtml(p.assignedUserName || 'Unassigned')}</span>
+                    ${student?.studentId ? `<span class="font-mono text-[10px] font-extrabold bg-slate-900 text-white px-1.5 py-0.2 rounded">ID: ${escapeHtml(student.studentId)}</span>` : ''}
+                  </div>
+                </div>
+              </td>
+              <td class="py-2.5 px-3 text-slate-600">${escapeHtml(student?.department || '-')}</td>
+              <td class="py-2.5 px-3">
+                <a href="https://wa.me/91${normalizePhone(p.assignedUserPhone || student?.phone || '')}" target="_blank"
+                  class="font-mono text-emerald-700 hover:underline flex items-center gap-1 font-bold">
+                  <i data-lucide="message-circle" class="w-3 h-3 text-[#25D366]"></i>
+                  <span>${escapeHtml(p.assignedUserPhone || student?.phone || '-')}</span>
+                </a>
+              </td>
+              <td class="py-2.5 px-3 font-mono font-bold text-slate-600">${escapeHtml(p.pnrNumber)}</td>
+              <td class="py-2.5 px-3 font-mono text-[11px] text-slate-500">${escapeHtml(p.bookingStatus || p.ticketStatus || 'CNF')}</td>
+              <td class="py-2.5 px-3 font-mono text-[11px] font-bold text-slate-800">${escapeHtml(p.currentStatus || p.ticketStatus || 'CNF')}</td>
+              <td class="py-2.5 px-3">${statusBadge}</td>
+            </tr>
+          `;
+        }).join('');
+
+        return `
+          <div class="p-4 sm:p-5 rounded-2xl border border-slate-200 bg-white space-y-3 shadow-2xs">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2.5">
+                <span class="px-3 py-1 rounded-xl bg-amber-600 text-white font-display font-black text-sm shadow-xs">
+                  ${escapeHtml(coachName)}
+                </span>
+                <div>
+                  <h5 class="font-display font-extrabold text-sm sm:text-base text-slate-900">
+                    ${list.length} Passengers Grouped
+                  </h5>
+                  <div class="flex items-center gap-2 text-[11px] font-bold mt-0.5">
+                    <span class="text-emerald-700 font-extrabold">${cnfCount} Confirmed</span>
+                    <span class="text-slate-300">•</span>
+                    <span class="text-amber-700">${racCount} RAC</span>
+                    <span class="text-slate-300">•</span>
+                    <span class="text-rose-700">${wlCount} Waitlist</span>
+                  </div>
+                </div>
+              </div>
+              <button type="button" onclick="selectVisualCoach('${escapeHtml(coachName)}'); setRailwayViewMode('visual_map');"
+                class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition">
+                <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-amber-600"></i>
+                <span>Visual Berth Map</span>
+              </button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-slate-50 text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                    <th class="py-2 px-3">Seat</th>
+                    <th class="py-2 px-3">Berth</th>
+                    <th class="py-2 px-3">Passenger</th>
+                    <th class="py-2 px-3">Department</th>
+                    <th class="py-2 px-3">Phone</th>
+                    <th class="py-2 px-3">PNR</th>
+                    <th class="py-2 px-3">Booking Status</th>
+                    <th class="py-2 px-3">Current Status</th>
+                    <th class="py-2 px-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rowsHtml}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }).join('');
       lucide.createIcons();
+    }
+
+    // VISUAL COACH BERTH MAP (2D BAY LAYOUT)
+    function selectVisualCoach(coach) {
+      activeVisualSelectedCoach = coach;
+      renderVisualCoachMapView();
+    }
+
+    function renderVisualCoachMapView() {
+      const container = document.getElementById('visualCoachMapContainer');
+      if (!container) return;
+
+      const coachesSet = new Set();
+      pnrRecords.forEach(r => {
+        (r.passengerMappings || []).forEach(m => {
+          if (m.coach && m.coach !== 'No Coach') coachesSet.add(m.coach.toUpperCase());
+        });
+      });
+
+      const availableCoaches = Array.from(coachesSet).sort();
+      if (availableCoaches.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+            <i data-lucide="layout-grid" class="w-8 h-8 text-slate-400 mx-auto mb-2"></i>
+            <h5 class="text-sm font-bold text-slate-700">No Coach Seating Data Available</h5>
+            <p class="text-xs text-slate-400 mt-1">Assign PNRs with confirmed coach and berth numbers to view the visual layout.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      if (!activeVisualSelectedCoach || !availableCoaches.includes(activeVisualSelectedCoach)) {
+        activeVisualSelectedCoach = availableCoaches[0];
+      }
+
+      const coach = activeVisualSelectedCoach;
+
+      const berthMap = {};
+      pnrRecords.forEach(record => {
+        (record.passengerMappings || []).forEach(m => {
+          if (m.coach && m.coach.toUpperCase() === coach && m.seatNumber) {
+            const cleanSeat = String(parseInt(String(m.seatNumber).replace(/\D/g, ''), 10) || m.seatNumber);
+            berthMap[cleanSeat] = {
+              ...m,
+              pnrNumber: record.pnrNumber,
+              trainNumber: record.trainNumber,
+              trainName: record.trainName,
+              journeyType: record.journeyType || 'onward'
+            };
+          }
+        });
+      });
+
+      const coachTabsHtml = availableCoaches.map(c => {
+        const isSel = (c === coach);
+        return `
+          <button type="button" onclick="selectVisualCoach('${c}')"
+            class="px-3.5 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${isSel ? 'bg-amber-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}">
+            <span>Coach ${c}</span>
+          </button>
+        `;
+      }).join('');
+
+      const totalBays = 9;
+      let baysHtml = '';
+      for (let b = 1; b <= totalBays; b++) {
+        const startSeat = (b - 1) * 8 + 1;
+        const endSeat = b * 8;
+
+        const renderBerthBox = (seatNum) => {
+          const p = berthMap[String(seatNum)];
+          const r = seatNum % 8;
+          let bType = 'LB';
+          if (r === 1 || r === 4) bType = 'LB';
+          else if (r === 2 || r === 5) bType = 'MB';
+          else if (r === 3 || r === 6) bType = 'UB';
+          else if (r === 7) bType = 'SL';
+          else if (r === 0) bType = 'SU';
+
+          if (p) {
+            let isMatchFilter = true;
+            if (currentRailwayStatusFilter !== 'all' && p.ticketStatus !== currentRailwayStatusFilter) isMatchFilter = false;
+            if (currentPnrRosterSearchQuery) {
+              const q = currentPnrRosterSearchQuery;
+              const nameM = (p.assignedUserName || '').toLowerCase().includes(q);
+              const pnrM = (p.pnrNumber || '').includes(q);
+              const seatM = String(p.seatNumber) === q;
+              if (!nameM && !pnrM && !seatM) isMatchFilter = false;
+            }
+
+            const statusBg = p.ticketStatus === 'CNF'
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
+              : (p.ticketStatus === 'RAC' ? 'bg-amber-50 border-amber-300 text-amber-950' : 'bg-rose-50 border-rose-300 text-rose-950');
+
+            const opacityClass = isMatchFilter ? 'opacity-100' : 'opacity-30';
+
+            return `
+              <div onclick="openAdminBerthInspector('${coach}', '${seatNum}')"
+                class="p-2 rounded-xl border ${statusBg} ${opacityClass} cursor-pointer hover:shadow-md transition space-y-1 relative group">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono font-black text-xs text-slate-900">#${seatNum}</span>
+                  <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.2 rounded bg-white/80 border border-black/10 font-mono">${bType}</span>
+                </div>
+                <p class="font-bold text-xs truncate leading-tight">${escapeHtml(p.assignedUserName || 'Unassigned')}</p>
+                <div class="flex items-center justify-between text-[10px] font-mono text-slate-500">
+                  <span class="font-bold text-amber-800">${p.ticketStatus || 'CNF'}</span>
+                  <span class="truncate max-w-[60px]">${maskPNR(p.pnrNumber)}</span>
+                </div>
+              </div>
+            `;
+          } else {
+            return `
+              <div class="p-2 rounded-xl border border-dashed border-slate-200 bg-slate-50/70 text-slate-400 space-y-1 select-none">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono font-bold text-xs">#${seatNum}</span>
+                  <span class="text-[9px] font-bold font-mono text-slate-400">${bType}</span>
+                </div>
+                <p class="text-[11px] font-medium text-slate-400 italic">Available</p>
+                <div class="text-[10px] text-slate-300 font-mono">-</div>
+              </div>
+            `;
+          }
+        };
+
+        baysHtml += `
+          <div class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-2xs space-y-2.5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-1.5">
+              <span class="font-display font-extrabold text-xs text-slate-900">Bay ${b} (Berths ${startSeat}–${endSeat})</span>
+              <span class="text-[10px] font-bold font-mono text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md">8 Berths</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="space-y-1.5 border-r border-slate-100 pr-2">
+                <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">Main Coupe</span>
+                <div class="grid grid-cols-3 gap-1.5">
+                  ${renderBerthBox((b - 1) * 8 + 1)}
+                  ${renderBerthBox((b - 1) * 8 + 2)}
+                  ${renderBerthBox((b - 1) * 8 + 3)}
+                  ${renderBerthBox((b - 1) * 8 + 4)}
+                  ${renderBerthBox((b - 1) * 8 + 5)}
+                  ${renderBerthBox((b - 1) * 8 + 6)}
+                </div>
+              </div>
+              <div class="space-y-1.5 pl-1">
+                <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">Side Berths</span>
+                <div class="grid grid-cols-2 gap-1.5">
+                  ${renderBerthBox((b - 1) * 8 + 7)}
+                  ${renderBerthBox((b - 1) * 8 + 8)}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <div class="space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <div class="flex items-center gap-2 overflow-x-auto">
+              ${coachTabsHtml}
+            </div>
+            <div class="flex items-center gap-3 text-xs font-bold text-slate-600">
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> Confirmed</span>
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-amber-500"></span> RAC</span>
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-rose-500"></span> WL</span>
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-md border border-dashed border-slate-300"></span> Empty</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            ${baysHtml}
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    // ADMIN BERTH INSPECTOR POPOVER
+    function openAdminBerthInspector(coach, seatNumber) {
+      let passenger = null;
+      pnrRecords.forEach(r => {
+        (r.passengerMappings || []).forEach(m => {
+          if (m.coach && m.coach.toUpperCase() === coach.toUpperCase() && String(m.seatNumber) === String(seatNumber)) {
+            passenger = { ...m, pnrRecord: r };
+          }
+        });
+      });
+
+      const modal = document.getElementById('adminBerthInspectorModal');
+      if (!modal) return;
+
+      const seatBadge = document.getElementById('adminBerthPopupSeatBadge');
+      const title = document.getElementById('adminBerthPopupTitle');
+      const desc = document.getElementById('adminBerthPopupDesc');
+      const body = document.getElementById('adminBerthPopupBody');
+      const pnrTag = document.getElementById('adminBerthPopupPnrTag');
+
+      if (seatBadge) seatBadge.textContent = seatNumber;
+      if (title) title.textContent = `Coach ${coach} • Berth ${seatNumber}`;
+
+      const r = parseInt(seatNumber, 10) % 8;
+      let bType = 'Lower Berth (LB)';
+      if (r === 1 || r === 4) bType = 'Lower Berth (LB)';
+      else if (r === 2 || r === 5) bType = 'Middle Berth (MB)';
+      else if (r === 3 || r === 6) bType = 'Upper Berth (UB)';
+      else if (r === 7) bType = 'Side Lower (SL)';
+      else if (r === 0) bType = 'Side Upper (SU)';
+      if (desc) desc.textContent = bType;
+
+      if (passenger) {
+        const student = payments.find(st => st.id === passenger.assignedUserId);
+        const pnr = passenger.pnrRecord;
+        if (pnrTag) pnrTag.textContent = `PNR: ${pnr.pnrNumber} (${pnr.trainNumber})`;
+        if (body) {
+          body.innerHTML = `
+            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-1.5">
+              <p class="text-[10px] font-bold uppercase text-slate-400">Assigned Passenger</p>
+              <div class="flex items-center gap-2">
+                ${getStudentAvatarHtml(student, 'w-8 h-8', 'text-xs')}
+                <div>
+                  <h5 class="font-bold text-slate-900 text-sm leading-tight">${escapeHtml(passenger.assignedUserName || 'Student')}</h5>
+                  ${student?.studentId ? `<span class="font-mono text-[10px] font-bold text-indigo-700">ID: ${escapeHtml(student.studentId)}</span> • ` : ''}
+                  <span class="text-xs text-slate-500">${escapeHtml(student?.department || 'Participant')}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+                <span class="text-[10px] text-slate-400 font-bold block">Booking Status</span>
+                <span class="font-mono font-bold text-slate-700">${escapeHtml(passenger.bookingStatus || passenger.ticketStatus || 'CNF')}</span>
+              </div>
+              <div class="p-2.5 bg-emerald-50 rounded-xl border border-emerald-100">
+                <span class="text-[10px] text-emerald-600 font-bold block">Current Status</span>
+                <span class="font-mono font-extrabold text-emerald-800">${escapeHtml(passenger.currentStatus || passenger.ticketStatus || 'CNF')}</span>
+              </div>
+            </div>
+
+            <div class="space-y-1.5 text-xs text-slate-600">
+              <p><strong>Train:</strong> ${escapeHtml(pnr.trainNumber)} ${escapeHtml(pnr.trainName)}</p>
+              <p><strong>Route:</strong> ${escapeHtml(pnr.fromStation)} ➔ ${escapeHtml(pnr.toStation)}</p>
+              <p><strong>Journey:</strong> ${pnr.journeyType === 'return' ? '🔄 Return' : '🚂 Onward'} • ${escapeHtml(pnr.dateOfJourney)}</p>
+            </div>
+
+            <div class="pt-2 flex items-center gap-2">
+              <a href="https://wa.me/91${normalizePhone(passenger.assignedUserPhone || student?.phone || '')}" target="_blank"
+                class="flex-1 py-2 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition">
+                <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                <span>WhatsApp</span>
+              </a>
+              <button type="button" onclick="editSavedPNR('${pnr.pnrNumber}'); closeAdminBerthInspector();"
+                class="flex-1 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition">
+                Reassign Seat
+              </button>
+            </div>
+          `;
+        }
+      } else {
+        if (pnrTag) pnrTag.textContent = 'Vacant Berth';
+        if (body) {
+          body.innerHTML = `
+            <div class="p-4 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200 space-y-1">
+              <p class="font-bold text-slate-700 text-xs">Berth ${seatNumber} is Available</p>
+              <p class="text-[11px] text-slate-400">No student is currently assigned to this berth in Coach ${coach}.</p>
+            </div>
+          `;
+        }
+      }
+
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeAdminBerthInspector() {
+      const modal = document.getElementById('adminBerthInspectorModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    // ORIGINAL TRAIN TICKET PDF UPLOAD, PREVIEW & DOWNLOAD
+    function triggerPnrTicketPdfUpload(pnrNumber) {
+      activeUploadPnrNumber = pnrNumber;
+      const input = document.getElementById('pnrTicketPdfFileInput');
+      if (input) {
+        input.value = '';
+        input.click();
+      }
+    }
+
+    async function handlePnrTicketPdfFileSelected(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file || !activeUploadPnrNumber) return;
+
+      const pnrNumber = activeUploadPnrNumber;
+      try {
+        showToast('Uploading e-Ticket PDF...', 'info');
+        const reader = new FileReader();
+        reader.onerror = () => showToast('Failed to read PDF file', 'error');
+        reader.onload = async (e) => {
+          const dataUrl = e.target.result;
+          const pnrDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'pnr_records', pnrNumber);
+          await updateDoc(pnrDocRef, {
+            ticketPdfUrl: dataUrl,
+            ticketPdfName: file.name,
+            ticketPdfSize: file.size,
+            ticketPdfUploadedAt: Date.now()
+          });
+          showToast(`Original e-Ticket PDF attached to PNR ${pnrNumber}!`, 'success');
+          logSecurityEvent('PNR_TICKET_PDF_UPLOADED', pnrNumber, `Attached ${file.name}`);
+          renderRailwayViews();
+        };
+        reader.readAsDataURL(file);
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to attach ticket PDF: ' + err.message, 'error');
+      }
+    }
+
+    function previewTicketPdf(pnrNumber) {
+      const record = pnrRecords.find(r => r.pnrNumber === pnrNumber);
+      if (!record || !record.ticketPdfUrl) {
+        showToast('No PDF ticket uploaded for this PNR yet.', 'error');
+        return;
+      }
+      const modal = document.getElementById('ticketPdfViewerModal');
+      const title = document.getElementById('ticketPdfModalTitle');
+      const sub = document.getElementById('ticketPdfModalSubtitle');
+      const frame = document.getElementById('ticketPdfViewerFrame');
+      const fallbackBox = document.getElementById('ticketPdfFallbackBox');
+      const fallbackImg = document.getElementById('ticketPdfFallbackImg');
+      const dlBtn = document.getElementById('ticketPdfModalDownloadBtn');
+
+      if (title) title.textContent = `Official Train e-Ticket: ${record.trainNumber} ${record.trainName}`;
+      if (sub) sub.textContent = `PNR: ${record.pnrNumber} • ${record.ticketPdfName || 'IRCTC e-Ticket'}`;
+
+      const isPdf = record.ticketPdfUrl.startsWith('data:application/pdf') || (record.ticketPdfName && record.ticketPdfName.toLowerCase().endsWith('.pdf'));
+      if (isPdf) {
+        if (frame) {
+          frame.src = record.ticketPdfUrl;
+          frame.classList.remove('hidden');
+        }
+        if (fallbackBox) fallbackBox.classList.add('hidden');
+      } else {
+        if (frame) frame.classList.add('hidden');
+        if (fallbackBox && fallbackImg) {
+          fallbackImg.src = record.ticketPdfUrl;
+          fallbackBox.classList.remove('hidden');
+        }
+      }
+
+      if (dlBtn) {
+        dlBtn.onclick = () => downloadTicketPdf(pnrNumber);
+      }
+
+      if (modal) modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeTicketPdfViewerModal() {
+      const modal = document.getElementById('ticketPdfViewerModal');
+      if (modal) modal.classList.add('hidden');
+      const frame = document.getElementById('ticketPdfViewerFrame');
+      if (frame) frame.src = '';
+    }
+
+    function downloadTicketPdf(pnrNumber) {
+      const record = pnrRecords.find(r => r.pnrNumber === pnrNumber);
+      if (!record || !record.ticketPdfUrl) {
+        showToast('No ticket file available for download.', 'error');
+        return;
+      }
+      const a = document.createElement('a');
+      a.href = record.ticketPdfUrl;
+      a.download = record.ticketPdfName || `IRCTC_Ticket_PNR_${pnrNumber}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('Downloaded official e-Ticket!');
+    }
+
+    // EXPORT COACH-WISE PASSENGER LISTS (EXCEL & PDF)
+    function exportRailwayCoachListExcel() {
+      if (!pnrRecords || pnrRecords.length === 0) {
+        showToast('No railway PNR records available to export.', 'error');
+        return;
+      }
+
+      const rows = [
+        [
+          'Trip Name',
+          'Train Number',
+          'Train Name',
+          'Journey Type',
+          'PNR Number',
+          'Coach',
+          'Seat Number',
+          'Berth Type',
+          'Passenger Name',
+          'Student ID',
+          'Department',
+          'Phone',
+          'Booking Status',
+          'Current Status',
+          'Ticket Status'
+        ]
+      ];
+
+      pnrRecords.forEach(record => {
+        const journey = record.journeyType || 'onward';
+        const mappings = record.passengerMappings || [];
+        mappings.forEach(m => {
+          const student = payments.find(p => p.id === m.assignedUserId);
+          rows.push([
+            tripConfig.tripTitle || 'Trip',
+            record.trainNumber || '',
+            record.trainName || '',
+            journey.toUpperCase(),
+            record.pnrNumber || '',
+            m.coach || 'Unassigned',
+            m.seatNumber || '',
+            m.berthType || '',
+            m.assignedUserName || 'Unassigned',
+            student?.studentId || '',
+            student?.department || '',
+            m.assignedUserPhone || student?.phone || '',
+            m.bookingStatus || m.ticketStatus || 'CNF',
+            m.currentStatus || m.ticketStatus || 'CNF',
+            m.ticketStatus || 'CNF'
+          ]);
+        });
+      });
+
+      const csvContent = '\uFEFF' + rows.map(r => r.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(',')).join('\r\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `TripPay_Railway_Coach_List_${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Coach-wise passenger list exported to Excel / CSV!', 'success');
+    }
+
+    function exportRailwayCoachManifestPDF() {
+      if (!pnrRecords || pnrRecords.length === 0) {
+        showToast('No railway PNR records available to export.', 'error');
+        return;
+      }
+
+      const coachMap = {};
+      pnrRecords.forEach(record => {
+        const mappings = record.passengerMappings || [];
+        mappings.forEach(m => {
+          const coachKey = (m.coach && m.coach !== 'No Coach') ? m.coach.toUpperCase() : 'WAITLIST / UNASSIGNED';
+          if (!coachMap[coachKey]) coachMap[coachKey] = [];
+          const student = payments.find(p => p.id === m.assignedUserId);
+          coachMap[coachKey].push({
+            ...m,
+            pnrNumber: record.pnrNumber,
+            trainNumber: record.trainNumber,
+            trainName: record.trainName,
+            journeyType: record.journeyType || 'onward',
+            fromStation: record.fromStation,
+            toStation: record.toStation,
+            dateOfJourney: record.dateOfJourney,
+            studentId: student?.studentId || '-',
+            department: student?.department || '-'
+          });
+        });
+      });
+
+      Object.keys(coachMap).forEach(c => {
+        coachMap[c].sort((a, b) => {
+          const numA = parseInt(String(a.seatNumber).replace(/\D/g, ''), 10) || 999;
+          const numB = parseInt(String(b.seatNumber).replace(/\D/g, ''), 10) || 999;
+          return numA - numB;
+        });
+      });
+
+      const sortedCoaches = Object.keys(coachMap).sort();
+
+      const printDiv = document.createElement('div');
+      printDiv.id = 'tempRailwayManifestPrint';
+      printDiv.style.padding = '24px';
+      printDiv.style.fontFamily = 'Arial, sans-serif';
+      printDiv.style.color = '#0f172a';
+      printDiv.style.background = '#ffffff';
+
+      let htmlContent = `
+        <div style="border-bottom:2px solid #0f172a; padding-bottom:12px; margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <h1 style="font-size:20px; font-weight:bold; margin:0; text-transform:uppercase;">INDIAN RAILWAYS COACH MANIFEST</h1>
+              <p style="font-size:12px; margin:4px 0 0; color:#475569;">${escapeHtml(tripConfig.tripTitle)} • Official College Expedition Seating Chart</p>
+            </div>
+            <div style="text-align:right;">
+              <p style="font-size:11px; margin:0; font-weight:bold;">Generated: ${new Date().toLocaleString('en-IN')}</p>
+              <p style="font-size:10px; margin:2px 0 0; color:#64748b;">Coordinator: ${escapeHtml(tripConfig.receiverName)}</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      sortedCoaches.forEach(coachName => {
+        const list = coachMap[coachName];
+        htmlContent += `
+          <div style="margin-bottom:24px; page-break-inside:avoid;">
+            <div style="background:#0f172a; color:#ffffff; padding:8px 12px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-weight:bold; font-size:14px;">COACH ${escapeHtml(coachName)}</span>
+              <span style="font-size:11px;">Total Passengers: ${list.length}</span>
+            </div>
+            <table style="width:100%; border-collapse:collapse; font-size:11px; text-align:left;">
+              <thead>
+                <tr style="background:#f1f5f9; border-bottom:1px solid #cbd5e1;">
+                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">Seat #</th>
+                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">Berth</th>
+                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">Passenger Name</th>
+                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">Student ID</th>
+                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">Dept</th>
+                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">Mobile</th>
+                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">PNR Number</th>
+                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">Booking Status</th>
+                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">Current Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${list.map(p => `
+                  <tr style="border-bottom:1px solid #e2e8f0;">
+                    <td style="padding:6px 8px; border:1px solid #e2e8f0; font-weight:bold; font-family:monospace;">${escapeHtml(p.seatNumber || '-')}</td>
+                    <td style="padding:6px 8px; border:1px solid #e2e8f0; font-weight:bold;">${escapeHtml(p.berthType ? (BERTH_MAP[p.berthType] || p.berthType) : '-')}</td>
+                    <td style="padding:6px 8px; border:1px solid #e2e8f0; font-weight:bold;">${escapeHtml(p.assignedUserName || 'Unassigned')}</td>
+                    <td style="padding:6px 8px; border:1px solid #e2e8f0; font-family:monospace;">${escapeHtml(p.studentId || '-')}</td>
+                    <td style="padding:6px 8px; border:1px solid #e2e8f0;">${escapeHtml(p.department || '-')}</td>
+                    <td style="padding:6px 8px; border:1px solid #e2e8f0; font-family:monospace;">${escapeHtml(p.assignedUserPhone || '-')}</td>
+                    <td style="padding:6px 8px; border:1px solid #e2e8f0; font-family:monospace;">${escapeHtml(p.pnrNumber || '-')}</td>
+                    <td style="padding:6px 8px; border:1px solid #e2e8f0;">${escapeHtml(p.bookingStatus || p.ticketStatus || 'CNF')}</td>
+                    <td style="padding:6px 8px; border:1px solid #e2e8f0; font-weight:bold; color:${p.ticketStatus === 'CNF' ? '#047857' : '#b45309'};">${escapeHtml(p.currentStatus || p.ticketStatus || 'CNF')}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      });
+
+      printDiv.innerHTML = htmlContent;
+      document.body.appendChild(printDiv);
+
+      if (typeof html2pdf !== 'undefined') {
+        showToast('Generating Coach Manifest PDF...', 'info');
+        const opt = {
+          margin: 8,
+          filename: `TripPay_Railway_Coach_Manifest_${new Date().toISOString().slice(0, 10)}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+        };
+        html2pdf().set(opt).from(printDiv).save().then(() => {
+          document.body.removeChild(printDiv);
+          showToast('Coach Manifest PDF downloaded!', 'success');
+        }).catch(err => {
+          console.error(err);
+          window.print();
+          document.body.removeChild(printDiv);
+        });
+      } else {
+        window.print();
+        document.body.removeChild(printDiv);
+      }
     }
 
     async function handleRefreshPNRStatus(pnrNumber) {
@@ -15313,6 +15900,8 @@
           if (m.assignedUserId) {
             const studentDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', m.assignedUserId);
             batch.update(studentDocRef, {
+              [`${targetField}.bookingStatus`]: m.bookingStatus || m.ticketStatus || 'CNF',
+              [`${targetField}.currentStatus`]: m.currentStatus || m.ticketStatus || 'CNF',
               [`${targetField}.ticketStatus`]: m.ticketStatus,
               [`${targetField}.coach`]: m.coach,
               [`${targetField}.seatNumber`]: m.seatNumber,
@@ -15403,6 +15992,9 @@
         ? '<span class="inline-block text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-purple-500/30 text-purple-200 border border-purple-400/40 mb-1">🔄 Return Journey Ticket (Coming Back)</span>'
         : '<span class="inline-block text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-500/30 text-blue-200 border border-blue-400/40 mb-1">🚂 Onward Journey Ticket (Departure)</span>';
 
+      const pnrRec = pnrRecords.find(r => r.pnrNumber === ta.pnrNumber);
+      const hasTicketPdf = Boolean(pnrRec && pnrRec.ticketPdfUrl);
+
       const cardGradient = isReturn
         ? 'from-purple-950/90 via-slate-900 to-indigo-950 border-purple-400/50'
         : 'from-slate-900 via-indigo-950 to-slate-950 border-amber-300/80';
@@ -15489,19 +16081,23 @@
             </div>
           </div>
 
-          <!-- Comprehensive Passenger Details Strip (Age, Gender, Quota, Chart, Distance) - FARE REMOVED FOR USER -->
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs bg-black/40 p-3.5 rounded-2xl border border-white/10">
+          <!-- Comprehensive Passenger Details Strip (Age, Gender, Quota, Chart, Distance, Booking & Current Status) -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs bg-black/40 p-3.5 rounded-2xl border border-white/10">
             <div>
               <p class="text-[10px] uppercase font-bold text-slate-400">Passenger / Gender</p>
               <p class="font-extrabold text-white text-xs mt-0.5 truncate">${ta.assignedUserName || (typeof loggedInParticipant !== 'undefined' && loggedInParticipant?.studentName) || 'Student'} • ${ta.gender || (typeof loggedInParticipant !== 'undefined' && loggedInParticipant?.gender) || 'GEN'}</p>
             </div>
             <div>
-              <p class="text-[10px] uppercase font-bold text-slate-400">Age / Quota</p>
-              <p class="font-extrabold text-amber-300 text-xs mt-0.5">${ta.age ? `${ta.age} Yrs` : '21 Yrs'} • Quota: ${ta.quota || 'GN'}</p>
+              <p class="text-[10px] uppercase font-bold text-slate-400">Booking Status</p>
+              <p class="font-mono font-bold text-slate-200 text-xs mt-0.5 truncate">${escapeHtml(ta.bookingStatus || ta.ticketStatus || 'CNF')}</p>
+            </div>
+            <div>
+              <p class="text-[10px] uppercase font-bold text-emerald-400">Current Status</p>
+              <p class="font-mono font-black ${ta.ticketStatus === 'CNF' ? 'text-emerald-300' : 'text-amber-300'} text-xs mt-0.5 truncate">${escapeHtml(ta.currentStatus || ta.ticketStatus || 'CNF')}</p>
             </div>
             <div>
               <p class="text-[10px] uppercase font-bold text-slate-400">Chart / Distance</p>
-              <p class="font-extrabold text-white text-xs mt-0.5 truncate">${ta.chartPrepared ? 'Chart Prepared' : 'Chart Pending'} ${ta.distance ? `• ${ta.distance}` : ''}</p>
+              <p class="font-extrabold text-white text-xs mt-0.5 truncate">${ta.chartPrepared ? 'Chart Prepared ✓' : 'Chart Pending ⏳'} ${ta.distance ? `• ${ta.distance}` : ''}</p>
             </div>
           </div>
 
@@ -15543,7 +16139,18 @@
               ` : ''}
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
+              ${hasTicketPdf ? `
+                <button
+                  type="button"
+                  onclick="downloadTicketPdf('${ta.pnrNumber}')"
+                  class="px-3.5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md transition"
+                  title="Download Original Official IRCTC e-Ticket PDF"
+                >
+                  <i data-lucide="file-down" class="w-4 h-4 text-slate-950"></i>
+                  <span>Download IRCTC e-Ticket</span>
+                </button>
+              ` : ''}
               <button
                 type="button"
                 onclick="openLiveTrainTrackerModal('${ta.trainNumber}', '${ta.trainName}', '${ta.dateOfJourney || ''}', '${ta.departureTime || ''}', '${ta.fromStation || ''}', '${ta.toStation || ''}')"
@@ -19479,14 +20086,6 @@ Guidelines:
 
     // Attach globals to window
     Object.assign(window, {
-      compressImageFileToDataUrl,
-      getStudentInitialsAvatar,
-      getStudentAvatarHtml,
-      handleRegistrationPhotoChange,
-      removeRegistrationPhoto,
-      handleAdminEditPhotoChange,
-      removeAdminEditPhoto,
-      setDashboardDeptFilter,
       toggleAppFullscreen,
       updateFullscreenState,
       openPaymentReceiptForStudent,
@@ -19761,7 +20360,23 @@ Guidelines:
       saveAiApiConfig,
       testAiApiConnection,
       updateAiModelBadge,
-      callChatbotApi
+      callChatbotApi,
+      setRailwayViewMode,
+      setRailwayStatusFilter,
+      setRailwayCoachFilter,
+      toggleUnassignedAuditDrawer,
+      setUnassignedAuditFilter,
+      focusPnrAssignmentForStudent,
+      selectVisualCoach,
+      openAdminBerthInspector,
+      closeAdminBerthInspector,
+      triggerPnrTicketPdfUpload,
+      handlePnrTicketPdfFileSelected,
+      previewTicketPdf,
+      closeTicketPdfViewerModal,
+      downloadTicketPdf,
+      exportRailwayCoachListExcel,
+      exportRailwayCoachManifestPDF
     });
 
     // Restore sessions from localStorage on load
