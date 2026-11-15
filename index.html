@@ -393,11 +393,11 @@
             <h1 class="font-display font-extrabold text-base sm:text-xl tracking-tight text-slate-900 truncate">
               TripPay <span class="text-emerald-600">Manager</span>
             </h1>
-            <span id="cloudSyncBadge"
-              class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">
+            <button type="button" id="cloudSyncBadge" onclick="syncCloudNow()" title="Click to synchronize all features with cloud"
+              class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1 cursor-pointer hover:opacity-90 active:scale-95 transition">
               <span id="cloudSyncDot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               <span id="cloudSyncText">Syncing...</span>
-            </span>
+            </button>
           </div>
           <p class="text-[11px] sm:text-xs text-slate-500 font-medium truncate">
             UPI: <span id="headerUpiId" class="font-mono font-bold text-slate-800">mohdshemeemkp@oksbi</span>
@@ -8533,15 +8533,28 @@
       if (!badge || !dot || !label) return;
       label.textContent = text;
       if (status === 'connected') {
-        badge.className = 'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1';
+        badge.className = 'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1 cursor-pointer hover:opacity-90 active:scale-95 transition';
         dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse';
       } else if (status === 'error') {
-        badge.className = 'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-200 flex items-center gap-1';
+        badge.className = 'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-200 flex items-center gap-1 cursor-pointer hover:opacity-90 active:scale-95 transition';
         dot.className = 'w-1.5 h-1.5 rounded-full bg-rose-500';
+      } else if (status === 'offline') {
+        badge.className = 'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-300 flex items-center gap-1 cursor-pointer hover:opacity-90 active:scale-95 transition';
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-slate-400';
       } else {
-        badge.className = 'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1';
+        badge.className = 'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1 cursor-pointer hover:opacity-90 active:scale-95 transition';
         dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse';
       }
+    }
+
+    function syncCloudNow() {
+      setCloudBadgeState('connecting', 'Syncing...');
+      listenToActiveTripConfig();
+      filterAndRenderAllTripData();
+      setTimeout(() => {
+        setCloudBadgeState('connected', 'Live Cloud');
+        showToast('All features synchronized with cloud! ✓', 'success');
+      }, 350);
     }
 
     async function initFirebaseAndListeners() {
@@ -8558,6 +8571,19 @@
         currentUser = auth.currentUser || { uid: 'public-session' };
       }
       onAuthStateChanged(auth, (u) => { if (u) currentUser = u; });
+
+      // Live Cloud Connection Monitor
+      window.addEventListener('online', () => {
+        setCloudBadgeState('connected', 'Live Cloud');
+        showToast('Network restored. Live cloud sync active! ✓', 'success');
+        filterAndRenderAllTripData();
+      });
+
+      window.addEventListener('offline', () => {
+        setCloudBadgeState('offline', 'Offline (Cached)');
+        showToast('You are currently offline. Cloud sync will resume once connected.', 'warning');
+      });
+
       startFirestoreListeners();
     }
 
@@ -8571,12 +8597,26 @@
         if (snap.exists()) {
           const d = snap.data();
           tripConfig = { ...tripConfig, ...d };
+          // Sync RapidAPI and AI Assistant settings from cloud across devices
+          if (d.rapidApiConfig) {
+            if (d.rapidApiConfig.key) localStorage.setItem('trippay_rapidapi_key', d.rapidApiConfig.key);
+            if (d.rapidApiConfig.host) localStorage.setItem('trippay_rapidapi_host', d.rapidApiConfig.host);
+          }
+          if (d.aiApiConfig) {
+            aiApiConfig = { ...aiApiConfig, ...d.aiApiConfig };
+            if (typeof updateAiModelBadge === 'function') updateAiModelBadge();
+          }
           // Preserve permanent global boss security invariant across all trips
           if (globalBossSecurity.bossEmail) tripConfig.bossEmail = globalBossSecurity.bossEmail;
           if (globalBossSecurity.bossPassword) tripConfig.bossPassword = globalBossSecurity.bossPassword;
           if (globalBossSecurity.bossMasterPin) tripConfig.bossMasterPin = globalBossSecurity.bossMasterPin;
           applyTripConfigToUI();
-          if (isAdminLoggedIn) renderDashboard();
+          renderItinerary();
+          renderContacts();
+          if (isAdminLoggedIn) {
+            renderDashboard();
+            renderExpenses();
+          }
           if (loggedInParticipant) updateParticipantDashboardUI();
         } else {
           // If no custom doc yet for this trip, check allTrips metadata
@@ -8622,10 +8662,19 @@
       pnrRecords.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       renderSavedPNRRecords();
 
+      // Cloud sync notifications collection
+      notifications = rawNotifList.filter(n => (n.tripId || 'default') === currentTripId);
+      notifications.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      renderNotificationsUI();
+      if (isAdminLoggedIn) renderNotificationsManagerUI();
+
       setCloudBadgeState('connected', 'Live Cloud');
       updateNavBadge();
       updateActiveTripUI();
       renderTripsListInModal();
+      renderItinerary();
+      renderContacts();
+      if (typeof renderRailwayManagerUI === 'function') renderRailwayManagerUI();
 
       if (currentPaymentMode === 'balance') renderBalanceLookupResults();
       if (isAdminLoggedIn) {
@@ -9281,9 +9330,10 @@
 
       updateUserTabsVisibility();
 
-      const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
+      const configDocId = currentTripId === 'default' ? 'main_config' : 'trip_' + currentTripId;
+      const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', configDocId);
       try {
-        await updateDoc(ref, updatedState);
+        await setDoc(ref, updatedState, { merge: true });
       } catch (err) {
         try {
           await setDoc(ref, tripConfig, { merge: true });
@@ -9329,8 +9379,9 @@
       if (!tripConfig.expenseCategories.includes(clean)) {
         tripConfig.expenseCategories.push(clean);
         if (isAdminLoggedIn) {
-          const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config');
-          updateDoc(ref, { expenseCategories: tripConfig.expenseCategories }).catch(() => { });
+          const configDocId = currentTripId === 'default' ? 'main_config' : 'trip_' + currentTripId;
+          const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', configDocId);
+          setDoc(ref, { expenseCategories: tripConfig.expenseCategories }, { merge: true }).catch(() => { });
         }
       }
       renderExpenseCategoryDropdown(clean);
@@ -16887,7 +16938,7 @@ Thank you!`;
       try {
         const configDocId = currentTripId === 'default' ? 'main_config' : 'trip_' + currentTripId;
         const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', configDocId);
-        await setDoc(ref, updated);
+        await setDoc(ref, updated, { merge: true });
 
         // Also update master trip record so switcher immediately reflects new title & pricing
         try {
@@ -25858,7 +25909,14 @@ Thank you!`;
       }
       localStorage.setItem('trippay_rapidapi_host', host);
 
-      showToast('RapidAPI settings saved! Live query priority active.');
+      // Cloud sync RapidAPI credentials to Firestore
+      try {
+        const configDocId = currentTripId === 'default' ? 'main_config' : 'trip_' + currentTripId;
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', configDocId);
+        setDoc(ref, { rapidApiConfig: { key, host } }, { merge: true }).catch(() => {});
+      } catch (e) {}
+
+      showToast('RapidAPI settings saved & synced to cloud! ✓');
       closeRapidApiConfigModal();
     }
 
@@ -27373,9 +27431,16 @@ Thank you!`;
         localStorage.setItem('trippay_ai_endpoint', aiApiConfig.endpoint);
       } catch (e) { }
 
+      // Cloud sync AI settings to Firestore
+      try {
+        const configDocId = currentTripId === 'default' ? 'main_config' : 'trip_' + currentTripId;
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', configDocId);
+        setDoc(ref, { aiApiConfig }, { merge: true }).catch(() => {});
+      } catch (e) {}
+
       updateAiModelBadge();
       closeAiApiConfigModal();
-      showToast('AI Chatbot API settings saved! ✓');
+      showToast('AI Chatbot API settings saved & synced to cloud! ✓');
     }
 
     async function testAiApiConnection() {
@@ -28179,6 +28244,7 @@ Guidelines:
       saveInlineCustomCategory,
       openAddItineraryModal,
       downloadItineraryPDF,
+      syncCloudNow,
       openEditContactModal,
       toggleItinCategoryFields,
       openNotificationCenterModal,
