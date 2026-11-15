@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -565,6 +565,90 @@
             <i data-lucide="lock" class="w-4 h-4"></i>
             <span>Admin / Manager Login</span>
           </button>
+        </div>
+      </div>
+
+      <!-- DYNAMIC USER TRIP OVERVIEW & REGISTRATION STATUS CARD -->
+      <div id="userTripOverviewCard"
+        class="expressive-card border border-slate-200/90 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-sm mb-6 bg-gradient-to-r from-emerald-50/50 via-teal-50/30 to-white">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-1.5 flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span id="userTripStatusBadge"
+                class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
+                <i data-lucide="radio" class="w-3 h-3 text-emerald-600 animate-pulse"></i>
+                <span id="userTripStatusText">Active</span>
+              </span>
+              <span id="userTripIdBadge" class="font-mono text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                #default
+              </span>
+              <span id="userTripAllowedDeptsBadge" class="text-[11px] font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200 hidden">
+                Open for: All Departments
+              </span>
+            </div>
+
+            <h3 id="userTripOverviewTitle" class="font-display font-extrabold text-lg sm:text-xl text-slate-900 leading-snug truncate">
+              Annual College Tour 2026
+            </h3>
+
+            <p id="userTripOverviewMeta" class="text-xs text-slate-600 flex items-center gap-3 flex-wrap font-medium">
+              <span><i data-lucide="map-pin" class="w-3.5 h-3.5 inline text-rose-500"></i> <span id="userTripDestText">Munnar & Vagamon</span></span>
+              <span>• <i data-lucide="calendar" class="w-3.5 h-3.5 inline text-indigo-500"></i> <span id="userTripDatesText">Nov 15 – Nov 18, 2026</span></span>
+              <span>• 💰 Total Fee: <span id="userTripTotalFeeText" class="font-bold text-slate-800">₹2,500</span></span>
+            </p>
+
+            <p id="userTripDescText" class="text-xs text-slate-500 line-clamp-2 pt-0.5 hidden">
+              Official college excursion and industrial visit.
+            </p>
+
+            <div id="userTripCoordinatorBox" class="flex items-center gap-2 pt-1 text-xs text-slate-600 flex-wrap">
+              <span class="font-bold text-slate-700 flex items-center gap-1">
+                <i data-lucide="user-check" class="w-3.5 h-3.5 text-purple-600"></i>
+                <span>In-Charge:</span>
+              </span>
+              <span id="userTripCoordinatorName" class="font-semibold text-slate-800">Coordinator Name</span>
+              <span id="userTripCoordinatorContactLinks" class="inline-flex items-center gap-1.5 ml-1">
+                <!-- WhatsApp & Call pills -->
+              </span>
+            </div>
+          </div>
+
+          <!-- Capacity & Deadline Meters -->
+          <div class="flex flex-col sm:flex-row lg:flex-col gap-2.5 shrink-0 min-w-[240px] border-t lg:border-t-0 lg:border-l border-slate-200/80 pt-3 lg:pt-0 lg:pl-5">
+            <!-- Seat Capacity Gauge -->
+            <div id="userTripCapacityGauge" class="p-2.5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-600 flex items-center gap-1">
+                  <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-600"></i>
+                  <span>Seat Capacity</span>
+                </span>
+                <span id="userTripCapacityNumbers" class="font-extrabold text-slate-900 font-mono text-[11px]">0 / 60</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                <div id="userTripCapacityProgressBar" class="h-full bg-indigo-600 rounded-full transition-all" style="width: 0%"></div>
+              </div>
+              <p id="userTripCapacityStatusText" class="text-[10px] text-slate-400 font-medium">Seats filling fast</p>
+            </div>
+
+            <!-- Registration Deadline Notice -->
+            <div id="userTripDeadlineBox" class="p-2.5 rounded-xl bg-amber-50/70 border border-amber-200 text-xs hidden">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-amber-900 flex items-center gap-1">
+                  <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-700"></i>
+                  <span>Reg Deadline:</span>
+                </span>
+                <span id="userTripDeadlineTime" class="font-extrabold text-amber-800 text-[11px]">-</span>
+              </div>
+              <p id="userTripDeadlineCountdown" class="text-[10px] text-amber-700 font-medium mt-0.5">-</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Registration Closed Banner (Dynamic) -->
+        <div id="tripRegistrationClosedBanner"
+          class="hidden mt-3 p-3 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-900 flex items-center gap-2 font-bold">
+          <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600 shrink-0"></i>
+          <span id="tripRegistrationClosedReason">Registrations are currently closed for this trip.</span>
         </div>
       </div>
 
@@ -2244,15 +2328,30 @@
               <div class="relative flex-1 max-w-sm">
                 <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
                 <input type="text" id="bossTripSearchInput" oninput="renderBossTripsHub()"
-                  placeholder="Search trips by title, ID, destination..."
+                  placeholder="Search trips by title, ID, destination, coordinator..."
                   class="w-full pl-9 pr-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none text-xs text-slate-900 font-medium" />
               </div>
 
-              <button type="button" onclick="openCreateTripModal()"
-                class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-sm transition shrink-0">
-                <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                <span>Create New Trip</span>
-              </button>
+              <div class="flex items-center gap-2 flex-wrap">
+                <div class="flex items-center bg-slate-100 p-0.5 rounded-xl text-xs font-bold shrink-0">
+                  <button type="button" id="bossTripStatusBtn_all" onclick="setBossTripStatusFilter('all')"
+                    class="px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-2xs font-extrabold text-[11px]">All</button>
+                  <button type="button" id="bossTripStatusBtn_active" onclick="setBossTripStatusFilter('Active')"
+                    class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 text-[11px]">Active</button>
+                  <button type="button" id="bossTripStatusBtn_upcoming" onclick="setBossTripStatusFilter('Upcoming')"
+                    class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 text-[11px]">Upcoming</button>
+                  <button type="button" id="bossTripStatusBtn_completed" onclick="setBossTripStatusFilter('Completed')"
+                    class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 text-[11px]">Completed</button>
+                  <button type="button" id="bossTripStatusBtn_archived" onclick="setBossTripStatusFilter('Archived')"
+                    class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 text-[11px]">Archived</button>
+                </div>
+
+                <button type="button" onclick="openCreateTripModal()"
+                  class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-sm transition shrink-0">
+                  <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                  <span>Create New Trip</span>
+                </button>
+              </div>
             </div>
 
             <!-- Trips Grid -->
@@ -4087,19 +4186,19 @@
     </div>
   </div>
 
-  <!-- MODAL: UNIQUE KEY REQUIRED FOR TRIP DELETION (unique : key) -->
+  <!-- MODAL: UNIQUE KEY REQUIRED FOR TRIP DELETION WITH DATA PROTECTION SAFEGUARDS -->
   <div id="deleteTripKeyModal"
     class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
     <div
-      class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[90vh] overflow-y-auto space-y-4">
+      class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[92vh] overflow-y-auto space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <div class="flex items-center gap-2.5">
           <div class="w-10 h-10 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold">
-            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+            <i data-lucide="shield-alert" class="w-5 h-5"></i>
           </div>
           <div>
             <h3 class="font-display font-extrabold text-base text-slate-900">Authorize Trip Deletion</h3>
-            <p class="text-xs text-rose-600 font-bold">Unique Key Required (unique : key)</p>
+            <p class="text-xs text-rose-600 font-bold">Data Protection Safeguard (Unique Key Required)</p>
           </div>
         </div>
         <button type="button" onclick="closeDeleteTripKeyModal()"
@@ -4110,10 +4209,41 @@
 
       <input type="hidden" id="deleteTargetTripId" value="" />
 
-      <div class="p-3.5 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-900 space-y-1">
-        <p class="font-bold text-sm text-slate-900" id="deleteTripTitleDisplay">Trip Title</p>
-        <p id="deleteTripWarningText" class="text-rose-700">Warning: All registered payments and records will be
-          permanently removed.</p>
+      <!-- Risk Notice & Student Count -->
+      <div class="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-900 space-y-2">
+        <div class="flex items-center justify-between">
+          <p class="font-extrabold text-sm text-slate-900" id="deleteTripTitleDisplay">Trip Title</p>
+          <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-rose-200/80 text-rose-900 font-bold">Destructive Action</span>
+        </div>
+        <p id="deleteTripWarningText" class="text-rose-700 font-medium">
+          Warning: All registered student payments, boarding passes, railway berth allocations, and expenses will be permanently wiped!
+        </p>
+      </div>
+
+      <!-- Safe Alternative: Archive Trip Box -->
+      <div class="p-3.5 bg-gradient-to-r from-amber-50 to-orange-50/60 border border-amber-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <div class="text-xs">
+          <p class="font-bold text-amber-900 flex items-center gap-1.5">
+            <i data-lucide="archive" class="w-4 h-4 text-amber-700"></i>
+            <span>Recommended: Archive Instead</span>
+          </p>
+          <p class="text-[11px] text-amber-800/80 mt-0.5">Archiving protects 100% of student records while closing registration.</p>
+        </div>
+        <button type="button" onclick="archiveCurrentTargetTrip()"
+          class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-2xs transition shrink-0 flex items-center justify-center gap-1.5">
+          <i data-lucide="archive" class="w-3.5 h-3.5"></i>
+          <span>Archive Trip Safely</span>
+        </button>
+      </div>
+
+      <!-- Export Pre-Deletion Backup Button -->
+      <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+        <span class="text-slate-600 font-medium">Need a backup before deleting?</span>
+        <button type="button" onclick="downloadTripBackupJson(document.getElementById('deleteTargetTripId')?.value)"
+          class="px-2.5 py-1 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 text-[11px] font-bold transition flex items-center gap-1 shadow-2xs">
+          <i data-lucide="download" class="w-3 h-3 text-indigo-600"></i>
+          <span>Download Trip JSON</span>
+        </button>
       </div>
 
       <div class="space-y-2">
@@ -4124,8 +4254,7 @@
         </div>
         <input type="text" id="inpConfirmDeleteKey" required placeholder="Type the unique key to confirm deletion"
           class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-rose-500 focus:outline-none text-sm font-mono text-slate-900 font-bold" />
-        <p class="text-[10px] text-slate-400">To prevent accidental deletion, you must type the exact unique key shown
-          above or the Boss Master PIN (8899).</p>
+        <p class="text-[10px] text-slate-400">To prevent accidental deletion, you must type the exact unique key shown above or the Boss Master PIN.</p>
       </div>
 
       <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
@@ -4681,15 +4810,38 @@
         </button>
       </div>
 
-      <!-- Action Bar: Add New Trip -->
-      <div class="flex items-center justify-between gap-2 pt-1">
-        <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500">Available Trips (<span
-            id="tripsCountText">1</span>)</h4>
-        <button type="button" onclick="openCreateTripModal()"
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-sm transition">
-          <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-          <span>Create New Trip</span>
-        </button>
+      <!-- Action Bar: Search, Filters & Add New Trip -->
+      <div class="space-y-2.5 pt-1">
+        <div class="flex items-center justify-between gap-2">
+          <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500">Available Trips (<span
+              id="tripsCountText">1</span>)</h4>
+          <button type="button" onclick="openCreateTripModal()"
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-sm transition">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span>Create New Trip</span>
+          </button>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+          <div class="relative flex-1">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input type="text" id="tripManagerSearchInput" oninput="renderTripsListInModal()"
+              placeholder="Filter trips by title, destination, ID..."
+              class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-800 focus:bg-white focus:border-indigo-500 focus:outline-none" />
+          </div>
+          <div class="flex items-center bg-slate-100 p-0.5 rounded-xl text-xs font-bold shrink-0 self-start sm:self-auto">
+            <button type="button" id="tmStatusBtn_all" onclick="setTripManagerStatusFilter('all')"
+              class="px-2 py-1 rounded-lg bg-white text-slate-900 shadow-2xs font-extrabold text-[11px]">All</button>
+            <button type="button" id="tmStatusBtn_active" onclick="setTripManagerStatusFilter('Active')"
+              class="px-2 py-1 rounded-lg text-slate-600 hover:text-slate-900 text-[11px]">Active</button>
+            <button type="button" id="tmStatusBtn_upcoming" onclick="setTripManagerStatusFilter('Upcoming')"
+              class="px-2 py-1 rounded-lg text-slate-600 hover:text-slate-900 text-[11px]">Upcoming</button>
+            <button type="button" id="tmStatusBtn_completed" onclick="setTripManagerStatusFilter('Completed')"
+              class="px-2 py-1 rounded-lg text-slate-600 hover:text-slate-900 text-[11px]">Completed</button>
+            <button type="button" id="tmStatusBtn_archived" onclick="setTripManagerStatusFilter('Archived')"
+              class="px-2 py-1 rounded-lg text-slate-600 hover:text-slate-900 text-[11px]">Archived</button>
+          </div>
+        </div>
       </div>
 
       <!-- Trips List Container -->
@@ -4872,18 +5024,19 @@
   </div>
 
   <!-- MODAL: CREATE NEW TRIP -->
+  <!-- CREATE NEW TRIP MODAL -->
   <div id="newTripModal"
     class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
     <div
-      class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[90vh] overflow-y-auto space-y-4">
+      class="bg-white border border-slate-200 rounded-3xl max-w-xl w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[92vh] overflow-y-auto space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <div class="flex items-center gap-2.5">
           <div class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
             <i data-lucide="plus-circle" class="w-5 h-5"></i>
           </div>
           <div>
-            <h3 class="font-display font-extrabold text-base text-slate-900">Create New Trip</h3>
-            <p class="text-xs text-slate-500">Configure separate trip ID, fee, UPI, and shareable links</p>
+            <h3 class="font-display font-extrabold text-base text-slate-900">Create New College Trip</h3>
+            <p class="text-xs text-slate-500">Configure trip dates, fee, capacity, departments, and coordinator</p>
           </div>
         </div>
         <button type="button" onclick="closeCreateTripModal()"
@@ -4893,78 +5046,129 @@
       </div>
 
       <form id="createTripForm" onsubmit="handleCreateTripSubmit(event)" class="space-y-3.5">
+        <!-- Trip Title -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Trip Title *</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Trip Name / Title *</label>
           <input type="text" id="newTripTitle" required oninput="autoGenerateTripSlug(this.value)"
-            placeholder="e.g., Goa Beach &amp; Cultural Tour 2026"
-            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm text-slate-900 font-medium" />
+            placeholder="e.g., Goa Beach & Cultural Tour 2026"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none text-sm text-slate-900 font-medium" />
         </div>
 
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Unique Trip ID / Slug *</label>
-          <div class="relative">
-            <span
-              class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-mono text-slate-400 font-bold">?trip=</span>
-            <input type="text" id="newTripSlug" required placeholder="e.g., goa-2026"
-              class="w-full pl-16 pr-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-mono text-slate-900 font-bold" />
+        <!-- Slug & Destination Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Unique Trip ID / Slug *</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-mono text-slate-400 font-bold">?trip=</span>
+              <input type="text" id="newTripSlug" required placeholder="goa-2026"
+                class="w-full pl-16 pr-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none text-sm font-mono text-slate-900 font-bold" />
+            </div>
+            <p class="text-[10px] text-slate-400 mt-0.5">Used in URLs and login links</p>
           </div>
-          <p class="text-[10px] text-slate-400 mt-0.5">Use lowercase letters, numbers, and dashes (used in payment &amp;
-            login links)</p>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Destination *</label>
-            <input type="text" id="newTripDestination" required placeholder="e.g., Goa, India"
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm text-slate-900 font-medium" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Trip Date *</label>
-            <input type="date" id="newTripDate" required
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm text-slate-900 font-medium" />
+            <input type="text" id="newTripDestination" required placeholder="e.g., Goa & Dandeli, India"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none text-sm text-slate-900 font-medium" />
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <!-- Description -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Trip Description & Highlights</label>
+          <textarea id="newTripDescription" rows="2" placeholder="Brief tour description, activities, stay details, or instructions..."
+            class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none text-xs text-slate-800"></textarea>
+        </div>
+
+        <!-- Starting Date & Ending Date -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Starting Date *</label>
+            <input type="date" id="newTripStartDate" required onchange="syncNewTripDates()"
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none text-xs text-slate-900 font-medium" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Ending Date *</label>
+            <input type="date" id="newTripEndDate" required
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none text-xs text-slate-900 font-medium" />
+          </div>
+        </div>
+
+        <!-- Registration Deadline & Trip Status -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Registration Deadline</label>
+            <input type="datetime-local" id="newTripRegDeadline"
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none text-xs text-slate-900 font-medium" />
+            <p class="text-[10px] text-slate-400 mt-0.5">Registrations auto-close after this date/time</p>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Initial Trip Status *</label>
+            <select id="newTripStatus"
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none text-xs text-slate-900 font-bold">
+              <option value="Upcoming" selected>Upcoming (Registrations Open)</option>
+              <option value="Active">Active (Ongoing Tour)</option>
+              <option value="Completed">Completed (Tour Ended)</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Fees & Max Students Limit -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Total Fee (₹) *</label>
             <input type="number" id="newTripAmount" min="1" required value="2500"
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm text-slate-900 font-bold" />
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none text-xs font-bold text-slate-900" />
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Default Advance (₹) *</label>
-            <input type="number" id="newTripAdvance" min="1" required value="500"
-              class="w-full px-3.5 py-2.5 rounded-xl bg-amber-50/60 border border-amber-300 focus:bg-white focus:border-amber-600 focus:outline-none text-sm text-amber-900 font-bold" />
+            <label class="block text-xs font-bold text-slate-700 mb-1">Advance Amount (₹) *</label>
+            <input type="number" id="newTripAdvance" min="0" required value="500"
+              class="w-full px-3.5 py-2 rounded-xl bg-amber-50/70 border border-amber-300 focus:bg-white focus:border-amber-600 focus:outline-none text-xs font-bold text-amber-900" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Max Student Limit</label>
+            <input type="number" id="newTripMaxStudents" min="1" placeholder="e.g. 60 (Blank=No limit)"
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none text-xs font-bold text-slate-900" />
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <!-- Department-Wise Registration Restrictions -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-bold text-slate-700">Department-Wise Registration</label>
+            <button type="button" onclick="toggleAllNewTripDepts(this)" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800">
+              Select All Departments
+            </button>
+          </div>
+          <div id="newTripAllowedDeptsContainer" class="p-2.5 rounded-2xl bg-slate-50 border border-slate-200 grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
+            <!-- Dynamic departments checklist -->
+          </div>
+          <p class="text-[10px] text-slate-400 mt-0.5">Only students from checked departments can register (leave all checked for open access)</p>
+        </div>
+
+        <!-- UPI Receiver Info -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Receiver Name *</label>
             <input type="text" id="newTripReceiverName" required placeholder="e.g., Mohd Shemeem KP"
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm text-slate-900 font-medium" />
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none text-xs text-slate-900 font-medium" />
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Receiver UPI ID *</label>
             <input type="text" id="newTripUpiId" required placeholder="e.g., mohdshemeemkp@oksbi"
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-mono text-slate-900 font-bold" />
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none text-xs font-mono text-slate-900 font-bold" />
           </div>
         </div>
 
+        <!-- In-charge Admins & Coordinators -->
         <div>
           <div class="flex items-center justify-between mb-1">
-            <label class="text-xs font-bold text-slate-700">Assign In-Charge Admins (Admin 1, Admin 2, Admin
-              3...)</label>
-            <span
-              class="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">Trip
-              Managers</span>
+            <label class="text-xs font-bold text-slate-700">Assign In-Charge Coordinators & Admins</label>
+            <span class="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">Trip Managers</span>
           </div>
-          <div id="newTripAdminsChecklist"
-            class="p-2.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5 max-h-32 overflow-y-auto">
+          <div id="newTripAdminsChecklist" class="p-2.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5 max-h-32 overflow-y-auto">
             <!-- Dynamic checklist -->
           </div>
-          <p class="text-[10px] text-slate-400 mt-0.5">Selected admins will have permissions to manage this trip's
-            students &amp; collections</p>
         </div>
 
         <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
@@ -4982,11 +5186,11 @@
     </div>
   </div>
 
-  <!-- Edit Trip Modal -->
+  <!-- EDIT TRIP MODAL (FULL FEATURE UPGRADE) -->
   <div id="editTripModal"
     class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
     <div
-      class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[90vh] overflow-y-auto space-y-4">
+      class="bg-white border border-slate-200 rounded-3xl max-w-xl w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[92vh] overflow-y-auto space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <div class="flex items-center gap-2.5">
           <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
@@ -4995,10 +5199,9 @@
           <div>
             <div class="flex items-center gap-2">
               <h3 class="font-display font-extrabold text-base text-slate-900">Edit Trip Details</h3>
-              <span id="editTripSlugBadge"
-                class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">#slug</span>
+              <span id="editTripSlugBadge" class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">#slug</span>
             </div>
-            <p class="text-xs text-slate-500">Update destination, pricing, date, and payment details</p>
+            <p class="text-xs text-slate-500">Update destination, dates, deadline, capacity, pricing, and coordinators</p>
           </div>
         </div>
         <button type="button" onclick="closeEditTripModal()"
@@ -5010,12 +5213,14 @@
       <form id="editTripForm" onsubmit="handleEditTripSubmit(event)" class="space-y-3.5">
         <input type="hidden" id="editTripId" value="" />
 
+        <!-- Trip Title -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Trip Title *</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Trip Name / Title *</label>
           <input type="text" id="editTripTitle" required placeholder="e.g., Goa Beach & Cultural Tour 2026"
             class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-sm text-slate-900 font-medium" />
         </div>
 
+        <!-- Destination & Status -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Destination *</label>
@@ -5023,50 +5228,203 @@
               class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-sm text-slate-900 font-medium" />
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Trip Date(s)</label>
-            <input type="text" id="editTripDate" placeholder="e.g., 2026-11-15 or Nov 15-18"
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-sm text-slate-900 font-medium" />
+            <label class="block text-xs font-bold text-slate-700 mb-1">Trip Status *</label>
+            <select id="editTripStatus"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-xs text-slate-900 font-bold">
+              <option value="Upcoming">Upcoming (Registrations Open)</option>
+              <option value="Active">Active (Ongoing Tour)</option>
+              <option value="Completed">Completed (Tour Ended)</option>
+              <option value="Cancelled">Cancelled</option>
+              <option value="Archived">Archived (Safe Storage / Hidden)</option>
+            </select>
           </div>
         </div>
 
+        <!-- Description -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Trip Description & Guidelines</label>
+          <textarea id="editTripDescription" rows="2" placeholder="Tour description, guidelines, and highlights..."
+            class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-xs text-slate-800"></textarea>
+        </div>
+
+        <!-- Starting Date & Ending Date -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Starting Date *</label>
+            <input type="date" id="editTripStartDate" required
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-xs text-slate-900 font-medium" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Ending Date *</label>
+            <input type="date" id="editTripEndDate" required
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-xs text-slate-900 font-medium" />
+          </div>
+        </div>
+
+        <!-- Registration Deadline -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Registration Deadline</label>
+          <input type="datetime-local" id="editTripRegDeadline"
+            class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-xs text-slate-900 font-medium" />
+        </div>
+
+        <!-- Fees & Max Students Limit -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Total Trip Fee (₹) *</label>
             <input type="number" id="editTripAmount" required min="1"
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-sm text-slate-900 font-bold" />
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-xs font-bold text-slate-900" />
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Advance Amount (₹) *</label>
-            <input type="number" id="editTripAdvance" required min="1"
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-sm text-slate-900 font-bold" />
+            <input type="number" id="editTripAdvance" required min="0"
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-xs font-bold text-slate-900" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Max Student Limit</label>
+            <input type="number" id="editTripMaxStudents" min="1" placeholder="e.g. 60 (Blank=Unlimited)"
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-xs font-bold text-slate-900" />
           </div>
         </div>
 
+        <!-- Department-Wise Registration Restrictions -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-bold text-slate-700">Allowed Departments for Registration</label>
+            <button type="button" onclick="toggleAllEditTripDepts(this)" class="text-[10px] font-bold text-amber-700 hover:text-amber-900">
+              Select All
+            </button>
+          </div>
+          <div id="editTripAllowedDeptsContainer" class="p-2.5 rounded-2xl bg-slate-50 border border-slate-200 grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
+            <!-- Dynamic departments checklist -->
+          </div>
+        </div>
+
+        <!-- Payment Details -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">UPI ID for Payments *</label>
             <input type="text" id="editTripUpi" required placeholder="e.g., name@oksbi"
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-xs text-slate-900 font-mono" />
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-xs text-slate-900 font-mono font-bold" />
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Receiver Name *</label>
             <input type="text" id="editTripReceiver" required placeholder="e.g., Coordinator Name"
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-xs text-slate-900 font-medium" />
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none text-xs text-slate-900 font-medium" />
           </div>
         </div>
 
-        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
-          <button type="button" onclick="closeEditTripModal()"
-            class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
-            Cancel
+        <!-- Assigned Coordinators & Admins -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-bold text-slate-700">In-Charge Coordinators & Admins</label>
+            <span class="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Trip In-Charge</span>
+          </div>
+          <div id="editTripAdminsChecklist" class="p-2.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5 max-h-32 overflow-y-auto">
+            <!-- Dynamic checklist -->
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2.5 flex-wrap">
+          <button type="button" id="btnArchiveFromEditModal" onclick="archiveTripFromEditModal()"
+            class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition flex items-center gap-1.5">
+            <i data-lucide="archive" class="w-3.5 h-3.5"></i>
+            <span id="btnArchiveFromEditModalText">Archive Trip</span>
           </button>
-          <button type="submit" id="btnSubmitEditTrip"
-            class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 active:scale-95 text-white font-extrabold text-xs shadow-md transition flex items-center gap-1.5">
-            <i data-lucide="check" class="w-4 h-4"></i>
-            <span>Save Changes</span>
-          </button>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="closeEditTripModal()"
+              class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
+              Cancel
+            </button>
+            <button type="submit" id="btnSubmitEditTrip"
+              class="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 active:scale-95 text-white font-extrabold text-xs shadow-md transition flex items-center gap-1.5">
+              <i data-lucide="check" class="w-4 h-4"></i>
+              <span>Save Changes</span>
+            </button>
+          </div>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DEDICATED TRIP REGISTERED STUDENTS ROSTER -->
+  <div id="tripStudentsModal"
+    class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
+    <div
+      class="bg-white border border-slate-200 rounded-3xl max-w-4xl w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[92vh] overflow-y-auto space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
+            <i data-lucide="users" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 id="tripStudentsModalTitle" class="font-display font-extrabold text-base sm:text-lg text-slate-900">Trip Registered Students</h3>
+              <span id="tripStudentsTripIdBadge" class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">#tripId</span>
+            </div>
+            <p id="tripStudentsModalSubtitle" class="text-xs text-slate-500">Student roster, payment verification, roll numbers, and contacts</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeTripStudentsModal()"
+          class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Quick KPI & Capacity Bar -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+          <p class="text-[10px] font-bold text-slate-500 uppercase">Total Students</p>
+          <p id="tsKpiTotalCount" class="font-display font-extrabold text-base sm:text-lg text-slate-900 mt-0.5">0</p>
+          <p id="tsKpiCapacityText" class="text-[10px] text-indigo-600 font-semibold">Unlimited</p>
+        </div>
+        <div class="p-3 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-center">
+          <p class="text-[10px] font-bold text-emerald-700 uppercase">Verified</p>
+          <p id="tsKpiVerifiedCount" class="font-display font-extrabold text-base sm:text-lg text-emerald-800 mt-0.5">0</p>
+          <p class="text-[10px] text-emerald-600 font-medium">Confirmed</p>
+        </div>
+        <div class="p-3 rounded-2xl bg-blue-50/70 border border-blue-200 text-center">
+          <p class="text-[10px] font-bold text-blue-700 uppercase">Total Collected</p>
+          <p id="tsKpiCollected" class="font-display font-extrabold text-base sm:text-lg text-blue-900 mt-0.5">₹0</p>
+          <p class="text-[10px] text-blue-600 font-medium">Received</p>
+        </div>
+        <div class="p-3 rounded-2xl bg-amber-50/70 border border-amber-200 text-center">
+          <p class="text-[10px] font-bold text-amber-700 uppercase">Pending Dues</p>
+          <p id="tsKpiDues" class="font-display font-extrabold text-base sm:text-lg text-amber-900 mt-0.5">₹0</p>
+          <p class="text-[10px] text-amber-600 font-medium">To Collect</p>
+        </div>
+      </div>
+
+      <!-- Search, Status Filter & Export Bar -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <div class="relative flex-1">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="tripStudentsSearchInput" oninput="renderTripStudentsList()"
+            placeholder="Search by student name, roll no, department, phone..."
+            class="w-full pl-9 pr-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none text-xs text-slate-800 font-medium" />
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0 flex-wrap">
+          <div class="flex items-center bg-slate-100 p-0.5 rounded-xl text-xs font-bold">
+            <button type="button" id="tsFilterBtn_all" onclick="setTripStudentsFilter('all')"
+              class="px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-2xs">All</button>
+            <button type="button" id="tsFilterBtn_verified" onclick="setTripStudentsFilter('Verified')"
+              class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900">Verified</button>
+            <button type="button" id="tsFilterBtn_pending" onclick="setTripStudentsFilter('Pending Verification')"
+              class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900">Pending</button>
+          </div>
+          <button type="button" onclick="exportTripStudentsRosterExcel()"
+            class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-2xs"
+            title="Download formatted Excel/CSV student list for this trip">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Export CSV</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Students List Container (Table / Cards) -->
+      <div id="tripStudentsListContainer" class="max-h-96 overflow-y-auto space-y-2 pr-0.5">
+        <!-- Rendered via renderTripStudentsList() -->
+      </div>
     </div>
   </div>
 
@@ -6585,7 +6943,7 @@
     function applyTripConfigToUI() {
       document.getElementById('heroTripTitle').textContent = tripConfig.tripTitle;
       document.getElementById('heroDestination').textContent = tripConfig.destination;
-      document.getElementById('heroTripDate').textContent = tripConfig.tripDate;
+      document.getElementById('heroTripDate').textContent = formatTripDates(tripConfig);
       document.getElementById('heroTripAmount').textContent = formatINR(tripConfig.tripAmount);
       document.getElementById('heroAdvanceAmount').textContent = formatINR(tripConfig.advanceAmount || 500);
       document.getElementById('presetFullText').textContent = formatINR(tripConfig.tripAmount);
@@ -6599,6 +6957,179 @@
       const currentInp = document.getElementById('inpAmount');
       if (currentInp && (!currentInp.value || currentInp.value === '1500' || currentInp.value === '500' || currentInp.value === String(tripConfig.tripAmount))) {
         selectPaymentPreset('advance');
+      }
+
+      // Update User Trip Overview Card
+      const overviewCard = document.getElementById('userTripOverviewCard');
+      if (overviewCard) {
+        const titleEl = document.getElementById('userTripOverviewTitle');
+        if (titleEl) titleEl.textContent = tripConfig.tripTitle || 'College Trip';
+
+        const idBadge = document.getElementById('userTripIdBadge');
+        if (idBadge) idBadge.textContent = '#' + (currentTripId || 'default');
+
+        const destText = document.getElementById('userTripDestText');
+        if (destText) destText.textContent = tripConfig.destination || 'Destination';
+
+        const datesText = document.getElementById('userTripDatesText');
+        if (datesText) datesText.textContent = formatTripDates(tripConfig);
+
+        const feeText = document.getElementById('userTripTotalFeeText');
+        if (feeText) feeText.textContent = formatINR(tripConfig.tripAmount || 1500);
+
+        const descText = document.getElementById('userTripDescText');
+        if (descText) {
+          if (tripConfig.description && tripConfig.description.trim()) {
+            descText.textContent = tripConfig.description.trim();
+            descText.classList.remove('hidden');
+          } else {
+            descText.classList.add('hidden');
+          }
+        }
+
+        // Status Badge
+        const statusBadge = document.getElementById('userTripStatusBadge');
+        const statusText = document.getElementById('userTripStatusText');
+        const st = tripConfig.status || 'Active';
+        if (statusText) statusText.textContent = st;
+        if (statusBadge) {
+          if (st === 'Upcoming') {
+            statusBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-100 text-blue-800 border border-blue-300 flex items-center gap-1';
+          } else if (st === 'Completed') {
+            statusBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-800 border border-purple-300 flex items-center gap-1';
+          } else if (st === 'Cancelled') {
+            statusBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-100 text-rose-800 border border-rose-300 flex items-center gap-1';
+          } else if (st === 'Archived') {
+            statusBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-300 flex items-center gap-1';
+          } else {
+            statusBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1';
+          }
+        }
+
+        // Allowed Departments Badge
+        const deptsBadge = document.getElementById('userTripAllowedDeptsBadge');
+        if (deptsBadge) {
+          if (tripConfig.allowedDepartments && Array.isArray(tripConfig.allowedDepartments) && tripConfig.allowedDepartments.length > 0 && !tripConfig.allowedDepartments.includes('All')) {
+            deptsBadge.textContent = 'Open for: ' + tripConfig.allowedDepartments.join(', ');
+            deptsBadge.classList.remove('hidden');
+          } else {
+            deptsBadge.classList.add('hidden');
+          }
+        }
+
+        // In-Charge Coordinator Details
+        const coordName = document.getElementById('userTripCoordinatorName');
+        const coordLinks = document.getElementById('userTripCoordinatorContactLinks');
+        if (coordName) {
+          coordName.textContent = tripConfig.receiverName || 'Organizer';
+        }
+        if (coordLinks) {
+          const phone = tripConfig.coordinatorPhone || tripConfig.receiverPhone || '';
+          if (phone) {
+            coordLinks.innerHTML = `
+              <a href="tel:${escapeHtml(phone)}" class="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 flex items-center gap-1 shadow-2xs">
+                <i data-lucide="phone" class="w-3 h-3 text-emerald-600"></i> ${escapeHtml(phone)}
+              </a>
+              <a href="https://wa.me/91${normalizePhone(phone)}" target="_blank" class="px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold hover:bg-emerald-100 flex items-center gap-1 shadow-2xs">
+                <i data-lucide="message-circle" class="w-3 h-3 text-emerald-600"></i> WhatsApp
+              </a>
+            `;
+          } else {
+            coordLinks.innerHTML = '';
+          }
+        }
+
+        // Capacity Gauge
+        const currentCount = payments.length;
+        const maxLimit = Number(tripConfig.maxStudentsLimit) || 0;
+        const capNumbers = document.getElementById('userTripCapacityNumbers');
+        const capProgress = document.getElementById('userTripCapacityProgressBar');
+        const capStatus = document.getElementById('userTripCapacityStatusText');
+        if (capNumbers && capProgress && capStatus) {
+          if (maxLimit > 0) {
+            capNumbers.textContent = `${currentCount} / ${maxLimit}`;
+            const pct = Math.min(100, Math.round((currentCount / maxLimit) * 100));
+            capProgress.style.width = pct + '%';
+            if (currentCount >= maxLimit) {
+              capProgress.className = 'h-full bg-rose-600 rounded-full transition-all';
+              capStatus.textContent = 'Trip Full / Capacity Reached';
+              capStatus.className = 'text-[10px] text-rose-600 font-bold';
+            } else if (pct >= 80) {
+              capProgress.className = 'h-full bg-amber-500 rounded-full transition-all';
+              capStatus.textContent = `Only ${maxLimit - currentCount} seats remaining!`;
+              capStatus.className = 'text-[10px] text-amber-700 font-bold';
+            } else {
+              capProgress.className = 'h-full bg-indigo-600 rounded-full transition-all';
+              capStatus.textContent = `${maxLimit - currentCount} seats available (${pct}% filled)`;
+              capStatus.className = 'text-[10px] text-slate-400 font-medium';
+            }
+          } else {
+            capNumbers.textContent = `${currentCount} Registered`;
+            capProgress.style.width = '100%';
+            capProgress.className = 'h-full bg-emerald-500 rounded-full';
+            capStatus.textContent = 'Open enrollment (No limit)';
+            capStatus.className = 'text-[10px] text-emerald-600 font-medium';
+          }
+        }
+
+        // Deadline Box
+        const dlBox = document.getElementById('userTripDeadlineBox');
+        const dlTime = document.getElementById('userTripDeadlineTime');
+        const dlCountdown = document.getElementById('userTripDeadlineCountdown');
+        let isDeadlinePassed = false;
+        if (dlBox && dlTime && dlCountdown) {
+          if (tripConfig.registrationDeadline) {
+            const dlMs = new Date(tripConfig.registrationDeadline).getTime();
+            if (!isNaN(dlMs)) {
+              dlBox.classList.remove('hidden');
+              dlTime.textContent = new Date(dlMs).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+              const diffMs = dlMs - Date.now();
+              if (diffMs > 0) {
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                dlCountdown.textContent = diffDays > 0 ? `${diffDays}d ${diffHours}h remaining to register` : `${diffHours} hours remaining!`;
+                dlCountdown.className = 'text-[10px] text-amber-700 font-bold mt-0.5';
+              } else {
+                isDeadlinePassed = true;
+                dlCountdown.textContent = 'Deadline Expired';
+                dlCountdown.className = 'text-[10px] text-rose-600 font-extrabold mt-0.5';
+              }
+            } else {
+              dlBox.classList.add('hidden');
+            }
+          } else {
+            dlBox.classList.add('hidden');
+          }
+        }
+
+        // Check if registration closed
+        const isClosedStatus = ['Completed', 'Cancelled', 'Archived'].includes(st);
+        const isFull = maxLimit > 0 && currentCount >= maxLimit;
+        const closedBanner = document.getElementById('tripRegistrationClosedBanner');
+        const closedReason = document.getElementById('tripRegistrationClosedReason');
+        const submitBtn = document.getElementById('btnSubmitNewPay');
+
+        if (isClosedStatus || isDeadlinePassed || isFull) {
+          if (closedBanner) closedBanner.classList.remove('hidden');
+          let reason = 'Registrations are closed for this trip.';
+          if (isClosedStatus) reason = `Registrations are closed because this trip is marked as ${st}.`;
+          else if (isDeadlinePassed) reason = `Registrations are closed: The registration deadline has passed.`;
+          else if (isFull) reason = `Registrations are closed: All ${maxLimit} seats are fully booked!`;
+
+          if (closedReason) closedReason.textContent = reason;
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            submitBtn.title = reason;
+          }
+        } else {
+          if (closedBanner) closedBanner.classList.add('hidden');
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            submitBtn.title = '';
+          }
+        }
       }
 
       applyLogoAcrossApp();
@@ -6736,12 +7267,19 @@
     }
 
     function renderDepartmentDropdowns() {
-      const depts = tripConfig.departments || [];
-      const opts = depts.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+      const allDepts = tripConfig.departments || ['BCA', 'B.Sc Computer Science', 'B.Com', 'BBA', 'BA English', 'General'];
+      let studentDepts = [...allDepts];
+      if (tripConfig.allowedDepartments && Array.isArray(tripConfig.allowedDepartments) && tripConfig.allowedDepartments.length > 0 && !tripConfig.allowedDepartments.includes('All')) {
+        studentDepts = allDepts.filter(d => tripConfig.allowedDepartments.includes(d));
+        if (studentDepts.length === 0) studentDepts = [...tripConfig.allowedDepartments];
+      }
+      const studentOpts = studentDepts.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+      const adminOpts = allDepts.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+
       const el1 = document.getElementById('inpDept');
       const el2 = document.getElementById('editDept');
-      if (el1) el1.innerHTML = opts;
-      if (el2) el2.innerHTML = opts;
+      if (el1) el1.innerHTML = studentOpts;
+      if (el2) el2.innerHTML = adminOpts;
     }
 
     function renderExpenseCategoryDropdown(selectedVal = '') {
@@ -7967,9 +8505,44 @@
       }
 
       const btn = document.getElementById('btnSubmitNewPay');
-      const originalText = btn.innerHTML;
-      btn.disabled = true;
-      btn.innerHTML = '<span>Submitting...</span>';
+      const originalText = btn ? btn.innerHTML : 'Submit My Trip Payment';
+
+      // 1. Check Trip Status
+      const tripStatus = (tripConfig.status || 'Active').trim();
+      if (['Completed', 'Cancelled', 'Archived'].includes(tripStatus)) {
+        showToast(`Registration closed: This trip is marked as ${tripStatus}.`, 'error');
+        return;
+      }
+
+      // 2. Check Registration Deadline
+      if (tripConfig.registrationDeadline) {
+        const deadlineTime = new Date(tripConfig.registrationDeadline).getTime();
+        if (!isNaN(deadlineTime) && Date.now() > deadlineTime) {
+          showToast(`Registration deadline passed on ${new Date(deadlineTime).toLocaleString('en-IN')}.`, 'error');
+          return;
+        }
+      }
+
+      // 3. Check Maximum Student Limit
+      const maxLimit = Number(tripConfig.maxStudentsLimit) || 0;
+      const isNewStudent = !payments.some(p => normalizePhone(p.phone) === cleanPhone);
+      if (maxLimit > 0 && isNewStudent && payments.length >= maxLimit) {
+        showToast(`Registration closed: Maximum capacity of ${maxLimit} students has been reached for this trip!`, 'error');
+        return;
+      }
+
+      // 4. Check Allowed Departments
+      if (tripConfig.allowedDepartments && Array.isArray(tripConfig.allowedDepartments) && tripConfig.allowedDepartments.length > 0 && !tripConfig.allowedDepartments.includes('All')) {
+        if (!tripConfig.allowedDepartments.includes(department)) {
+          showToast(`Department restricted: This trip is only open for ${tripConfig.allowedDepartments.join(', ')}`, 'error');
+          return;
+        }
+      }
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>Submitting...</span>';
+      }
 
       const totalFee = Number(tripConfig.tripAmount) || 1500;
       const existingRecord = payments.find(p => normalizePhone(p.phone) === cleanPhone);
@@ -10577,6 +11150,67 @@
       }
     }
 
+    // =========================================================================
+    // MULTI-TRIP MANAGEMENT, LIFECYCLE, ARCHIVING & ROSTER SUITE
+    // =========================================================================
+    let currentTripManagerStatusFilter = 'all'; // 'all', 'Active', 'Upcoming', 'Completed', 'Archived'
+    let currentBossTripStatusFilter = 'all';
+    let currentTripStudentsTargetId = '';
+    let currentTripStudentsFilter = 'all'; // 'all', 'Verified', 'Pending Verification'
+
+    function setTripManagerStatusFilter(status) {
+      currentTripManagerStatusFilter = status;
+      const statuses = ['all', 'active', 'upcoming', 'completed', 'archived'];
+      statuses.forEach(s => {
+        const btn = document.getElementById(`tmStatusBtn_${s}`);
+        if (!btn) return;
+        if (s === status.toLowerCase()) {
+          btn.className = 'px-2 py-1 rounded-lg bg-white text-slate-900 shadow-2xs font-extrabold text-[11px]';
+        } else {
+          btn.className = 'px-2 py-1 rounded-lg text-slate-600 hover:text-slate-900 text-[11px]';
+        }
+      });
+      renderTripsListInModal();
+    }
+
+    function setBossTripStatusFilter(status) {
+      currentBossTripStatusFilter = status;
+      const statuses = ['all', 'active', 'upcoming', 'completed', 'archived'];
+      statuses.forEach(s => {
+        const btn = document.getElementById(`bossTripStatusBtn_${s}`);
+        if (!btn) return;
+        if (s === status.toLowerCase()) {
+          btn.className = 'px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-2xs font-extrabold text-[11px]';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 text-[11px]';
+        }
+      });
+      renderBossTripsHub();
+    }
+
+    function formatTripDates(t) {
+      if (!t) return 'Custom Dates';
+      if (t.startDate && t.endDate) {
+        if (t.startDate === t.endDate) return t.startDate;
+        return `${t.startDate} – ${t.endDate}`;
+      }
+      return t.startDate || t.tripDate || t.endDate || 'Upcoming';
+    }
+
+    function getTripStatusBadge(status) {
+      const st = status || 'Active';
+      if (st === 'Upcoming') {
+        return `<span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-100 text-blue-800 border border-blue-200 inline-flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3 text-blue-600"></i> Upcoming</span>`;
+      } else if (st === 'Completed') {
+        return `<span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-800 border border-purple-200 inline-flex items-center gap-1"><i data-lucide="check-circle" class="w-3 h-3 text-purple-600"></i> Completed</span>`;
+      } else if (st === 'Cancelled') {
+        return `<span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-100 text-rose-800 border border-rose-200 inline-flex items-center gap-1"><i data-lucide="alert-circle" class="w-3 h-3 text-rose-600"></i> Cancelled</span>`;
+      } else if (st === 'Archived') {
+        return `<span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-300 inline-flex items-center gap-1"><i data-lucide="archive" class="w-3 h-3 text-slate-600"></i> Archived</span>`;
+      }
+      return `<span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300 inline-flex items-center gap-1"><i data-lucide="radio" class="w-3 h-3 text-emerald-600 animate-pulse"></i> Active</span>`;
+    }
+
     function renderTripsListInModal() {
       const container = document.getElementById('tripsListContainer');
       if (!container) return;
@@ -10590,6 +11224,10 @@
           tripAmount: Number(tripConfig.tripAmount) || 1500,
           advanceAmount: Number(tripConfig.advanceAmount) || 500,
           receiverName: tripConfig.receiverName || 'Organizer',
+          status: tripConfig.status || 'Active',
+          startDate: tripConfig.startDate || '',
+          endDate: tripConfig.endDate || '',
+          tripDate: tripConfig.tripDate || '2026-11-15',
           createdAt: 0
         });
       }
@@ -10603,15 +11241,35 @@
         );
       }
 
-      const countBadge = document.getElementById('tripsCountBadgeText');
+      // Search Filter
+      const searchInput = document.getElementById('tripManagerSearchInput');
+      const query = (searchInput?.value || '').toLowerCase().trim();
+      if (query) {
+        tripsToDisplay = tripsToDisplay.filter(t =>
+          (t.tripTitle || '').toLowerCase().includes(query) ||
+          (t.destination || '').toLowerCase().includes(query) ||
+          (t.id || '').toLowerCase().includes(query) ||
+          (t.description || '').toLowerCase().includes(query)
+        );
+      }
+
+      // Status Filter
+      if (currentTripManagerStatusFilter !== 'all') {
+        tripsToDisplay = tripsToDisplay.filter(t => {
+          const st = (t.status || 'Active').toLowerCase();
+          return st === currentTripManagerStatusFilter.toLowerCase();
+        });
+      }
+
+      const countBadge = document.getElementById('tripsCountText');
       if (countBadge) countBadge.textContent = tripsToDisplay.length;
 
       if (tripsToDisplay.length === 0) {
         container.innerHTML = `
           <div class="p-6 text-center text-slate-400 text-xs bg-slate-50 border border-slate-200 rounded-2xl">
             <i data-lucide="compass" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
-            <p class="font-bold text-slate-600">No active trips found.</p>
-            <p class="text-[11px] mt-0.5">Click "Create New Trip" above to add your first trip.</p>
+            <p class="font-bold text-slate-600">No matching trips found.</p>
+            <p class="text-[11px] mt-0.5">Click "Create New Trip" above to launch a new trip or change filters.</p>
           </div>
         `;
         if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
@@ -10623,35 +11281,56 @@
         const tripPayments = rawPaymentsList.filter(p => (p.tripId || 'default') === t.id);
         const verifiedCount = tripPayments.filter(p => p.status === 'Verified').length;
         const totalCollected = tripPayments.filter(p => p.status === 'Verified').reduce((sum, p) => sum + (Number(p.amountPaid) || 0), 0);
+        const isArchived = t.status === 'Archived' || t.isArchived === true;
+        const maxLimit = Number(t.maxStudentsLimit) || 0;
+        const capacityPct = maxLimit > 0 ? Math.min(100, Math.round((tripPayments.length / maxLimit) * 100)) : 0;
 
         return `
-          <div class="p-4 rounded-2xl border transition-all ${isActive ? 'border-indigo-400 bg-indigo-50/60 shadow-md ring-2 ring-indigo-500/20' : 'border-slate-200 bg-white hover:border-slate-300 shadow-sm'}">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div class="flex items-start gap-3">
+          <div class="p-4 rounded-2xl border transition-all ${isActive ? 'border-indigo-400 bg-indigo-50/60 shadow-md ring-2 ring-indigo-500/20' : 'border-slate-200 bg-white hover:border-slate-300 shadow-sm'} ${isArchived ? 'opacity-85 bg-slate-50' : ''}">
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+              <div class="flex items-start gap-3 flex-1 min-w-0">
                 <div class="w-10 h-10 rounded-xl ${isActive ? 'bg-indigo-600 text-white shadow-indigo-200 shadow-lg' : 'bg-slate-100 text-slate-600'} flex items-center justify-center shrink-0 font-bold text-sm">
-                  ${isActive ? '<i data-lucide="check" class="w-5 h-5"></i>' : '<i data-lucide="compass" class="w-5 h-5"></i>'}
+                  ${isActive ? '<i data-lucide="check" class="w-5 h-5"></i>' : (isArchived ? '<i data-lucide="archive" class="w-5 h-5"></i>' : '<i data-lucide="compass" class="w-5 h-5"></i>')}
                 </div>
-                <div>
+                <div class="flex-1 min-w-0">
                   <div class="flex items-center gap-2 flex-wrap">
-                    <h5 class="font-bold text-slate-900 text-base">${escapeHtml(t.tripTitle || 'Trip')}</h5>
+                    <h5 class="font-extrabold text-slate-900 text-base truncate" title="${escapeHtml(t.tripTitle || 'Trip')}">${escapeHtml(t.tripTitle || 'Trip')}</h5>
                     <span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold ${isActive ? 'bg-indigo-200 text-indigo-900' : 'bg-slate-100 text-slate-700'}">
                       #${escapeHtml(t.id)}
                     </span>
+                    ${getTripStatusBadge(t.status)}
                     ${isActive ? '<span class="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300">Active Now</span>' : ''}
                   </div>
+
                   <p class="text-xs text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
                     <span><i data-lucide="map-pin" class="w-3.5 h-3.5 inline text-rose-500"></i> ${escapeHtml(t.destination || 'Custom Destination')}</span>
-                    ${t.tripDate ? `<span>• <i data-lucide="calendar" class="w-3.5 h-3.5 inline text-indigo-500"></i> ${escapeHtml(t.tripDate)}</span>` : ''}
+                    <span>• <i data-lucide="calendar" class="w-3.5 h-3.5 inline text-indigo-500"></i> ${escapeHtml(formatTripDates(t))}</span>
                     <span>• 💰 ₹${(t.tripAmount || 1500).toLocaleString('en-IN')} (Adv: ₹${(t.advanceAmount || 500).toLocaleString('en-IN')})</span>
                   </p>
-                  <div class="flex items-center gap-3 text-xs text-slate-600 mt-2">
-                    <span class="font-semibold text-indigo-700 bg-indigo-100/70 px-2 py-0.5 rounded-md">${tripPayments.length} Registered (${verifiedCount} Verified)</span>
+
+                  ${t.description ? `<p class="text-[11px] text-slate-500 line-clamp-1 mt-1">${escapeHtml(t.description)}</p>` : ''}
+
+                  <!-- Capacity & Deadline Bar -->
+                  <div class="flex items-center gap-3 text-xs text-slate-600 mt-2 flex-wrap">
+                    <button type="button" onclick="openTripStudentsModal('${t.id}')"
+                      class="font-semibold text-indigo-700 bg-indigo-100/70 hover:bg-indigo-200 px-2 py-0.5 rounded-md transition flex items-center gap-1 shadow-2xs"
+                      title="View registered students roster for this trip">
+                      <i data-lucide="users" class="w-3.5 h-3.5"></i>
+                      <span>${tripPayments.length} Students (${verifiedCount} Verified)</span>
+                    </button>
                     <span class="font-semibold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded-md">₹${totalCollected.toLocaleString('en-IN')} Collected</span>
+                    ${maxLimit > 0 ? `<span class="text-[11px] font-bold ${tripPayments.length >= maxLimit ? 'text-rose-700 bg-rose-50' : 'text-slate-600 bg-slate-100'} px-2 py-0.5 rounded-md">Capacity: ${tripPayments.length}/${maxLimit} (${capacityPct}%)</span>` : ''}
+                    ${t.registrationDeadline ? `<span class="text-[10px] font-semibold text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">Deadline: ${escapeHtml(t.registrationDeadline.replace('T', ' '))}</span>` : ''}
                   </div>
                 </div>
               </div>
 
+              <!-- Action Buttons -->
               <div class="flex items-center gap-1.5 self-end sm:self-center shrink-0 flex-wrap justify-end">
+                <button type="button" onclick="openTripStudentsModal('${t.id}')" class="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200/80 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-2xs" title="View students registered for this trip">
+                  <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-600"></i>
+                  <span>Students</span>
+                </button>
                 <button type="button" onclick="openShareTripModal('${t.id}')" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-2xs" title="Get direct shareable payment & login links">
                   <i data-lucide="share-2" class="w-3.5 h-3.5 text-indigo-600"></i>
                   <span class="hidden xs:inline">Share</span>
@@ -10659,6 +11338,10 @@
                 <button type="button" onclick="openEditTripModal('${t.id}')" class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/80 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-2xs" title="Edit trip details and pricing">
                   <i data-lucide="edit-3" class="w-3.5 h-3.5 text-amber-600"></i>
                   <span class="hidden xs:inline">Edit</span>
+                </button>
+                <button type="button" onclick="${isArchived ? `unarchiveTrip('${t.id}')` : `archiveTrip('${t.id}')`}" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-2xs" title="${isArchived ? 'Restore / Unarchive trip' : 'Archive trip safely (data protected)'}">
+                  <i data-lucide="${isArchived ? 'rotate-ccw' : 'archive'}" class="w-3.5 h-3.5"></i>
+                  <span class="hidden xs:inline">${isArchived ? 'Unarchive' : 'Archive'}</span>
                 </button>
                 <button type="button" onclick="promptDeleteTrip('${t.id}')" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/80 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-2xs" title="Delete trip">
                   <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-600"></i>
@@ -10690,6 +11373,7 @@
       renderTripsListInModal();
       const modal = document.getElementById('tripManagerModal');
       if (modal) modal.classList.remove('hidden');
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
     }
 
     function closeTripManagerModal() {
@@ -10697,15 +11381,44 @@
       if (modal) modal.classList.add('hidden');
     }
 
+    function syncNewTripDates() {
+      const startInp = document.getElementById('newTripStartDate');
+      const endInp = document.getElementById('newTripEndDate');
+      if (startInp && startInp.value && endInp && !endInp.value) {
+        const d = new Date(startInp.value);
+        d.setDate(d.getDate() + 3);
+        endInp.value = d.toISOString().split('T')[0];
+      }
+    }
+
+    function toggleAllNewTripDepts(btn) {
+      const checkboxes = document.querySelectorAll('input[name="chkNewTripDept"]');
+      const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+      checkboxes.forEach(cb => cb.checked = !allChecked);
+      if (btn) btn.textContent = allChecked ? 'Select All Departments' : 'Deselect All';
+    }
+
+    function toggleAllEditTripDepts(btn) {
+      const checkboxes = document.querySelectorAll('input[name="chkEditTripDept"]');
+      const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+      checkboxes.forEach(cb => cb.checked = !allChecked);
+      if (btn) btn.textContent = allChecked ? 'Select All' : 'Deselect All';
+    }
+
     function openCreateTripModal() {
       const titleInput = document.getElementById('newTripTitle');
       const slugInput = document.getElementById('newTripSlug');
-      const destInput = document.getElementById('newTripDestination') || document.getElementById('newTripDest');
-      const dateInput = document.getElementById('newTripDate');
+      const destInput = document.getElementById('newTripDestination');
+      const descInput = document.getElementById('newTripDescription');
+      const startInput = document.getElementById('newTripStartDate');
+      const endInput = document.getElementById('newTripEndDate');
+      const regDeadlineInput = document.getElementById('newTripRegDeadline');
+      const statusInput = document.getElementById('newTripStatus');
       const amountInput = document.getElementById('newTripAmount');
       const advInput = document.getElementById('newTripAdvance');
-      const upiInput = document.getElementById('newTripUpiId') || document.getElementById('newTripUpi');
-      const recInput = document.getElementById('newTripReceiverName') || document.getElementById('newTripReceiver');
+      const maxStudentsInput = document.getElementById('newTripMaxStudents');
+      const upiInput = document.getElementById('newTripUpiId');
+      const recInput = document.getElementById('newTripReceiverName');
 
       if (titleInput) titleInput.value = '';
       if (slugInput) {
@@ -10713,14 +11426,34 @@
         delete slugInput.dataset.manual;
       }
       if (destInput) destInput.value = '';
-      if (dateInput) {
-        const d = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
-        dateInput.value = d.toISOString().split('T')[0];
-      }
+      if (descInput) descInput.value = '';
+
+      const now = new Date();
+      const startD = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+      const endD = new Date(now.getTime() + 18 * 24 * 60 * 60 * 1000);
+      const dlD = new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000);
+
+      if (startInput) startInput.value = startD.toISOString().split('T')[0];
+      if (endInput) endInput.value = endD.toISOString().split('T')[0];
+      if (regDeadlineInput) regDeadlineInput.value = dlD.toISOString().slice(0, 16);
+      if (statusInput) statusInput.value = 'Upcoming';
       if (amountInput) amountInput.value = '2500';
       if (advInput) advInput.value = '500';
+      if (maxStudentsInput) maxStudentsInput.value = '';
       if (upiInput) upiInput.value = tripConfig.upiId || 'mohdshemeemkp@oksbi';
       if (recInput) recInput.value = tripConfig.receiverName || 'Mohd Shemeem KP';
+
+      // Render Department Checklist for New Trip
+      const deptContainer = document.getElementById('newTripAllowedDeptsContainer');
+      if (deptContainer) {
+        const availableDepts = tripConfig.departments || ['BCA', 'B.Sc Computer Science', 'B.Com', 'BBA', 'BA English', 'General'];
+        deptContainer.innerHTML = availableDepts.map(d => `
+          <label class="flex items-center gap-2 p-1.5 rounded-lg bg-white border border-slate-200 cursor-pointer hover:border-indigo-300 transition">
+            <input type="checkbox" name="chkNewTripDept" value="${escapeHtml(d)}" checked class="w-3.5 h-3.5 text-indigo-600 rounded" />
+            <span class="font-bold text-slate-800 truncate">${escapeHtml(d)}</span>
+          </label>
+        `).join('');
+      }
 
       // Populate Admin 1, Admin 2, Admin 3... checklist
       const adminsContainer = document.getElementById('newTripAdminsChecklist');
@@ -10783,15 +11516,26 @@
 
       const title = (document.getElementById('newTripTitle')?.value || '').trim();
       let slug = (document.getElementById('newTripSlug')?.value || '').trim().toLowerCase();
-      const destEl = document.getElementById('newTripDestination') || document.getElementById('newTripDest');
-      const destination = (destEl?.value || '').trim();
-      const tripDate = document.getElementById('newTripDate')?.value || new Date().toISOString().split('T')[0];
+      const destination = (document.getElementById('newTripDestination')?.value || '').trim();
+      const description = (document.getElementById('newTripDescription')?.value || '').trim();
+      const startDate = document.getElementById('newTripStartDate')?.value || new Date().toISOString().split('T')[0];
+      const endDate = document.getElementById('newTripEndDate')?.value || startDate;
+      const registrationDeadline = document.getElementById('newTripRegDeadline')?.value || '';
+      const status = document.getElementById('newTripStatus')?.value || 'Upcoming';
       const tripAmount = Number(document.getElementById('newTripAmount')?.value) || 2500;
       const advanceAmount = Number(document.getElementById('newTripAdvance')?.value) || 500;
-      const upiEl = document.getElementById('newTripUpiId') || document.getElementById('newTripUpi');
-      const upiId = (upiEl?.value || '').trim() || tripConfig.upiId || 'mohdshemeemkp@oksbi';
-      const receiverEl = document.getElementById('newTripReceiverName') || document.getElementById('newTripReceiver');
-      const receiverName = (receiverEl?.value || '').trim() || tripConfig.receiverName || 'Mohd Shemeem KP';
+      const maxStudentsVal = document.getElementById('newTripMaxStudents')?.value;
+      const maxStudentsLimit = (maxStudentsVal && !isNaN(Number(maxStudentsVal)) && Number(maxStudentsVal) > 0) ? Number(maxStudentsVal) : 0;
+      const upiId = (document.getElementById('newTripUpiId')?.value || '').trim() || tripConfig.upiId || 'mohdshemeemkp@oksbi';
+      const receiverName = (document.getElementById('newTripReceiverName')?.value || '').trim() || tripConfig.receiverName || 'Mohd Shemeem KP';
+
+      // Department restrictions
+      const checkedDepts = [];
+      document.querySelectorAll('input[name="chkNewTripDept"]:checked').forEach(cb => {
+        checkedDepts.push(cb.value);
+      });
+      const allDepts = tripConfig.departments || ['BCA', 'B.Sc Computer Science', 'B.Com', 'BBA', 'BA English', 'General'];
+      const allowedDepartments = (checkedDepts.length === 0 || checkedDepts.length === allDepts.length) ? ['All'] : checkedDepts;
 
       if (!title) {
         showToast('Please enter trip title.', 'error');
@@ -10815,7 +11559,7 @@
         return;
       }
 
-      const btn = document.getElementById('btnCreateTripSubmit') || document.getElementById('btnSubmitNewTrip');
+      const btn = document.getElementById('btnCreateTripSubmit');
       if (btn) {
         btn.disabled = true;
         btn.textContent = 'Creating Trip...';
@@ -10850,15 +11594,23 @@
           id: slug,
           tripTitle: title,
           destination,
-          tripDate,
+          description,
+          startDate,
+          endDate,
+          tripDate: startDate,
+          registrationDeadline,
+          status,
+          isArchived: status === 'Archived',
           tripAmount,
           advanceAmount,
+          maxStudentsLimit,
+          allowedDepartments,
           upiId,
           receiverName,
           createdBy: creatorEmail,
           assignedAdmins: assignedAdminEmails,
           customLogoUrl: DEFAULT_LOGO_URL,
-          departments: ['BCA', 'B.Sc Computer Science', 'B.Com', 'BBA', 'General'],
+          departments: allDepts,
           expenseCategories: ['Transportation', 'Resort / Stay', 'Food & Snacks', 'Entry & Permits', 'Misc / Other'],
           createdAt: Date.now()
         };
@@ -10896,7 +11648,7 @@
         });
 
         // 3. Log event
-        logSecurityEvent('TRIP_CREATE', slug, `Created trip "${title}" assigned to ${assignedAdminEmails.length} admin(s)`);
+        logSecurityEvent('TRIP_CREATE', slug, `Created trip "${title}" (Status: ${status}) assigned to ${assignedAdminEmails.length} admin(s)`);
 
         closeCreateTripModal();
         showToast(`Trip "${title}" created successfully!`, 'success');
@@ -10989,14 +11741,12 @@
       const payLink = getTripShareUrl(targetId);
       const loginLink = getTripShareUrl(targetId, 'participant');
 
-      // Populate input elements (supporting all IDs)
       const payInp = document.getElementById('sharePayLinkInput') || document.getElementById('shareTripPayLink');
       if (payInp) payInp.value = payLink;
 
       const loginInp = document.getElementById('shareLoginLinkInput') || document.getElementById('shareTripLoginLink');
       if (loginInp) loginInp.value = loginLink;
 
-      // Render live QR Code for the payment link
       const qrImg = document.getElementById('shareModalQrImg') || document.getElementById('shareQrImage');
       if (qrImg) {
         qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=8&data=${encodeURIComponent(payLink)}`;
@@ -11115,15 +11865,21 @@
       }
     }
 
-
     function openEditTripModal(tripId) {
       const trip = allTrips.find(t => t.id === tripId) || {
         id: tripId,
         tripTitle: tripConfig.tripTitle || '',
         destination: tripConfig.destination || '',
+        description: tripConfig.description || '',
+        startDate: tripConfig.startDate || '',
+        endDate: tripConfig.endDate || '',
         tripDate: tripConfig.tripDate || '',
+        registrationDeadline: tripConfig.registrationDeadline || '',
+        status: tripConfig.status || 'Active',
         tripAmount: tripConfig.tripAmount || 1500,
         advanceAmount: tripConfig.advanceAmount || 500,
+        maxStudentsLimit: tripConfig.maxStudentsLimit || '',
+        allowedDepartments: tripConfig.allowedDepartments || ['All'],
         upiId: tripConfig.upiId || '',
         receiverName: tripConfig.receiverName || ''
       };
@@ -11140,20 +11896,92 @@
       const destInp = document.getElementById('editTripDest');
       if (destInp) destInp.value = trip.destination || '';
 
-      const dateInp = document.getElementById('editTripDate');
-      if (dateInp) dateInp.value = trip.tripDate || '';
+      const descInp = document.getElementById('editTripDescription');
+      if (descInp) descInp.value = trip.description || '';
+
+      const startInp = document.getElementById('editTripStartDate');
+      if (startInp) startInp.value = trip.startDate || trip.tripDate || '';
+
+      const endInp = document.getElementById('editTripEndDate');
+      if (endInp) endInp.value = trip.endDate || trip.startDate || trip.tripDate || '';
+
+      const dlInp = document.getElementById('editTripRegDeadline');
+      if (dlInp) dlInp.value = trip.registrationDeadline ? trip.registrationDeadline.slice(0, 16) : '';
+
+      const statusInp = document.getElementById('editTripStatus');
+      if (statusInp) statusInp.value = trip.status || (trip.isArchived ? 'Archived' : 'Active');
 
       const amountInp = document.getElementById('editTripAmount');
       if (amountInp) amountInp.value = trip.tripAmount || 1500;
 
       const advInp = document.getElementById('editTripAdvance');
-      if (advInp) advInp.value = trip.advanceAmount || 500;
+      if (advInp) advInp.value = (trip.advanceAmount !== undefined) ? trip.advanceAmount : 500;
+
+      const maxInp = document.getElementById('editTripMaxStudents');
+      if (maxInp) maxInp.value = trip.maxStudentsLimit || '';
 
       const upiInp = document.getElementById('editTripUpi');
       if (upiInp) upiInp.value = trip.upiId || tripConfig.upiId || 'mohdshemeemkp@oksbi';
 
       const recInp = document.getElementById('editTripReceiver');
       if (recInp) recInp.value = trip.receiverName || tripConfig.receiverName || 'Mohd Shemeem KP';
+
+      // Archive button state in modal
+      const isArchived = trip.status === 'Archived' || trip.isArchived === true;
+      const archiveBtnText = document.getElementById('btnArchiveFromEditModalText');
+      if (archiveBtnText) archiveBtnText.textContent = isArchived ? 'Unarchive Trip' : 'Archive Trip';
+
+      // Allowed Departments Checklist
+      const deptContainer = document.getElementById('editTripAllowedDeptsContainer');
+      if (deptContainer) {
+        const availableDepts = tripConfig.departments || ['BCA', 'B.Sc Computer Science', 'B.Com', 'BBA', 'BA English', 'General'];
+        const currentAllowed = Array.isArray(trip.allowedDepartments) ? trip.allowedDepartments : ['All'];
+        const isAll = currentAllowed.includes('All') || currentAllowed.length === 0;
+
+        deptContainer.innerHTML = availableDepts.map(d => {
+          const isChecked = isAll || currentAllowed.includes(d);
+          return `
+            <label class="flex items-center gap-2 p-1.5 rounded-lg bg-white border border-slate-200 cursor-pointer hover:border-amber-300 transition">
+              <input type="checkbox" name="chkEditTripDept" value="${escapeHtml(d)}" ${isChecked ? 'checked' : ''} class="w-3.5 h-3.5 text-amber-600 rounded" />
+              <span class="font-bold text-slate-800 truncate">${escapeHtml(d)}</span>
+            </label>
+          `;
+        }).join('');
+      }
+
+      // Populate Admin & Coordinator Checklist
+      const adminsContainer = document.getElementById('editTripAdminsChecklist');
+      if (adminsContainer) {
+        const nonBossAdmins = allAdminUsers.filter(u => u.role !== 'boss');
+        if (nonBossAdmins.length === 0) {
+          adminsContainer.innerHTML = `
+            <div class="text-center py-2 text-xs text-slate-400">
+              <span>No other managers registered yet.</span>
+            </div>
+          `;
+        } else {
+          adminsContainer.innerHTML = nonBossAdmins.map((u, idx) => {
+            const isAssigned = (Array.isArray(trip.assignedAdmins) && (trip.assignedAdmins.includes(u.email) || trip.assignedAdmins.includes(u.id))) ||
+              (Array.isArray(u.assignedTrips) && (u.assignedTrips.includes('*') || u.assignedTrips.includes(trip.id))) ||
+              (trip.createdBy && (trip.createdBy === u.email || trip.createdBy === u.id));
+            return `
+              <label class="flex items-center gap-2 p-1.5 rounded-lg bg-white border border-slate-200 cursor-pointer text-xs hover:border-amber-300 transition">
+                <input
+                  type="checkbox"
+                  name="chkEditTripAdmin"
+                  value="${escapeHtml(u.id)}"
+                  data-email="${escapeHtml(u.email || '')}"
+                  class="w-3.5 h-3.5 text-amber-600 rounded"
+                  ${isAssigned ? 'checked' : ''}
+                />
+                <span class="w-4 h-4 rounded-full bg-amber-600 text-white text-[9px] flex items-center justify-center font-black">A${idx + 1}</span>
+                <span class="font-bold text-slate-800">Admin ${idx + 1}: ${escapeHtml(u.name || 'Admin')}</span>
+                <span class="font-mono text-[10px] text-slate-400">(${escapeHtml(u.email || '')})</span>
+              </label>
+            `;
+          }).join('');
+        }
+      }
 
       const modal = document.getElementById('editTripModal');
       if (modal) modal.classList.remove('hidden');
@@ -11169,17 +11997,40 @@
     }
 
     async function handleEditTripSubmit(e) {
-      e.preventDefault();
+      if (e && e.preventDefault) e.preventDefault();
       const tripId = (document.getElementById('editTripId')?.value || '').trim();
       if (!tripId) return;
 
       const title = (document.getElementById('editTripTitle')?.value || '').trim();
       const destination = (document.getElementById('editTripDest')?.value || '').trim();
-      const tripDate = (document.getElementById('editTripDate')?.value || '').trim();
+      const description = (document.getElementById('editTripDescription')?.value || '').trim();
+      const startDate = (document.getElementById('editTripStartDate')?.value || '').trim();
+      const endDate = (document.getElementById('editTripEndDate')?.value || startDate).trim();
+      const registrationDeadline = document.getElementById('editTripRegDeadline')?.value || '';
+      const status = document.getElementById('editTripStatus')?.value || 'Active';
       const tripAmount = Number(document.getElementById('editTripAmount')?.value) || 1500;
       const advanceAmount = Number(document.getElementById('editTripAdvance')?.value) || 500;
+      const maxStudentsVal = document.getElementById('editTripMaxStudents')?.value;
+      const maxStudentsLimit = (maxStudentsVal && !isNaN(Number(maxStudentsVal)) && Number(maxStudentsVal) > 0) ? Number(maxStudentsVal) : 0;
       const upiId = (document.getElementById('editTripUpi')?.value || '').trim();
       const receiverName = (document.getElementById('editTripReceiver')?.value || '').trim();
+
+      // Department restrictions
+      const checkedDepts = [];
+      document.querySelectorAll('input[name="chkEditTripDept"]:checked').forEach(cb => {
+        checkedDepts.push(cb.value);
+      });
+      const allDepts = tripConfig.departments || ['BCA', 'B.Sc Computer Science', 'B.Com', 'BBA', 'BA English', 'General'];
+      const allowedDepartments = (checkedDepts.length === 0 || checkedDepts.length === allDepts.length) ? ['All'] : checkedDepts;
+
+      // Collect assigned admins
+      const selectedAdminCheckboxes = document.querySelectorAll('input[name="chkEditTripAdmin"]:checked');
+      const assignedAdminEmails = [];
+      const assignedAdminIds = [];
+      selectedAdminCheckboxes.forEach(cb => {
+        assignedAdminIds.push(cb.value);
+        if (cb.dataset.email) assignedAdminEmails.push(cb.dataset.email);
+      });
 
       if (!title || !destination) {
         showToast('Please enter trip title and destination.', 'error');
@@ -11197,9 +12048,18 @@
           id: tripId,
           tripTitle: title,
           destination,
-          tripDate,
+          description,
+          startDate,
+          endDate,
+          tripDate: startDate,
+          registrationDeadline,
+          status,
+          isArchived: status === 'Archived',
           tripAmount,
           advanceAmount,
+          maxStudentsLimit,
+          allowedDepartments,
+          assignedAdmins: assignedAdminEmails,
           upiId,
           receiverName,
           updatedAt: Date.now()
@@ -11212,7 +12072,24 @@
         const configDocId = tripId === 'default' ? 'main_config' : 'trip_' + tripId;
         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', configDocId), updatedTripMeta, { merge: true });
 
-        // 3. If currently active, sync config and update UI
+        // 3. Update assigned admin records
+        for (const u of allAdminUsers) {
+          if (u.role === 'boss') continue;
+          let userAssigned = Array.isArray(u.assignedTrips) ? [...u.assignedTrips] : [];
+          if (assignedAdminIds.includes(u.id)) {
+            if (!userAssigned.includes(tripId) && !userAssigned.includes('*')) userAssigned.push(tripId);
+          } else {
+            userAssigned = userAssigned.filter(t => t !== tripId);
+          }
+          u.assignedTrips = userAssigned;
+          try {
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admin_users', u.id), {
+              assignedTrips: userAssigned
+            });
+          } catch (eAssigned) { }
+        }
+
+        // 4. If currently active, sync config and update UI
         if (tripId === currentTripId) {
           tripConfig = { ...tripConfig, ...updatedTripMeta };
           applyTripConfigToUI();
@@ -11221,14 +12098,15 @@
           if (loggedInParticipant) updateParticipantDashboardUI();
         }
 
-        // 4. Update in-memory allTrips entry
+        // 5. Update in-memory allTrips entry
         const idx = allTrips.findIndex(t => t.id === tripId);
         if (idx !== -1) {
           allTrips[idx] = { ...allTrips[idx], ...updatedTripMeta };
         }
 
         renderTripsListInModal();
-        logSecurityEvent('EDIT_TRIP', tripId, `Updated trip details for "${title}"`);
+        if (typeof renderBossTripsHub === 'function') renderBossTripsHub();
+        logSecurityEvent('EDIT_TRIP', tripId, `Updated trip details for "${title}" (Status: ${status})`);
         closeEditTripModal();
         showToast(`Trip "${title}" updated successfully!`, 'success');
       } catch (err) {
@@ -11241,6 +12119,130 @@
           if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
         }
       }
+    }
+
+    // TRIP ARCHIVING & DATA PROTECTION
+    async function archiveTrip(tripId) {
+      const trip = allTrips.find(t => t.id === tripId);
+      if (!trip) return;
+
+      try {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trips_master', tripId), {
+          status: 'Archived',
+          isArchived: true,
+          archivedAt: Date.now()
+        }, { merge: true });
+
+        const configDocId = tripId === 'default' ? 'main_config' : 'trip_' + tripId;
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', configDocId), {
+          status: 'Archived',
+          isArchived: true
+        }, { merge: true });
+
+        trip.status = 'Archived';
+        trip.isArchived = true;
+
+        if (tripId === currentTripId) {
+          tripConfig.status = 'Archived';
+          tripConfig.isArchived = true;
+          applyTripConfigToUI();
+        }
+
+        renderTripsListInModal();
+        if (typeof renderBossTripsHub === 'function') renderBossTripsHub();
+        logSecurityEvent('ARCHIVE_TRIP', tripId, `Archived trip "${trip.tripTitle || tripId}" safely`);
+        showToast(`Trip "${trip.tripTitle || tripId}" archived safely! All data protected.`, 'success');
+      } catch (err) {
+        console.error('Error archiving trip:', err);
+        showToast('Failed to archive trip.', 'error');
+      }
+    }
+
+    async function unarchiveTrip(tripId) {
+      const trip = allTrips.find(t => t.id === tripId);
+      if (!trip) return;
+
+      try {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trips_master', tripId), {
+          status: 'Active',
+          isArchived: false,
+          unarchivedAt: Date.now()
+        }, { merge: true });
+
+        const configDocId = tripId === 'default' ? 'main_config' : 'trip_' + tripId;
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', configDocId), {
+          status: 'Active',
+          isArchived: false
+        }, { merge: true });
+
+        trip.status = 'Active';
+        trip.isArchived = false;
+
+        if (tripId === currentTripId) {
+          tripConfig.status = 'Active';
+          tripConfig.isArchived = false;
+          applyTripConfigToUI();
+        }
+
+        renderTripsListInModal();
+        if (typeof renderBossTripsHub === 'function') renderBossTripsHub();
+        logSecurityEvent('UNARCHIVE_TRIP', tripId, `Restored trip "${trip.tripTitle || tripId}" to Active`);
+        showToast(`Trip "${trip.tripTitle || tripId}" unarchived and set to Active!`, 'success');
+      } catch (err) {
+        console.error('Error unarchiving trip:', err);
+        showToast('Failed to unarchive trip.', 'error');
+      }
+    }
+
+    function archiveTripFromEditModal() {
+      const tripId = document.getElementById('editTripId')?.value;
+      if (!tripId) return;
+      const trip = allTrips.find(t => t.id === tripId);
+      if (trip && (trip.status === 'Archived' || trip.isArchived)) {
+        unarchiveTrip(tripId);
+      } else {
+        archiveTrip(tripId);
+      }
+      closeEditTripModal();
+    }
+
+    function archiveCurrentTargetTrip() {
+      const tripId = document.getElementById('deleteTargetTripId')?.value;
+      if (!tripId) return;
+      archiveTrip(tripId);
+      closeDeleteTripKeyModal();
+    }
+
+    function downloadTripBackupJson(tripId) {
+      if (!tripId) tripId = currentTripId || 'default';
+      const trip = allTrips.find(t => t.id === tripId) || { id: tripId };
+      const tripPayments = rawPaymentsList.filter(p => (p.tripId || 'default') === tripId);
+      const tripExpenses = rawExpensesList.filter(e => (e.tripId || 'default') === tripId);
+      const tripItin = rawItinList.filter(i => (i.tripId || 'default') === tripId);
+      const tripContacts = rawContactsList.filter(c => (c.tripId || 'default') === tripId);
+      const tripPnr = rawPnrList.filter(p => (p.tripId || 'default') === tripId);
+
+      const backupData = {
+        app: 'TripPay',
+        backupVersion: '2.0',
+        exportedAt: new Date().toISOString(),
+        tripId,
+        tripMetadata: trip,
+        studentsCount: tripPayments.length,
+        payments: tripPayments,
+        expenses: tripExpenses,
+        itinerary: tripItin,
+        contacts: tripContacts,
+        pnrRecords: tripPnr
+      };
+
+      const jsonStr = JSON.stringify(backupData, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `TripPay_Backup_${tripId}_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      showToast(`Trip data backup downloaded for #${tripId}! ✅`, 'success');
     }
 
     function promptDeleteTrip(tripId) {
@@ -11261,11 +12263,10 @@
       const warnEl = document.getElementById('deleteTripWarningText');
       if (warnEl) {
         warnEl.textContent = studentCount > 0
-          ? `⚠️ CAUTION: There are ${studentCount} registered payment record(s) under this trip that will be permanently wiped!`
+          ? `⚠️ CAUTION: There are ${studentCount} registered payment record(s) under this trip that will be permanently wiped! Archiving is strongly recommended instead.`
           : 'Warning: This trip and all its configurations will be permanently deleted.';
       }
 
-      // Unique Confirmation Key (unique : key requirement)
       const keyEl = document.getElementById('requiredUniqueKeyDisplay');
       if (keyEl) keyEl.textContent = tripId;
 
@@ -11296,7 +12297,6 @@
 
       if (!tripId) return;
 
-      // Validate Unique Key (Accepts unique trip key/slug, 'DELETE', or Boss Master PIN)
       const isValid = (enteredKey === requiredKey) || (enteredKey === `DELETE:${tripId}`) || (enteredKey === 'DELETE') || (enteredKey === bossPin);
       if (!isValid) {
         showToast(`Invalid unique key! You must type '${requiredKey}' to confirm.`, 'error');
@@ -11379,6 +12379,198 @@
           if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
         }
       }
+    }
+
+    // =========================================================================
+    // DEDICATED TRIP REGISTERED STUDENTS ROSTER MODAL
+    // =========================================================================
+    function openTripStudentsModal(tripId) {
+      currentTripStudentsTargetId = tripId || currentTripId || 'default';
+      const trip = allTrips.find(t => t.id === currentTripStudentsTargetId) || {
+        id: currentTripStudentsTargetId,
+        tripTitle: tripConfig.tripTitle || currentTripStudentsTargetId,
+        destination: tripConfig.destination || 'Destination'
+      };
+
+      const titleEl = document.getElementById('tripStudentsModalTitle');
+      if (titleEl) titleEl.textContent = `Registered Students — ${trip.tripTitle || 'Trip'}`;
+
+      const idBadge = document.getElementById('tripStudentsTripIdBadge');
+      if (idBadge) idBadge.textContent = `#${trip.id}`;
+
+      const subEl = document.getElementById('tripStudentsModalSubtitle');
+      if (subEl) subEl.textContent = `Destination: ${trip.destination || 'Custom'} • Dates: ${formatTripDates(trip)}`;
+
+      const searchInput = document.getElementById('tripStudentsSearchInput');
+      if (searchInput) searchInput.value = '';
+
+      currentTripStudentsFilter = 'all';
+      setTripStudentsFilter('all');
+
+      const modal = document.getElementById('tripStudentsModal');
+      if (modal) modal.classList.remove('hidden');
+
+      renderTripStudentsList();
+    }
+
+    function closeTripStudentsModal() {
+      const modal = document.getElementById('tripStudentsModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function setTripStudentsFilter(filter) {
+      currentTripStudentsFilter = filter;
+      const btns = ['all', 'verified', 'pending'];
+      btns.forEach(b => {
+        const btn = document.getElementById(`tsFilterBtn_${b}`);
+        if (!btn) return;
+        const matches = (b === 'all' && filter === 'all') ||
+          (b === 'verified' && filter === 'Verified') ||
+          (b === 'pending' && filter === 'Pending Verification');
+        btn.className = matches
+          ? 'px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-2xs font-bold'
+          : 'px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-medium';
+      });
+      renderTripStudentsList();
+    }
+
+    function renderTripStudentsList() {
+      const container = document.getElementById('tripStudentsListContainer');
+      if (!container) return;
+
+      const targetTrip = allTrips.find(t => t.id === currentTripStudentsTargetId) || { id: currentTripStudentsTargetId };
+      const tripStudents = rawPaymentsList.filter(p => (p.tripId || 'default') === currentTripStudentsTargetId);
+      const verifiedCount = tripStudents.filter(p => p.status === 'Verified').length;
+      const totalCollected = tripStudents.filter(p => p.status === 'Verified').reduce((sum, p) => sum + (Number(p.amountPaid) || 0), 0);
+      const totalDues = tripStudents.reduce((sum, p) => sum + getBalanceDue(p), 0);
+      const maxLimit = Number(targetTrip.maxStudentsLimit) || 0;
+
+      // Update KPI Cards
+      const elTot = document.getElementById('tsKpiTotalCount');
+      const elVer = document.getElementById('tsKpiVerifiedCount');
+      const elCol = document.getElementById('tsKpiCollected');
+      const elDue = document.getElementById('tsKpiDues');
+      const elCap = document.getElementById('tsKpiCapacityText');
+
+      if (elTot) elTot.textContent = tripStudents.length;
+      if (elVer) elVer.textContent = verifiedCount;
+      if (elCol) elCol.textContent = formatINR(totalCollected);
+      if (elDue) elDue.textContent = formatINR(totalDues);
+      if (elCap) {
+        if (maxLimit > 0) {
+          const pct = Math.round((tripStudents.length / maxLimit) * 100);
+          elCap.textContent = `Limit: ${maxLimit} (${pct}% Full)`;
+        } else {
+          elCap.textContent = 'No Limit Set';
+        }
+      }
+
+      // Filter list
+      let filtered = [...tripStudents];
+      const searchInput = document.getElementById('tripStudentsSearchInput');
+      const query = (searchInput?.value || '').toLowerCase().trim();
+
+      if (query) {
+        filtered = filtered.filter(p =>
+          (p.studentName || '').toLowerCase().includes(query) ||
+          (p.studentRollNo || '').toLowerCase().includes(query) ||
+          (p.department || '').toLowerCase().includes(query) ||
+          (p.phone || '').includes(query) ||
+          (p.receiptCode || '').toLowerCase().includes(query)
+        );
+      }
+
+      if (currentTripStudentsFilter !== 'all') {
+        filtered = filtered.filter(p => p.status === currentTripStudentsFilter);
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center bg-slate-50 border border-slate-200 rounded-2xl">
+            <i data-lucide="users" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
+            <p class="font-bold text-slate-700 text-sm">${tripStudents.length === 0 ? 'No students registered for this trip yet' : 'No students match current filter'}</p>
+            <p class="text-xs text-slate-400 mt-0.5">Share this trip\'s payment link with students to begin registration.</p>
+          </div>
+        `;
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = filtered.map((p, idx) => {
+        const isVer = p.status === 'Verified';
+        const due = getBalanceDue(p);
+        const avatar = p.photoUrl
+          ? `<img src="${escapeHtml(p.photoUrl)}" alt="${escapeHtml(p.studentName)}" class="w-10 h-10 rounded-xl object-cover border border-slate-200 shadow-2xs shrink-0" />`
+          : `<div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center shrink-0 text-sm">${escapeHtml((p.studentName || 'S').charAt(0).toUpperCase())}</div>`;
+
+        return `
+          <div class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-indigo-200 transition shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="font-mono text-xs font-bold text-slate-400 w-5 text-right shrink-0">${idx + 1}.</span>
+              ${avatar}
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h5 class="font-extrabold text-sm text-slate-900 truncate">${escapeHtml(p.studentName || 'Student')}</h5>
+                  ${p.studentRollNo ? `<span class="px-1.5 py-0.2 rounded bg-indigo-50 border border-indigo-200 text-indigo-800 font-mono text-[10px] font-bold">ID: ${escapeHtml(p.studentRollNo)}</span>` : ''}
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${isVer ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                    ${isVer ? 'Verified' : 'Pending'}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-2 flex-wrap">
+                  <span>🎓 ${escapeHtml(p.department || 'General')}</span>
+                  <span>• 📱 ${escapeHtml(p.phone || 'N/A')}</span>
+                  ${p.trainAllocation ? `<span class="font-bold text-indigo-700">• 🚆 ${escapeHtml(p.trainAllocation.coach)}/${escapeHtml(p.trainAllocation.seat)}</span>` : ''}
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 self-end sm:self-center shrink-0">
+              <div class="text-right text-xs">
+                <p class="font-extrabold text-slate-900">${formatINR(p.amountPaid || 0)} <span class="text-[10px] text-slate-400">Paid</span></p>
+                <p class="text-[11px] font-bold ${due > 0 ? 'text-amber-700' : 'text-emerald-700'}">${due > 0 ? `Due: ${formatINR(due)}` : 'Fully Paid'}</p>
+              </div>
+              <a href="https://wa.me/91${normalizePhone(p.phone)}" target="_blank"
+                class="w-8 h-8 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 flex items-center justify-center transition shadow-2xs"
+                title="Message student on WhatsApp">
+                <i data-lucide="message-circle" class="w-4 h-4"></i>
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function exportTripStudentsRosterExcel() {
+      const targetTrip = allTrips.find(t => t.id === currentTripStudentsTargetId) || { id: currentTripStudentsTargetId, tripTitle: currentTripStudentsTargetId };
+      const tripStudents = rawPaymentsList.filter(p => (p.tripId || 'default') === currentTripStudentsTargetId);
+
+      const headers = ['Sl No', 'Student Name', 'Roll No / ID', 'Department', 'Phone', 'Amount Paid', 'Balance Due', 'Status', 'Payment App', 'Receipt Code', 'Train Seat Onward', 'Train Seat Return'];
+      const rows = tripStudents.map((p, idx) => [
+        idx + 1,
+        `"${(p.studentName || '').replace(/"/g, '""')}"`,
+        `"${(p.studentRollNo || '').replace(/"/g, '""')}"`,
+        `"${(p.department || '').replace(/"/g, '""')}"`,
+        `"${p.phone || ''}"`,
+        p.amountPaid || 0,
+        getBalanceDue(p),
+        `"${p.status || ''}"`,
+        `"${(p.paymentApp || '').replace(/"/g, '""')}"`,
+        `"${p.receiptCode || ''}"`,
+        `"${p.trainAllocation ? p.trainAllocation.coach + '/' + p.trainAllocation.seat : ''}"`,
+        `"${p.returnTrainAllocation ? p.returnTrainAllocation.coach + '/' + p.returnTrainAllocation.seat : ''}"`
+      ]);
+
+      const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Trip_Students_Manifest_${currentTripStudentsTargetId}_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      showToast(`Exported student manifest for #${currentTripStudentsTargetId}! ✅`, 'success');
     }
 
 
@@ -11687,8 +12879,17 @@
           (t.destination || '').toLowerCase().includes(query) ||
           (t.id || '').toLowerCase().includes(query) ||
           (t.receiverName || '').toLowerCase().includes(query) ||
-          (t.createdBy || '').toLowerCase().includes(query)
+          (t.createdBy || '').toLowerCase().includes(query) ||
+          (t.description || '').toLowerCase().includes(query)
         );
+      }
+
+      // Boss Status Filter
+      if (currentBossTripStatusFilter !== 'all') {
+        tripsList = tripsList.filter(t => {
+          const st = (t.status || 'Active').toLowerCase();
+          return st === currentBossTripStatusFilter.toLowerCase();
+        });
       }
 
       if (tripsList.length === 0) {
@@ -11698,7 +12899,7 @@
               <i data-lucide="compass" class="w-5 h-5"></i>
             </div>
             <p class="text-sm font-bold text-slate-700">${allTrips.length === 0 ? 'No trips created yet' : 'No matching trips found'}</p>
-            <p class="text-xs text-slate-400 mt-0.5">${allTrips.length === 0 ? 'Click "Create New Trip" to launch your first college trip under Admin 1, 2, 3.' : 'Try adjusting your search query or create a new trip.'}</p>
+            <p class="text-xs text-slate-400 mt-0.5">${allTrips.length === 0 ? 'Click "Create New Trip" to launch your first college trip under Admin 1, 2, 3.' : 'Try adjusting your status filter or search keyword.'}</p>
           </div>
         `;
         if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
@@ -11713,6 +12914,9 @@
         const verifiedCount = tripPayments.filter(p => p.status === 'Verified').length;
         const totalCollected = tripPayments.filter(p => p.status === 'Verified').reduce((sum, p) => sum + (Number(p.amountPaid) || 0), 0);
         const totalDue = tripPayments.reduce((sum, p) => sum + getBalanceDue(p), 0);
+        const isArchived = t.status === 'Archived' || t.isArchived === true;
+        const maxLimit = Number(t.maxStudentsLimit) || 0;
+        const capacityPct = maxLimit > 0 ? Math.min(100, Math.round((tripPayments.length / maxLimit) * 100)) : 0;
 
         // Find assigned admins for this trip
         const assignedAdmins = nonBossAdmins.filter(u =>
@@ -11722,19 +12926,21 @@
         );
 
         return `
-          <div class="p-5 rounded-2xl border transition-all ${isActive ? 'border-purple-400 bg-purple-50/50 shadow-md ring-2 ring-purple-400/20' : 'border-slate-200 bg-white hover:border-purple-200 shadow-sm'}">
+          <div class="p-5 rounded-2xl border transition-all ${isActive ? 'border-purple-400 bg-purple-50/50 shadow-md ring-2 ring-purple-400/20' : 'border-slate-200 bg-white hover:border-purple-200 shadow-sm'} ${isArchived ? 'opacity-85 bg-slate-50' : ''}">
             <div class="flex items-start justify-between gap-3 mb-3">
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2 flex-wrap mb-1">
                   <span class="font-mono text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">#${escapeHtml(t.id)}</span>
+                  ${getTripStatusBadge(t.status)}
                   ${isActive ? '<span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-600 text-white">Active Trip</span>' : ''}
                   <span class="text-[10px] font-bold text-slate-400">• ${escapeHtml(t.category || 'College Tour')}</span>
                 </div>
                 <h4 class="font-extrabold text-slate-900 text-base leading-snug truncate" title="${escapeHtml(t.tripTitle || t.id)}">${escapeHtml(t.tripTitle || t.id)}</h4>
-                <p class="text-xs text-slate-500 flex items-center gap-1 mt-0.5 truncate">
-                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-purple-500 shrink-0"></i>
-                  <span>${escapeHtml(t.destination || 'Destination')}</span>
+                <p class="text-xs text-slate-500 flex items-center gap-2 mt-0.5 flex-wrap">
+                  <span><i data-lucide="map-pin" class="w-3.5 h-3.5 inline text-rose-500"></i> ${escapeHtml(t.destination || 'Destination')}</span>
+                  <span>• <i data-lucide="calendar" class="w-3.5 h-3.5 inline text-purple-600"></i> ${escapeHtml(formatTripDates(t))}</span>
                 </p>
+                ${t.description ? `<p class="text-xs text-slate-500 line-clamp-1 mt-1">${escapeHtml(t.description)}</p>` : ''}
               </div>
             </div>
 
@@ -11743,13 +12949,13 @@
               <div class="flex items-center justify-between text-[11px]">
                 <span class="text-purple-900 font-extrabold flex items-center gap-1">
                   <i data-lucide="shield-check" class="w-3.5 h-3.5 text-purple-600"></i>
-                  <span>Trip In-Charge Admins:</span>
+                  <span>Trip In-Charge Coordinators:</span>
                 </span>
                 <button
                   type="button"
                   onclick="openTripAdminAssignmentModal('${t.id}')"
                   class="px-2 py-0.5 rounded-md bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-extrabold transition flex items-center gap-1 shadow-2xs"
-                  title="Assign Admin 1, 2, 3 to this trip"
+                  title="Assign Admin 1, 2, 3 or coordinators to this trip"
                 >
                   <i data-lucide="user-plus" class="w-3 h-3"></i>
                   <span>Assign Admins (1, 2, 3...)</span>
@@ -11757,31 +12963,55 @@
               </div>
               <div class="flex items-center gap-1.5 flex-wrap pt-0.5">
                 ${assignedAdmins.length > 0 ? assignedAdmins.map((a, aIdx) => {
-          const globalIdx = nonBossAdmins.findIndex(u => u.id === a.id);
-          const adminNum = globalIdx >= 0 ? globalIdx + 1 : aIdx + 1;
-          return `
+                  const globalIdx = nonBossAdmins.findIndex(u => u.id === a.id);
+                  const adminNum = globalIdx >= 0 ? globalIdx + 1 : aIdx + 1;
+                  return `
                     <span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-white text-purple-950 border border-purple-200 flex items-center gap-1 shadow-2xs" title="${escapeHtml(a.email || '')}">
                       <span class="w-4 h-4 rounded-full bg-purple-600 text-white text-[9px] flex items-center justify-center font-black">A${adminNum}</span>
                       <span>Admin ${adminNum}: ${escapeHtml(a.name || 'Unnamed')}</span>
                     </span>
                   `;
-        }).join('') : '<span class="text-amber-700 bg-amber-50 px-2 py-0.5 rounded text-[11px] font-medium border border-amber-200">⚠️ No Admins Assigned — Click Assign Admins</span>'}
+                }).join('') : '<span class="text-amber-700 bg-amber-50 px-2 py-0.5 rounded text-[11px] font-medium border border-amber-200">⚠️ No Admins Assigned — Click Assign Admins</span>'}
               </div>
             </div>
 
-            <!-- Fee & Details -->
-            <div class="p-2 rounded-xl bg-slate-50 border border-slate-100 text-xs mb-3 flex items-center justify-between">
-              <span class="text-slate-500 font-medium">Trip Fee / Advance:</span>
-              <span class="font-bold text-slate-800">${formatINR(t.tripAmount || 1500)} (Adv: ${formatINR(t.advanceAmount || 500)})</span>
+            <!-- Fee, Capacity & Deadline Meta -->
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs mb-3 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-500 font-medium">Trip Fee / Advance:</span>
+                <span class="font-bold text-slate-800">${formatINR(t.tripAmount || 1500)} (Adv: ${formatINR(t.advanceAmount || 500)})</span>
+              </div>
+              ${maxLimit > 0 ? `
+                <div class="space-y-1 pt-1 border-t border-slate-200/60">
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="font-bold text-slate-600">Capacity: ${tripPayments.length} / ${maxLimit} seats</span>
+                    <span class="font-extrabold ${tripPayments.length >= maxLimit ? 'text-rose-600' : 'text-purple-700'}">${capacityPct}% filled</span>
+                  </div>
+                  <div class="w-full h-1.5 rounded-full bg-slate-200 overflow-hidden">
+                    <div class="h-full ${tripPayments.length >= maxLimit ? 'bg-rose-500' : 'bg-purple-600'} rounded-full" style="width: ${capacityPct}%"></div>
+                  </div>
+                </div>
+              ` : ''}
+              ${t.registrationDeadline ? `
+                <div class="flex items-center justify-between text-[10px] pt-1 text-slate-500">
+                  <span>Registration Deadline:</span>
+                  <span class="font-bold text-amber-800 font-mono">${escapeHtml(t.registrationDeadline.replace('T', ' '))}</span>
+                </div>
+              ` : ''}
             </div>
 
             <!-- Financials & Stats Grid -->
             <div class="grid grid-cols-3 gap-2 text-center mb-4">
-              <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">
-                <p class="text-[10px] font-bold text-slate-500 uppercase">Students</p>
+              <button type="button" onclick="openTripStudentsModal('${t.id}')"
+                class="p-2 rounded-xl bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-200 transition text-center"
+                title="View full registered students roster">
+                <p class="text-[10px] font-bold text-slate-500 uppercase flex items-center justify-center gap-1">
+                  <i data-lucide="users" class="w-3 h-3 text-indigo-600"></i>
+                  <span>Students</span>
+                </p>
                 <p class="text-sm font-extrabold text-slate-900 mt-0.5">${tripPayments.length}</p>
                 <p class="text-[9px] text-emerald-600 font-bold">${verifiedCount} Verified</p>
-              </div>
+              </button>
               <div class="p-2 rounded-xl bg-emerald-50/60 border border-emerald-100">
                 <p class="text-[10px] font-bold text-emerald-700 uppercase">Collected</p>
                 <p class="text-sm font-extrabold text-emerald-800 mt-0.5">${formatINR(totalCollected)}</p>
@@ -11796,17 +13026,27 @@
 
             <!-- Action Buttons -->
             <div class="flex items-center gap-1.5 pt-3 border-t border-slate-100 flex-wrap">
+              <button
+                type="button"
+                onclick="openTripStudentsModal('${t.id}')"
+                class="py-2 px-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200/80 text-xs font-bold transition flex items-center justify-center gap-1 shadow-2xs"
+                title="View Students Roster"
+              >
+                <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-600"></i>
+                <span>Students</span>
+              </button>
+
               ${!isActive ? `
                 <button
                   type="button"
                   onclick="switchActiveTrip('${t.id}')"
-                  class="flex-1 min-w-[90px] py-2 px-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition flex items-center justify-center gap-1 shadow-xs"
+                  class="flex-1 min-w-[80px] py-2 px-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition flex items-center justify-center gap-1 shadow-xs"
                 >
                   <i data-lucide="check" class="w-3.5 h-3.5"></i>
                   <span>Switch</span>
                 </button>
               ` : `
-                <div class="flex-1 min-w-[90px] py-2 px-2.5 rounded-xl bg-purple-100 text-purple-800 text-xs font-extrabold text-center flex items-center justify-center gap-1">
+                <div class="flex-1 min-w-[80px] py-2 px-2.5 rounded-xl bg-purple-100 text-purple-800 text-xs font-extrabold text-center flex items-center justify-center gap-1">
                   <i data-lucide="activity" class="w-3.5 h-3.5"></i>
                   <span>Current</span>
                 </div>
@@ -11816,7 +13056,7 @@
                 type="button"
                 onclick="openEditTripModal('${t.id}')"
                 class="p-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/90 text-xs font-bold transition shadow-2xs"
-                title="Edit Trip Details & Pricing"
+                title="Edit Trip Details, Dates, Capacity & Pricing"
               >
                 <i data-lucide="edit-3" class="w-4 h-4 text-amber-600"></i>
               </button>
@@ -11828,6 +13068,15 @@
                 title="Share Trip Link & QR"
               >
                 <i data-lucide="share-2" class="w-4 h-4"></i>
+              </button>
+
+              <button
+                type="button"
+                onclick="${isArchived ? `unarchiveTrip('${t.id}')` : `archiveTrip('${t.id}')`}"
+                class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition shadow-2xs"
+                title="${isArchived ? 'Restore / Unarchive Trip' : 'Archive Trip Safely'}"
+              >
+                <i data-lucide="${isArchived ? 'rotate-ccw' : 'archive'}" class="w-4 h-4 text-slate-600"></i>
               </button>
 
               <button
@@ -20376,7 +21625,24 @@ Guidelines:
       closeTicketPdfViewerModal,
       downloadTicketPdf,
       exportRailwayCoachListExcel,
-      exportRailwayCoachManifestPDF
+      exportRailwayCoachManifestPDF,
+      setTripManagerStatusFilter,
+      setBossTripStatusFilter,
+      formatTripDates,
+      getTripStatusBadge,
+      syncNewTripDates,
+      toggleAllNewTripDepts,
+      toggleAllEditTripDepts,
+      archiveTrip,
+      unarchiveTrip,
+      archiveTripFromEditModal,
+      archiveCurrentTargetTrip,
+      downloadTripBackupJson,
+      openTripStudentsModal,
+      closeTripStudentsModal,
+      setTripStudentsFilter,
+      renderTripStudentsList,
+      exportTripStudentsRosterExcel
     });
 
     // Restore sessions from localStorage on load
