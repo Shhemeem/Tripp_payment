@@ -863,6 +863,24 @@
                   <option value="Paytm">3. Paytm</option>
                 </select>
               </div>
+
+              <!-- UTR Number & Duplicate Detection (Feature 35 & 36) -->
+              <div class="sm:col-span-2">
+                <div class="flex items-center justify-between mb-1">
+                  <label class="block text-xs font-bold text-slate-700">UPI Ref / 12-Digit UTR Number</label>
+                  <span class="text-[10px] text-slate-400 font-medium">Found in Google Pay / PhonePe transaction receipt</span>
+                </div>
+                <div class="relative">
+                  <input type="text" id="inpUtr" maxlength="22" placeholder="e.g. 423512345678 (12-digit UTR)"
+                    oninput="validateUtrInputRealtime(this.value, 'utrDuplicateNotice')"
+                    class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-mono font-bold text-slate-900 tracking-wider uppercase" />
+                  <span id="utrCharCount" class="absolute right-3 top-2.5 text-[11px] text-slate-400 font-mono">0/12</span>
+                </div>
+                <div id="utrDuplicateNotice" class="hidden mt-1.5 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-bold text-rose-700 flex items-start gap-1.5">
+                  <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-600 shrink-0 mt-0.5"></i>
+                  <span id="utrDuplicateNoticeText">Duplicate UTR detected</span>
+                </div>
+              </div>
             </div>
 
             <div>
@@ -939,6 +957,21 @@
                     <option value="PhonePe">2. PhonePe</option>
                     <option value="Paytm">3. Paytm</option>
                   </select>
+                </div>
+
+                <!-- Balance UTR Number (Feature 35 & 36) -->
+                <div class="sm:col-span-2">
+                  <div class="flex items-center justify-between mb-1">
+                    <label class="block text-xs font-bold text-slate-700">UPI Ref / 12-Digit UTR Number</label>
+                    <span class="text-[10px] text-slate-400 font-medium">From UPI payment receipt</span>
+                  </div>
+                  <input type="text" id="balUtrInput" maxlength="22" placeholder="e.g. 423512345678"
+                    oninput="validateUtrInputRealtime(this.value, 'balUtrDuplicateNotice', selectedBalanceStudent ? selectedBalanceStudent.id : null)"
+                    class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-emerald-400 text-sm font-mono font-bold text-slate-900 tracking-wider uppercase focus:outline-none" />
+                  <div id="balUtrDuplicateNotice" class="hidden mt-1.5 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-bold text-rose-700 flex items-start gap-1.5">
+                    <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-600 shrink-0 mt-0.5"></i>
+                    <span id="balUtrDuplicateNoticeText">Duplicate UTR detected</span>
+                  </div>
                 </div>
               </div>
 
@@ -1437,21 +1470,34 @@
               </button>
             </div>
 
-            <!-- List Selector Pills -->
-            <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl shrink-0">
+            <!-- List Selector Pills (Feature 42: Pending, Dues, Full, Rejected Lists) -->
+            <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl shrink-0 overflow-x-auto">
               <button type="button" id="filterPill-all" onclick="setPaymentListPill('All')"
-                class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-white text-emerald-800 shadow-sm transition">
+                class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-extrabold bg-white text-emerald-800 shadow-sm transition whitespace-nowrap">
                 All (<span id="pillCountAll">0</span>)
               </button>
               <button type="button" id="filterPill-pending" onclick="setPaymentListPill('Pending')"
-                class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-amber-700 hover:text-amber-900 transition flex items-center gap-1">
+                class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-extrabold text-amber-700 hover:text-amber-900 transition flex items-center gap-1 whitespace-nowrap"
+                title="Pending Admin Verification">
                 <i data-lucide="clock" class="w-3 h-3"></i>
                 <span>Pending (<span id="pillCountPending">0</span>)</span>
               </button>
               <button type="button" id="filterPill-full" onclick="setPaymentListPill('Full')"
-                class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600 hover:text-emerald-700 transition flex items-center gap-1">
+                class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600 hover:text-emerald-700 transition flex items-center gap-1 whitespace-nowrap">
                 <i data-lucide="check-circle" class="w-3 h-3"></i>
                 <span>Full (<span id="pillCountFull">0</span>)</span>
+              </button>
+              <button type="button" id="filterPill-dues" onclick="setPaymentListPill('Dues')"
+                class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-extrabold text-amber-600 hover:text-amber-800 transition flex items-center gap-1 whitespace-nowrap"
+                title="Students with unpaid balance dues">
+                <i data-lucide="alert-circle" class="w-3 h-3"></i>
+                <span>Dues (<span id="pillCountDues">0</span>)</span>
+              </button>
+              <button type="button" id="filterPill-rejected" onclick="setPaymentListPill('Rejected')"
+                class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-extrabold text-rose-600 hover:text-rose-800 transition flex items-center gap-1 whitespace-nowrap"
+                title="Payments rejected by admin">
+                <i data-lucide="x-circle" class="w-3 h-3"></i>
+                <span>Rejected (<span id="pillCountRejected">0</span>)</span>
               </button>
             </div>
           </div>
@@ -1472,8 +1518,15 @@
             </div>
 
             <div class="flex items-center gap-2 flex-wrap">
+              <button type="button" onclick="openDeptCollectionReportModal()"
+                class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+                title="Department-wise Payment Collection Report (Feature 43)">
+                <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>
+                <span>Dept Collection</span>
+              </button>
               <button type="button" onclick="broadcastBalanceAlertsWhatsApp()"
-                class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition">
+                class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+                title="Broadcast WhatsApp reminder to all students with pending dues">
                 <i data-lucide="bell-ring" class="w-3.5 h-3.5"></i>
                 <span>Dues Reminder</span>
               </button>
@@ -3042,6 +3095,12 @@
                   <p style="font-size:9px; color:#a1a1aa; margin:0 0 1px;">Receipt Number</p>
                   <p id="rcptCode"
                     style="font-size:11px; font-family:monospace; font-weight:800; color:#38bdf8; margin:0;">TRP-000000
+                  </p>
+                </div>
+                <div>
+                  <p style="font-size:9px; color:#a1a1aa; margin:0 0 1px;">UPI UTR / Ref No</p>
+                  <p id="rcptUtr"
+                    style="font-size:11px; font-family:monospace; font-weight:800; color:#34d399; margin:0;">-
                   </p>
                 </div>
               </div>
@@ -6190,6 +6249,462 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL: STUDENT PAYMENT HISTORY & MULTI-INSTALLMENT LEDGER (Feature 34 & 45) -->
+  <!-- ========================================================================= -->
+  <div id="studentPaymentHistoryModal"
+    class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-3xl w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[92vh] overflow-y-auto space-y-4">
+      <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-base shrink-0">
+            <i data-lucide="receipt" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 id="sphStudentName" class="font-display font-extrabold text-base sm:text-lg text-slate-900">Student Name</h3>
+              <span id="sphStatusBadge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Verified</span>
+            </div>
+            <p id="sphStudentMeta" class="text-xs text-slate-500 font-medium mt-0.5">Department • Roll No • Phone</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeStudentPaymentHistoryModal()"
+          class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Financial Overview Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+          <p class="text-[10px] font-bold text-slate-400 uppercase">Trip Fee</p>
+          <p id="sphTotalFee" class="font-display font-extrabold text-sm sm:text-base text-slate-900 mt-0.5">₹0</p>
+        </div>
+        <div class="p-3 rounded-2xl bg-blue-50/70 border border-blue-200 text-center">
+          <p class="text-[10px] font-bold text-blue-700 uppercase">Gross Paid</p>
+          <p id="sphGrossPaid" class="font-display font-extrabold text-sm sm:text-base text-blue-900 mt-0.5">₹0</p>
+        </div>
+        <div class="p-3 rounded-2xl bg-rose-50/70 border border-rose-200 text-center">
+          <p class="text-[10px] font-bold text-rose-700 uppercase">Refunds</p>
+          <p id="sphTotalRefunded" class="font-display font-extrabold text-sm sm:text-base text-rose-900 mt-0.5">₹0</p>
+        </div>
+        <div class="p-3 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-center">
+          <p class="text-[10px] font-bold text-emerald-700 uppercase">Net Paid</p>
+          <p id="sphNetPaid" class="font-display font-extrabold text-sm sm:text-base text-emerald-900 mt-0.5">₹0</p>
+        </div>
+        <div class="p-3 rounded-2xl bg-amber-50/70 border border-amber-200 text-center col-span-2 sm:col-span-1">
+          <p class="text-[10px] font-bold text-amber-700 uppercase">Balance Due</p>
+          <p id="sphBalanceDue" class="font-display font-extrabold text-sm sm:text-base text-amber-900 mt-0.5">₹0</p>
+        </div>
+      </div>
+
+      <!-- Action Toolbar -->
+      <div class="flex items-center justify-between gap-2 flex-wrap bg-slate-50 p-2.5 rounded-2xl border border-slate-200">
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <button type="button" onclick="openRecordInstallmentModal(window.activeHistoryStudentId)"
+            class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-2xs transition">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span>Record Installment</span>
+          </button>
+          <button type="button" onclick="openRecordRefundModal(window.activeHistoryStudentId)"
+            class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs flex items-center gap-1.5 transition">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            <span>Issue Refund</span>
+          </button>
+        </div>
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <button type="button" onclick="openStudentStatementModal(window.activeHistoryStudentId)"
+            class="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold text-xs flex items-center gap-1.5 transition"
+            title="Individual Account Statement & Payment Ledger">
+            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+            <span>Statement PDF</span>
+          </button>
+          <button type="button" onclick="sendSingleBalanceReminderWhatsApp(window.activeHistoryStudentId)"
+            class="px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs flex items-center gap-1.5 transition"
+            title="Send WhatsApp payment / balance alert">
+            <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+            <span>WhatsApp</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Payment Installments Ledger -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <h4 class="font-display font-extrabold text-sm text-slate-900 flex items-center gap-1.5">
+            <i data-lucide="list-ordered" class="w-4 h-4 text-emerald-600"></i>
+            <span>Payment Installments &amp; Transactions</span>
+          </h4>
+          <span id="sphInstallmentsCount" class="text-xs text-slate-500 font-medium">0 entries</span>
+        </div>
+        <div id="sphInstallmentsContainer" class="max-h-56 overflow-y-auto space-y-2 pr-0.5"></div>
+      </div>
+
+      <!-- Refunds List (if any) -->
+      <div id="sphRefundsSection" class="hidden space-y-2 pt-2 border-t border-slate-100">
+        <h4 class="font-display font-extrabold text-sm text-slate-900 flex items-center gap-1.5 text-rose-700">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          <span>Recorded Refunds &amp; Deductions</span>
+        </h4>
+        <div id="sphRefundsContainer" class="max-h-40 overflow-y-auto space-y-2 pr-0.5"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: RECORD INSTALLMENT / ADVANCE (Feature 32, 34 & 45)                 -->
+  <!-- ========================================================================= -->
+  <div id="recordInstallmentModal"
+    class="fixed inset-0 z-55 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl my-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-extrabold text-base text-slate-900">Record Payment Installment</h3>
+            <p id="recInstStudentLabel" class="text-xs text-slate-500 font-medium">Student</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeRecordInstallmentModal()"
+          class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+          <i data-lucide="x" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleRecordInstallmentSubmit(event)" class="space-y-3">
+        <input type="hidden" id="recInstStudentId" />
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Amount (₹) *</label>
+            <input type="number" id="recInstAmount" min="1" required inputmode="numeric" placeholder="e.g. 500"
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-sm font-extrabold text-emerald-700" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Payment Type</label>
+            <select id="recInstType"
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-xs font-bold text-slate-800">
+              <option value="Installment" selected>Installment</option>
+              <option value="Advance">Advance Payment</option>
+              <option value="Full Fee">Full Fee Settlement</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Payment App / Mode</label>
+            <select id="recInstApp"
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-xs font-semibold text-slate-800">
+              <option value="Google Pay" selected>Google Pay</option>
+              <option value="PhonePe">PhonePe</option>
+              <option value="Paytm">Paytm</option>
+              <option value="Cash">Cash / In-Person</option>
+              <option value="Bank Transfer">Bank Transfer / IMPS</option>
+              <option value="Other">Other UPI</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Status</label>
+            <select id="recInstStatus"
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-xs font-bold text-slate-800">
+              <option value="Verified" selected>Verified ✓</option>
+              <option value="Pending Verification">Pending Verification</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-bold text-slate-700">12-Digit UTR / UPI Ref No</label>
+            <span class="text-[10px] text-slate-400 font-medium">Optional for cash</span>
+          </div>
+          <input type="text" id="recInstUtr" maxlength="22" placeholder="e.g. 423512345678"
+            oninput="validateUtrInputRealtime(this.value, 'recInstUtrNotice', document.getElementById('recInstStudentId').value)"
+            class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-xs font-mono font-bold text-slate-900 tracking-wider uppercase" />
+          <div id="recInstUtrNotice" class="hidden mt-1 p-2 rounded-xl bg-rose-50 border border-rose-200 text-xs font-bold text-rose-700 flex items-start gap-1">
+            <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5"></i>
+            <span id="recInstUtrNoticeText">Duplicate UTR detected</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Remarks / Note</label>
+          <input type="text" id="recInstRemarks" placeholder="e.g. Received via GPay at desk"
+            class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:outline-none text-xs text-slate-800" />
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
+          <button type="button" onclick="closeRecordInstallmentModal()"
+            class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
+            Cancel
+          </button>
+          <button type="submit" id="btnSubmitRecInstallment"
+            class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Save Installment</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: REJECT PAYMENT (Feature 38 & 45)                                   -->
+  <!-- ========================================================================= -->
+  <div id="rejectPaymentModal"
+    class="fixed inset-0 z-55 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl my-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold">
+            <i data-lucide="x-circle" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-extrabold text-base text-slate-900">Reject Payment Submission</h3>
+            <p id="rejectStudentLabel" class="text-xs text-slate-500 font-medium">Student</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeRejectPaymentModal()"
+          class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+          <i data-lucide="x" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleRejectPaymentSubmit(event)" class="space-y-3">
+        <input type="hidden" id="rejectStudentId" />
+
+        <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-800 leading-relaxed">
+          Rejecting marks the student's payment as <strong>Rejected</strong>. Their access code will be suspended until a valid payment is verified.
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Reason for Rejection *</label>
+          <select id="rejectReasonCategory" required
+            class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-rose-500 focus:outline-none text-xs font-semibold text-slate-800">
+            <option value="UTR / Transaction ID not found in bank statement" selected>UTR not found in bank statement</option>
+            <option value="Incorrect or incomplete payment amount">Incorrect / incomplete amount</option>
+            <option value="Duplicate UTR number submitted">Duplicate UTR number submitted</option>
+            <option value="Bank transaction reversed or cancelled">Bank transaction reversed or cancelled</option>
+            <option value="Invalid payment screenshot / receipt">Invalid payment screenshot</option>
+            <option value="Other">Other / Custom Reason</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Additional Note to Student (Optional)</label>
+          <textarea id="rejectCustomReason" rows="2" placeholder="e.g. Please re-send the valid 12-digit UTR from your bank SMS"
+            class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-rose-500 focus:outline-none text-xs text-slate-800"></textarea>
+        </div>
+
+        <div class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
+          <input type="checkbox" id="rejectNotifyWhatsApp" checked class="w-4 h-4 text-emerald-600 rounded" />
+          <label for="rejectNotifyWhatsApp" class="text-xs font-bold text-slate-700 cursor-pointer">
+            Send rejection explanation to student via WhatsApp
+          </label>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
+          <button type="button" onclick="closeRejectPaymentModal()"
+            class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
+            Cancel
+          </button>
+          <button type="submit" id="btnConfirmReject"
+            class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5">
+            <i data-lucide="x" class="w-4 h-4"></i>
+            <span>Confirm Rejection</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: RECORD REFUND (Feature 39 & 45)                                    -->
+  <!-- ========================================================================= -->
+  <div id="recordRefundModal"
+    class="fixed inset-0 z-55 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl my-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold">
+            <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-extrabold text-base text-slate-900">Issue / Record Refund</h3>
+            <p id="refundStudentLabel" class="text-xs text-slate-500 font-medium">Student</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeRecordRefundModal()"
+          class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+          <i data-lucide="x" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleRecordRefundSubmit(event)" class="space-y-3">
+        <input type="hidden" id="refundStudentId" />
+
+        <div class="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-800 leading-relaxed">
+          Refunds decrease the student's net paid balance and automatically increase their balance due.
+          <p id="refundMaxNotice" class="font-bold mt-1 text-rose-900">Max Refundable: ₹0</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Refund Amount (₹) *</label>
+            <input type="number" id="refundAmount" min="1" required inputmode="numeric" placeholder="e.g. 500"
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-rose-500 focus:outline-none text-sm font-extrabold text-rose-700" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Refund Mode</label>
+            <select id="refundMode"
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-rose-500 focus:outline-none text-xs font-semibold text-slate-800">
+              <option value="UPI" selected>UPI Transfer</option>
+              <option value="Cash">Cash</option>
+              <option value="Bank Transfer">Bank Transfer / NEFT</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Reason for Refund *</label>
+          <select id="refundReason" required
+            class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-rose-500 focus:outline-none text-xs font-semibold text-slate-800">
+            <option value="Trip Cancellation" selected>Trip Cancellation / Seat Drop</option>
+            <option value="Excess / Over-payment Settlement">Excess / Over-payment Settlement</option>
+            <option value="Discretionary Student Discount / Concession">Discretionary Student Concession</option>
+            <option value="Other">Other / Administrative Refund</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Refund UTR / Transaction Reference (Optional)</label>
+          <input type="text" id="refundUtr" placeholder="e.g. UPI Ref / Bank UTR"
+            class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-rose-500 focus:outline-none text-xs font-mono font-bold text-slate-800 uppercase" />
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
+          <button type="button" onclick="closeRecordRefundModal()"
+            class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
+            Cancel
+          </button>
+          <button type="submit" id="btnSubmitRefund"
+            class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Record Refund</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: DEPARTMENT-WISE PAYMENT COLLECTION REPORT (Feature 43)              -->
+  <!-- ========================================================================= -->
+  <div id="deptCollectionReportModal"
+    class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-4xl w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[92vh] overflow-y-auto space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
+            <i data-lucide="pie-chart" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-extrabold text-base sm:text-lg text-slate-900">Department Payment Collection Report</h3>
+            <p id="dcrTripSubtitle" class="text-xs text-slate-500 font-medium">Breakdown by college department, collection rates, and pending dues</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button type="button" onclick="exportDeptCollectionReportCSV()"
+            class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 shadow-2xs transition"
+            title="Export CSV spreadsheet">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Export CSV</span>
+          </button>
+          <button type="button" onclick="printDeptCollectionReport()"
+            class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition"
+            title="Print report">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+            <span>Print</span>
+          </button>
+          <button type="button" onclick="closeDeptCollectionReportModal()"
+            class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Overview Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5" id="dcrSummaryCards">
+        <!-- Rendered by renderDeptCollectionReport() -->
+      </div>
+
+      <!-- Department Table -->
+      <div class="overflow-x-auto border border-slate-200 rounded-2xl">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead class="bg-slate-50 border-b border-slate-200 font-bold text-slate-500 uppercase tracking-wider">
+            <tr>
+              <th class="py-3 px-3">Department</th>
+              <th class="py-3 px-3 text-center">Students</th>
+              <th class="py-3 px-3 text-center">Verified</th>
+              <th class="py-3 px-3 text-right">Expected (₹)</th>
+              <th class="py-3 px-3 text-right">Collected (₹)</th>
+              <th class="py-3 px-3 text-right">Pending Dues (₹)</th>
+              <th class="py-3 px-3 text-center">Collection %</th>
+            </tr>
+          </thead>
+          <tbody id="dcrTableBody" class="divide-y divide-slate-100 font-medium"></tbody>
+          <tfoot id="dcrTableFoot" class="bg-slate-50/80 font-bold text-slate-900 border-t-2 border-slate-200"></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: INDIVIDUAL STUDENT PAYMENT STATEMENT (Feature 41)                   -->
+  <!-- ========================================================================= -->
+  <div id="studentStatementModal"
+    class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[92vh] overflow-y-auto space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
+            <i data-lucide="file-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-extrabold text-base sm:text-lg text-slate-900">Student Account Statement</h3>
+            <p class="text-xs text-slate-500 font-medium">Official statement of trip fees, installments, and closing balance</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button type="button" onclick="downloadStudentStatementPDF(window.activeStatementStudentId)"
+            class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 shadow-2xs transition"
+            title="Download PDF statement">
+            <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
+            <span>PDF</span>
+          </button>
+          <button type="button" onclick="printStudentStatement()"
+            class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition"
+            title="Print statement">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+            <span>Print</span>
+          </button>
+          <button type="button" onclick="closeStudentStatementModal()"
+            class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Statement Document Container (Printable Canvas) -->
+      <div id="studentStatementPrintable" class="p-6 bg-white border border-slate-200/80 rounded-2xl shadow-xs space-y-4 font-sans text-slate-800">
+        <!-- Rendered dynamically by openStudentStatementModal() -->
+      </div>
+    </div>
+  </div>
+
   <!-- Firebase & Application Engine -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -6420,10 +6935,115 @@
         .replace(/'/g, '&#039;');
     }
 
+    // UTR Normalizer & Duplicate Detection (Feature 35 & 36)
+    function normalizeUtr(utr) {
+      return (utr || '').toUpperCase().replace(/[^A-Z0-9]/g, '').trim();
+    }
+
+    function checkDuplicateUtr(utr, excludeStudentId = null) {
+      const clean = normalizeUtr(utr);
+      if (!clean || clean.length < 6) return null;
+
+      for (const s of payments) {
+        if (excludeStudentId && s.id === excludeStudentId) continue;
+
+        // Check primary UTR field
+        if (normalizeUtr(s.utr) === clean) {
+          return {
+            studentId: s.id,
+            studentName: s.studentName,
+            phone: s.phone,
+            receiptCode: s.receiptCode,
+            utr: clean
+          };
+        }
+
+        // Check inside all installments
+        if (Array.isArray(s.paymentInstallments)) {
+          for (const inst of s.paymentInstallments) {
+            if (normalizeUtr(inst.utr) === clean && inst.status !== 'Rejected') {
+              return {
+                studentId: s.id,
+                studentName: s.studentName,
+                phone: s.phone,
+                receiptCode: s.receiptCode,
+                utr: clean
+              };
+            }
+          }
+        }
+      }
+      return null;
+    }
+
+    function validateUtrInputRealtime(val, errorElementId, excludeStudentId = null) {
+      const clean = normalizeUtr(val);
+      const countEl = document.getElementById('utrCharCount');
+      if (countEl) countEl.textContent = clean.length + '/12';
+
+      const errorBox = document.getElementById(errorElementId);
+      const errorText = document.getElementById(errorElementId + 'Text');
+      if (!errorBox || !errorText) return;
+
+      if (!clean || clean.length < 6) {
+        errorBox.classList.add('hidden');
+        return;
+      }
+
+      const dup = checkDuplicateUtr(clean, excludeStudentId);
+      if (dup) {
+        errorBox.classList.remove('hidden');
+        errorText.textContent = `Duplicate UTR: Already submitted by ${dup.studentName} (${dup.phone}). Duplicate entries are flagged & rejected by admins.`;
+      } else {
+        errorBox.classList.add('hidden');
+      }
+    }
+
+    // Comprehensive Payment Summary Calculator (Feature 33, 34, 39)
+    function getStudentPaymentSummary(p) {
+      const totalFee = Number(tripConfig.tripAmount) || 1500;
+      let installments = [];
+      if (Array.isArray(p.paymentInstallments) && p.paymentInstallments.length > 0) {
+        installments = [...p.paymentInstallments];
+      } else {
+        const legacyAmt = Number(p.amountPaid) || 0;
+        if (legacyAmt > 0) {
+          installments.push({
+            id: 'inst_legacy',
+            amount: legacyAmt,
+            type: legacyAmt >= totalFee ? 'Full Fee' : 'Advance',
+            paymentApp: p.paymentApp || 'UPI',
+            utr: p.utr || '',
+            recordedAt: p.createdAt || Date.now(),
+            recordedAtStr: p.createdDateStr || '',
+            status: p.status || 'Pending Verification',
+            remarks: p.remarks || 'Initial Payment'
+          });
+        }
+      }
+
+      const refunds = Array.isArray(p.refunds) ? [...p.refunds] : [];
+
+      const validInstallments = installments.filter(i => i.status !== 'Rejected');
+      const grossPaid = validInstallments.reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+      const totalRefunded = refunds.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+      const netPaid = Math.max(0, grossPaid - totalRefunded);
+      const balanceDue = Math.max(0, totalFee - netPaid);
+
+      return {
+        totalFee,
+        grossPaid,
+        totalRefunded,
+        netPaid,
+        balanceDue,
+        installments,
+        refunds,
+        isFullyPaid: balanceDue === 0
+      };
+    }
+
     function getBalanceDue(p) {
-      const total = Number(tripConfig.tripAmount) || 1500;
-      const paid = Number(p.amountPaid) || 0;
-      return Math.max(0, total - paid);
+      return getStudentPaymentSummary(p).balanceDue;
     }
 
     function generateSecureAccessCode() {
@@ -8498,6 +9118,7 @@
       const amountPaid = (rawAmtVal !== '' && rawAmtVal !== null && !isNaN(Number(rawAmtVal))) ? Math.max(0, Number(rawAmtVal)) : (Number(tripConfig.advanceAmount) || 500);
       const paymentApp = document.getElementById('inpApp').value || 'Google Pay';
       const userRemarks = document.getElementById('inpRemarks').value.trim();
+      const utr = (document.getElementById('inpUtr')?.value || '').trim();
 
       if (!studentName || !department || cleanPhone.length < 10) {
         showToast('Please enter your Full Name, Department, and valid 10-digit mobile number.', 'error');
@@ -8539,6 +9160,16 @@
         }
       }
 
+      // 5. Check Duplicate UTR (Feature 36)
+      if (utr) {
+        const existingRecordForUtr = payments.find(p => normalizePhone(p.phone) === cleanPhone);
+        const dupUtr = checkDuplicateUtr(utr, existingRecordForUtr ? existingRecordForUtr.id : null);
+        if (dupUtr) {
+          showToast(`Duplicate UTR: This UTR (${utr}) was already submitted by ${dupUtr.studentName}. Please check your transaction details.`, 'error');
+          return;
+        }
+      }
+
       if (btn) {
         btn.disabled = true;
         btn.innerHTML = '<span>Submitting...</span>';
@@ -8554,6 +9185,38 @@
           const balanceDue = Math.max(0, totalFee - updatedTotalPaid);
           const updatedRemarks = `${existingRecord.remarks ? existingRecord.remarks + ' + ' : ''}Paid ${formatINR(amountPaid)} via ${paymentApp}${userRemarks ? ' (' + userRemarks + ')' : ''}`;
 
+          const now = Date.now();
+          const nowStr = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+          const newInstallment = {
+            id: 'inst_' + now,
+            amount: amountPaid,
+            type: amountPaid >= balanceDue ? 'Full Fee' : 'Installment',
+            paymentApp,
+            utr: utr || '',
+            recordedAt: now,
+            recordedAtStr: nowStr,
+            status: 'Pending Verification',
+            verifiedBy: '',
+            remarks: userRemarks || 'Additional payment'
+          };
+
+          const currentInstallments = Array.isArray(existingRecord.paymentInstallments) ? [...existingRecord.paymentInstallments] : [];
+          if (currentInstallments.length === 0 && previousPaid > 0) {
+            currentInstallments.push({
+              id: 'inst_initial',
+              amount: previousPaid,
+              type: previousPaid >= totalFee ? 'Full Fee' : 'Advance',
+              paymentApp: existingRecord.paymentApp || 'UPI',
+              utr: existingRecord.utr || '',
+              recordedAt: existingRecord.createdAt || now,
+              recordedAtStr: existingRecord.createdDateStr || nowStr,
+              status: existingRecord.status || 'Pending Verification',
+              remarks: existingRecord.remarks || 'Initial payment'
+            });
+          }
+          currentInstallments.push(newInstallment);
+
           const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', existingRecord.id);
           await updateDoc(docRef, {
             tripId: existingRecord.tripId || currentTripId,
@@ -8562,9 +9225,11 @@
             phone: cleanPhone,
             amountPaid: updatedTotalPaid,
             paymentApp: `${existingRecord.paymentApp || ''} & ${paymentApp}`,
+            utr: utr || existingRecord.utr || '',
+            paymentInstallments: currentInstallments,
             remarks: updatedRemarks,
             status: 'Pending Verification',
-            createdDateStr: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
+            createdDateStr: nowStr
           });
 
           logSecurityEvent('PAYMENT_UPDATE', cleanPhone, `Added payment of ₹${amountPaid}`);
@@ -8585,14 +9250,33 @@
           showToast('Updated existing payment record!', 'success', 'Get Boarding Pass', () => openBoardingPassFromLastReceipt());
         } else {
           const balanceDue = Math.max(0, totalFee - amountPaid);
+          const now = Date.now();
+          const nowStr = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+          const initialInstallment = {
+            id: 'inst_' + now,
+            amount: amountPaid,
+            type: amountPaid >= totalFee ? 'Full Fee' : 'Advance',
+            paymentApp,
+            utr: utr || '',
+            recordedAt: now,
+            recordedAtStr: nowStr,
+            status: 'Pending Verification',
+            verifiedBy: '',
+            remarks: userRemarks || (amountPaid === 0 ? 'Registered (Pay Balance Later)' : (balanceDue > 0 ? 'Advance Payment' : 'Full Payment'))
+          };
+
           const newEntry = {
             tripId: currentTripId,
-            receiptCode: 'TRP-' + Date.now().toString().slice(-6),
+            receiptCode: 'TRP-' + now.toString().slice(-6),
             studentName,
             department,
             phone: cleanPhone,
             amountPaid,
             paymentApp,
+            utr: utr || '',
+            paymentInstallments: [initialInstallment],
+            refunds: [],
             remarks: userRemarks || (amountPaid === 0 ? 'Registered (Pay Balance Later)' : (balanceDue > 0 ? `Advance Paid (${formatINR(amountPaid)})` : 'Full Fee Paid')),
             status: 'Pending Verification',
             accessCode: '',
@@ -8601,8 +9285,8 @@
             boardedAt: 0,
             boardedAtStr: '',
             failedLoginAttempts: 0,
-            createdAt: Date.now(),
-            createdDateStr: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
+            createdAt: now,
+            createdDateStr: nowStr
           };
 
           const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'trip_payments');
@@ -8739,17 +9423,60 @@
       if (!selectedBalanceStudent) return;
       const payNow = Number(document.getElementById('balAmountInput').value) || 0;
       const app = document.getElementById('balAppInput').value;
-      const oldPaid = Number(selectedBalanceStudent.amountPaid);
+      const balUtr = (document.getElementById('balUtrInput')?.value || '').trim();
+
+      if (balUtr) {
+        const dup = checkDuplicateUtr(balUtr, selectedBalanceStudent.id);
+        if (dup) {
+          showToast(`Duplicate UTR: This UTR (${balUtr}) was already submitted by ${dup.studentName}.`, 'error');
+          return;
+        }
+      }
+
+      const oldPaid = Number(selectedBalanceStudent.amountPaid) || 0;
       const totalPaid = oldPaid + payNow;
+      const now = Date.now();
+      const nowStr = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+      const newInst = {
+        id: 'inst_' + now,
+        amount: payNow,
+        type: 'Balance Payment',
+        paymentApp: app,
+        utr: balUtr || '',
+        recordedAt: now,
+        recordedAtStr: nowStr,
+        status: 'Pending Verification',
+        verifiedBy: '',
+        remarks: `Balance payment of ${formatINR(payNow)} via ${app}`
+      };
+
+      const currentInst = Array.isArray(selectedBalanceStudent.paymentInstallments) ? [...selectedBalanceStudent.paymentInstallments] : [];
+      if (currentInst.length === 0 && oldPaid > 0) {
+        currentInst.push({
+          id: 'inst_initial',
+          amount: oldPaid,
+          type: 'Advance',
+          paymentApp: selectedBalanceStudent.paymentApp || 'UPI',
+          utr: selectedBalanceStudent.utr || '',
+          recordedAt: selectedBalanceStudent.createdAt || now,
+          recordedAtStr: selectedBalanceStudent.createdDateStr || nowStr,
+          status: selectedBalanceStudent.status || 'Pending Verification',
+          remarks: selectedBalanceStudent.remarks || 'Advance payment'
+        });
+      }
+      currentInst.push(newInst);
 
       try {
         const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', selectedBalanceStudent.id);
         await updateDoc(ref, {
           amountPaid: totalPaid,
           paymentApp: `${selectedBalanceStudent.paymentApp} & ${app}`,
+          utr: balUtr || selectedBalanceStudent.utr || '',
+          paymentInstallments: currentInst,
           remarks: `Advance ${formatINR(oldPaid)} + Balance ${formatINR(payNow)} via ${app}`,
           status: 'Pending Verification',
-          createdDateStr: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
+          createdDateStr: nowStr
         });
 
         logSecurityEvent('BALANCE_PAYMENT', selectedBalanceStudent.phone, `Paid balance of ₹${payNow}`);
@@ -8787,6 +9514,7 @@
       set('rcptCoordName', tripConfig.receiverName);
       set('rcptUpiId', tripConfig.upiId);
       set('rcptCode', data.receiptCode);
+      set('rcptUtr', data.utr || '-');
       set('rcptStudentName', data.studentName);
       set('rcptDepartment', data.department);
       set('rcptPhone', `+91 ${normalizePhone(data.phone)}`);
@@ -9853,12 +10581,13 @@
 
     function setPaymentListPill(pill) {
       activePillFilter = pill;
-      ['all', 'pending', 'full'].forEach(p => {
+      ['all', 'pending', 'full', 'dues', 'rejected'].forEach(p => {
         const btn = document.getElementById(`filterPill-${p}`);
+        if (!btn) return;
         if (p === pill.toLowerCase()) {
-          btn.className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold bg-white text-emerald-800 shadow-sm transition';
+          btn.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-extrabold bg-white text-emerald-800 shadow-sm transition whitespace-nowrap';
         } else {
-          btn.className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600 hover:text-slate-900 transition';
+          btn.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600 hover:text-slate-900 transition whitespace-nowrap';
         }
       });
       renderDashboard();
@@ -9895,9 +10624,16 @@
       document.getElementById('statExpensesCount').textContent = `${expenses.length} expenses logged`;
       document.getElementById('statNetTripBalance').textContent = formatINR(net);
 
+      const pendingVerifCount = payments.filter(p => p.status === 'Pending Verification').length;
+      const duesCount = payments.filter(p => getBalanceDue(p) > 0).length;
+      const fullCount = payments.filter(p => getBalanceDue(p) === 0).length;
+      const rejectedCount = payments.filter(p => p.status === 'Rejected').length;
+
       document.getElementById('pillCountAll').textContent = payments.length;
-      document.getElementById('pillCountPending').textContent = pendingCount;
-      document.getElementById('pillCountFull').textContent = payments.length - pendingCount;
+      document.getElementById('pillCountPending').textContent = pendingVerifCount;
+      document.getElementById('pillCountFull').textContent = fullCount;
+      if (document.getElementById('pillCountDues')) document.getElementById('pillCountDues').textContent = duesCount;
+      if (document.getElementById('pillCountRejected')) document.getElementById('pillCountRejected').textContent = rejectedCount;
     }
 
     // Search & Filter state variables to keep options live
@@ -9967,10 +10703,16 @@
 
       const filtered = payments.filter(p => {
         const bal = getBalanceDue(p);
+        const isVer = p.status === 'Verified';
+        const isPendingVer = p.status === 'Pending Verification';
+        const isRejected = p.status === 'Rejected';
+
         const matchPill =
           activePillFilter === 'All' ||
-          (activePillFilter === 'Pending' && bal > 0) ||
-          (activePillFilter === 'Full' && bal === 0);
+          (activePillFilter === 'Pending' && isPendingVer) ||
+          (activePillFilter === 'Full' && bal === 0) ||
+          (activePillFilter === 'Dues' && bal > 0) ||
+          (activePillFilter === 'Rejected' && isRejected);
 
         const matchStatus = statusF === 'All' || p.status === statusF;
         const matchDept = deptF === 'All' || p.department === deptF;
@@ -10000,17 +10742,28 @@
       }
       empty.classList.add('hidden');
 
-      // Desktop Table View
+      // Desktop Table View (Upgraded with Features 34-45)
       tbody.innerHTML = filtered.map((s, idx) => {
-        const bal = getBalanceDue(s);
+        const summary = getStudentPaymentSummary(s);
+        const bal = summary.balanceDue;
         const isVer = s.status === 'Verified';
+        const isRej = s.status === 'Rejected';
         const isBoarded = Boolean(s.boarded);
+        const utrDup = s.utr ? checkDuplicateUtr(s.utr, s.id) : null;
+
         return `
-          <tr class="hover:bg-slate-50/80 transition group">
+          <tr class="hover:bg-slate-50/80 transition group ${isRej ? 'bg-rose-50/30' : ''}">
             <td class="py-3.5 px-4 font-mono text-xs text-slate-400 font-bold">${idx + 1}</td>
             <td class="py-3.5 px-4">
               <span class="font-bold text-slate-900 block text-sm">${escapeHtml(s.studentName)}</span>
               <span class="font-mono text-[10px] text-slate-400">${escapeHtml(s.receiptCode)} • ${escapeHtml(s.createdDateStr || '')}</span>
+              ${s.utr ? `
+                <div class="flex items-center gap-1 mt-1">
+                  <span class="font-mono text-[10px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded font-bold">UTR: ${escapeHtml(s.utr)}</span>
+                  <button onclick="copyText('${escapeHtml(s.utr)}', 'UTR copied!')" class="text-slate-400 hover:text-slate-600" title="Copy UTR"><i data-lucide="copy" class="w-2.5 h-2.5"></i></button>
+                  ${utrDup ? `<span class="bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded text-[9px] font-extrabold flex items-center gap-0.5" title="Duplicate with ${escapeHtml(utrDup.studentName)} (${utrDup.phone})"><i data-lucide="alert-triangle" class="w-2.5 h-2.5"></i> Dup UTR!</span>` : ''}
+                </div>
+              ` : ''}
             </td>
             <td class="py-3.5 px-4">
               <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">${escapeHtml(s.department)}</span>
@@ -10022,7 +10775,8 @@
               </a>
             </td>
             <td class="py-3.5 px-4">
-              <span class="font-display font-extrabold text-emerald-700 block">${formatINR(s.amountPaid)}</span>
+              <span class="font-display font-extrabold text-emerald-700 block">${formatINR(summary.netPaid)}</span>
+              ${summary.totalRefunded > 0 ? `<span class="text-[10px] text-rose-600 font-bold block">Ref: -${formatINR(summary.totalRefunded)}</span>` : ''}
               <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded ${bal > 0 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">
                 ${bal > 0 ? `Due: ${formatINR(bal)}` : 'Full Paid'}
               </span>
@@ -10030,17 +10784,24 @@
             <td class="py-3.5 px-4">
               <div class="space-y-1">
                 <div class="flex items-center gap-1 flex-wrap">
-                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold ${isVer ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                    <i data-lucide="${isVer ? 'check' : 'clock'}" class="w-3 h-3"></i>
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold ${isVer ? 'bg-emerald-100 text-emerald-800' : (isRej ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800')}">
+                    <i data-lucide="${isVer ? 'check' : (isRej ? 'x-circle' : 'clock')}" class="w-3 h-3"></i>
                     <span>${escapeHtml(s.status)}</span>
                   </span>
                   ${isBoarded ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-100 text-indigo-800">Boarded ✅</span>` : ''}
                 </div>
                 ${s.accessCode ? `<p class="font-mono text-[11px] font-extrabold text-indigo-700">Pass: ${escapeHtml(s.accessCode)}</p>` : ''}
+                ${s.rejectionReason ? `<p class="text-[10px] text-rose-600 font-medium truncate max-w-[140px]" title="${escapeHtml(s.rejectionReason)}">Reason: ${escapeHtml(s.rejectionReason)}</p>` : ''}
               </div>
             </td>
             <td class="py-3.5 px-4 text-right">
               <div class="inline-flex items-center gap-1 flex-wrap justify-end">
+                <!-- Ledger / Payment History Action (Feature 34) -->
+                <button onclick="openStudentPaymentHistoryModal('${s.id}')" class="px-2 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center gap-1 transition" title="View multi-installment history, UTRs & refunds">
+                  <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+                  <span>Ledger</span>
+                </button>
+
                 <!-- Pass Actions -->
                 <div class="flex items-center gap-0.5 bg-slate-100 rounded-xl p-0.5" title="Pass & Payment Details Actions">
                   <button onclick="openBoardingPassByStudentId('${s.id}')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-700 text-white text-xs font-bold flex items-center gap-1 transition" title="Open Boarding Pass">
@@ -10050,26 +10811,37 @@
                   <button onclick="downloadPaymentDetailsPDF('${s.id}')" class="p-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white transition" title="Download Payment Details (Receipt PDF)">
                     <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
                   </button>
-                  <button onclick="savePassAsImageForStudent('${s.id}')" class="p-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white transition" title="Save as Image">
-                    <i data-lucide="image" class="w-3.5 h-3.5"></i>
-                  </button>
                   <button onclick="shareStudentPDFWhatsApp('${s.id}')" class="p-1.5 rounded-lg bg-[#25D366] hover:bg-[#20bd5a] text-white transition" title="WhatsApp PDF">
                     <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
                   </button>
-                  <button onclick="downloadStudentPassPDF('${s.id}')" class="p-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white transition" title="Download PDF">
-                    <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
-                  </button>
-                  <button onclick="printStudentPass('${s.id}')" class="p-1.5 rounded-lg bg-slate-600 hover:bg-slate-500 text-white transition" title="Print / Save">
-                    <i data-lucide="printer" class="w-3.5 h-3.5"></i>
-                  </button>
                 </div>
-                <!-- Admin Actions -->
-                <button onclick="markParticipantBoardingStatus('${s.id}', ${!isBoarded})" class="px-2 py-1 rounded-lg text-xs font-bold ${isBoarded ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700'} transition" title="Toggle Boarding">
-                  ${isBoarded ? 'Boarded ✓' : 'Check-In'}
-                </button>
-                <button onclick="toggleVerifyStudent('${s.id}')" class="px-2 py-1 rounded-lg text-xs font-bold ${isVer ? 'bg-slate-100 text-slate-600' : 'bg-emerald-600 hover:bg-emerald-500 text-white'} transition">
-                  ${isVer ? 'Unverify' : 'Verify'}
-                </button>
+
+                <!-- Admin Approve & Reject Actions (Feature 37 & 38) -->
+                ${!isVer ? `
+                  <button onclick="approveStudentPayment('${s.id}')" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1 transition" title="Approve Payment">
+                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                    <span>Approve</span>
+                  </button>
+                  ${!isRej ? `
+                    <button onclick="openRejectPaymentModal('${s.id}')" class="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold flex items-center gap-1 transition" title="Reject Payment">
+                      <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+                      <span>Reject</span>
+                    </button>
+                  ` : ''}
+                ` : `
+                  <button onclick="toggleVerifyStudent('${s.id}')" class="px-2 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition" title="Mark as Pending">
+                    Unverify
+                  </button>
+                `}
+
+                <!-- WhatsApp Balance Reminder (Feature 44) -->
+                ${bal > 0 ? `
+                  <button onclick="sendSingleBalanceReminderWhatsApp('${s.id}')" class="p-1.5 rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 transition" title="Send WhatsApp Dues Reminder">
+                    <i data-lucide="bell" class="w-3.5 h-3.5"></i>
+                  </button>
+                ` : ''}
+
+                <!-- Edit and Delete Actions -->
                 <button onclick="openAdminEditModal('${s.id}')" class="px-2 py-1 rounded-lg bg-sky-50 text-sky-700 border border-sky-200 text-xs font-bold hover:bg-sky-100 transition">
                   Edit
                 </button>
@@ -10082,28 +10854,40 @@
         `;
       }).join('');
 
-      // Mobile Cards View — modern premium card with all boarding pass operations
+      // Mobile Cards View — modern premium card with all boarding pass & payment operations
       mContainer.innerHTML = filtered.map(s => {
-        const bal = getBalanceDue(s);
+        const summary = getStudentPaymentSummary(s);
+        const bal = summary.balanceDue;
         const isVer = s.status === 'Verified';
+        const isRej = s.status === 'Rejected';
         const isBoarded = Boolean(s.boarded);
+        const utrDup = s.utr ? checkDuplicateUtr(s.utr, s.id) : null;
+
         return `
-          <div class="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden transition hover:shadow-md">
+          <div class="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden transition hover:shadow-md ${isRej ? 'border-rose-300 bg-rose-50/20' : ''}">
             <!-- Card Header -->
             <div class="flex items-start justify-between px-4 pt-4 pb-3">
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2 flex-wrap mb-1">
-                  <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${isVer ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}">
-                    ${isVer ? '✅ Verified' : '⏳ Pending'}
+                  <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${isVer ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : (isRej ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-amber-50 text-amber-700 border-amber-200')}">
+                    ${isVer ? '✅ Verified' : (isRej ? '❌ Rejected' : '⏳ Pending')}
                   </span>
                   ${isBoarded ? `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">🚌 Boarded</span>` : ''}
                 </div>
                 <h4 class="font-bold text-slate-900 text-base leading-tight truncate">${escapeHtml(s.studentName)}</h4>
                 <p class="text-xs text-slate-400 mt-0.5">${escapeHtml(s.department)} • <span class="font-mono">${escapeHtml(s.receiptCode)}</span></p>
+                ${s.utr ? `
+                  <div class="flex items-center gap-1 mt-1">
+                    <span class="font-mono text-[10px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded font-bold">UTR: ${escapeHtml(s.utr)}</span>
+                    <button onclick="copyText('${escapeHtml(s.utr)}', 'UTR copied!')" class="text-slate-400 hover:text-slate-600"><i data-lucide="copy" class="w-2.5 h-2.5"></i></button>
+                    ${utrDup ? `<span class="bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded text-[9px] font-extrabold flex items-center gap-0.5" title="Duplicate with ${escapeHtml(utrDup.studentName)}"><i data-lucide="alert-triangle" class="w-2.5 h-2.5"></i> Dup!</span>` : ''}
+                  </div>
+                ` : ''}
               </div>
               <div class="text-right ml-3 shrink-0">
-                <p class="font-display font-extrabold text-lg text-emerald-600 leading-tight">${formatINR(s.amountPaid)}</p>
+                <p class="font-display font-extrabold text-lg text-emerald-600 leading-tight">${formatINR(summary.netPaid)}</p>
                 <p class="text-[10px] font-bold ${bal > 0 ? 'text-amber-600' : 'text-emerald-500'}">${bal > 0 ? `Due ${formatINR(bal)}` : 'Fully Paid'}</p>
+                ${summary.totalRefunded > 0 ? `<p class="text-[9px] font-bold text-rose-600">Ref: -${formatINR(summary.totalRefunded)}</p>` : ''}
               </div>
             </div>
 
@@ -10147,15 +10931,34 @@
               </div>
             </div>
 
-            <!-- Admin Actions -->
+            <!-- Admin Actions (Features 34, 38, 44) -->
             <div class="border-t border-slate-100 px-4 py-2.5 flex items-center justify-between gap-1.5 flex-wrap bg-slate-50/50">
-              <div class="flex items-center gap-1.5">
-                <button onclick="markParticipantBoardingStatus('${s.id}', ${!isBoarded})" class="px-2.5 py-1.5 rounded-xl text-xs font-bold transition ${isBoarded ? 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200' : 'bg-slate-200 text-slate-700 hover:bg-emerald-100 hover:text-emerald-800'}">
-                  ${isBoarded ? '✓ Boarded' : 'Check-In'}
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <button onclick="openStudentPaymentHistoryModal('${s.id}')" class="px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center gap-1 transition">
+                  <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+                  <span>Ledger</span>
                 </button>
-                <button onclick="toggleVerifyStudent('${s.id}')" class="px-2.5 py-1.5 rounded-xl text-xs font-bold transition ${isVer ? 'bg-slate-200 text-slate-600 hover:bg-slate-300' : 'bg-emerald-600 text-white hover:bg-emerald-500'}">
-                  ${isVer ? 'Unverify' : 'Verify'}
-                </button>
+                ${!isVer ? `
+                  <button onclick="approveStudentPayment('${s.id}')" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 text-xs font-bold flex items-center gap-1 transition">
+                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                    <span>Approve</span>
+                  </button>
+                  ${!isRej ? `
+                    <button onclick="openRejectPaymentModal('${s.id}')" class="px-2 py-1.5 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 text-xs font-bold flex items-center gap-1 transition">
+                      <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+                      <span>Reject</span>
+                    </button>
+                  ` : ''}
+                ` : `
+                  <button onclick="toggleVerifyStudent('${s.id}')" class="px-2.5 py-1.5 rounded-xl text-xs font-bold transition bg-slate-200 text-slate-600 hover:bg-slate-300">
+                    Unverify
+                  </button>
+                `}
+                ${bal > 0 ? `
+                  <button onclick="sendSingleBalanceReminderWhatsApp('${s.id}')" class="p-1.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 transition" title="Send WhatsApp Reminder">
+                    <i data-lucide="bell" class="w-3.5 h-3.5"></i>
+                  </button>
+                ` : ''}
               </div>
               <div class="flex items-center gap-1">
                 <button onclick="printStudentPass('${s.id}')" class="p-1.5 rounded-lg bg-slate-200 text-slate-600 hover:bg-slate-300 transition" title="Print Pass">
@@ -10200,6 +11003,931 @@
       } catch (e) {
         showToast('Status update failed.', 'error');
       }
+    }
+
+    // =========================================================================
+    // ADVANCED PAYMENT SUITE: APPROVAL, REJECTION, REFUNDS, STATEMENTS & REPORTS
+    // Features 28 through 45
+    // =========================================================================
+
+    window.activeHistoryStudentId = null;
+    window.activeStatementStudentId = null;
+
+    // Approve Payment (Feature 37 & 38)
+    async function approveStudentPayment(id) {
+      const p = payments.find(x => x.id === id);
+      if (!p) return;
+
+      const accessCode = p.accessCode || generateSecureAccessCode();
+      const now = Date.now();
+      const nowStr = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+      // Mark all pending or rejected installments as Verified
+      const installments = (Array.isArray(p.paymentInstallments) ? [...p.paymentInstallments] : []).map(i => {
+        if (i.status === 'Pending Verification' || i.status === 'Rejected') {
+          return { ...i, status: 'Verified', verifiedAt: now, verifiedAtStr: nowStr, verifiedBy: 'Admin' };
+        }
+        return i;
+      });
+
+      const updatePayload = {
+        status: 'Verified',
+        accessCode,
+        accessStatus: 'Active',
+        failedLoginAttempts: 0,
+        verifiedAt: now,
+        verifiedAtStr: nowStr,
+        verifiedBy: 'Admin',
+        rejectionReason: '',
+        paymentInstallments: installments
+      };
+
+      try {
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', id);
+        await updateDoc(ref, updatePayload);
+        logSecurityEvent('APPROVE_PAYMENT', p.phone, `Approved payment and issued access code ${accessCode}`);
+        showToast(
+          `Payment verified for ${p.studentName}! Access Code: ${accessCode}`,
+          'success',
+          'Send Receipt on WA',
+          () => shareVerifiedPaymentWhatsApp(id, updatePayload)
+        );
+      } catch (e) {
+        console.error(e);
+        showToast('Approval update failed.', 'error');
+      }
+    }
+
+    // Reject Payment Modal & Workflow (Feature 38 & 45)
+    function openRejectPaymentModal(studentId) {
+      const p = payments.find(x => x.id === studentId);
+      if (!p) return;
+
+      document.getElementById('rejectStudentId').value = studentId;
+      document.getElementById('rejectStudentLabel').textContent = `${p.studentName} (${p.department}) • Submitted: ${formatINR(p.amountPaid)}`;
+      document.getElementById('rejectReasonCategory').selectedIndex = 0;
+      document.getElementById('rejectCustomReason').value = '';
+      document.getElementById('rejectNotifyWhatsApp').checked = true;
+
+      const modal = document.getElementById('rejectPaymentModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        lucide.createIcons();
+      }
+    }
+
+    function closeRejectPaymentModal() {
+      const modal = document.getElementById('rejectPaymentModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function handleRejectPaymentSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('rejectStudentId').value;
+      const p = payments.find(x => x.id === id);
+      if (!p) return;
+
+      const category = document.getElementById('rejectReasonCategory').value;
+      const customNote = document.getElementById('rejectCustomReason').value.trim();
+      const fullReason = customNote ? `${category} - ${customNote}` : category;
+      const notifyWA = document.getElementById('rejectNotifyWhatsApp').checked;
+
+      const now = Date.now();
+      const nowStr = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+      // Mark pending installments as Rejected
+      const installments = (Array.isArray(p.paymentInstallments) ? [...p.paymentInstallments] : []).map(i => {
+        if (i.status === 'Pending Verification') {
+          return { ...i, status: 'Rejected', rejectedAt: now, rejectedAtStr: nowStr, rejectionReason: fullReason };
+        }
+        return i;
+      });
+
+      const updatePayload = {
+        status: 'Rejected',
+        rejectionReason: fullReason,
+        rejectedAt: now,
+        rejectedAtStr: nowStr,
+        rejectedBy: 'Admin',
+        paymentInstallments: installments
+      };
+
+      try {
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', id);
+        await updateDoc(ref, updatePayload);
+        logSecurityEvent('REJECT_PAYMENT', p.phone, `Rejected payment: ${fullReason}`);
+        closeRejectPaymentModal();
+        showToast(`Payment rejected for ${p.studentName}.`, 'info');
+
+        if (notifyWA) {
+          const cleanPhone = normalizePhone(p.phone);
+          const tripTitle = tripConfig.tripTitle || 'College Trip';
+          const msg = `Hello *${p.studentName}*,
+
+Your payment verification for *${tripTitle}* could not be processed and has been *rejected* by administrators.
+
+` +
+            `• Reason: *${fullReason}*
+` +
+            (p.utr ? `• Submitted UTR: *${p.utr}*
+` : '') +
+            `
+Please verify your payment details and re-submit through the portal or contact the coordinator.
+
+Thank you.`;
+          window.open(`https://wa.me/91${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to reject payment.', 'error');
+      }
+    }
+
+    // Student Payment History Modal (Feature 34 & 45)
+    function openStudentPaymentHistoryModal(studentId) {
+      window.activeHistoryStudentId = studentId;
+      const p = payments.find(x => x.id === studentId);
+      if (!p) {
+        showToast('Student record not found.', 'error');
+        return;
+      }
+
+      const summary = getStudentPaymentSummary(p);
+      const isVer = p.status === 'Verified';
+      const isRej = p.status === 'Rejected';
+
+      // Header Info
+      document.getElementById('sphStudentName').textContent = p.studentName;
+      document.getElementById('sphStudentMeta').textContent = `${p.department || 'General'} • Roll: ${p.rollNumber || 'N/A'} • Phone: +91 ${normalizePhone(p.phone)} • Receipt: ${p.receiptCode || '-'}`;
+
+      const badge = document.getElementById('sphStatusBadge');
+      if (badge) {
+        badge.className = `text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${isVer ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : (isRej ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-amber-50 text-amber-700 border-amber-200')}`;
+        badge.textContent = isVer ? '✅ Verified' : (isRej ? '❌ Rejected' : '⏳ Pending Verification');
+      }
+
+      // Financial Overview
+      document.getElementById('sphTotalFee').textContent = formatINR(summary.totalFee);
+      document.getElementById('sphGrossPaid').textContent = formatINR(summary.grossPaid);
+      document.getElementById('sphTotalRefunded').textContent = formatINR(summary.totalRefunded);
+      document.getElementById('sphNetPaid').textContent = formatINR(summary.netPaid);
+      document.getElementById('sphBalanceDue').textContent = summary.balanceDue > 0 ? formatINR(summary.balanceDue) : '₹0 (Full Paid)';
+
+      // Installments List
+      const instCountEl = document.getElementById('sphInstallmentsCount');
+      if (instCountEl) instCountEl.textContent = `${summary.installments.length} transactions`;
+
+      const instContainer = document.getElementById('sphInstallmentsContainer');
+      if (instContainer) {
+        if (summary.installments.length === 0) {
+          instContainer.innerHTML = '<div class="p-3 text-center text-xs text-slate-400 bg-slate-50 rounded-xl">No installments recorded yet.</div>';
+        } else {
+          instContainer.innerHTML = summary.installments.map((inst, idx) => {
+            const instVer = inst.status === 'Verified';
+            const instRej = inst.status === 'Rejected';
+            const utrDup = inst.utr ? checkDuplicateUtr(inst.utr, p.id) : null;
+
+            return `
+              <div class="p-3 rounded-2xl border ${instRej ? 'bg-rose-50/40 border-rose-200' : 'bg-white border-slate-200'} flex items-start justify-between gap-3 text-xs">
+                <div class="space-y-1 min-w-0 flex-1">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="font-extrabold text-slate-900">#${idx + 1} ${escapeHtml(inst.type || 'Installment')}</span>
+                    <span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${instVer ? 'bg-emerald-100 text-emerald-800' : (instRej ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800')}">
+                      ${escapeHtml(inst.status || 'Pending')}
+                    </span>
+                    <span class="text-slate-400">• ${escapeHtml(inst.paymentApp || 'UPI')}</span>
+                  </div>
+                  <div class="flex items-center gap-2 flex-wrap text-[11px] text-slate-500">
+                    <span>${escapeHtml(inst.recordedAtStr || new Date(inst.recordedAt || Date.now()).toLocaleString('en-IN'))}</span>
+                    ${inst.utr ? `
+                      <span class="font-mono bg-slate-100 px-1.5 py-0.5 rounded font-bold text-slate-700">UTR: ${escapeHtml(inst.utr)}</span>
+                      <button type="button" onclick="copyText('${escapeHtml(inst.utr)}', 'UTR copied!')" class="text-slate-400 hover:text-slate-600"><i data-lucide="copy" class="w-3 h-3 inline"></i></button>
+                      ${utrDup ? `<span class="bg-rose-100 text-rose-700 px-1 py-0.2 rounded font-extrabold text-[9px]">⚠️ Dup with ${escapeHtml(utrDup.studentName)}</span>` : ''}
+                    ` : ''}
+                  </div>
+                  ${inst.remarks ? `<p class="text-[11px] text-slate-600 italic font-medium">"${escapeHtml(inst.remarks)}"</p>` : ''}
+                  ${inst.rejectionReason ? `<p class="text-[11px] text-rose-600 font-bold">Rejected: ${escapeHtml(inst.rejectionReason)}</p>` : ''}
+                </div>
+                <div class="text-right shrink-0 flex flex-col items-end gap-1">
+                  <span class="font-display font-extrabold text-sm ${instRej ? 'text-rose-500 line-through' : 'text-emerald-700'}">${formatINR(inst.amount)}</span>
+                  ${summary.installments.length > 1 ? `
+                    <button type="button" onclick="deletePaymentInstallment('${p.id}', '${inst.id}')"
+                      class="text-[10px] text-slate-400 hover:text-rose-600 transition" title="Delete installment">
+                      <i data-lucide="trash-2" class="w-3 h-3 inline"></i>
+                    </button>
+                  ` : ''}
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // Refunds List
+      const refSection = document.getElementById('sphRefundsSection');
+      const refContainer = document.getElementById('sphRefundsContainer');
+      if (refSection && refContainer) {
+        if (summary.refunds.length > 0) {
+          refSection.classList.remove('hidden');
+          refContainer.innerHTML = summary.refunds.map((ref, idx) => `
+            <div class="p-3 rounded-2xl bg-rose-50/50 border border-rose-200 flex items-start justify-between gap-3 text-xs">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <span class="font-extrabold text-rose-900">Refund #${idx + 1}: ${escapeHtml(ref.reason || 'Concession')}</span>
+                  <span class="text-[10px] bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded font-bold">${escapeHtml(ref.mode || 'UPI')}</span>
+                </div>
+                <p class="text-[11px] text-slate-500">Date: ${escapeHtml(ref.refundedAtStr || '')} ${ref.refundUtr ? '• Ref: ' + escapeHtml(ref.refundUtr) : ''}</p>
+              </div>
+              <div class="text-right shrink-0 flex items-center gap-2">
+                <span class="font-display font-extrabold text-sm text-rose-700">-${formatINR(ref.amount)}</span>
+                <button type="button" onclick="deleteStudentRefund('${p.id}', '${ref.refundId}')" class="text-slate-400 hover:text-rose-600" title="Delete refund record">
+                  <i data-lucide="trash-2" class="w-3 h-3"></i>
+                </button>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          refSection.classList.add('hidden');
+          refContainer.innerHTML = '';
+        }
+      }
+
+      const modal = document.getElementById('studentPaymentHistoryModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        lucide.createIcons();
+      }
+    }
+
+    function closeStudentPaymentHistoryModal() {
+      const modal = document.getElementById('studentPaymentHistoryModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    // Record Installment Modal (Feature 32 & 34)
+    function openRecordInstallmentModal(studentId) {
+      const p = payments.find(x => x.id === studentId);
+      if (!p) return;
+
+      document.getElementById('recInstStudentId').value = studentId;
+      document.getElementById('recInstStudentLabel').textContent = `${p.studentName} (${p.department}) • Current Paid: ${formatINR(p.amountPaid)}`;
+      document.getElementById('recInstAmount').value = '';
+      document.getElementById('recInstUtr').value = '';
+      document.getElementById('recInstRemarks').value = '';
+      document.getElementById('recInstType').value = 'Installment';
+      document.getElementById('recInstApp').value = 'Google Pay';
+      document.getElementById('recInstStatus').value = 'Verified';
+      document.getElementById('recInstUtrNotice').classList.add('hidden');
+
+      const modal = document.getElementById('recordInstallmentModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        lucide.createIcons();
+      }
+    }
+
+    function closeRecordInstallmentModal() {
+      const modal = document.getElementById('recordInstallmentModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function handleRecordInstallmentSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('recInstStudentId').value;
+      const p = payments.find(x => x.id === id);
+      if (!p) return;
+
+      const amount = Number(document.getElementById('recInstAmount').value) || 0;
+      if (amount <= 0) {
+        showToast('Please enter a valid installment amount.', 'error');
+        return;
+      }
+
+      const instType = document.getElementById('recInstType').value;
+      const instApp = document.getElementById('recInstApp').value;
+      const instStatus = document.getElementById('recInstStatus').value;
+      const instUtr = (document.getElementById('recInstUtr').value || '').trim();
+      const instRemarks = document.getElementById('recInstRemarks').value.trim();
+
+      if (instUtr) {
+        const dup = checkDuplicateUtr(instUtr, id);
+        if (dup) {
+          showToast(`Duplicate UTR: This UTR (${instUtr}) was already submitted by ${dup.studentName}.`, 'error');
+          return;
+        }
+      }
+
+      const now = Date.now();
+      const nowStr = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+      const newInst = {
+        id: 'inst_' + now,
+        amount,
+        type: instType,
+        paymentApp: instApp,
+        utr: instUtr,
+        recordedAt: now,
+        recordedAtStr: nowStr,
+        status: instStatus,
+        verifiedBy: instStatus === 'Verified' ? 'Admin' : '',
+        remarks: instRemarks || 'Recorded by admin'
+      };
+
+      const currentInstallments = Array.isArray(p.paymentInstallments) ? [...p.paymentInstallments] : [];
+      if (currentInstallments.length === 0 && Number(p.amountPaid) > 0) {
+        currentInstallments.push({
+          id: 'inst_initial',
+          amount: Number(p.amountPaid),
+          type: 'Advance',
+          paymentApp: p.paymentApp || 'UPI',
+          utr: p.utr || '',
+          recordedAt: p.createdAt || now,
+          recordedAtStr: p.createdDateStr || nowStr,
+          status: p.status || 'Pending Verification',
+          remarks: p.remarks || 'Initial payment'
+        });
+      }
+      currentInstallments.push(newInst);
+
+      // Recompute net amount paid
+      const validInstallments = currentInstallments.filter(i => i.status !== 'Rejected');
+      const gross = validInstallments.reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+      const refunded = (Array.isArray(p.refunds) ? p.refunds : []).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+      const newNet = Math.max(0, gross - refunded);
+
+      try {
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', id);
+        await updateDoc(ref, {
+          paymentInstallments: currentInstallments,
+          amountPaid: newNet,
+          utr: instUtr || p.utr || ''
+        });
+        logSecurityEvent('RECORD_INSTALLMENT', p.phone, `Recorded installment of ₹${amount} (${instType})`);
+        closeRecordInstallmentModal();
+        showToast(`Recorded installment of ₹${amount} for ${p.studentName}!`, 'success');
+        openStudentPaymentHistoryModal(id);
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to record installment.', 'error');
+      }
+    }
+
+    // Delete Payment Installment
+    async function deletePaymentInstallment(studentId, instId) {
+      const p = payments.find(x => x.id === studentId);
+      if (!p || !Array.isArray(p.paymentInstallments)) return;
+      if (!confirm('Are you sure you want to delete this installment record?')) return;
+
+      const updated = p.paymentInstallments.filter(i => i.id !== instId);
+      const validInstallments = updated.filter(i => i.status !== 'Rejected');
+      const gross = validInstallments.reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+      const refunded = (Array.isArray(p.refunds) ? p.refunds : []).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+      const newNet = Math.max(0, gross - refunded);
+
+      try {
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', studentId);
+        await updateDoc(ref, {
+          paymentInstallments: updated,
+          amountPaid: newNet
+        });
+        logSecurityEvent('DELETE_INSTALLMENT', p.phone, `Deleted installment ${instId}`);
+        showToast('Installment removed.', 'info');
+        openStudentPaymentHistoryModal(studentId);
+      } catch (e) {
+        showToast('Failed to delete installment.', 'error');
+      }
+    }
+
+    // Record Refund Modal (Feature 39 & 45)
+    function openRecordRefundModal(studentId) {
+      const p = payments.find(x => x.id === studentId);
+      if (!p) return;
+
+      const summary = getStudentPaymentSummary(p);
+      document.getElementById('refundStudentId').value = studentId;
+      document.getElementById('refundStudentLabel').textContent = `${p.studentName} (${p.department}) • Net Paid: ${formatINR(summary.netPaid)}`;
+      document.getElementById('refundMaxNotice').textContent = `Max Refundable: ${formatINR(summary.netPaid)}`;
+      document.getElementById('refundAmount').value = '';
+      document.getElementById('refundAmount').max = summary.netPaid;
+      document.getElementById('refundUtr').value = '';
+      document.getElementById('refundReason').selectedIndex = 0;
+      document.getElementById('refundMode').selectedIndex = 0;
+
+      const modal = document.getElementById('recordRefundModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        lucide.createIcons();
+      }
+    }
+
+    function closeRecordRefundModal() {
+      const modal = document.getElementById('recordRefundModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function handleRecordRefundSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('refundStudentId').value;
+      const p = payments.find(x => x.id === id);
+      if (!p) return;
+
+      const summary = getStudentPaymentSummary(p);
+      const amount = Number(document.getElementById('refundAmount').value) || 0;
+      if (amount <= 0 || amount > summary.netPaid) {
+        showToast(`Please enter an amount between ₹1 and ${formatINR(summary.netPaid)}.`, 'error');
+        return;
+      }
+
+      const reason = document.getElementById('refundReason').value;
+      const mode = document.getElementById('refundMode').value;
+      const refundUtr = document.getElementById('refundUtr').value.trim();
+
+      const now = Date.now();
+      const nowStr = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+      const newRefund = {
+        refundId: 'ref_' + now,
+        amount,
+        reason,
+        mode,
+        refundUtr,
+        refundedAt: now,
+        refundedAtStr: nowStr,
+        refundedBy: 'Admin'
+      };
+
+      const refunds = Array.isArray(p.refunds) ? [...p.refunds, newRefund] : [newRefund];
+      const newNet = Math.max(0, summary.grossPaid - refunds.reduce((sum, r) => sum + (Number(r.amount) || 0), 0));
+
+      try {
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', id);
+        await updateDoc(ref, {
+          refunds,
+          amountPaid: newNet
+        });
+        logSecurityEvent('RECORD_REFUND', p.phone, `Issued refund of ₹${amount} (${reason})`);
+        closeRecordRefundModal();
+        showToast(`Issued refund of ₹${amount} for ${p.studentName}!`, 'success');
+        openStudentPaymentHistoryModal(id);
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to record refund.', 'error');
+      }
+    }
+
+    // Delete Student Refund
+    async function deleteStudentRefund(studentId, refId) {
+      const p = payments.find(x => x.id === studentId);
+      if (!p || !Array.isArray(p.refunds)) return;
+      if (!confirm('Are you sure you want to remove this refund record?')) return;
+
+      const updated = p.refunds.filter(r => r.refundId !== refId);
+      const summary = getStudentPaymentSummary(p);
+      const newNet = Math.max(0, summary.grossPaid - updated.reduce((sum, r) => sum + (Number(r.amount) || 0), 0));
+
+      try {
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', studentId);
+        await updateDoc(ref, {
+          refunds: updated,
+          amountPaid: newNet
+        });
+        logSecurityEvent('DELETE_REFUND', p.phone, `Deleted refund ${refId}`);
+        showToast('Refund record removed.', 'info');
+        openStudentPaymentHistoryModal(studentId);
+      } catch (e) {
+        showToast('Failed to delete refund.', 'error');
+      }
+    }
+
+    // Department-Wise Payment Collection Report (Feature 43)
+    function calculateDeptCollectionStats() {
+      const tripFee = Number(tripConfig.tripAmount) || 1500;
+      const deptMap = {};
+
+      (tripConfig.departments || []).forEach(d => {
+        deptMap[d] = {
+          department: d,
+          totalStudents: 0,
+          verifiedStudents: 0,
+          expectedRevenue: 0,
+          collectedRevenue: 0,
+          pendingDues: 0,
+          refundedAmount: 0
+        };
+      });
+
+      payments.forEach(p => {
+        const dept = p.department || 'General';
+        if (!deptMap[dept]) {
+          deptMap[dept] = {
+            department: dept,
+            totalStudents: 0,
+            verifiedStudents: 0,
+            expectedRevenue: 0,
+            collectedRevenue: 0,
+            pendingDues: 0,
+            refundedAmount: 0
+          };
+        }
+
+        const s = getStudentPaymentSummary(p);
+        deptMap[dept].totalStudents++;
+        if (p.status === 'Verified') deptMap[dept].verifiedStudents++;
+        deptMap[dept].expectedRevenue += s.totalFee;
+        deptMap[dept].collectedRevenue += s.netPaid;
+        deptMap[dept].pendingDues += s.balanceDue;
+        deptMap[dept].refundedAmount += s.totalRefunded;
+      });
+
+      const deptList = Object.values(deptMap).map(d => {
+        const rate = d.expectedRevenue > 0 ? Math.round((d.collectedRevenue / d.expectedRevenue) * 100) : 0;
+        return { ...d, collectionRate: Math.min(100, Math.max(0, rate)) };
+      });
+
+      const totals = deptList.reduce((acc, d) => {
+        acc.totalStudents += d.totalStudents;
+        acc.verifiedStudents += d.verifiedStudents;
+        acc.expectedRevenue += d.expectedRevenue;
+        acc.collectedRevenue += d.collectedRevenue;
+        acc.pendingDues += d.pendingDues;
+        acc.refundedAmount += d.refundedAmount;
+        return acc;
+      }, {
+        totalStudents: 0,
+        verifiedStudents: 0,
+        expectedRevenue: 0,
+        collectedRevenue: 0,
+        pendingDues: 0,
+        refundedAmount: 0
+      });
+
+      totals.collectionRate = totals.expectedRevenue > 0 ? Math.round((totals.collectedRevenue / totals.expectedRevenue) * 100) : 0;
+
+      return { deptList, totals };
+    }
+
+    function openDeptCollectionReportModal() {
+      const stats = calculateDeptCollectionStats();
+      const tripTitle = tripConfig.tripTitle || 'College Trip';
+      document.getElementById('dcrTripSubtitle').textContent = `${tripTitle} • ${stats.totals.totalStudents} total students enrolled • Overall Collection: ${stats.totals.collectionRate}%`;
+
+      // Summary Cards
+      const summaryCards = document.getElementById('dcrSummaryCards');
+      if (summaryCards) {
+        summaryCards.innerHTML = `
+          <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+            <p class="text-[10px] font-bold text-slate-400 uppercase">Enrolled</p>
+            <p class="font-display font-extrabold text-base sm:text-lg text-slate-900 mt-0.5">${stats.totals.totalStudents}</p>
+            <p class="text-[10px] text-emerald-600 font-bold">${stats.totals.verifiedStudents} verified</p>
+          </div>
+          <div class="p-3 rounded-2xl bg-indigo-50/70 border border-indigo-200 text-center">
+            <p class="text-[10px] font-bold text-indigo-700 uppercase">Expected</p>
+            <p class="font-display font-extrabold text-base sm:text-lg text-indigo-900 mt-0.5">${formatINR(stats.totals.expectedRevenue)}</p>
+            <p class="text-[10px] text-indigo-600 font-medium">100% potential</p>
+          </div>
+          <div class="p-3 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-center">
+            <p class="text-[10px] font-bold text-emerald-700 uppercase">Collected</p>
+            <p class="font-display font-extrabold text-base sm:text-lg text-emerald-900 mt-0.5">${formatINR(stats.totals.collectedRevenue)}</p>
+            <p class="text-[10px] text-emerald-600 font-bold">${stats.totals.collectionRate}% collected</p>
+          </div>
+          <div class="p-3 rounded-2xl bg-amber-50/70 border border-amber-200 text-center">
+            <p class="text-[10px] font-bold text-amber-700 uppercase">Pending Dues</p>
+            <p class="font-display font-extrabold text-base sm:text-lg text-amber-900 mt-0.5">${formatINR(stats.totals.pendingDues)}</p>
+            <p class="text-[10px] text-amber-600 font-medium">To collect</p>
+          </div>
+          <div class="p-3 rounded-2xl bg-rose-50/70 border border-rose-200 text-center col-span-2 sm:col-span-1">
+            <p class="text-[10px] font-bold text-rose-700 uppercase">Refunds</p>
+            <p class="font-display font-extrabold text-base sm:text-lg text-rose-900 mt-0.5">${formatINR(stats.totals.refundedAmount)}</p>
+            <p class="text-[10px] text-rose-600 font-medium">Deductions</p>
+          </div>
+        `;
+      }
+
+      // Table Body
+      const tbody = document.getElementById('dcrTableBody');
+      if (tbody) {
+        tbody.innerHTML = stats.deptList.map(d => `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3 px-3 font-bold text-slate-800">${escapeHtml(d.department)}</td>
+            <td class="py-3 px-3 text-center">${d.totalStudents}</td>
+            <td class="py-3 px-3 text-center">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">${d.verifiedStudents}</span>
+            </td>
+            <td class="py-3 px-3 text-right font-mono font-bold text-slate-600">${formatINR(d.expectedRevenue)}</td>
+            <td class="py-3 px-3 text-right font-mono font-extrabold text-emerald-700">${formatINR(d.collectedRevenue)}</td>
+            <td class="py-3 px-3 text-right font-mono font-bold ${d.pendingDues > 0 ? 'text-amber-600' : 'text-emerald-600'}">${formatINR(d.pendingDues)}</td>
+            <td class="py-3 px-3 text-center">
+              <div class="flex items-center justify-center gap-1.5">
+                <div class="w-16 bg-slate-200 rounded-full h-2 overflow-hidden">
+                  <div class="bg-emerald-500 h-2 rounded-full" style="width: ${d.collectionRate}%"></div>
+                </div>
+                <span class="font-mono text-xs font-bold text-slate-700">${d.collectionRate}%</span>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      // Table Footer
+      const tfoot = document.getElementById('dcrTableFoot');
+      if (tfoot) {
+        tfoot.innerHTML = `
+          <tr>
+            <td class="py-3 px-3 uppercase tracking-wider text-slate-900">Total / Summary</td>
+            <td class="py-3 px-3 text-center">${stats.totals.totalStudents}</td>
+            <td class="py-3 px-3 text-center text-emerald-800">${stats.totals.verifiedStudents}</td>
+            <td class="py-3 px-3 text-right font-mono">${formatINR(stats.totals.expectedRevenue)}</td>
+            <td class="py-3 px-3 text-right font-mono text-emerald-700">${formatINR(stats.totals.collectedRevenue)}</td>
+            <td class="py-3 px-3 text-right font-mono text-amber-700">${formatINR(stats.totals.pendingDues)}</td>
+            <td class="py-3 px-3 text-center font-mono font-extrabold text-emerald-800">${stats.totals.collectionRate}%</td>
+          </tr>
+        `;
+      }
+
+      const modal = document.getElementById('deptCollectionReportModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        lucide.createIcons();
+      }
+    }
+
+    function closeDeptCollectionReportModal() {
+      const modal = document.getElementById('deptCollectionReportModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function exportDeptCollectionReportCSV() {
+      const stats = calculateDeptCollectionStats();
+      const rows = [
+        ['Department', 'Total Students', 'Verified Students', 'Expected Revenue (INR)', 'Collected Revenue (INR)', 'Pending Dues (INR)', 'Refunds (INR)', 'Collection Rate (%)']
+      ];
+      stats.deptList.forEach(d => {
+        rows.push([
+          `"${d.department}"`,
+          d.totalStudents,
+          d.verifiedStudents,
+          d.expectedRevenue,
+          d.collectedRevenue,
+          d.pendingDues,
+          d.refundedAmount,
+          `${d.collectionRate}%`
+        ]);
+      });
+      rows.push([
+        '"GRAND TOTAL"',
+        stats.totals.totalStudents,
+        stats.totals.verifiedStudents,
+        stats.totals.expectedRevenue,
+        stats.totals.collectedRevenue,
+        stats.totals.pendingDues,
+        stats.totals.refundedAmount,
+        `${stats.totals.collectionRate}%`
+      ]);
+
+      const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(e => e.join(',')).join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `TripPay_Dept_Collection_${(tripConfig.tripTitle || 'Trip').replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function printDeptCollectionReport() {
+      window.print();
+    }
+
+    // Single Student WhatsApp Dues Reminder (Feature 44)
+    function sendSingleBalanceReminderWhatsApp(studentId) {
+      const s = payments.find(p => p.id === studentId);
+      if (!s) return;
+      const summary = getStudentPaymentSummary(s);
+      if (summary.balanceDue <= 0) {
+        showToast(`${s.studentName} has no pending dues.`, 'info');
+        return;
+      }
+      const cleanPhone = normalizePhone(s.phone);
+      const tripTitle = tripConfig.tripTitle || 'College Trip';
+      const upiId = (tripConfig.upiId || 'mohdshemeemkp@oksbi').trim();
+      const receiver = (tripConfig.receiverName || 'Trip Coordinator').trim();
+
+      const message = `Hello *${s.studentName}*,
+
+This is a friendly reminder regarding your pending balance for *${tripTitle}*.
+
+` +
+        `• Total Trip Fee: *₹${summary.totalFee}*
+` +
+        `• Paid So Far: *₹${summary.netPaid}*
+` +
+        `• Remaining Balance Due: *₹${summary.balanceDue}*
+` +
+        (s.receiptCode ? `• Receipt Code: *${s.receiptCode}*
+` : '') +
+        `
+Please clear your balance at the earliest to finalize your seat and boarding pass.
+` +
+        `UPI Receiver: *${receiver}* (UPI ID: *${upiId}*)
+
+Thank you!`;
+
+      window.open(`https://wa.me/91${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
+    }
+
+    // Individual Student Payment Statement (Feature 41)
+    function openStudentStatementModal(studentId) {
+      window.activeStatementStudentId = studentId;
+      const s = payments.find(p => p.id === studentId);
+      if (!s) {
+        showToast('Student record not found.', 'error');
+        return;
+      }
+
+      const summary = getStudentPaymentSummary(s);
+      const tripTitle = tripConfig.tripTitle || 'College Trip';
+      const dest = tripConfig.tripDestination || 'Destination';
+      const nowStr = new Date().toLocaleString('en-IN', { dateStyle: 'long', timeStyle: 'short' });
+      const stmtDocId = `STMT-${s.receiptCode || s.id.slice(0, 8).toUpperCase()}`;
+
+      const printable = document.getElementById('studentStatementPrintable');
+      if (printable) {
+        let runningBal = summary.totalFee;
+        const ledgerRows = [];
+
+        // Debit: Trip Fee
+        ledgerRows.push({
+          date: s.createdDateStr || 'Trip Enrollment',
+          desc: `Trip Registration & Enrollment Fee (${tripTitle})`,
+          mode: 'Debit Note',
+          ref: '-',
+          debit: summary.totalFee,
+          credit: 0,
+          balance: runningBal
+        });
+
+        // Credits: Installments
+        summary.installments.forEach(inst => {
+          if (inst.status !== 'Rejected') {
+            runningBal = Math.max(0, runningBal - inst.amount);
+            ledgerRows.push({
+              date: inst.recordedAtStr || 'Payment',
+              desc: `${inst.type || 'Installment'} - Paid via ${inst.paymentApp || 'UPI'}`,
+              mode: inst.paymentApp || 'UPI',
+              ref: inst.utr || 'Direct',
+              debit: 0,
+              credit: inst.amount,
+              balance: runningBal
+            });
+          }
+        });
+
+        // Debits: Refunds
+        summary.refunds.forEach(ref => {
+          runningBal += ref.amount;
+          ledgerRows.push({
+            date: ref.refundedAtStr || 'Refund',
+            desc: `Refund: ${ref.reason || 'Concession / Excess Settlement'}`,
+            mode: ref.mode || 'UPI',
+            ref: ref.refundUtr || '-',
+            debit: ref.amount,
+            credit: 0,
+            balance: runningBal
+          });
+        });
+
+        printable.innerHTML = `
+          <!-- Statement Header -->
+          <div class="flex items-start justify-between border-b-2 border-slate-900 pb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center font-extrabold text-sm">TP</span>
+                <h2 class="font-display font-extrabold text-lg text-slate-900 tracking-tight">TRIPPAY COLLEGE ACCOUNTS</h2>
+              </div>
+              <p class="text-xs font-bold text-slate-600 mt-1">${escapeHtml(tripTitle)} • ${escapeHtml(dest)}</p>
+              <p class="text-[11px] text-slate-400">Statement No: <span class="font-mono font-bold text-slate-800">${stmtDocId}</span></p>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full ${summary.balanceDue === 0 ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-800 border border-amber-300'}">
+                ${summary.balanceDue === 0 ? 'PAID IN FULL ✓' : 'DUES PENDING'}
+              </span>
+              <p class="text-[11px] text-slate-500 mt-1.5">Generated: ${nowStr}</p>
+            </div>
+          </div>
+
+          <!-- Student Profile Strip -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-400">Student Name</p>
+              <p class="font-bold text-slate-900 text-sm mt-0.5">${escapeHtml(s.studentName)}</p>
+            </div>
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-400">Department</p>
+              <p class="font-bold text-slate-800 mt-0.5">${escapeHtml(s.department || 'General')}</p>
+            </div>
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-400">Roll No / Access Code</p>
+              <p class="font-mono font-bold text-indigo-700 mt-0.5">${escapeHtml(s.rollNumber || s.accessCode || 'N/A')}</p>
+            </div>
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-400">Registered Phone</p>
+              <p class="font-mono font-bold text-slate-800 mt-0.5">+91 ${normalizePhone(s.phone)}</p>
+            </div>
+          </div>
+
+          <!-- Ledger Table -->
+          <div class="overflow-x-auto border border-slate-200 rounded-xl">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead class="bg-slate-100 border-b border-slate-200 font-bold text-slate-600 uppercase text-[10px]">
+                <tr>
+                  <th class="py-2.5 px-3">Date</th>
+                  <th class="py-2.5 px-3">Description</th>
+                  <th class="py-2.5 px-3">Mode</th>
+                  <th class="py-2.5 px-3 font-mono">UTR / Ref</th>
+                  <th class="py-2.5 px-3 text-right">Debit (₹)</th>
+                  <th class="py-2.5 px-3 text-right">Credit (₹)</th>
+                  <th class="py-2.5 px-3 text-right">Balance (₹)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 font-medium">
+                ${ledgerRows.map(row => `
+                  <tr class="hover:bg-slate-50/50">
+                    <td class="py-2.5 px-3 text-slate-500 whitespace-nowrap">${escapeHtml(row.date)}</td>
+                    <td class="py-2.5 px-3 font-semibold text-slate-900">${escapeHtml(row.desc)}</td>
+                    <td class="py-2.5 px-3 text-slate-600">${escapeHtml(row.mode)}</td>
+                    <td class="py-2.5 px-3 font-mono text-[11px] text-slate-500">${escapeHtml(row.ref)}</td>
+                    <td class="py-2.5 px-3 text-right font-mono text-slate-700">${row.debit > 0 ? formatINR(row.debit) : '-'}</td>
+                    <td class="py-2.5 px-3 text-right font-mono font-bold text-emerald-700">${row.credit > 0 ? formatINR(row.credit) : '-'}</td>
+                    <td class="py-2.5 px-3 text-right font-mono font-bold ${row.balance > 0 ? 'text-amber-800' : 'text-emerald-800'}">${formatINR(row.balance)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+              <tfoot class="bg-slate-50 font-bold text-slate-900 border-t-2 border-slate-300">
+                <tr>
+                  <td colspan="4" class="py-2.5 px-3 uppercase text-[11px]">Closing Balance Due</td>
+                  <td class="py-2.5 px-3 text-right font-mono">${formatINR(summary.totalFee + summary.totalRefunded)}</td>
+                  <td class="py-2.5 px-3 text-right font-mono text-emerald-700">${formatINR(summary.grossPaid)}</td>
+                  <td class="py-2.5 px-3 text-right font-mono font-extrabold text-base ${summary.balanceDue > 0 ? 'text-amber-700' : 'text-emerald-700'}">${formatINR(summary.balanceDue)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- Official Sign-off and Digital Stamp -->
+          <div class="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
+            <div class="space-y-0.5">
+              <p class="font-bold text-slate-800">Trip Coordinator: ${escapeHtml(tripConfig.receiverName || 'Trip In-Charge')}</p>
+              <p class="text-slate-400 text-[10px]">Official Computer-Generated Account Statement • TripPay Verification</p>
+            </div>
+            <div class="text-center p-2 rounded-xl border border-indigo-200 bg-indigo-50/60 font-mono text-[10px] text-indigo-900">
+              <span class="block font-bold">VERIFIED LEDGER</span>
+              <span>AUTHENTIC RECORD</span>
+            </div>
+          </div>
+        `;
+      }
+
+      const modal = document.getElementById('studentStatementModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        lucide.createIcons();
+      }
+    }
+
+    function closeStudentStatementModal() {
+      const modal = document.getElementById('studentStatementModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function downloadStudentStatementPDF(studentId) {
+      const s = payments.find(p => p.id === studentId);
+      if (!s) return;
+
+      const element = document.getElementById('studentStatementPrintable');
+      if (!element) return;
+
+      if (typeof html2pdf !== 'undefined') {
+        showToast('Generating official account statement PDF...', 'info');
+        const opt = {
+          margin: 10,
+          filename: `Statement_${(s.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_')}_${s.receiptCode || Date.now()}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save().then(() => {
+          showToast('Statement PDF downloaded successfully!', 'success');
+        }).catch(err => {
+          console.error(err);
+          window.print();
+        });
+      } else {
+        window.print();
+      }
+    }
+
+    function printStudentStatement() {
+      window.print();
     }
 
     // EXPENSE SYSTEM
@@ -10605,17 +12333,20 @@
         showToast('Payment record not found.', 'error');
         return;
       }
-      const bal = getBalanceDue(p);
+      const summary = getStudentPaymentSummary(p);
+      const bal = summary.balanceDue;
+      const latestUtr = p.utr || (summary.installments?.[summary.installments.length - 1]?.utr || '');
       showDigitalReceipt({
         badge: bal === 0 ? 'Full Payment Completed' : 'Payment Advance / Due',
         studentName: p.studentName,
         receiptCode: p.receiptCode,
         department: p.department,
         phone: p.phone,
-        paidNow: Number(p.amountPaid) || 0,
-        totalPaid: Number(p.amountPaid) || 0,
+        paidNow: summary.netPaid,
+        totalPaid: summary.netPaid,
         balanceDue: bal,
         paymentApp: p.paymentApp || 'UPI',
+        utr: latestUtr,
         status: p.status || 'Pending Verification',
         accessCode: p.accessCode || ''
       });
@@ -21335,6 +23066,34 @@ Guidelines:
 
     // Attach globals to window
     Object.assign(window, {
+      normalizeUtr,
+      checkDuplicateUtr,
+      validateUtrInputRealtime,
+      getStudentPaymentSummary,
+      approveStudentPayment,
+      openRejectPaymentModal,
+      closeRejectPaymentModal,
+      handleRejectPaymentSubmit,
+      openStudentPaymentHistoryModal,
+      closeStudentPaymentHistoryModal,
+      openRecordInstallmentModal,
+      closeRecordInstallmentModal,
+      handleRecordInstallmentSubmit,
+      deletePaymentInstallment,
+      openRecordRefundModal,
+      closeRecordRefundModal,
+      handleRecordRefundSubmit,
+      deleteStudentRefund,
+      calculateDeptCollectionStats,
+      openDeptCollectionReportModal,
+      closeDeptCollectionReportModal,
+      exportDeptCollectionReportCSV,
+      printDeptCollectionReport,
+      sendSingleBalanceReminderWhatsApp,
+      openStudentStatementModal,
+      closeStudentStatementModal,
+      downloadStudentStatementPDF,
+      printStudentStatement,
       toggleAppFullscreen,
       updateFullscreenState,
       openPaymentReceiptForStudent,
