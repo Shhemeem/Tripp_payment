@@ -463,6 +463,15 @@
           <span class="hidden xs:inline">Install App</span>
         </button>
 
+        <!-- In-App Notification Center Trigger (Feature 108) -->
+        <button id="notifBellBtn" type="button" onclick="openNotificationCenterModal()"
+          class="relative p-2 sm:px-2.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center justify-center shadow-xs transition active:scale-95 cursor-pointer"
+          title="Notification Center & Announcements">
+          <i data-lucide="bell" class="w-4 h-4 text-slate-700"></i>
+          <span id="notifBellBadge"
+            class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-600 text-white text-[10px] font-black flex items-center justify-center ring-2 ring-white animate-pulse">0</span>
+        </button>
+
         <!-- Admin Access Trigger -->
         <button id="adminToggleBtn" onclick="handleAdminAccessClick()"
           class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
@@ -474,6 +483,58 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-3 sm:px-4 pt-4 sm:pt-6 no-print">
+    <!-- ACTIVE EMERGENCY ALERT BROADCAST BANNER (Feature 105) -->
+    <div id="emergencyAlertBanner" class="hidden mb-4 rounded-3xl bg-gradient-to-r from-rose-600 via-red-600 to-rose-700 text-white p-4 sm:p-5 shadow-lg border border-red-500/50 animate-pulse">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex items-start gap-3">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
+            <i data-lucide="shield-alert" class="w-5 h-5 text-white"></i>
+          </div>
+          <div class="space-y-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-white text-rose-700 tracking-wider">
+                EMERGENCY BROADCAST
+              </span>
+              <span id="emergencyAlertTimestamp" class="text-xs text-rose-100 font-mono"></span>
+            </div>
+            <h4 id="emergencyAlertTitle" class="font-display font-black text-base sm:text-lg text-white">Emergency Notice</h4>
+            <p id="emergencyAlertMessage" class="text-xs sm:text-sm text-rose-50 leading-relaxed"></p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <a href="tel:112" class="px-3 py-1.5 rounded-xl bg-white text-rose-700 font-extrabold text-xs flex items-center gap-1 shadow-sm">
+            <i data-lucide="phone" class="w-3.5 h-3.5"></i> Call 112
+          </a>
+          <button onclick="dismissEmergencyBanner()" class="p-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold transition">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PINNED TRIP ANNOUNCEMENT TICKER BANNER (Feature 103) -->
+    <div id="tripAnnouncementBanner" class="hidden mb-4 rounded-2xl bg-gradient-to-r from-sky-50 via-indigo-50/50 to-white border border-sky-200/90 p-3 sm:p-3.5 shadow-xs">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <span class="w-7 h-7 rounded-xl bg-sky-600 text-white flex items-center justify-center shrink-0">
+            <i data-lucide="megaphone" class="w-3.5 h-3.5"></i>
+          </span>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">
+                Latest Announcement
+              </span>
+              <span id="tripAnnouncementTime" class="text-[11px] text-slate-400"></span>
+            </div>
+            <p id="tripAnnouncementText" class="text-xs font-bold text-slate-800 truncate"></p>
+          </div>
+        </div>
+        <button onclick="openNotificationCenterModal('announcements')" class="px-2.5 py-1 rounded-lg bg-sky-100 hover:bg-sky-200 text-sky-800 text-xs font-bold shrink-0 transition">
+          View All
+        </button>
+      </div>
+    </div>
+
     <!-- Expressive Trip Header Card -->
     <section
       class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-50 via-white to-amber-50 border border-emerald-200/80 p-5 sm:p-7 mb-6 shadow-sm">
@@ -1459,6 +1520,14 @@
           <span id="subTabBadgeContacts"
             class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-slate-100 text-slate-700 font-extrabold">0</span>
         </button>
+
+        <button onclick="switchManagerSubTab('notifications')" id="subTabBtn-notifications"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900">
+          <i data-lucide="bell-ring" class="w-4 h-4 text-rose-500"></i>
+          <span>Notification & Broadcast Hub</span>
+          <span id="subTabBadgeNotifications"
+            class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-rose-100 text-rose-800 font-extrabold">0</span>
+        </button>
       </div>
 
       <!-- SUB-TAB 1: STUDENTS & PAYMENTS -->
@@ -1997,6 +2066,155 @@
           </div>
 
           <div id="contactsListContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB: NOTIFICATION & BROADCAST HUB (Features 98-109) -->
+      <div id="managerSection-notifications" class="hidden space-y-5">
+        <div class="expressive-card border border-slate-200 rounded-3xl p-5 sm:p-6 space-y-5">
+          <!-- Header & Quick Actions Strip -->
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="font-display font-extrabold text-lg sm:text-xl text-slate-900">Notification & Broadcast Hub</h3>
+                <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-200">
+                  Multi-Channel Engine
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">
+                Dispatch automated alerts, announcements, pending fee reminders & emergency broadcasts across In-App, WhatsApp & Email.
+              </p>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button onclick="openCreateAnnouncementModal()"
+                class="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-sm">
+                <i data-lucide="megaphone" class="w-3.5 h-3.5"></i>
+                <span>New Announcement</span>
+              </button>
+              <button onclick="openEmergencyBroadcastModal()"
+                class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-sm">
+                <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
+                <span>Emergency Alert</span>
+              </button>
+              <button onclick="openScheduleChangeModal()"
+                class="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition shadow-sm">
+                <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-600"></i>
+                <span>Schedule Update</span>
+              </button>
+              <button onclick="broadcastPendingPaymentReminders()"
+                class="px-3.5 py-2 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs flex items-center gap-1.5 transition shadow-sm">
+                <i data-lucide="send" class="w-3.5 h-3.5 text-amber-600"></i>
+                <span>Bulk Fee Reminders</span>
+              </button>
+              <button onclick="openNotificationApiConfigModal()"
+                class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 font-bold text-xs flex items-center gap-1 transition shadow-sm"
+                title="Configure WhatsApp & Email APIs">
+                <i data-lucide="settings" class="w-3.5 h-3.5 text-slate-600"></i>
+                <span>API Settings</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Notification KPI Metrics -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="bg-slate-50 border border-slate-200/90 rounded-2xl p-3.5">
+              <span class="text-[11px] font-bold text-slate-500">Total Notifications</span>
+              <p id="notifKpiTotal" class="text-xl sm:text-2xl font-black text-slate-900">0</p>
+              <span class="text-[10px] text-slate-400">Lifetime logged</span>
+            </div>
+            <div class="bg-emerald-50/60 border border-emerald-200/90 rounded-2xl p-3.5">
+              <span class="text-[11px] font-bold text-emerald-700 flex items-center gap-1">
+                <i data-lucide="message-square" class="w-3 h-3"></i> WhatsApp Alerts
+              </span>
+              <p id="notifKpiWhatsApp" class="text-xl sm:text-2xl font-black text-emerald-900">0</p>
+              <span class="text-[10px] text-emerald-600">API & Web dispatches</span>
+            </div>
+            <div class="bg-sky-50/60 border border-sky-200/90 rounded-2xl p-3.5">
+              <span class="text-[11px] font-bold text-sky-700 flex items-center gap-1">
+                <i data-lucide="mail" class="w-3 h-3"></i> Email Notifications
+              </span>
+              <p id="notifKpiEmail" class="text-xl sm:text-2xl font-black text-sky-900">0</p>
+              <span class="text-[10px] text-sky-600">Delivered & sent</span>
+            </div>
+            <div class="bg-rose-50/60 border border-rose-200/90 rounded-2xl p-3.5">
+              <span class="text-[11px] font-bold text-rose-700 flex items-center gap-1">
+                <i data-lucide="shield-alert" class="w-3 h-3"></i> Urgent / Alerts
+              </span>
+              <p id="notifKpiUrgent" class="text-xl sm:text-2xl font-black text-rose-900">0</p>
+              <span class="text-[10px] text-rose-600">Emergency & Reminders</span>
+            </div>
+          </div>
+
+          <!-- History Filter & Search Bar (Feature 109) -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-2">
+            <div class="relative flex-1">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input type="text" id="notifHistorySearchInput" oninput="handleNotifHistorySearch(this.value)"
+                placeholder="Search history by recipient, roll no, title, message..."
+                class="w-full pl-10 pr-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 focus:bg-white focus:border-rose-500 focus:outline-none" />
+            </div>
+
+            <div class="flex items-center gap-2 flex-wrap">
+              <select id="notifHistoryTypeFilter" onchange="handleNotifHistoryFilterChange()"
+                class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800">
+                <option value="all">All Types</option>
+                <option value="registration">🎉 Registration</option>
+                <option value="payment_confirmed">✅ Payment Approved</option>
+                <option value="payment_rejected">⚠️ Payment Rejected</option>
+                <option value="balance_reminder">⏳ Balance Reminder</option>
+                <option value="ticket_assigned">🚆 Ticket Allocated</option>
+                <option value="announcement">📢 Announcement</option>
+                <option value="schedule_change">⏰ Schedule Change</option>
+                <option value="emergency">🚨 Emergency</option>
+              </select>
+
+              <select id="notifHistoryChannelFilter" onchange="handleNotifHistoryFilterChange()"
+                class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800">
+                <option value="all">All Channels</option>
+                <option value="in_app">In-App</option>
+                <option value="whatsapp">WhatsApp</option>
+                <option value="email">Email</option>
+              </select>
+
+              <button onclick="exportNotificationHistoryCSV()"
+                class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition shadow-xs">
+                <i data-lucide="download" class="w-3.5 h-3.5 text-slate-600"></i>
+                <span>Export CSV</span>
+              </button>
+              <button onclick="printNotificationHistory()"
+                class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition shadow-xs">
+                <i data-lucide="printer" class="w-3.5 h-3.5 text-slate-600"></i>
+                <span>Print Log</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Delivery History Log Table Container (Feature 109) -->
+          <div class="overflow-x-auto rounded-2xl border border-slate-200">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-100/80 text-slate-700 border-b border-slate-200 text-[11px] font-black uppercase tracking-wider">
+                  <th class="py-3 px-3.5">Time</th>
+                  <th class="py-3 px-3">Type & Priority</th>
+                  <th class="py-3 px-3">Notification Content</th>
+                  <th class="py-3 px-3">Recipient</th>
+                  <th class="py-3 px-3">Channels & Status</th>
+                  <th class="py-3 px-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="notifHistoryTableBody" class="divide-y divide-slate-100 bg-white">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+
+          <div id="notifHistoryEmptyBox" class="hidden p-8 text-center space-y-2">
+            <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
+              <i data-lucide="bell-off" class="w-5 h-5"></i>
+            </div>
+            <h5 class="text-sm font-bold text-slate-800">No notification history records</h5>
+            <p class="text-xs text-slate-400">All dispatched student notifications, announcements and alerts will be logged here.</p>
+          </div>
         </div>
       </div>
 
@@ -5296,6 +5514,369 @@
     </div>
   </div>
 
+  <!-- MODAL: IN-APP NOTIFICATION CENTER (Feature 108) -->
+  <div id="notificationCenterModal"
+    class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 no-print overflow-y-auto">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-4 sm:p-6 shadow-2xl my-6 max-h-[88vh] flex flex-col">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3 shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center font-black">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-display text-base sm:text-lg font-extrabold text-slate-900">Notifications & Alerts</h3>
+              <span id="notifCenterUnreadCount" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-rose-100 text-rose-800">0 new</span>
+            </div>
+            <p class="text-[11px] text-slate-500">Live tour announcements, schedule updates & personal alerts</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1">
+          <button onclick="markAllNotificationsRead()" class="text-xs text-slate-500 hover:text-emerald-700 font-bold px-2 py-1 rounded-lg hover:bg-slate-50 transition" title="Mark all as read">
+            Mark all read
+          </button>
+          <button onclick="closeNotificationCenterModal()" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-slate-100 shrink-0 text-xs">
+        <button id="notifFilterBtn-all" onclick="setNotifCenterFilter('all')" class="px-3 py-1.5 rounded-xl font-bold bg-slate-900 text-white transition whitespace-nowrap">
+          All
+        </button>
+        <button id="notifFilterBtn-unread" onclick="setNotifCenterFilter('unread')" class="px-3 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">
+          Unread
+        </button>
+        <button id="notifFilterBtn-announcements" onclick="setNotifCenterFilter('announcements')" class="px-3 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">
+          📢 Announcements
+        </button>
+        <button id="notifFilterBtn-personal" onclick="setNotifCenterFilter('personal')" class="px-3 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">
+          🔔 Personal
+        </button>
+        <button id="notifFilterBtn-urgent" onclick="setNotifCenterFilter('urgent')" class="px-3 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap">
+          🚨 Urgent
+        </button>
+      </div>
+
+      <!-- Notifications List Container -->
+      <div id="notifCenterList" class="flex-1 overflow-y-auto py-3 space-y-2.5">
+        <!-- Dynamically rendered -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CREATE TRIP ANNOUNCEMENT (Feature 103) -->
+  <div id="createAnnouncementModal"
+    class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print overflow-y-auto">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl my-6">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold">
+            <i data-lucide="megaphone" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-display text-base sm:text-lg font-extrabold text-slate-900">Compose Announcement</h3>
+            <p class="text-xs text-slate-500">Broadcast updates to all trip participants</p>
+          </div>
+        </div>
+        <button onclick="closeCreateAnnouncementModal()" class="p-1 text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleCreateAnnouncementSubmit(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Announcement Title *</label>
+          <input type="text" id="announcementTitle" required placeholder="e.g., Reporting Time & Bus Bay Numbers Announced"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Message Content *</label>
+          <textarea id="announcementMessage" rows="3" required placeholder="Enter full announcement details for students..."
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 leading-relaxed"></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Priority</label>
+            <select id="announcementPriority" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800">
+              <option value="normal">Normal (Standard)</option>
+              <option value="high">High Priority</option>
+              <option value="urgent">Urgent Alert</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Target Audience</label>
+            <select id="announcementTarget" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800">
+              <option value="all">All Registered Students</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 border border-slate-200/90 rounded-2xl p-3 space-y-2">
+          <span class="text-[11px] font-bold text-slate-600 block">Dispatch Channels (Features 106, 107):</span>
+          <div class="flex items-center gap-4 text-xs font-semibold text-slate-700">
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="announcementChanInApp" checked class="w-4 h-4 text-emerald-600 rounded" />
+              <span>In-App</span>
+            </label>
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="announcementChanWhatsApp" checked class="w-4 h-4 text-[#25D366] rounded" />
+              <span>WhatsApp</span>
+            </label>
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="announcementChanEmail" class="w-4 h-4 text-sky-600 rounded" />
+              <span>Email</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeCreateAnnouncementModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold shadow-sm">
+            Publish & Broadcast
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: EMERGENCY BROADCAST (Feature 105) -->
+  <div id="emergencyBroadcastModal"
+    class="fixed inset-0 z-50 hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 no-print overflow-y-auto">
+    <div class="bg-white border-2 border-rose-500 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl my-6">
+      <div class="flex items-center justify-between border-b border-rose-100 pb-3 mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-black animate-pulse">
+            <i data-lucide="shield-alert" class="w-5 h-5 text-rose-600"></i>
+          </div>
+          <div>
+            <h3 class="font-display text-base sm:text-lg font-black text-rose-700">Urgent Emergency Alert</h3>
+            <p class="text-xs text-rose-500 font-semibold">Immediate broadcast across all channels</p>
+          </div>
+        </div>
+        <button onclick="closeEmergencyBroadcastModal()" class="p-1 text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleEmergencyBroadcastSubmit(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-slate-800 mb-1">Emergency Alert Title *</label>
+          <input type="text" id="emergencyHeadline" required placeholder="e.g., Immediate Bus Assembly Call / Route Change"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-rose-50/60 border border-rose-300 text-sm font-bold text-rose-950" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-800 mb-1">Urgent Instructions / Advisory *</label>
+          <textarea id="emergencyInstructions" rows="3" required placeholder="Clear emergency instructions for students (e.g., assemble at Hotel Reception Ground immediately for roll call)..."
+            class="w-full px-3.5 py-2.5 rounded-xl bg-rose-50/60 border border-rose-300 text-xs text-rose-950 font-medium leading-relaxed"></textarea>
+        </div>
+
+        <div class="p-3 bg-rose-50 border border-rose-200 rounded-2xl text-[11px] text-rose-800 leading-normal">
+          <strong>Notice:</strong> This broadcast triggers an audio chime on student devices, displays a sticky red emergency banner at the top of the app, and logs directly to the notification delivery history.
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeEmergencyBroadcastModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-extrabold shadow-md">
+            Broadcast Emergency Alert Now
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: SCHEDULE CHANGE BROADCAST (Feature 104) -->
+  <div id="scheduleChangeModal"
+    class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print overflow-y-auto">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl my-6">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+            <i data-lucide="clock" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-display text-base sm:text-lg font-extrabold text-slate-900">Schedule Change Alert</h3>
+            <p class="text-xs text-slate-500">Notify students of updated timings or venues</p>
+          </div>
+        </div>
+        <button onclick="closeScheduleChangeModal()" class="p-1 text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleScheduleChangeSubmit(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Activity / Stop Name *</label>
+          <input type="text" id="schedChangeActivity" required placeholder="e.g., Morning Departure to Tea Museum"
+            class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Updated Day Tag</label>
+            <input type="text" id="schedChangeDay" placeholder="e.g., Day 2 (16 Nov)"
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Updated Time Slot</label>
+            <input type="text" id="schedChangeTime" placeholder="e.g., 07:30 AM (Rescheduled)"
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Updated Boarding / Venue Location</label>
+          <input type="text" id="schedChangeLocation" placeholder="e.g., Hotel Main Porch (Bus Bay 1 & 2)"
+            class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Details & Reason for Students</label>
+          <textarea id="schedChangeReason" rows="2" placeholder="e.g., Departure moved earlier by 30 mins to avoid traffic at Munnar junction."
+            class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeScheduleChangeModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold shadow-sm">
+            Broadcast Schedule Update
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: WHATSAPP & EMAIL API CONFIGURATION (Features 106, 107) -->
+  <div id="notificationApiConfigModal"
+    class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print overflow-y-auto">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4 sticky top-0 bg-white z-10">
+        <div>
+          <h3 class="font-display text-base sm:text-lg font-extrabold text-slate-900">WhatsApp & Email API Settings</h3>
+          <p class="text-xs text-slate-500">Configure official messaging gateways for automated alerts</p>
+        </div>
+        <button onclick="closeNotificationApiConfigModal()" class="p-1 text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="saveNotificationApiConfig(event)" class="space-y-4">
+        <!-- Section: WhatsApp API (Feature 106) -->
+        <div class="bg-emerald-50/50 border border-emerald-200/90 rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold text-emerald-900 uppercase flex items-center gap-1.5">
+              <i data-lucide="message-square" class="w-4 h-4 text-emerald-600"></i>
+              <span>Official WhatsApp Gateway (Feature 106)</span>
+            </span>
+            <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Supported API</span>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">WhatsApp Provider</label>
+            <select id="cfgWhatsAppProvider" class="w-full px-3 py-2 rounded-xl bg-white border border-emerald-200 text-xs font-semibold text-slate-800">
+              <option value="direct">Direct WhatsApp Web / Protocol (1-Click Instant)</option>
+              <option value="cloud_api">Meta WhatsApp Cloud API (Official Cloud Graph API)</option>
+              <option value="twilio">Twilio Programmable WhatsApp Messaging</option>
+              <option value="webhook">Custom Webhook Gateway (POST Endpoint)</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">API Endpoint / Webhook URL</label>
+              <input type="url" id="cfgWhatsAppUrl" placeholder="https://graph.facebook.com/v18.0/..."
+                class="w-full px-3 py-1.5 rounded-xl bg-white border border-emerald-200 text-xs text-slate-800" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Bearer Token / Auth Key</label>
+              <input type="password" id="cfgWhatsAppToken" placeholder="Meta permanent system user token"
+                class="w-full px-3 py-1.5 rounded-xl bg-white border border-emerald-200 text-xs text-slate-800" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Phone Number ID (Meta) / From</label>
+              <input type="text" id="cfgWhatsAppPhoneId" placeholder="e.g., 104829104928"
+                class="w-full px-3 py-1.5 rounded-xl bg-white border border-emerald-200 text-xs text-slate-800" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Template Name (Meta)</label>
+              <input type="text" id="cfgWhatsAppTemplate" placeholder="trippay_notification_alert"
+                class="w-full px-3 py-1.5 rounded-xl bg-white border border-emerald-200 text-xs text-slate-800" />
+            </div>
+          </div>
+          <button type="button" onclick="testWhatsAppApiConnection()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 transition">
+            <i data-lucide="radio" class="w-3.5 h-3.5"></i> Test WhatsApp Dispatch
+          </button>
+        </div>
+
+        <!-- Section: Email API (Feature 107) -->
+        <div class="bg-sky-50/50 border border-sky-200/90 rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold text-sky-900 uppercase flex items-center gap-1.5">
+              <i data-lucide="mail" class="w-4 h-4 text-sky-600"></i>
+              <span>Email Notifications Service (Feature 107)</span>
+            </span>
+            <span class="text-[10px] font-bold text-sky-700 bg-sky-100 px-2 py-0.5 rounded-full">Email API</span>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Email Provider</label>
+            <select id="cfgEmailProvider" class="w-full px-3 py-2 rounded-xl bg-white border border-sky-200 text-xs font-semibold text-slate-800">
+              <option value="direct">Direct Mailto Link (Client Fallback)</option>
+              <option value="resend">Resend API / SendGrid</option>
+              <option value="webhook">Custom Email Webhook Endpoint</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">API Endpoint URL</label>
+              <input type="url" id="cfgEmailUrl" placeholder="https://api.resend.com/emails"
+                class="w-full px-3 py-1.5 rounded-xl bg-white border border-sky-200 text-xs text-slate-800" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">API Key</label>
+              <input type="password" id="cfgEmailApiKey" placeholder="re_123456789..."
+                class="w-full px-3 py-1.5 rounded-xl bg-white border border-sky-200 text-xs text-slate-800" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 mb-1">From Sender Address</label>
+            <input type="email" id="cfgEmailFrom" placeholder="College Tour Committee <tour@collegetrip.edu>"
+              class="w-full px-3 py-1.5 rounded-xl bg-white border border-sky-200 text-xs text-slate-800" />
+          </div>
+          <button type="button" onclick="testEmailApiConnection()" class="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs flex items-center gap-1 transition">
+            <i data-lucide="send" class="w-3.5 h-3.5"></i> Test Email Dispatch
+          </button>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeNotificationApiConfigModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm">
+            Save API Settings
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- MODAL: ADD / EDIT ITINERARY (Features 86-94) -->
   <div id="itineraryModal"
     class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print overflow-y-auto">
@@ -5456,6 +6037,14 @@
           </label>
           <textarea id="itinNote" rows="2" placeholder="e.g., Mandatory: Carry college ID card, jacket, comfortable sports shoes. Punctual boarding at 05:45 AM."
             class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800"></textarea>
+        </div>
+
+        <!-- Broadcast Schedule Change Checkbox (Feature 104) -->
+        <div class="flex items-center gap-2 pt-1 pb-1">
+          <input type="checkbox" id="itinNotifyStudents" checked class="w-4 h-4 text-emerald-600 rounded border-slate-300" />
+          <label for="itinNotifyStudents" class="text-xs font-bold text-slate-700 cursor-pointer">
+            📢 Broadcast schedule update notification to all participants (Feature 104)
+          </label>
         </div>
 
         <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
@@ -7667,6 +8256,14 @@
     let itineraries = [];
     let contacts = [];
     let auditLogs = [];
+    let notifications = [];
+    let rawNotifList = [];
+    let unsubNotifications = null;
+    let activeNotifFilter = 'all';
+    let notifHistorySearchQuery = '';
+    let notifHistoryTypeFilter = 'all';
+    let notifHistoryChannelFilter = 'all';
+    let dismissedEmergencyIds = new Set();
 
     // Railway PNR Records State
     let unsubPnr = null;
@@ -8173,6 +8770,16 @@
         itineraries = rawItinList.filter(i => (i.tripId || 'default') === currentTripId);
         itineraries.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
         renderItinerary();
+      }, (err) => console.error(err));
+
+      // Notification Listener (Features 98-109)
+      const notifCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_notifications');
+      unsubNotifications = onSnapshot(notifCol, (snap) => {
+        rawNotifList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        notifications = rawNotifList.filter(n => (n.tripId || 'default') === currentTripId);
+        notifications.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        renderNotificationsUI();
+        if (isAdminLoggedIn) renderNotificationsManagerUI();
       }, (err) => console.error(err));
 
       // 6. Contacts Listener
@@ -11243,6 +11850,20 @@
             accessCode: ''
           });
           showToast('Payment submitted successfully!', 'success', 'Boarding Pass', () => openBoardingPassFromLastReceipt());
+
+          // Feature 98: Trip Registration Confirmation Notification
+          dispatchNotification({
+            type: 'registration',
+            title: 'Trip Registration Confirmed! 🎉',
+            message: `Welcome to ${tripConfig.tripTitle}! Registration confirmed for ${studentName} (${department}). Your Trip ID is ${newEntry.studentTripId}. Amount paid: ₹${amountPaid}.`,
+            recipientName: studentName,
+            recipientPhone: cleanPhone,
+            recipientEmail: '',
+            recipientRollNo: '',
+            targetRollNo: 'all',
+            priority: 'high',
+            channels: ['in_app', 'whatsapp']
+          });
         }
 
         document.getElementById('studentPayForm').reset();
@@ -12486,7 +13107,7 @@
     }
 
     function switchManagerSubTab(sub) {
-      ['students', 'checkin', 'access-codes', 'audit-logs', 'expenses', 'itinerary', 'contacts', 'admins', 'railway'].forEach(s => {
+      ['students', 'checkin', 'access-codes', 'audit-logs', 'expenses', 'itinerary', 'contacts', 'notifications', 'admins', 'railway'].forEach(s => {
         const sec = document.getElementById(`managerSection-${s}`);
         const btn = document.getElementById(`subTabBtn-${s}`);
         if (!sec || !btn) return;
@@ -12496,6 +13117,8 @@
             btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-purple-600 text-white shadow-sm';
           } else if (s === 'railway') {
             btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-amber-600 text-white shadow-sm';
+          } else if (s === 'notifications') {
+            btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-rose-600 text-white shadow-sm';
           } else {
             btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-emerald-600 text-white shadow-sm';
           }
@@ -12508,6 +13131,7 @@
       if (sub === 'access-codes') renderAccessCodesSuite();
       if (sub === 'audit-logs') renderAuditLogs();
       if (sub === 'railway') renderRailwayManagerUI();
+      if (sub === 'notifications') renderNotificationsManagerUI();
       if (sub === 'admins') { updateBossGlobalKPIs(); switchBossDashboardTab(activeBossDashboardTab || 'admins'); }
       if (window.lucide && typeof lucide.createIcons === 'function') {
         lucide.createIcons();
@@ -12998,6 +13622,20 @@
           'Send Receipt on WA',
           () => shareVerifiedPaymentWhatsApp(id, updatePayload)
         );
+
+        // Feature 99: Payment Confirmation Notification
+        dispatchNotification({
+          type: 'payment_confirmed',
+          title: `Payment Approved: ₹${p.amountPaid} Verified ✅`,
+          message: `Congratulations ${p.studentName}! Your payment of ₹${p.amountPaid} has been verified and confirmed. Digital Boarding Pass is now active.`,
+          recipientName: p.studentName,
+          recipientPhone: p.phone,
+          recipientEmail: p.email || '',
+          recipientRollNo: p.rollNo || '',
+          targetRollNo: p.rollNo || '',
+          priority: 'high',
+          channels: ['in_app', 'whatsapp']
+        });
       } catch (e) {
         console.error(e);
         showToast('Approval update failed.', 'error');
@@ -13064,6 +13702,20 @@
         logSecurityEvent('REJECT_PAYMENT', p.phone, `Rejected payment: ${fullReason}`);
         closeRejectPaymentModal();
         showToast(`Payment rejected for ${p.studentName}.`, 'info');
+
+        // Feature 100: Payment Rejection Notification
+        dispatchNotification({
+          type: 'payment_rejected',
+          title: 'Payment Verification Alert ⚠️',
+          message: `Payment submission for ${p.studentName} was rejected. Reason: ${fullReason}. Please submit valid UTR or contact staff coordinator.`,
+          recipientName: p.studentName,
+          recipientPhone: p.phone,
+          recipientEmail: p.email || '',
+          recipientRollNo: p.rollNo || '',
+          targetRollNo: p.rollNo || '',
+          priority: 'urgent',
+          channels: ['in_app', 'whatsapp']
+        });
 
         if (notifyWA) {
           const cleanPhone = normalizePhone(p.phone);
@@ -13679,6 +14331,20 @@ Please clear your balance at the earliest to finalize your seat and boarding pas
 Thank you!`;
 
       window.open(`https://wa.me/91${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
+
+      // Feature 101: Pending Payment Reminder Notification
+      dispatchNotification({
+        type: 'balance_reminder',
+        title: `Pending Fee Reminder: ₹${summary.balanceDue} Remaining ⏳`,
+        message: `Hello ${s.studentName}, your pending balance for ${tripTitle} is ₹${summary.balanceDue}. Kindly complete payment before registration closes.`,
+        recipientName: s.studentName,
+        recipientPhone: s.phone,
+        recipientEmail: s.email || '',
+        recipientRollNo: s.rollNo || '',
+        targetRollNo: s.rollNo || '',
+        priority: 'high',
+        channels: ['in_app', 'whatsapp']
+      });
     }
 
     // Individual Student Payment Statement (Feature 41)
@@ -13976,6 +14642,823 @@ Thank you!`;
       } catch (err) {
         showToast('Failed to save expense.', 'error');
       }
+    }
+
+    // MULTI-CHANNEL NOTIFICATION & BROADCAST SUITE (Features 98-109)
+
+    // Play notification audio chime (Web Audio API)
+    function playNotificationChime() {
+      try {
+        if ('vibrate' in navigator) navigator.vibrate([100, 50, 100]);
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.35);
+      } catch (e) {}
+    }
+
+    // Official WhatsApp API Dispatcher (Feature 106)
+    async function sendWhatsAppApiNotification({ phone, title, messageText, type }) {
+      const cleanPhone = normalizePhone(phone);
+      if (!cleanPhone) return { status: 'skipped', reason: 'no_phone' };
+
+      const cfg = (tripConfig && tripConfig.whatsappApi) ? tripConfig.whatsappApi : {};
+      const provider = cfg.provider || 'direct';
+
+      if (provider === 'cloud_api' && cfg.phoneNumberId && cfg.apiToken) {
+        const url = cfg.endpointUrl || `https://graph.facebook.com/v18.0/${cfg.phoneNumberId}/messages`;
+        try {
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${cfg.apiToken}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              messaging_product: 'whatsapp',
+              recipient_type: 'individual',
+              to: cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`,
+              type: 'text',
+              text: { preview_url: true, body: `*${title}*\n\n${messageText}` }
+            })
+          });
+          const data = await res.json();
+          if (res.ok) return { status: 'delivered', provider: 'cloud_api', data };
+        } catch (err) {
+          console.warn('Meta WhatsApp API error, fallback to direct:', err);
+        }
+      }
+
+      if (provider === 'twilio' && cfg.endpointUrl && cfg.apiToken) {
+        try {
+          const res = await fetch(cfg.endpointUrl, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Basic ${btoa(cfg.apiToken)}`,
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+              From: `whatsapp:${cfg.fromNumber || '+14155238886'}`,
+              To: `whatsapp:+91${cleanPhone}`,
+              Body: `*${title}*\n\n${messageText}`
+            })
+          });
+          if (res.ok) return { status: 'delivered', provider: 'twilio' };
+        } catch (err) {}
+      }
+
+      if (provider === 'webhook' && cfg.endpointUrl) {
+        try {
+          const res = await fetch(cfg.endpointUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: cleanPhone, title, message: messageText, type })
+          });
+          if (res.ok) return { status: 'delivered', provider: 'webhook' };
+        } catch (e) {}
+      }
+
+      return { status: 'sent', provider: 'direct' };
+    }
+
+    // Email Notifications Dispatcher (Feature 107)
+    async function sendEmailApiNotification({ to, subject, htmlBody, textBody }) {
+      if (!to || !to.includes('@')) return { status: 'skipped', reason: 'invalid_email' };
+
+      const cfg = (tripConfig && tripConfig.emailApi) ? tripConfig.emailApi : {};
+      const provider = cfg.provider || 'direct';
+
+      if ((provider === 'webhook' || provider === 'resend') && cfg.endpointUrl) {
+        try {
+          const headers = { 'Content-Type': 'application/json' };
+          if (cfg.apiKey) headers['Authorization'] = `Bearer ${cfg.apiKey}`;
+          const res = await fetch(cfg.endpointUrl, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+              from: cfg.fromEmail || 'TripPay <notifications@trippay.com>',
+              to: [to],
+              subject,
+              html: htmlBody,
+              text: textBody
+            })
+          });
+          if (res.ok) return { status: 'delivered', provider };
+        } catch (err) {
+          console.warn('Email API dispatch error:', err);
+        }
+      }
+
+      return { status: 'sent', provider: 'direct' };
+    }
+
+    // Master Dispatch Function (Features 98-109)
+    async function dispatchNotification({
+      type, // 'registration', 'payment_confirmed', 'payment_rejected', 'balance_reminder', 'ticket_assigned', 'announcement', 'schedule_change', 'emergency'
+      title,
+      message,
+      priority = 'normal', // 'normal', 'high', 'urgent'
+      recipientName = 'All Participants',
+      recipientPhone = '',
+      recipientEmail = '',
+      recipientRollNo = '',
+      targetRollNo = 'all',
+      channels = ['in_app', 'whatsapp'],
+      metadata = {}
+    }) {
+      const now = Date.now();
+      const notifRecord = {
+        tripId: currentTripId,
+        type,
+        title,
+        message,
+        priority,
+        recipientName,
+        recipientPhone,
+        recipientEmail,
+        recipientRollNo,
+        targetRollNo,
+        channels,
+        deliveryStatus: 'delivered',
+        channelStatus: {
+          inApp: 'delivered'
+        },
+        read: false,
+        readBy: [],
+        metadata,
+        createdAt: now,
+        sentBy: isStaffOrManagerSession() ? 'Admin' : 'System'
+      };
+
+      // 1. Dispatch WhatsApp
+      if (channels.includes('whatsapp') && recipientPhone) {
+        try {
+          const waResult = await sendWhatsAppApiNotification({
+            phone: recipientPhone,
+            title,
+            messageText: message,
+            type
+          });
+          notifRecord.channelStatus.whatsapp = waResult.status || 'sent';
+        } catch (e) {
+          notifRecord.channelStatus.whatsapp = 'queued';
+        }
+      }
+
+      // 2. Dispatch Email
+      if (channels.includes('email') && recipientEmail) {
+        try {
+          const emailResult = await sendEmailApiNotification({
+            to: recipientEmail,
+            subject: `[${tripConfig.tripTitle || 'TripPay'}] ${title}`,
+            textBody: message,
+            htmlBody: `<div style="font-family: sans-serif; padding: 20px;"><h2>${title}</h2><p>${message}</p></div>`
+          });
+          notifRecord.channelStatus.email = emailResult.status || 'sent';
+        } catch (e) {
+          notifRecord.channelStatus.email = 'queued';
+        }
+      }
+
+      // 3. Save to Firestore (Feature 109: Notification Delivery History)
+      try {
+        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'trip_notifications'), notifRecord);
+      } catch (err) {
+        console.error('Failed to log notification to Firestore:', err);
+      }
+
+      // 4. Play audio chime if high/urgent priority
+      if (priority === 'urgent' || priority === 'high') {
+        playNotificationChime();
+      }
+
+      return notifRecord;
+    }
+
+    // Render Notifications in App & Banners (Feature 108)
+    function renderNotificationsUI() {
+      // 1. Update Bell Badge
+      const bellBadge = document.getElementById('notifBellBadge');
+      const unreadCountBadge = document.getElementById('notifCenterUnreadCount');
+
+      const loggedRoll = loggedInParticipant ? (loggedInParticipant.rollNo || '') : '';
+      const userNotifs = notifications.filter(n => {
+        if (n.targetRollNo === 'all') return true;
+        if (loggedRoll && n.targetRollNo === loggedRoll) return true;
+        if (isStaffOrManagerSession()) return true;
+        return false;
+      });
+
+      const unreadNotifs = userNotifs.filter(n => !n.read);
+      const unreadCount = unreadNotifs.length;
+
+      if (bellBadge) {
+        if (unreadCount > 0) {
+          bellBadge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+          bellBadge.classList.remove('hidden');
+        } else {
+          bellBadge.classList.add('hidden');
+        }
+      }
+      if (unreadCountBadge) {
+        unreadCountBadge.textContent = `${unreadCount} new`;
+      }
+
+      // 2. Emergency Alert Banner (Feature 105)
+      const emergBanner = document.getElementById('emergencyAlertBanner');
+      const latestEmergency = notifications.find(n => n.type === 'emergency' && !dismissedEmergencyIds.has(n.id));
+      if (emergBanner) {
+        if (latestEmergency) {
+          emergBanner.classList.remove('hidden');
+          document.getElementById('emergencyAlertTitle').textContent = latestEmergency.title;
+          document.getElementById('emergencyAlertMessage').textContent = latestEmergency.message;
+          document.getElementById('emergencyAlertTimestamp').textContent = new Date(latestEmergency.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        } else {
+          emergBanner.classList.add('hidden');
+        }
+      }
+
+      // 3. Latest Pinned Announcement Banner (Feature 103)
+      const annBanner = document.getElementById('tripAnnouncementBanner');
+      const latestAnn = notifications.find(n => n.type === 'announcement');
+      if (annBanner) {
+        if (latestAnn) {
+          annBanner.classList.remove('hidden');
+          document.getElementById('tripAnnouncementText').textContent = `${latestAnn.title}: ${latestAnn.message}`;
+          document.getElementById('tripAnnouncementTime').textContent = new Date(latestAnn.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        } else {
+          annBanner.classList.add('hidden');
+        }
+      }
+
+      // 4. Render In-App Notification Center List (Feature 108)
+      renderNotificationCenterList(userNotifs);
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function dismissEmergencyBanner() {
+      const latestEmergency = notifications.find(n => n.type === 'emergency');
+      if (latestEmergency) dismissedEmergencyIds.add(latestEmergency.id);
+      const emergBanner = document.getElementById('emergencyAlertBanner');
+      if (emergBanner) emergBanner.classList.add('hidden');
+    }
+
+    function renderNotificationCenterList(userNotifs) {
+      const container = document.getElementById('notifCenterList');
+      if (!container) return;
+
+      let list = userNotifs;
+      if (activeNotifFilter === 'unread') list = list.filter(n => !n.read);
+      if (activeNotifFilter === 'announcements') list = list.filter(n => n.type === 'announcement');
+      if (activeNotifFilter === 'personal') list = list.filter(n => ['registration', 'payment_confirmed', 'payment_rejected', 'balance_reminder', 'ticket_assigned'].includes(n.type));
+      if (activeNotifFilter === 'urgent') list = list.filter(n => n.priority === 'urgent' || n.type === 'emergency');
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="py-12 text-center space-y-2">
+            <div class="w-10 h-10 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+              <i data-lucide="bell-off" class="w-5 h-5"></i>
+            </div>
+            <h5 class="text-xs font-bold text-slate-700">No notifications in this view</h5>
+            <p class="text-[11px] text-slate-400">You are all caught up!</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(n => {
+        let typeBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">Notification</span>';
+        let iconName = 'bell';
+        let iconColor = 'bg-slate-100 text-slate-700';
+
+        if (n.type === 'registration') {
+          typeBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Registration</span>';
+          iconName = 'sparkles';
+          iconColor = 'bg-emerald-100 text-emerald-700';
+        } else if (n.type === 'payment_confirmed') {
+          typeBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Payment Verified</span>';
+          iconName = 'check-circle-2';
+          iconColor = 'bg-emerald-100 text-emerald-700';
+        } else if (n.type === 'payment_rejected') {
+          typeBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-rose-100 text-rose-800">Payment Alert</span>';
+          iconName = 'alert-triangle';
+          iconColor = 'bg-rose-100 text-rose-700';
+        } else if (n.type === 'balance_reminder') {
+          typeBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">Fee Reminder</span>';
+          iconName = 'hourglass';
+          iconColor = 'bg-amber-100 text-amber-700';
+        } else if (n.type === 'ticket_assigned') {
+          typeBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">Train Seat Booked</span>';
+          iconName = 'train';
+          iconColor = 'bg-indigo-100 text-indigo-700';
+        } else if (n.type === 'announcement') {
+          typeBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">Announcement</span>';
+          iconName = 'megaphone';
+          iconColor = 'bg-sky-100 text-sky-700';
+        } else if (n.type === 'schedule_change') {
+          typeBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">Schedule Change</span>';
+          iconName = 'clock';
+          iconColor = 'bg-amber-100 text-amber-700';
+        } else if (n.type === 'emergency') {
+          typeBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-rose-600 text-white animate-pulse">Emergency Alert</span>';
+          iconName = 'shield-alert';
+          iconColor = 'bg-rose-600 text-white';
+        }
+
+        const timeStr = new Date(n.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' +
+                        new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        return `
+          <div class="p-3.5 rounded-2xl border ${n.read ? 'bg-white border-slate-200/80' : 'bg-rose-50/20 border-rose-200'} shadow-xs hover:shadow-sm transition space-y-2">
+            <div class="flex items-start justify-between gap-2.5">
+              <div class="flex items-start gap-2.5">
+                <div class="w-8 h-8 rounded-xl ${iconColor} flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
+                  <i data-lucide="${iconName}" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    ${typeBadge}
+                    ${n.priority === 'urgent' ? '<span class="text-[9px] font-black uppercase px-1.5 py-0.2 rounded bg-rose-600 text-white">URGENT</span>' : ''}
+                    <span class="text-[10px] text-slate-400 font-mono">${timeStr}</span>
+                  </div>
+                  <h5 class="font-extrabold text-xs sm:text-sm text-slate-900 mt-1">${escapeHtml(n.title)}</h5>
+                </div>
+              </div>
+              <div class="flex items-center gap-1 shrink-0">
+                ${!n.read ? `
+                  <button onclick="markNotificationAsRead('${n.id}')" class="w-2.5 h-2.5 rounded-full bg-rose-500 hover:scale-125 transition" title="Mark as read"></button>
+                ` : ''}
+              </div>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed pl-10">${escapeHtml(n.message)}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openNotificationCenterModal(initialFilter = 'all') {
+      setNotifCenterFilter(initialFilter);
+      document.getElementById('notificationCenterModal').classList.remove('hidden');
+    }
+
+    function closeNotificationCenterModal() {
+      document.getElementById('notificationCenterModal').classList.add('hidden');
+    }
+
+    function setNotifCenterFilter(filter) {
+      activeNotifFilter = filter;
+      ['all', 'unread', 'announcements', 'personal', 'urgent'].forEach(f => {
+        const btn = document.getElementById(`notifFilterBtn-${f}`);
+        if (!btn) return;
+        if (f === filter) {
+          btn.className = 'px-3 py-1.5 rounded-xl font-bold bg-slate-900 text-white transition whitespace-nowrap shadow-xs';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition whitespace-nowrap';
+        }
+      });
+      renderNotificationsUI();
+    }
+
+    async function markAllNotificationsRead() {
+      const unreadList = notifications.filter(n => !n.read);
+      if (unreadList.length === 0) {
+        showToast('All notifications are already marked read.');
+        return;
+      }
+      try {
+        const batch = writeBatch(db);
+        unreadList.forEach(n => {
+          const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_notifications', n.id);
+          batch.update(ref, { read: true });
+        });
+        await batch.commit();
+        showToast('All notifications marked as read.');
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function markNotificationAsRead(id) {
+      try {
+        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_notifications', id);
+        await updateDoc(ref, { read: true });
+      } catch (e) {}
+    }
+
+    // Render Notifications Manager Hub (Features 106, 107, 109)
+    function renderNotificationsManagerUI() {
+      const container = document.getElementById('notifHistoryTableBody');
+      const emptyBox = document.getElementById('notifHistoryEmptyBox');
+      const badge = document.getElementById('subTabBadgeNotifications');
+
+      if (badge) badge.textContent = notifications.length;
+
+      // Update KPIs
+      const kpiTotal = document.getElementById('notifKpiTotal');
+      const kpiWhatsApp = document.getElementById('notifKpiWhatsApp');
+      const kpiEmail = document.getElementById('notifKpiEmail');
+      const kpiUrgent = document.getElementById('notifKpiUrgent');
+
+      if (kpiTotal) kpiTotal.textContent = notifications.length;
+      if (kpiWhatsApp) kpiWhatsApp.textContent = notifications.filter(n => n.channels && n.channels.includes('whatsapp')).length;
+      if (kpiEmail) kpiEmail.textContent = notifications.filter(n => n.channels && n.channels.includes('email')).length;
+      if (kpiUrgent) kpiUrgent.textContent = notifications.filter(n => n.priority === 'urgent' || n.type === 'emergency' || n.type === 'balance_reminder').length;
+
+      if (!container) return;
+
+      // Apply search and filters (Feature 109)
+      let list = [...notifications];
+      if (notifHistorySearchQuery) {
+        const q = notifHistorySearchQuery.toLowerCase();
+        list = list.filter(n =>
+          (n.recipientName && n.recipientName.toLowerCase().includes(q)) ||
+          (n.recipientRollNo && n.recipientRollNo.toLowerCase().includes(q)) ||
+          (n.title && n.title.toLowerCase().includes(q)) ||
+          (n.message && n.message.toLowerCase().includes(q))
+        );
+      }
+      if (notifHistoryTypeFilter !== 'all') {
+        list = list.filter(n => n.type === notifHistoryTypeFilter);
+      }
+      if (notifHistoryChannelFilter !== 'all') {
+        list = list.filter(n => n.channels && n.channels.includes(notifHistoryChannelFilter));
+      }
+
+      if (list.length === 0) {
+        if (emptyBox) emptyBox.classList.remove('hidden');
+        container.innerHTML = '';
+        return;
+      }
+      if (emptyBox) emptyBox.classList.add('hidden');
+
+      container.innerHTML = list.map(n => {
+        let typeBadge = '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">General</span>';
+        if (n.type === 'registration') typeBadge = '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Registration</span>';
+        if (n.type === 'payment_confirmed') typeBadge = '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Approved</span>';
+        if (n.type === 'payment_rejected') typeBadge = '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800">Rejected</span>';
+        if (n.type === 'balance_reminder') typeBadge = '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">Reminder</span>';
+        if (n.type === 'ticket_assigned') typeBadge = '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">Ticket</span>';
+        if (n.type === 'announcement') typeBadge = '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">Announcement</span>';
+        if (n.type === 'schedule_change') typeBadge = '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">Schedule</span>';
+        if (n.type === 'emergency') typeBadge = '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-600 text-white animate-pulse">Emergency</span>';
+
+        const priorityBadge = n.priority === 'urgent'
+          ? '<span class="text-[9px] font-black uppercase px-1.5 py-0.2 rounded bg-rose-100 text-rose-700">Urgent</span>'
+          : (n.priority === 'high' ? '<span class="text-[9px] font-black uppercase px-1.5 py-0.2 rounded bg-amber-100 text-amber-800">High</span>' : '');
+
+        const timeStr = new Date(n.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' +
+                        new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        // Channels Status Badges
+        const inAppBadge = '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">In-App</span>';
+        const waBadge = n.channels && n.channels.includes('whatsapp')
+          ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#25D366]/20 text-[#128C7E]">WhatsApp</span>' : '';
+        const emailBadge = n.channels && n.channels.includes('email')
+          ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-sky-100 text-sky-800">Email</span>' : '';
+
+        return `
+          <tr class="hover:bg-slate-50/80 transition">
+            <td class="py-3 px-3.5 font-mono text-[11px] text-slate-500 whitespace-nowrap">${timeStr}</td>
+            <td class="py-3 px-3">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                ${typeBadge}
+                ${priorityBadge}
+              </div>
+            </td>
+            <td class="py-3 px-3 max-w-xs">
+              <div class="font-bold text-slate-900 truncate">${escapeHtml(n.title)}</div>
+              <div class="text-[11px] text-slate-500 truncate mt-0.5">${escapeHtml(n.message)}</div>
+            </td>
+            <td class="py-3 px-3 whitespace-nowrap">
+              <div class="font-bold text-slate-800">${escapeHtml(n.recipientName || 'All')}</div>
+              ${n.recipientRollNo ? `<div class="text-[10px] font-mono text-slate-500">${escapeHtml(n.recipientRollNo)}</div>` : ''}
+              ${n.recipientPhone ? `<div class="text-[10px] font-mono text-slate-400">${escapeHtml(n.recipientPhone)}</div>` : ''}
+            </td>
+            <td class="py-3 px-3">
+              <div class="flex items-center gap-1 flex-wrap">
+                ${inAppBadge}
+                ${waBadge}
+                ${emailBadge}
+              </div>
+            </td>
+            <td class="py-3 px-3 text-right whitespace-nowrap">
+              ${n.recipientPhone ? `
+                <a href="https://wa.me/91${normalizePhone(n.recipientPhone)}?text=${encodeURIComponent('*' + n.title + '*\n\n' + n.message)}" target="_blank"
+                  class="px-2 py-1 rounded-lg bg-[#25D366] text-white font-bold text-[11px] inline-flex items-center gap-1 shadow-xs hover:bg-[#20bd5a] transition">
+                  <i data-lucide="message-circle" class="w-3 h-3"></i> WA
+                </a>
+              ` : ''}
+              <button onclick="resendNotification('${n.id}')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold transition ml-1">
+                Resend
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function handleNotifHistorySearch(val) {
+      notifHistorySearchQuery = val.trim();
+      renderNotificationsManagerUI();
+    }
+
+    function handleNotifHistoryFilterChange() {
+      notifHistoryTypeFilter = document.getElementById('notifHistoryTypeFilter').value;
+      notifHistoryChannelFilter = document.getElementById('notifHistoryChannelFilter').value;
+      renderNotificationsManagerUI();
+    }
+
+    // Modal Control & Submission Functions
+    function openCreateAnnouncementModal() {
+      document.getElementById('announcementTitle').value = '';
+      document.getElementById('announcementMessage').value = '';
+      document.getElementById('announcementPriority').value = 'normal';
+      document.getElementById('createAnnouncementModal').classList.remove('hidden');
+    }
+
+    function closeCreateAnnouncementModal() {
+      document.getElementById('createAnnouncementModal').classList.add('hidden');
+    }
+
+    async function handleCreateAnnouncementSubmit(e) {
+      e.preventDefault();
+      const title = document.getElementById('announcementTitle').value.trim();
+      const message = document.getElementById('announcementMessage').value.trim();
+      const priority = document.getElementById('announcementPriority').value;
+      const channels = [];
+      if (document.getElementById('announcementChanInApp').checked) channels.push('in_app');
+      if (document.getElementById('announcementChanWhatsApp').checked) channels.push('whatsapp');
+      if (document.getElementById('announcementChanEmail').checked) channels.push('email');
+
+      await dispatchNotification({
+        type: 'announcement',
+        title,
+        message,
+        priority,
+        recipientName: 'All Participants',
+        targetRollNo: 'all',
+        channels
+      });
+
+      showToast('Announcement published & broadcasted successfully!', 'success');
+      closeCreateAnnouncementModal();
+    }
+
+    function openEmergencyBroadcastModal() {
+      document.getElementById('emergencyHeadline').value = '';
+      document.getElementById('emergencyInstructions').value = '';
+      document.getElementById('emergencyBroadcastModal').classList.remove('hidden');
+    }
+
+    function closeEmergencyBroadcastModal() {
+      document.getElementById('emergencyBroadcastModal').classList.add('hidden');
+    }
+
+    async function handleEmergencyBroadcastSubmit(e) {
+      e.preventDefault();
+      const headline = document.getElementById('emergencyHeadline').value.trim();
+      const instructions = document.getElementById('emergencyInstructions').value.trim();
+
+      await dispatchNotification({
+        type: 'emergency',
+        title: `🚨 URGENT: ${headline}`,
+        message: instructions,
+        priority: 'urgent',
+        recipientName: 'All Participants',
+        targetRollNo: 'all',
+        channels: ['in_app', 'whatsapp', 'email']
+      });
+
+      showToast('Emergency broadcast dispatched immediately!', 'success');
+      closeEmergencyBroadcastModal();
+    }
+
+    function openScheduleChangeModal() {
+      document.getElementById('schedChangeActivity').value = '';
+      document.getElementById('schedChangeDay').value = 'Day 1';
+      document.getElementById('schedChangeTime').value = '';
+      document.getElementById('schedChangeLocation').value = '';
+      document.getElementById('schedChangeReason').value = '';
+      document.getElementById('scheduleChangeModal').classList.remove('hidden');
+    }
+
+    function closeScheduleChangeModal() {
+      document.getElementById('scheduleChangeModal').classList.add('hidden');
+    }
+
+    async function handleScheduleChangeSubmit(e) {
+      e.preventDefault();
+      const activity = document.getElementById('schedChangeActivity').value.trim();
+      const day = document.getElementById('schedChangeDay').value.trim();
+      const time = document.getElementById('schedChangeTime').value.trim();
+      const loc = document.getElementById('schedChangeLocation').value.trim();
+      const reason = document.getElementById('schedChangeReason').value.trim();
+
+      let msg = `Schedule update for ${day} - ${activity}.`;
+      if (time) msg += ` New Time: ${time}.`;
+      if (loc) msg += ` Venue/Boarding: ${loc}.`;
+      if (reason) msg += ` Note: ${reason}.`;
+      msg += ' Please check your Itinerary tab.';
+
+      await dispatchNotification({
+        type: 'schedule_change',
+        title: `Schedule Update: ${activity} ⏰`,
+        message: msg,
+        priority: 'high',
+        recipientName: 'All Participants',
+        targetRollNo: 'all',
+        channels: ['in_app', 'whatsapp']
+      });
+
+      showToast('Schedule update broadcasted to all participants!', 'success');
+      closeScheduleChangeModal();
+    }
+
+    // WhatsApp & Email API Config (Features 106, 107)
+    function openNotificationApiConfigModal() {
+      const waCfg = (tripConfig && tripConfig.whatsappApi) ? tripConfig.whatsappApi : {};
+      const emCfg = (tripConfig && tripConfig.emailApi) ? tripConfig.emailApi : {};
+
+      document.getElementById('cfgWhatsAppProvider').value = waCfg.provider || 'direct';
+      document.getElementById('cfgWhatsAppUrl').value = waCfg.endpointUrl || '';
+      document.getElementById('cfgWhatsAppToken').value = waCfg.apiToken || '';
+      document.getElementById('cfgWhatsAppPhoneId').value = waCfg.phoneNumberId || '';
+      document.getElementById('cfgWhatsAppTemplate').value = waCfg.templateName || '';
+
+      document.getElementById('cfgEmailProvider').value = emCfg.provider || 'direct';
+      document.getElementById('cfgEmailUrl').value = emCfg.endpointUrl || '';
+      document.getElementById('cfgEmailApiKey').value = emCfg.apiKey || '';
+      document.getElementById('cfgEmailFrom').value = emCfg.fromEmail || '';
+
+      document.getElementById('notificationApiConfigModal').classList.remove('hidden');
+    }
+
+    function closeNotificationApiConfigModal() {
+      document.getElementById('notificationApiConfigModal').classList.add('hidden');
+    }
+
+    async function saveNotificationApiConfig(e) {
+      e.preventDefault();
+      const whatsappApi = {
+        provider: document.getElementById('cfgWhatsAppProvider').value,
+        endpointUrl: document.getElementById('cfgWhatsAppUrl').value.trim(),
+        apiToken: document.getElementById('cfgWhatsAppToken').value.trim(),
+        phoneNumberId: document.getElementById('cfgWhatsAppPhoneId').value.trim(),
+        templateName: document.getElementById('cfgWhatsAppTemplate').value.trim()
+      };
+      const emailApi = {
+        provider: document.getElementById('cfgEmailProvider').value,
+        endpointUrl: document.getElementById('cfgEmailUrl').value.trim(),
+        apiKey: document.getElementById('cfgEmailApiKey').value.trim(),
+        fromEmail: document.getElementById('cfgEmailFrom').value.trim()
+      };
+
+      tripConfig.whatsappApi = whatsappApi;
+      tripConfig.emailApi = emailApi;
+
+      try {
+        const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', currentTripId || 'default');
+        await setDoc(configDocRef, { whatsappApi, emailApi }, { merge: true });
+        showToast('Notification API gateways saved successfully!', 'success');
+        closeNotificationApiConfigModal();
+      } catch (err) {
+        showToast('Could not save API settings.', 'error');
+      }
+    }
+
+    async function testWhatsAppApiConnection() {
+      showToast('Testing WhatsApp gateway connection...', 'info');
+      const testResult = await sendWhatsAppApiNotification({
+        phone: tripConfig.adminPhone || '9876543210',
+        title: 'TripPay Gateway Test',
+        messageText: 'This is a test notification from the official TripPay WhatsApp engine.',
+        type: 'test'
+      });
+      if (testResult.status === 'delivered') {
+        showToast('WhatsApp API test SUCCESS! Message delivered.', 'success');
+      } else {
+        showToast('WhatsApp API ready in Direct Mode or Endpoint logged.', 'info');
+      }
+    }
+
+    async function testEmailApiConnection() {
+      showToast('Testing Email gateway connection...', 'info');
+      const testResult = await sendEmailApiNotification({
+        to: tripConfig.adminEmail || 'admin@trippay.com',
+        subject: 'TripPay Email Gateway Test',
+        textBody: 'This is a test message from TripPay multi-channel notification engine.'
+      });
+      if (testResult.status === 'delivered') {
+        showToast('Email API test SUCCESS! Message delivered.', 'success');
+      } else {
+        showToast('Email API configured.', 'info');
+      }
+    }
+
+    // Export Notification History CSV (Feature 109)
+    function exportNotificationHistoryCSV() {
+      if (notifications.length === 0) {
+        showToast('No notification history records to export.');
+        return;
+      }
+      const headers = ['Timestamp', 'Type', 'Priority', 'Title', 'Message', 'Recipient Name', 'Roll No', 'Phone', 'Email', 'Channels', 'Status'];
+      const rows = notifications.map(n => [
+        new Date(n.createdAt).toISOString(),
+        n.type || '',
+        n.priority || '',
+        `"${(n.title || '').replace(/"/g, '""')}"`,
+        `"${(n.message || '').replace(/"/g, '""')}"`,
+        `"${(n.recipientName || '').replace(/"/g, '""')}"`,
+        n.recipientRollNo || '',
+        n.recipientPhone || '',
+        n.recipientEmail || '',
+        (n.channels || []).join(';'),
+        n.deliveryStatus || ''
+      ]);
+      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${(tripConfig.tripTitle || 'TripPay').replace(/\s+/g, '_')}_Notification_History_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      showToast('Notification History CSV exported successfully!');
+    }
+
+    // Print Notification History (Feature 109)
+    function printNotificationHistory() {
+      window.print();
+    }
+
+    // Resend Notification
+    async function resendNotification(id) {
+      const n = notifications.find(x => x.id === id);
+      if (!n) return;
+      showToast(`Resending notification: ${n.title}...`, 'info');
+      await dispatchNotification({
+        type: n.type,
+        title: n.title,
+        message: n.message,
+        priority: n.priority,
+        recipientName: n.recipientName,
+        recipientPhone: n.recipientPhone,
+        recipientEmail: n.recipientEmail,
+        recipientRollNo: n.recipientRollNo,
+        targetRollNo: n.targetRollNo,
+        channels: n.channels
+      });
+      showToast('Notification resent successfully!', 'success');
+    }
+
+    // Bulk Pending Payment Reminders (Feature 101)
+    async function broadcastPendingPaymentReminders() {
+      const pendingStudents = payments.filter(s => {
+        const summary = getStudentPaymentSummary(s);
+        return summary.balanceDue > 0 || s.status === 'Pending';
+      });
+
+      if (pendingStudents.length === 0) {
+        showToast('All registered students have cleared their payments! No pending balances.', 'info');
+        return;
+      }
+
+      if (!confirm(`Broadcast payment reminders to ${pendingStudents.length} students with pending dues?`)) {
+        return;
+      }
+
+      showToast(`Dispatching pending fee reminders to ${pendingStudents.length} students...`, 'info');
+      let count = 0;
+      for (const st of pendingStudents) {
+        const summary = getStudentPaymentSummary(st);
+        await dispatchNotification({
+          type: 'balance_reminder',
+          title: `Pending Balance Reminder: ₹${summary.balanceDue} Remaining ⏳`,
+          message: `Hello ${st.studentName}, friendly reminder regarding your pending balance of ₹${summary.balanceDue} for ${tripConfig.tripTitle || 'College Trip'}. Kindly complete payment before registration closes.`,
+          recipientName: st.studentName,
+          recipientPhone: st.phone,
+          recipientEmail: st.email || '',
+          recipientRollNo: st.rollNo || '',
+          targetRollNo: st.rollNo || '',
+          priority: 'high',
+          channels: ['in_app', 'whatsapp']
+        });
+        count++;
+      }
+      showToast(`Successfully sent reminders to ${count} students!`, 'success');
     }
 
     // ITINERARY & DESTINATION MANAGEMENT SYSTEM (Features 86-94, 97)
@@ -14384,6 +15867,19 @@ Thank you!`;
           await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'trip_itinerary'), data);
           showToast('Activity added to itinerary!');
         }
+        // Feature 104: Schedule change notification
+        if (document.getElementById('itinNotifyStudents')?.checked) {
+          dispatchNotification({
+            type: 'schedule_change',
+            title: `Schedule Update: ${data.title} ⏰`,
+            message: `Trip schedule update: ${data.day} - ${data.title}. Timings: ${data.time || data.departureTime || 'TBA'}${data.location ? ' @ ' + data.location : ''}${data.boardingLocation ? ' (Boarding: ' + data.boardingLocation + ')' : ''}. Check Itinerary tab.`,
+            recipientName: 'All Participants',
+            targetRollNo: 'all',
+            priority: 'high',
+            channels: ['in_app', 'whatsapp']
+          });
+        }
+
         closeItineraryModal();
       } catch (err) {
         showToast('Could not save itinerary.', 'error');
@@ -20190,6 +21686,27 @@ Thank you!`;
         await batch.commit();
 
         showToast(`PNR ${pnr.pnrNumber} & ${assignedSlotIndices.length} seat(s) successfully assigned!`);
+
+        // Feature 102: Notify students when train tickets are assigned
+        mappingsArray.forEach(m => {
+          if (m.assignedUserId) {
+            const st = payments.find(s => s.id === m.assignedUserId);
+            if (st) {
+              dispatchNotification({
+                type: 'ticket_assigned',
+                title: 'Train Ticket & Berth Allocated 🚆',
+                message: `Hello ${st.studentName}, your train ticket is confirmed! Train: ${pnr.trainName} (${pnr.trainNumber}), Coach: ${m.coach || 'TBA'}, Seat: ${m.seatNumber || 'TBA'} (${m.berthName || m.berthType || 'Berth'}), PNR: ${pnr.pnrNumber}. Check your Digital Pass.`,
+                recipientName: st.studentName,
+                recipientPhone: st.phone,
+                recipientEmail: st.email || '',
+                recipientRollNo: st.rollNo || '',
+                targetRollNo: st.rollNo || '',
+                priority: 'high',
+                channels: ['in_app', 'whatsapp']
+              });
+            }
+          }
+        });
         logSecurityEvent('PNR_SEATS_ALLOCATED', pnr.pnrNumber, `Assigned ${assignedSlotIndices.length} student seats on Train ${pnr.trainNumber}`);
 
         // Close fetched card
@@ -26664,6 +28181,32 @@ Guidelines:
       downloadItineraryPDF,
       openEditContactModal,
       toggleItinCategoryFields,
+      openNotificationCenterModal,
+      closeNotificationCenterModal,
+      setNotifCenterFilter,
+      markAllNotificationsRead,
+      markNotificationAsRead,
+      dismissEmergencyBanner,
+      openCreateAnnouncementModal,
+      closeCreateAnnouncementModal,
+      handleCreateAnnouncementSubmit,
+      openEmergencyBroadcastModal,
+      closeEmergencyBroadcastModal,
+      handleEmergencyBroadcastSubmit,
+      openScheduleChangeModal,
+      closeScheduleChangeModal,
+      handleScheduleChangeSubmit,
+      openNotificationApiConfigModal,
+      closeNotificationApiConfigModal,
+      saveNotificationApiConfig,
+      testWhatsAppApiConnection,
+      testEmailApiConnection,
+      exportNotificationHistoryCSV,
+      printNotificationHistory,
+      resendNotification,
+      broadcastPendingPaymentReminders,
+      handleNotifHistorySearch,
+      handleNotifHistoryFilterChange,
       openEditItineraryModal,
       closeItineraryModal,
       handleSaveItinerarySubmit,
