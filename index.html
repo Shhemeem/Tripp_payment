@@ -1455,6 +1455,15 @@
             class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-white text-emerald-800 font-extrabold">0</span>
         </button>
 
+        <!-- SUB-TAB BUTTON: EXECUTIVE ANALYTICS (Features 110-124) -->
+        <button onclick="switchManagerSubTab('analytics')" id="subTabBtn-analytics"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900">
+          <i data-lucide="bar-chart-3" class="w-4 h-4 text-indigo-600"></i>
+          <span>Analytics & Executive Dashboard</span>
+          <span id="subTabBadgeAnalytics"
+            class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-indigo-100 text-indigo-800 font-extrabold">Live</span>
+        </button>
+
         <button onclick="switchManagerSubTab('checkin')" id="subTabBtn-checkin"
           class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900">
           <i data-lucide="scan-line" class="w-4 h-4 text-emerald-600"></i>
@@ -1528,6 +1537,516 @@
           <span id="subTabBadgeNotifications"
             class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-rose-100 text-rose-800 font-extrabold">0</span>
         </button>
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- SUB-TAB: EXECUTIVE ANALYTICS & LIVE DASHBOARD (Features 110-124)          -->
+      <!-- ========================================================================= -->
+      <div id="managerSection-analytics" class="hidden space-y-6">
+        <!-- Analytics Header & Control Bar -->
+        <div class="expressive-card border border-slate-200 rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 text-white shadow-xl relative overflow-hidden">
+          <!-- Ambient Glows -->
+          <div class="absolute -right-16 -top-16 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  Real-Time Intelligence
+                </span>
+                <span id="analyticsActiveTripBadge" class="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-white/10 text-slate-200 border border-white/15">
+                  Trip: Loading...
+                </span>
+                <span id="analyticsTripStatusPill" class="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  Active
+                </span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-extrabold font-display tracking-tight text-white mt-2">
+                Executive Analytics & Live Dashboard
+              </h2>
+              <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl font-medium">
+                Comprehensive real-time insights across student registrations, payments, train bookings, attendance, and multi-trip comparisons.
+              </p>
+            </div>
+
+            <!-- Scope Switcher & Quick Actions -->
+            <div class="flex items-center gap-2 flex-wrap shrink-0">
+              <div class="inline-flex p-1 bg-white/10 rounded-xl border border-white/15 backdrop-blur-sm">
+                <button type="button" id="analyticsScopeBtn-active" onclick="setAnalyticsScope('active')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-indigo-600 text-white shadow-xs transition">
+                  Active Trip
+                </button>
+                <button type="button" id="analyticsScopeBtn-global" onclick="setAnalyticsScope('global')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition">
+                  All Trips (Global)
+                </button>
+              </div>
+
+              <button type="button" onclick="refreshExecutiveAnalytics()"
+                class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 transition flex items-center justify-center text-xs font-bold gap-1"
+                title="Recalculate & Refresh Analytics">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+              </button>
+
+              <button type="button" onclick="exportExecutiveAnalyticsCSV()"
+                class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                <i data-lucide="download" class="w-4 h-4"></i>
+                <span>Export Summary</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 1: EXECUTIVE KPI SUMMARY CARDS (Features 110-120) -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4">
+          <!-- Card 1: Total Registered Students (Feature 110) -->
+          <div class="expressive-card border border-slate-200 bg-white rounded-2xl p-4 flex flex-col justify-between hover:shadow-md transition">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Total Registered</span>
+              <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <i data-lucide="users" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-2">
+              <p id="kpiAnalyticsTotalStudents" class="font-display text-2xl font-extrabold text-slate-900">0</p>
+              <p id="kpiAnalyticsCapacityText" class="text-[11px] text-slate-500 font-medium mt-0.5 truncate">0 capacity limit</p>
+            </div>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+              <span class="text-slate-500">Turnout</span>
+              <span id="kpiAnalyticsCapacityPct" class="font-bold text-indigo-600">0%</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Total Trips (Feature 111) -->
+          <div class="expressive-card border border-slate-200 bg-white rounded-2xl p-4 flex flex-col justify-between hover:shadow-md transition">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Total Trips</span>
+              <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                <i data-lucide="map-pin" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-2">
+              <p id="kpiAnalyticsTotalTrips" class="font-display text-2xl font-extrabold text-purple-950">1</p>
+              <p id="kpiAnalyticsTripsStatusPills" class="text-[11px] text-purple-700 font-medium mt-0.5 truncate">1 Active</p>
+            </div>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+              <span class="text-slate-500">Upcoming / Other</span>
+              <span id="kpiAnalyticsTripsUpcomingCount" class="font-bold text-purple-700">0</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Paid Students (Feature 112) -->
+          <div class="expressive-card border border-emerald-200/90 bg-emerald-50/50 rounded-2xl p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer" onclick="jumpToStudentsWithFilter('Full')" title="View Fully Paid Students">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-800">Fully Paid</span>
+              <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
+                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-2">
+              <div class="flex items-baseline gap-1.5">
+                <p id="kpiAnalyticsPaidStudents" class="font-display text-2xl font-extrabold text-emerald-950">0</p>
+                <span id="kpiAnalyticsPaidPct" class="text-xs font-bold text-emerald-700">(0%)</span>
+              </div>
+              <p id="kpiAnalyticsPaidAmountText" class="text-[11px] text-emerald-700 font-medium mt-0.5">₹0 collected</p>
+            </div>
+            <div class="mt-3 pt-2.5 border-t border-emerald-100/80 flex items-center justify-between text-[11px]">
+              <span class="text-emerald-700">Clear of Dues</span>
+              <span class="font-bold text-emerald-800 flex items-center gap-0.5">View <i data-lucide="chevron-right" class="w-3 h-3"></i></span>
+            </div>
+          </div>
+
+          <!-- Card 4: Partially Paid Students (Feature 114) -->
+          <div class="expressive-card border border-amber-200/90 bg-amber-50/50 rounded-2xl p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer" onclick="jumpToStudentsWithFilter('Dues')" title="View Students with Pending Dues">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-800">Partially Paid</span>
+              <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center">
+                <i data-lucide="pie-chart" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-2">
+              <div class="flex items-baseline gap-1.5">
+                <p id="kpiAnalyticsPartialStudents" class="font-display text-2xl font-extrabold text-amber-950">0</p>
+                <span id="kpiAnalyticsPartialPct" class="text-xs font-bold text-amber-700">(0%)</span>
+              </div>
+              <p id="kpiAnalyticsPartialDuesText" class="text-[11px] text-amber-700 font-medium mt-0.5">₹0 advance paid</p>
+            </div>
+            <div class="mt-3 pt-2.5 border-t border-amber-100/80 flex items-center justify-between text-[11px]">
+              <span class="text-amber-700">Advance Cleared</span>
+              <span class="font-bold text-amber-800 flex items-center gap-0.5">View <i data-lucide="chevron-right" class="w-3 h-3"></i></span>
+            </div>
+          </div>
+
+          <!-- Card 5: Unpaid Students (Feature 113) -->
+          <div class="expressive-card border border-rose-200/90 bg-rose-50/50 rounded-2xl p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer" onclick="jumpToStudentsWithFilter('Pending')" title="View Unpaid Students">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-rose-800">Unpaid</span>
+              <div class="w-8 h-8 rounded-xl bg-rose-500 text-white flex items-center justify-center">
+                <i data-lucide="alert-circle" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-2">
+              <div class="flex items-baseline gap-1.5">
+                <p id="kpiAnalyticsUnpaidStudents" class="font-display text-2xl font-extrabold text-rose-950">0</p>
+                <span id="kpiAnalyticsUnpaidPct" class="text-xs font-bold text-rose-700">(0%)</span>
+              </div>
+              <p id="kpiAnalyticsUnpaidExpectedText" class="text-[11px] text-rose-700 font-medium mt-0.5">₹0 collected</p>
+            </div>
+            <div class="mt-3 pt-2.5 border-t border-rose-100/80 flex items-center justify-between text-[11px]">
+              <span class="text-rose-700">Zero Payment</span>
+              <span class="font-bold text-rose-800 flex items-center gap-0.5">Send Due Alert <i data-lucide="bell" class="w-3 h-3"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECOND KPI STRIP: FINANCIALS, TICKETS & ATTENDANCE -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+          <!-- Card 6: Total Payment Collection (Feature 115) -->
+          <div class="expressive-card border border-slate-200 bg-white rounded-2xl p-4 flex flex-col justify-between hover:shadow-md transition">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700">Total Collection</span>
+                <span id="kpiAnalyticsTargetPctBadge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">0% Target</span>
+              </div>
+              <p id="kpiAnalyticsTotalCollected" class="font-display text-2xl font-extrabold text-emerald-950 mt-1.5">₹0</p>
+              <p id="kpiAnalyticsVerifiedVsPending" class="text-[11px] text-slate-500 font-medium mt-0.5">₹0 verified • ₹0 pending</p>
+            </div>
+            <!-- Mini Progress bar -->
+            <div class="mt-3">
+              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                <div id="kpiAnalyticsCollectionProgressBar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+              <div class="flex justify-between items-center text-[10px] text-slate-400 mt-1 font-mono">
+                <span>₹0</span>
+                <span id="kpiAnalyticsTargetRevenueText">Target: ₹0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 7: Outstanding Balances (Feature 116) -->
+          <div class="expressive-card border border-slate-200 bg-white rounded-2xl p-4 flex flex-col justify-between hover:shadow-md transition">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-700">Outstanding Balances</span>
+                <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                  <i data-lucide="clock" class="w-4 h-4"></i>
+                </div>
+              </div>
+              <p id="kpiAnalyticsOutstandingTotal" class="font-display text-2xl font-extrabold text-amber-950 mt-1.5">₹0</p>
+              <p id="kpiAnalyticsOutstandingSubtext" class="text-[11px] text-slate-500 font-medium mt-0.5">0 students with dues</p>
+            </div>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+              <span class="text-slate-500">Average Pending</span>
+              <span id="kpiAnalyticsAvgDueText" class="font-bold text-amber-700 font-mono">₹0 / student</span>
+            </div>
+          </div>
+
+          <!-- Card 8: Railway Ticket Status (Features 117, 118, 119) -->
+          <div class="expressive-card border border-slate-200 bg-white rounded-2xl p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer" onclick="switchManagerSubTab('railway')" title="Manage Train PNR & Seats">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-700">Train Tickets & Berths</span>
+                <div class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <i data-lucide="train" class="w-4 h-4"></i>
+                </div>
+              </div>
+              <div class="flex items-baseline gap-1.5 mt-1.5">
+                <p id="kpiAnalyticsTrainCnf" class="font-display text-2xl font-extrabold text-indigo-950">0</p>
+                <span class="text-xs font-bold text-emerald-600 font-mono">CNF Confirmed</span>
+              </div>
+              <!-- RAC and WL mini badges (Features 118, 119) -->
+              <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-amber-100 text-amber-800">
+                  RAC: <span id="kpiAnalyticsTrainRac">0</span>
+                </span>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-rose-100 text-rose-800">
+                  WL: <span id="kpiAnalyticsTrainWl">0</span>
+                </span>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-slate-100 text-slate-700">
+                  Unassigned: <span id="kpiAnalyticsTrainUnassigned">0</span>
+                </span>
+              </div>
+            </div>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+              <span class="text-slate-500">PNR Allocation</span>
+              <span id="kpiAnalyticsTrainAllocationPct" class="font-bold text-indigo-600">0% Assigned</span>
+            </div>
+          </div>
+
+          <!-- Card 9: Boarding Attendance Statistics (Feature 120) -->
+          <div class="expressive-card border border-slate-200 bg-white rounded-2xl p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer" onclick="switchManagerSubTab('checkin')" title="Open QR Attendance Check-In">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-teal-700">Boarding Attendance</span>
+                <div class="w-7 h-7 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center">
+                  <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+                </div>
+              </div>
+              <div class="flex items-baseline gap-1.5 mt-1.5">
+                <p id="kpiAnalyticsBoardedCount" class="font-display text-2xl font-extrabold text-teal-950">0</p>
+                <span id="kpiAnalyticsBoardedPct" class="text-xs font-bold text-teal-700 font-mono">(0%)</span>
+              </div>
+              <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-sky-100 text-sky-800">
+                  Arrived: <span id="kpiAnalyticsArrivedCount">0</span>
+                </span>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-rose-100 text-rose-800">
+                  Absent: <span id="kpiAnalyticsAbsentCount">0</span>
+                </span>
+              </div>
+            </div>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+              <span class="text-slate-500">Campus Departure</span>
+              <span class="font-bold text-teal-700 flex items-center gap-0.5">Roster <i data-lucide="chevron-right" class="w-3 h-3"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: PAYMENT COLLECTION CHARTS & BREAKDOWN (Feature 122) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <!-- Chart 1: Payment Status Donut / Ring Chart (Feature 122) -->
+          <div class="expressive-card border border-slate-200 bg-white rounded-3xl p-5 sm:p-6 flex flex-col justify-between shadow-2xs">
+            <div>
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="font-display font-extrabold text-slate-900 text-base">Payment Distribution</h3>
+                  <p class="text-xs text-slate-500 mt-0.5">Proportional breakdown by payment clearance</p>
+                </div>
+                <span class="w-8 h-8 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center">
+                  <i data-lucide="pie-chart" class="w-4 h-4"></i>
+                </span>
+              </div>
+
+              <!-- Donut Visual Container -->
+              <div class="flex items-center justify-center my-6 relative">
+                <div id="analyticsDonutContainer" class="relative w-44 h-44 flex items-center justify-center">
+                  <!-- SVG rendered dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Donut Legend & Stats -->
+            <div id="analyticsDonutLegend" class="space-y-2 pt-4 border-t border-slate-100 text-xs">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+
+          <!-- Chart 2: Collection vs Budget Gauge & Payment Channels (Feature 122) -->
+          <div class="expressive-card border border-slate-200 bg-white rounded-3xl p-5 sm:p-6 flex flex-col justify-between shadow-2xs">
+            <div>
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="font-display font-extrabold text-slate-900 text-base">Target & Collection Channels</h3>
+                  <p class="text-xs text-slate-500 mt-0.5">Progress toward budget target & UPI distribution</p>
+                </div>
+                <span class="w-8 h-8 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center">
+                  <i data-lucide="trending-up" class="w-4 h-4"></i>
+                </span>
+              </div>
+
+              <!-- Target Milestone Progress Bar -->
+              <div class="mt-6 space-y-2">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="font-bold text-slate-700">Budget Realization</span>
+                  <span id="analyticsBudgetRealizedPct" class="font-mono font-extrabold text-indigo-600">0%</span>
+                </div>
+                <div class="w-full bg-slate-100 h-3.5 rounded-full overflow-hidden p-0.5 flex">
+                  <div id="analyticsProgressBarVerified" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%" title="Verified Collections"></div>
+                  <div id="analyticsProgressBarPending" class="bg-amber-400 h-full rounded-r-full transition-all duration-500" style="width: 0%" title="Pending Verification"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                  <span>₹0 (0%)</span>
+                  <span>50%</span>
+                  <span id="analyticsTargetMaxText">100% Target</span>
+                </div>
+              </div>
+
+              <!-- Payment Channels Breakdown -->
+              <div class="mt-6">
+                <p class="text-xs font-bold text-slate-700 mb-2.5">UPI & Payment Method Share</p>
+                <div id="analyticsPaymentMethodsContainer" class="space-y-2">
+                  <!-- Injected dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Financial Health Pill -->
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+              <span class="text-slate-500">Trip Net Cashflow:</span>
+              <span id="analyticsNetCashflowPill" class="font-mono font-extrabold text-emerald-700">₹0</span>
+            </div>
+          </div>
+
+          <!-- Chart 3: Collection Timeline & Activity Flow (Feature 122) -->
+          <div class="expressive-card border border-slate-200 bg-white rounded-3xl p-5 sm:p-6 flex flex-col justify-between shadow-2xs">
+            <div>
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="font-display font-extrabold text-slate-900 text-base">Collection Timeline</h3>
+                  <p class="text-xs text-slate-500 mt-0.5">Recent daily inflow & submission trends</p>
+                </div>
+                <span class="w-8 h-8 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center">
+                  <i data-lucide="calendar" class="w-4 h-4"></i>
+                </span>
+              </div>
+
+              <!-- Daily Collection Bar Chart -->
+              <div class="mt-6">
+                <div id="analyticsDailyTimelineContainer" class="h-44 flex items-end gap-2 border-b border-slate-200 pb-2">
+                  <!-- Injected dynamically -->
+                </div>
+                <div class="flex justify-between text-[10px] text-slate-400 mt-2 font-mono">
+                  <span id="analyticsTimelineStartDate">Start</span>
+                  <span>Daily Collection (₹)</span>
+                  <span id="analyticsTimelineEndDate">Today</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 flex justify-between items-center">
+              <span>Highest Inflow Day:</span>
+              <span id="analyticsPeakDayText" class="font-bold text-slate-800">None yet</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: DEPARTMENT-WISE STATISTICS (Feature 121) -->
+        <div class="expressive-card border border-slate-200 bg-white rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xs">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div>
+              <h3 class="font-display font-extrabold text-slate-900 text-base flex items-center gap-2">
+                <span>Department-Wise Performance & Attendance</span>
+                <span id="analyticsDeptCountBadge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-50 text-indigo-700">0 Departments</span>
+              </h3>
+              <p class="text-xs text-slate-500 mt-0.5">Comparative analytics across academic departments for the trip</p>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <input type="text" id="analyticsDeptSearchInput" oninput="filterAnalyticsDeptTable(this.value)"
+                placeholder="Filter department..."
+                class="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-indigo-500" />
+            </div>
+          </div>
+
+          <!-- Department Statistics Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider text-[10px] bg-slate-50/50">
+                  <th class="py-2.5 px-3 font-extrabold">Department</th>
+                  <th class="py-2.5 px-3 font-extrabold text-center">Enrolled</th>
+                  <th class="py-2.5 px-3 font-extrabold text-center">Paid / Partial / Unpaid</th>
+                  <th class="py-2.5 px-3 font-extrabold text-right">Collected (₹)</th>
+                  <th class="py-2.5 px-3 font-extrabold text-right">Dues (₹)</th>
+                  <th class="py-2.5 px-3 font-extrabold text-center">Train CNF</th>
+                  <th class="py-2.5 px-3 font-extrabold text-center">Boarding Rate</th>
+                  <th class="py-2.5 px-3 font-extrabold text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="analyticsDeptTableBody" class="divide-y divide-slate-100">
+                <!-- Injected dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION 4: TRIP-WISE ANALYTICS & COMPARISONS (Feature 123) -->
+        <div class="expressive-card border border-slate-200 bg-white rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xs">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div>
+              <h3 class="font-display font-extrabold text-slate-900 text-base flex items-center gap-2">
+                <span>Multi-Trip Comparative Analytics</span>
+                <span id="analyticsTripsComparisonCountBadge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-50 text-purple-700">0 Trips</span>
+              </h3>
+              <p class="text-xs text-slate-500 mt-0.5">High-level comparison across all college trips managed on the platform</p>
+            </div>
+            <button type="button" onclick="openCreateTripModal()"
+              class="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition flex items-center gap-1.5 self-start sm:self-auto shadow-xs">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>Create New Trip</span>
+            </button>
+          </div>
+
+          <!-- Trip Comparison Grid & Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider text-[10px] bg-slate-50/50">
+                  <th class="py-2.5 px-3 font-extrabold">Trip & Destination</th>
+                  <th class="py-2.5 px-3 font-extrabold text-center">Status</th>
+                  <th class="py-2.5 px-3 font-extrabold text-center">Travel Dates</th>
+                  <th class="py-2.5 px-3 font-extrabold text-center">Enrolled / Cap</th>
+                  <th class="py-2.5 px-3 font-extrabold text-right">Fee Rate</th>
+                  <th class="py-2.5 px-3 font-extrabold text-right">Total Collection</th>
+                  <th class="py-2.5 px-3 font-extrabold text-right">Pending Dues</th>
+                  <th class="py-2.5 px-3 font-extrabold text-center">Train CNF</th>
+                  <th class="py-2.5 px-3 font-extrabold text-center">Boarded %</th>
+                  <th class="py-2.5 px-3 font-extrabold text-center">Operation</th>
+                </tr>
+              </thead>
+              <tbody id="analyticsTripsTableBody" class="divide-y divide-slate-100">
+                <!-- Injected dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION 5: RECENT ADMIN & STUDENT ACTIVITIES (Feature 124) -->
+        <div class="expressive-card border border-slate-200 bg-white rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xs">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div>
+              <h3 class="font-display font-extrabold text-slate-900 text-base flex items-center gap-2">
+                <i data-lucide="activity" class="w-4 h-4 text-emerald-600"></i>
+                <span>Live Activity Feed & Audit Timeline</span>
+                <span id="analyticsActivityCountBadge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-700">Live</span>
+              </h3>
+              <p class="text-xs text-slate-500 mt-0.5">Real-time chronologically sorted audit stream of student registrations, payments, check-ins, and admin operations</p>
+            </div>
+
+            <!-- Filters & Search -->
+            <div class="flex items-center gap-2 flex-wrap">
+              <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+                <button type="button" id="activityFilterBtn-all" onclick="setActivityStreamFilter('all')"
+                  class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-slate-800 shadow-xs">
+                  All
+                </button>
+                <button type="button" id="activityFilterBtn-payments" onclick="setActivityStreamFilter('payments')"
+                  class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900">
+                  Payments
+                </button>
+                <button type="button" id="activityFilterBtn-attendance" onclick="setActivityStreamFilter('attendance')"
+                  class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900">
+                  Check-In
+                </button>
+                <button type="button" id="activityFilterBtn-railway" onclick="setActivityStreamFilter('railway')"
+                  class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900">
+                  Railway
+                </button>
+                <button type="button" id="activityFilterBtn-admin" onclick="setActivityStreamFilter('admin')"
+                  class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900">
+                  Admin
+                </button>
+              </div>
+
+              <input type="text" id="analyticsActivitySearchInput" oninput="handleActivitySearch(this.value)"
+                placeholder="Search activity..."
+                class="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-indigo-500" />
+
+              <button type="button" onclick="exportActivityLogCSV()"
+                class="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                title="Export Activity Feed CSV">
+                <i data-lucide="download" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Activity Stream Container -->
+          <div id="analyticsActivityFeedContainer" class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
       </div>
 
       <!-- SUB-TAB 1: STUDENTS & PAYMENTS -->
@@ -8675,6 +9194,7 @@
       renderItinerary();
       renderContacts();
       if (typeof renderRailwayManagerUI === 'function') renderRailwayManagerUI();
+      if (typeof renderExecutiveAnalytics === 'function') renderExecutiveAnalytics();
 
       if (currentPaymentMode === 'balance') renderBalanceLookupResults();
       if (isAdminLoggedIn) {
@@ -13158,7 +13678,7 @@
     }
 
     function switchManagerSubTab(sub) {
-      ['students', 'checkin', 'access-codes', 'audit-logs', 'expenses', 'itinerary', 'contacts', 'notifications', 'admins', 'railway'].forEach(s => {
+      ['students', 'analytics', 'checkin', 'access-codes', 'audit-logs', 'expenses', 'itinerary', 'contacts', 'notifications', 'admins', 'railway'].forEach(s => {
         const sec = document.getElementById(`managerSection-${s}`);
         const btn = document.getElementById(`subTabBtn-${s}`);
         if (!sec || !btn) return;
@@ -13170,6 +13690,8 @@
             btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-amber-600 text-white shadow-sm';
           } else if (s === 'notifications') {
             btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-rose-600 text-white shadow-sm';
+          } else if (s === 'analytics') {
+            btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-indigo-600 text-white shadow-sm';
           } else {
             btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-emerald-600 text-white shadow-sm';
           }
@@ -13178,6 +13700,7 @@
           btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900';
         }
       });
+      if (sub === 'analytics') renderExecutiveAnalytics();
       if (sub === 'checkin') renderCheckinRoster();
       if (sub === 'access-codes') renderAccessCodesSuite();
       if (sub === 'audit-logs') renderAuditLogs();
@@ -28019,7 +28542,984 @@ Guidelines:
     }
 
     // Attach globals to window
+    
+    // =========================================================================
+    // FEATURES 110-124: EXECUTIVE ANALYTICS, LIVE DASHBOARD & ACTIVITY AUDIT
+    // =========================================================================
+    let currentAnalyticsScope = 'active'; // 'active' or 'global'
+    let analyticsDeptSearchQuery = '';
+    let activeActivityStreamFilter = 'all'; // 'all', 'payments', 'attendance', 'railway', 'admin'
+    let activitySearchQuery = '';
+
+    function setAnalyticsScope(scope) {
+      currentAnalyticsScope = scope;
+      const btnActive = document.getElementById('analyticsScopeBtn-active');
+      const btnGlobal = document.getElementById('analyticsScopeBtn-global');
+      if (btnActive && btnGlobal) {
+        if (scope === 'active') {
+          btnActive.className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold bg-indigo-600 text-white shadow-xs transition';
+          btnGlobal.className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition';
+        } else {
+          btnGlobal.className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold bg-indigo-600 text-white shadow-xs transition';
+          btnActive.className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition';
+        }
+      }
+      renderExecutiveAnalytics();
+    }
+
+    function refreshExecutiveAnalytics() {
+      renderExecutiveAnalytics();
+      showToast('Executive Analytics refreshed from live data!', 'info');
+    }
+
+    function jumpToStudentsWithFilter(filterType) {
+      switchManagerSubTab('students');
+      if (typeof setPaymentListPill === 'function') {
+        setPaymentListPill(filterType);
+      }
+      const tableCard = document.getElementById('managerSection-students');
+      if (tableCard) tableCard.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function filterAnalyticsDeptTable(query) {
+      analyticsDeptSearchQuery = (query || '').toLowerCase().trim();
+      renderAnalyticsDepartmentStats();
+    }
+
+    function setActivityStreamFilter(filter) {
+      activeActivityStreamFilter = filter;
+      ['all', 'payments', 'attendance', 'railway', 'admin'].forEach(f => {
+        const btn = document.getElementById(`activityFilterBtn-${f}`);
+        if (!btn) return;
+        if (f === filter) {
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-slate-800 shadow-xs';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900';
+        }
+      });
+      renderAnalyticsActivityFeed();
+    }
+
+    function handleActivitySearch(query) {
+      activitySearchQuery = (query || '').toLowerCase().trim();
+      renderAnalyticsActivityFeed();
+    }
+
+    // Relative Time Helper
+    function formatRelativeTime(timestamp) {
+      if (!timestamp) return 'Recently';
+      const now = Date.now();
+      const diffMs = now - Number(timestamp);
+      const diffSec = Math.floor(diffMs / 1000);
+      const diffMin = Math.floor(diffSec / 60);
+      const diffHour = Math.floor(diffMin / 60);
+      const diffDay = Math.floor(diffHour / 24);
+
+      if (diffSec < 45) return 'Just now';
+      if (diffMin < 60) return `${diffMin}m ago`;
+      if (diffHour < 24) return `${diffHour}h ago`;
+      if (diffDay === 1) return 'Yesterday';
+      if (diffDay < 7) return `${diffDay}d ago`;
+      return formatDisplayDate(timestamp);
+    }
+
+    // Main Executive Analytics Renderer (Features 110-124)
+    function renderExecutiveAnalytics() {
+      // 1. Determine Scope
+      const isGlobal = (currentAnalyticsScope === 'global');
+      const studentList = isGlobal ? rawPaymentsList : payments;
+      const pnrList = isGlobal ? rawPnrList : pnrRecords;
+      const targetTrip = allTrips.find(t => t.id === currentTripId) || allTrips[0] || {};
+
+      // Update Header Badges
+      const activeTripBadge = document.getElementById('analyticsActiveTripBadge');
+      if (activeTripBadge) {
+        activeTripBadge.textContent = isGlobal
+          ? `Global: All ${allTrips.length} Trips`
+          : `Trip: ${targetTrip.tripTitle || currentTripId}`;
+      }
+      const tripStatusPill = document.getElementById('analyticsTripStatusPill');
+      if (tripStatusPill) {
+        const st = targetTrip.status || 'Active';
+        tripStatusPill.textContent = isGlobal ? 'Platform Live' : st;
+        tripStatusPill.className = st === 'Active'
+          ? 'px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+          : 'px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/30';
+      }
+
+      // Feature 110: Total Registered Students
+      const totalStudents = studentList.length;
+      const maxLimit = Number(targetTrip.maxStudentsLimit || tripConfig.maxStudentsLimit) || 0;
+      const turnoutPct = (maxLimit > 0) ? Math.min(100, Math.round((totalStudents / maxLimit) * 100)) : 100;
+
+      const elTotalStudents = document.getElementById('kpiAnalyticsTotalStudents');
+      if (elTotalStudents) elTotalStudents.textContent = totalStudents;
+      const elCapacityText = document.getElementById('kpiAnalyticsCapacityText');
+      if (elCapacityText) {
+        elCapacityText.textContent = maxLimit > 0
+          ? `${totalStudents} / ${maxLimit} max limit`
+          : 'Unlimited registration cap';
+      }
+      const elCapacityPct = document.getElementById('kpiAnalyticsCapacityPct');
+      if (elCapacityPct) elCapacityPct.textContent = maxLimit > 0 ? `${turnoutPct}%` : 'Active';
+
+      // Feature 111: Total Trips
+      const totalTripsCount = allTrips.length;
+      const activeTripsCount = allTrips.filter(t => (t.status || 'Active') === 'Active' && !t.isArchived).length;
+      const upcomingTripsCount = allTrips.filter(t => t.status === 'Upcoming' && !t.isArchived).length;
+      const completedTripsCount = allTrips.filter(t => t.status === 'Completed' && !t.isArchived).length;
+      const cancelledTripsCount = allTrips.filter(t => t.status === 'Cancelled' && !t.isArchived).length;
+
+      const elTotalTrips = document.getElementById('kpiAnalyticsTotalTrips');
+      if (elTotalTrips) elTotalTrips.textContent = totalTripsCount;
+      const elTripsStatusPills = document.getElementById('kpiAnalyticsTripsStatusPills');
+      if (elTripsStatusPills) {
+        elTripsStatusPills.textContent = `${activeTripsCount} Active • ${upcomingTripsCount} Upcoming`;
+      }
+      const elTripsUpcomingCount = document.getElementById('kpiAnalyticsTripsUpcomingCount');
+      if (elTripsUpcomingCount) {
+        elTripsUpcomingCount.textContent = `${upcomingTripsCount + completedTripsCount} Trips`;
+      }
+
+      // Features 112, 113, 114: Paid, Unpaid, and Partially Paid Students
+      let paidCount = 0;
+      let partialCount = 0;
+      let unpaidCount = 0;
+      let paidAmount = 0;
+      let partialAdvancePaid = 0;
+      let partialRemainingDues = 0;
+      let unpaidExpectedAmount = 0;
+
+      studentList.forEach(p => {
+        const sum = getStudentPaymentSummary(p);
+        if (sum.isFullyPaid && sum.netPaid > 0) {
+          paidCount++;
+          paidAmount += sum.netPaid;
+        } else if (sum.netPaid > 0 && sum.balanceDue > 0) {
+          partialCount++;
+          partialAdvancePaid += sum.netPaid;
+          partialRemainingDues += sum.balanceDue;
+        } else {
+          unpaidCount++;
+          unpaidExpectedAmount += sum.totalFee;
+        }
+      });
+
+      const paidPct = totalStudents > 0 ? Math.round((paidCount / totalStudents) * 100) : 0;
+      const partialPct = totalStudents > 0 ? Math.round((partialCount / totalStudents) * 100) : 0;
+      const unpaidPct = totalStudents > 0 ? Math.round((unpaidCount / totalStudents) * 100) : 0;
+
+      // Card 3: Paid Students
+      const elPaidStudents = document.getElementById('kpiAnalyticsPaidStudents');
+      if (elPaidStudents) elPaidStudents.textContent = paidCount;
+      const elPaidPct = document.getElementById('kpiAnalyticsPaidPct');
+      if (elPaidPct) elPaidPct.textContent = `(${paidPct}%)`;
+      const elPaidAmt = document.getElementById('kpiAnalyticsPaidAmountText');
+      if (elPaidAmt) elPaidAmt.textContent = `${formatINR(paidAmount)} collected`;
+
+      // Card 4: Partially Paid Students
+      const elPartialStudents = document.getElementById('kpiAnalyticsPartialStudents');
+      if (elPartialStudents) elPartialStudents.textContent = partialCount;
+      const elPartialPct = document.getElementById('kpiAnalyticsPartialPct');
+      if (elPartialPct) elPartialPct.textContent = `(${partialPct}%)`;
+      const elPartialDuesText = document.getElementById('kpiAnalyticsPartialDuesText');
+      if (elPartialDuesText) elPartialDuesText.textContent = `${formatINR(partialAdvancePaid)} paid • ${formatINR(partialRemainingDues)} due`;
+
+      // Card 5: Unpaid Students
+      const elUnpaidStudents = document.getElementById('kpiAnalyticsUnpaidStudents');
+      if (elUnpaidStudents) elUnpaidStudents.textContent = unpaidCount;
+      const elUnpaidPct = document.getElementById('kpiAnalyticsUnpaidPct');
+      if (elUnpaidPct) elUnpaidPct.textContent = `(${unpaidPct}%)`;
+      const elUnpaidExpectedText = document.getElementById('kpiAnalyticsUnpaidExpectedText');
+      if (elUnpaidExpectedText) elUnpaidExpectedText.textContent = `${formatINR(unpaidExpectedAmount)} pending`;
+
+      // Features 115, 116: Total Collection & Outstanding Balances
+      const totalCollected = studentList.reduce((acc, p) => acc + (getStudentPaymentSummary(p).netPaid || 0), 0);
+      const verifiedAmount = studentList
+        .filter(p => p.status === 'Verified')
+        .reduce((acc, p) => acc + (getStudentPaymentSummary(p).netPaid || 0), 0);
+      const pendingVerifAmount = Math.max(0, totalCollected - verifiedAmount);
+      const totalOutstanding = studentList.reduce((acc, p) => acc + (getStudentPaymentSummary(p).balanceDue || 0), 0);
+
+      const feeRate = Number(targetTrip.tripAmount || tripConfig.tripAmount) || 1500;
+      const targetRevenue = totalStudents * feeRate;
+      const targetPct = targetRevenue > 0 ? Math.min(100, Math.round((totalCollected / targetRevenue) * 100)) : 0;
+      const avgDue = (partialCount + unpaidCount) > 0 ? Math.round(totalOutstanding / (partialCount + unpaidCount)) : 0;
+
+      // Update Card 6
+      const elTotalCollected = document.getElementById('kpiAnalyticsTotalCollected');
+      if (elTotalCollected) elTotalCollected.textContent = formatINR(totalCollected);
+      const elVerifiedVsPending = document.getElementById('kpiAnalyticsVerifiedVsPending');
+      if (elVerifiedVsPending) elVerifiedVsPending.textContent = `${formatINR(verifiedAmount)} verified • ${formatINR(pendingVerifAmount)} pending`;
+      const elTargetPctBadge = document.getElementById('kpiAnalyticsTargetPctBadge');
+      if (elTargetPctBadge) elTargetPctBadge.textContent = `${targetPct}% Target`;
+      const elTargetRevenueText = document.getElementById('kpiAnalyticsTargetRevenueText');
+      if (elTargetRevenueText) elTargetRevenueText.textContent = `Target: ${formatINR(targetRevenue)}`;
+      const elProgressBar = document.getElementById('kpiAnalyticsCollectionProgressBar');
+      if (elProgressBar) elProgressBar.style.width = `${targetPct}%`;
+
+      // Update Card 7
+      const elOutstandingTotal = document.getElementById('kpiAnalyticsOutstandingTotal');
+      if (elOutstandingTotal) elOutstandingTotal.textContent = formatINR(totalOutstanding);
+      const elOutstandingSubtext = document.getElementById('kpiAnalyticsOutstandingSubtext');
+      if (elOutstandingSubtext) elOutstandingSubtext.textContent = `${partialCount + unpaidCount} students with dues`;
+      const elAvgDueText = document.getElementById('kpiAnalyticsAvgDueText');
+      if (elAvgDueText) elAvgDueText.textContent = `${formatINR(avgDue)} / student`;
+
+      // Features 117, 118, 119: Train Tickets (Confirmed, RAC, WL)
+      let trainCnfCount = 0;
+      let trainRacCount = 0;
+      let trainWlCount = 0;
+      let trainAssignedUserIds = new Set();
+
+      pnrList.forEach(r => {
+        (r.passengerMappings || []).forEach(m => {
+          const st = (m.ticketStatus || m.currentStatus || m.bookingStatus || '').toUpperCase();
+          if (st.includes('CNF') || st.includes('CONFIRM')) {
+            trainCnfCount++;
+          } else if (st.includes('RAC')) {
+            trainRacCount++;
+          } else if (st.includes('WL') || st.includes('WAIT')) {
+            trainWlCount++;
+          }
+          if (m.assignedUserId) trainAssignedUserIds.add(m.assignedUserId);
+        });
+      });
+
+      // Fallback check on student payment trainAllocation
+      if (trainCnfCount === 0 && trainRacCount === 0 && trainWlCount === 0) {
+        studentList.forEach(p => {
+          if (p.trainAllocation) {
+            const st = (p.trainAllocation.ticketStatus || p.trainAllocation.currentStatus || '').toUpperCase();
+            if (st.includes('CNF')) trainCnfCount++;
+            else if (st.includes('RAC')) trainRacCount++;
+            else if (st.includes('WL')) trainWlCount++;
+            trainAssignedUserIds.add(p.id);
+          }
+        });
+      }
+
+      const trainUnassignedCount = Math.max(0, totalStudents - trainAssignedUserIds.size);
+      const trainAllocationPct = totalStudents > 0 ? Math.round((trainAssignedUserIds.size / totalStudents) * 100) : 0;
+
+      const elTrainCnf = document.getElementById('kpiAnalyticsTrainCnf');
+      if (elTrainCnf) elTrainCnf.textContent = trainCnfCount;
+      const elTrainRac = document.getElementById('kpiAnalyticsTrainRac');
+      if (elTrainRac) elTrainRac.textContent = trainRacCount;
+      const elTrainWl = document.getElementById('kpiAnalyticsTrainWl');
+      if (elTrainWl) elTrainWl.textContent = trainWlCount;
+      const elTrainUnassigned = document.getElementById('kpiAnalyticsTrainUnassigned');
+      if (elTrainUnassigned) elTrainUnassigned.textContent = trainUnassignedCount;
+      const elTrainAllocPct = document.getElementById('kpiAnalyticsTrainAllocationPct');
+      if (elTrainAllocPct) elTrainAllocPct.textContent = `${trainAllocationPct}% Assigned (${trainAssignedUserIds.size}/${totalStudents})`;
+
+      // Feature 120: Boarding Attendance Statistics
+      const boardedCount = studentList.filter(p => p.boarded).length;
+      const arrivedCount = studentList.filter(p => p.arrived).length;
+      const absentCount = Math.max(0, totalStudents - boardedCount);
+      const boardedPct = totalStudents > 0 ? Math.round((boardedCount / totalStudents) * 100) : 0;
+      const arrivedPct = totalStudents > 0 ? Math.round((arrivedCount / totalStudents) * 100) : 0;
+
+      const elBoardedCount = document.getElementById('kpiAnalyticsBoardedCount');
+      if (elBoardedCount) elBoardedCount.textContent = `${boardedCount} / ${totalStudents}`;
+      const elBoardedPct = document.getElementById('kpiAnalyticsBoardedPct');
+      if (elBoardedPct) elBoardedPct.textContent = `(${boardedPct}%)`;
+      const elArrivedCount = document.getElementById('kpiAnalyticsArrivedCount');
+      if (elArrivedCount) elArrivedCount.textContent = `${arrivedCount} (${arrivedPct}%)`;
+      const elAbsentCount = document.getElementById('kpiAnalyticsAbsentCount');
+      if (elAbsentCount) elAbsentCount.textContent = absentCount;
+
+      // Render Charts, Department Stats, Trip Comparison, and Activity Feed
+      renderAnalyticsDonutChart(paidCount, partialCount, unpaidCount, totalStudents);
+      renderAnalyticsBudgetAndPaymentMethods(targetRevenue, verifiedAmount, pendingVerifAmount, studentList);
+      renderAnalyticsDailyTimeline(studentList);
+      renderAnalyticsDepartmentStats();
+      renderAnalyticsTripsComparison();
+      renderAnalyticsActivityFeed();
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    // Feature 122: Payment Distribution Donut / Ring Chart
+    function renderAnalyticsDonutChart(paidCount, partialCount, unpaidCount, total) {
+      const container = document.getElementById('analyticsDonutContainer');
+      const legend = document.getElementById('analyticsDonutLegend');
+      if (!container || !legend) return;
+
+      if (total === 0) {
+        container.innerHTML = `
+          <div class="text-center text-slate-400 text-xs">
+            <i data-lucide="pie-chart" class="w-8 h-8 mx-auto mb-1 text-slate-300"></i>
+            No students registered
+          </div>
+        `;
+        legend.innerHTML = '<p class="text-slate-400 text-center">Awaiting registrations</p>';
+        return;
+      }
+
+      const pPaid = (paidCount / total) * 100;
+      const pPartial = (partialCount / total) * 100;
+      const pUnpaid = (unpaidCount / total) * 100;
+
+      // SVG Donut calculation with stroke-dasharray (circumference = 2 * PI * 40 = 251.32)
+      const C = 251.32;
+      const dashPaid = (pPaid / 100) * C;
+      const dashPartial = (pPartial / 100) * C;
+      const dashUnpaid = (pUnpaid / 100) * C;
+
+      const offsetPaid = 0;
+      const offsetPartial = -dashPaid;
+      const offsetUnpaid = -(dashPaid + dashPartial);
+
+      container.innerHTML = `
+        <svg class="w-40 h-40 transform -rotate-90" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f1f5f9" stroke-width="12" />
+          <circle cx="50" cy="50" r="40" fill="transparent" stroke="#10b981" stroke-width="12"
+            stroke-dasharray="${dashPaid} ${C - dashPaid}" stroke-dashoffset="${offsetPaid}" stroke-linecap="round" class="transition-all duration-700" />
+          <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f59e0b" stroke-width="12"
+            stroke-dasharray="${dashPartial} ${C - dashPartial}" stroke-dashoffset="${offsetPartial}" stroke-linecap="round" class="transition-all duration-700" />
+          <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f43f5e" stroke-width="12"
+            stroke-dasharray="${dashUnpaid} ${C - dashUnpaid}" stroke-dashoffset="${offsetUnpaid}" stroke-linecap="round" class="transition-all duration-700" />
+        </svg>
+        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+          <span class="font-display text-2xl font-black text-slate-800">${Math.round(pPaid)}%</span>
+          <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Cleared</span>
+        </div>
+      `;
+
+      legend.innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="flex items-center gap-1.5 text-slate-700 font-medium">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Fully Paid
+          </span>
+          <span class="font-mono font-bold text-slate-900">${paidCount} <span class="text-slate-400 font-normal">(${Math.round(pPaid)}%)</span></span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="flex items-center gap-1.5 text-slate-700 font-medium">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Partially Paid
+          </span>
+          <span class="font-mono font-bold text-slate-900">${partialCount} <span class="text-slate-400 font-normal">(${Math.round(pPartial)}%)</span></span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="flex items-center gap-1.5 text-slate-700 font-medium">
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Unpaid
+          </span>
+          <span class="font-mono font-bold text-slate-900">${unpaidCount} <span class="text-slate-400 font-normal">(${Math.round(pUnpaid)}%)</span></span>
+        </div>
+      `;
+    }
+
+    // Feature 122: Budget Realization & Payment Channels
+    function renderAnalyticsBudgetAndPaymentMethods(targetRevenue, verifiedAmount, pendingVerifAmount, studentList) {
+      const elPct = document.getElementById('analyticsBudgetRealizedPct');
+      const elProgVer = document.getElementById('analyticsProgressBarVerified');
+      const elProgPend = document.getElementById('analyticsProgressBarPending');
+      const elTargetMax = document.getElementById('analyticsTargetMaxText');
+      const methodsContainer = document.getElementById('analyticsPaymentMethodsContainer');
+      const elNetCashflow = document.getElementById('analyticsNetCashflowPill');
+
+      const totalColl = verifiedAmount + pendingVerifAmount;
+      const pct = targetRevenue > 0 ? Math.min(100, Math.round((totalColl / targetRevenue) * 100)) : 0;
+      const pctVer = targetRevenue > 0 ? Math.min(100, (verifiedAmount / targetRevenue) * 100) : 0;
+      const pctPend = targetRevenue > 0 ? Math.min(100 - pctVer, (pendingVerifAmount / targetRevenue) * 100) : 0;
+
+      if (elPct) elPct.textContent = `${pct}% (${formatINR(totalColl)})`;
+      if (elProgVer) elProgVer.style.width = `${pctVer}%`;
+      if (elProgPend) elProgPend.style.width = `${pctPend}%`;
+      if (elTargetMax) elTargetMax.textContent = formatINR(targetRevenue);
+
+      // Payment Methods Aggregation
+      const methodCounts = { 'Google Pay': 0, 'PhonePe': 0, 'Paytm': 0, 'UPI': 0, 'Cash / Direct': 0 };
+      const methodAmounts = { 'Google Pay': 0, 'PhonePe': 0, 'Paytm': 0, 'UPI': 0, 'Cash / Direct': 0 };
+      let totalMethodColl = 0;
+
+      studentList.forEach(p => {
+        const sum = getStudentPaymentSummary(p);
+        (sum.installments || []).forEach(inst => {
+          if (inst.status !== 'Rejected') {
+            const app = inst.paymentApp || p.paymentApp || 'UPI';
+            let key = 'UPI';
+            if (app.toLowerCase().includes('google')) key = 'Google Pay';
+            else if (app.toLowerCase().includes('phonepe')) key = 'PhonePe';
+            else if (app.toLowerCase().includes('paytm')) key = 'Paytm';
+            else if (app.toLowerCase().includes('cash')) key = 'Cash / Direct';
+
+            methodCounts[key] = (methodCounts[key] || 0) + 1;
+            methodAmounts[key] = (methodAmounts[key] || 0) + (Number(inst.amount) || 0);
+            totalMethodColl += (Number(inst.amount) || 0);
+          }
+        });
+      });
+
+      if (methodsContainer) {
+        if (totalMethodColl === 0) {
+          methodsContainer.innerHTML = '<p class="text-xs text-slate-400">No payment transactions yet</p>';
+        } else {
+          methodsContainer.innerHTML = Object.keys(methodCounts).map(method => {
+            const count = methodCounts[method] || 0;
+            const amt = methodAmounts[method] || 0;
+            if (count === 0 && amt === 0) return '';
+            const sharePct = totalMethodColl > 0 ? Math.round((amt / totalMethodColl) * 100) : 0;
+
+            return `
+              <div class="space-y-1">
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-600 font-medium">${escapeHtml(method)} (${count})</span>
+                  <span class="font-mono font-bold text-slate-900">${formatINR(amt)} (${sharePct}%)</span>
+                </div>
+                <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                  <div class="bg-indigo-500 h-full rounded-full" style="width: ${sharePct}%"></div>
+                </div>
+              </div>
+            `;
+          }).filter(Boolean).join('');
+        }
+      }
+
+      // Net Cashflow
+      const totalExp = expenses.reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
+      const netCash = totalColl - totalExp;
+      if (elNetCashflow) {
+        elNetCashflow.textContent = `${formatINR(netCash)} (Expenses: ${formatINR(totalExp)})`;
+        elNetCashflow.className = netCash >= 0 ? 'font-mono font-extrabold text-emerald-700' : 'font-mono font-extrabold text-rose-700';
+      }
+    }
+
+    // Feature 122: Daily Payment Collection Timeline
+    function renderAnalyticsDailyTimeline(studentList) {
+      const container = document.getElementById('analyticsDailyTimelineContainer');
+      const startEl = document.getElementById('analyticsTimelineStartDate');
+      const endEl = document.getElementById('analyticsTimelineEndDate');
+      const peakEl = document.getElementById('analyticsPeakDayText');
+      if (!container) return;
+
+      const dailyMap = {};
+      studentList.forEach(p => {
+        const sum = getStudentPaymentSummary(p);
+        (sum.installments || []).forEach(inst => {
+          if (inst.status !== 'Rejected') {
+            const ts = inst.recordedAt || p.createdAt || Date.now();
+            const dateKey = toIsoDateString(ts);
+            dailyMap[dateKey] = (dailyMap[dateKey] || 0) + (Number(inst.amount) || 0);
+          }
+        });
+      });
+
+      const dates = Object.keys(dailyMap).sort();
+      if (dates.length === 0) {
+        container.innerHTML = `
+          <div class="w-full h-full flex flex-col items-center justify-center text-slate-400 text-xs">
+            <i data-lucide="bar-chart" class="w-6 h-6 mb-1 text-slate-300"></i>
+            No collection transactions recorded
+          </div>
+        `;
+        if (peakEl) peakEl.textContent = 'None yet';
+        return;
+      }
+
+      const amounts = dates.map(d => dailyMap[d]);
+      const maxAmt = Math.max(...amounts, 1);
+      let peakDay = dates[0];
+      let peakVal = dailyMap[dates[0]];
+      dates.forEach(d => {
+        if (dailyMap[d] > peakVal) {
+          peakVal = dailyMap[d];
+          peakDay = d;
+        }
+      });
+
+      if (startEl) startEl.textContent = formatDisplayDate(dates[0]);
+      if (endEl) endEl.textContent = formatDisplayDate(dates[dates.length - 1]);
+      if (peakEl) peakEl.textContent = `${formatINR(peakVal)} on ${formatDisplayDate(peakDay)}`;
+
+      // Show up to the last 12 days
+      const recentDates = dates.slice(-12);
+      container.innerHTML = recentDates.map(dateKey => {
+        const amt = dailyMap[dateKey];
+        const heightPct = Math.max(10, Math.round((amt / maxAmt) * 100));
+        const isPeak = (dateKey === peakDay);
+
+        return `
+          <div class="flex-1 flex flex-col items-center h-full justify-end group relative cursor-pointer" title="${formatDisplayDate(dateKey)}: ${formatINR(amt)}">
+            <div class="w-full ${isPeak ? 'bg-indigo-600' : 'bg-emerald-500 hover:bg-emerald-600'} rounded-t-md transition-all duration-300" style="height: ${heightPct}%"></div>
+            <span class="text-[9px] text-slate-500 font-mono mt-1 truncate max-w-full hidden sm:block">${dateKey.slice(8)}</span>
+            <!-- Tooltip -->
+            <div class="absolute -top-7 bg-slate-900 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none z-10 font-mono">
+              ${formatINR(amt)}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Feature 121: Department-Wise Performance Statistics
+    function renderAnalyticsDepartmentStats() {
+      const tbody = document.getElementById('analyticsDeptTableBody');
+      const badge = document.getElementById('analyticsDeptCountBadge');
+      if (!tbody) return;
+
+      const isGlobal = (currentAnalyticsScope === 'global');
+      const studentList = isGlobal ? rawPaymentsList : payments;
+
+      // Group students by department
+      const deptMap = {};
+      studentList.forEach(p => {
+        const dept = (p.department || 'General').trim();
+        if (!deptMap[dept]) {
+          deptMap[dept] = {
+            name: dept,
+            total: 0,
+            paid: 0,
+            partial: 0,
+            unpaid: 0,
+            collected: 0,
+            dues: 0,
+            cnfSeats: 0,
+            boarded: 0
+          };
+        }
+        const d = deptMap[dept];
+        d.total++;
+        const sum = getStudentPaymentSummary(p);
+        if (sum.isFullyPaid && sum.netPaid > 0) d.paid++;
+        else if (sum.netPaid > 0) d.partial++;
+        else d.unpaid++;
+        d.collected += sum.netPaid;
+        d.dues += sum.balanceDue;
+
+        if (p.trainAllocation && (p.trainAllocation.ticketStatus || '').toUpperCase().includes('CNF')) {
+          d.cnfSeats++;
+        }
+        if (p.boarded) d.boarded++;
+      });
+
+      let depts = Object.values(deptMap);
+      if (badge) badge.textContent = `${depts.length} Departments`;
+
+      if (analyticsDeptSearchQuery) {
+        depts = depts.filter(d => d.name.toLowerCase().includes(analyticsDeptSearchQuery));
+      }
+
+      // Sort by total collected descending
+      depts.sort((a, b) => b.collected - a.collected);
+
+      if (depts.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center py-8 text-slate-400">
+              No departments matching filter.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = depts.map(d => {
+        const boardingPct = d.total > 0 ? Math.round((d.boarded / d.total) * 100) : 0;
+        return `
+          <tr class="hover:bg-slate-50/70 transition">
+            <td class="py-3 px-3 font-extrabold text-slate-900 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-indigo-500 shrink-0"></span>
+              ${escapeHtml(d.name)}
+            </td>
+            <td class="py-3 px-3 text-center font-bold text-slate-700">${d.total}</td>
+            <td class="py-3 px-3 text-center font-mono">
+              <span class="text-emerald-700 font-bold">${d.paid}</span> /
+              <span class="text-amber-700 font-bold">${d.partial}</span> /
+              <span class="text-rose-700 font-bold">${d.unpaid}</span>
+            </td>
+            <td class="py-3 px-3 text-right font-mono font-bold text-emerald-800">${formatINR(d.collected)}</td>
+            <td class="py-3 px-3 text-right font-mono font-bold text-amber-700">${formatINR(d.dues)}</td>
+            <td class="py-3 px-3 text-center font-mono text-indigo-700 font-bold">${d.cnfSeats}</td>
+            <td class="py-3 px-3 text-center">
+              <div class="inline-flex items-center gap-1.5">
+                <div class="w-12 bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                  <div class="bg-teal-500 h-full rounded-full" style="width: ${boardingPct}%"></div>
+                </div>
+                <span class="font-mono text-[11px] font-bold text-teal-800">${boardingPct}%</span>
+              </div>
+            </td>
+            <td class="py-3 px-3 text-center">
+              <button type="button" onclick="jumpToStudentsWithDept('${escapeHtml(d.name)}')"
+                class="px-2 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[11px] font-bold transition">
+                Filter Students
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function jumpToStudentsWithDept(deptName) {
+      switchManagerSubTab('students');
+      const deptFilter = document.getElementById('dashDeptFilter');
+      if (deptFilter) {
+        deptFilter.value = deptName;
+        window.activeDeptFilter = deptName;
+      }
+      renderDashboard();
+      const sec = document.getElementById('managerSection-students');
+      if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Feature 123: Trip-Wise Analytics & Cross-Trip Comparison
+    function renderAnalyticsTripsComparison() {
+      const tbody = document.getElementById('analyticsTripsTableBody');
+      const badge = document.getElementById('analyticsTripsComparisonCountBadge');
+      if (!tbody) return;
+
+      if (badge) badge.textContent = `${allTrips.length} Trips`;
+
+      if (allTrips.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center py-6 text-slate-400">No trips created yet.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = allTrips.map(trip => {
+        const isCurrent = (trip.id === currentTripId);
+        const tripStudents = rawPaymentsList.filter(p => (p.tripId || 'default') === trip.id);
+        const totalRegistered = tripStudents.length;
+        const maxLimit = Number(trip.maxStudentsLimit) || 0;
+        const feeRate = Number(trip.tripAmount) || 1500;
+        const totalColl = tripStudents.reduce((acc, p) => acc + (getStudentPaymentSummary(p).netPaid || 0), 0);
+        const totalDues = tripStudents.reduce((acc, p) => acc + (getStudentPaymentSummary(p).balanceDue || 0), 0);
+
+        // Train seats
+        const tripPnrs = rawPnrList.filter(r => (r.tripId || 'default') === trip.id);
+        let cnfSeats = 0;
+        tripPnrs.forEach(r => {
+          (r.passengerMappings || []).forEach(m => {
+            if ((m.ticketStatus || m.currentStatus || '').toUpperCase().includes('CNF')) cnfSeats++;
+          });
+        });
+
+        // Attendance
+        const boardedCount = tripStudents.filter(p => p.boarded).length;
+        const boardedPct = totalRegistered > 0 ? Math.round((boardedCount / totalRegistered) * 100) : 0;
+
+        const st = trip.status || 'Active';
+        const stBadgeClass = st === 'Active'
+          ? 'bg-emerald-100 text-emerald-800'
+          : (st === 'Upcoming' ? 'bg-sky-100 text-sky-800' : (st === 'Completed' ? 'bg-purple-100 text-purple-800' : 'bg-rose-100 text-rose-800'));
+
+        const datesFormatted = formatTripDates(trip.startDate || trip.tripDate, trip.endDate);
+
+        return `
+          <tr class="${isCurrent ? 'bg-indigo-50/40' : 'hover:bg-slate-50/70'} transition">
+            <td class="py-3 px-3">
+              <div class="flex items-center gap-2">
+                ${isCurrent ? '<span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-indigo-600 text-white uppercase tracking-wider">Active</span>' : ''}
+                <div>
+                  <p class="font-extrabold text-slate-900">${escapeHtml(trip.tripTitle || trip.id)}</p>
+                  <p class="text-[11px] text-slate-500 font-medium">${escapeHtml(trip.destination || 'Unspecified')}</p>
+                </div>
+              </div>
+            </td>
+            <td class="py-3 px-3 text-center">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${stBadgeClass}">${st}</span>
+            </td>
+            <td class="py-3 px-3 text-center text-slate-600 font-medium whitespace-nowrap">${datesFormatted}</td>
+            <td class="py-3 px-3 text-center font-bold text-slate-800 font-mono">
+              ${totalRegistered} ${maxLimit > 0 ? `/` + maxLimit : ''}
+            </td>
+            <td class="py-3 px-3 text-right font-mono font-bold text-slate-800">${formatINR(feeRate)}</td>
+            <td class="py-3 px-3 text-right font-mono font-bold text-emerald-800">${formatINR(totalColl)}</td>
+            <td class="py-3 px-3 text-right font-mono font-bold text-amber-700">${formatINR(totalDues)}</td>
+            <td class="py-3 px-3 text-center font-mono font-bold text-indigo-700">${cnfSeats}</td>
+            <td class="py-3 px-3 text-center">
+              <span class="px-2 py-0.5 rounded-md font-mono text-[11px] font-bold bg-teal-50 text-teal-800">${boardedPct}%</span>
+            </td>
+            <td class="py-3 px-3 text-center">
+              ${isCurrent
+                ? '<span class="text-indigo-600 font-bold text-xs">Current</span>'
+                : `<button type="button" onclick="switchTrip('${trip.id}')" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] shadow-2xs transition">Switch</button>`
+              }
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Feature 124: Unified Real-Time Activity Feed & Audit Timeline
+    function renderAnalyticsActivityFeed() {
+      const container = document.getElementById('analyticsActivityFeedContainer');
+      const badge = document.getElementById('analyticsActivityCountBadge');
+      if (!container) return;
+
+      const isGlobal = (currentAnalyticsScope === 'global');
+      const studentList = isGlobal ? rawPaymentsList : payments;
+      const targetAudit = isGlobal ? rawAuditList : auditLogs;
+      const targetNotifs = isGlobal ? rawNotifList : notifications;
+
+      // Aggregate events into a unified stream
+      const events = [];
+
+      // 1. Registrations
+      studentList.forEach(p => {
+        if (p.createdAt) {
+          events.push({
+            id: 'reg_' + p.id,
+            category: 'payments',
+            icon: 'user-plus',
+            iconBg: 'bg-indigo-50 text-indigo-600',
+            title: `${p.studentName || 'New Student'} registered`,
+            desc: `Department: ${p.department || 'General'} • Phone: ${p.phone || 'N/A'}`,
+            timestamp: Number(p.createdAt),
+            actor: p.studentName || 'Student'
+          });
+        }
+      });
+
+      // 2. Payments & Installments
+      studentList.forEach(p => {
+        const sum = getStudentPaymentSummary(p);
+        (sum.installments || []).forEach((inst, idx) => {
+          const isVer = (inst.status === 'Verified' || p.status === 'Verified');
+          events.push({
+            id: 'pay_' + (inst.id || p.id + '_' + idx),
+            category: 'payments',
+            icon: isVer ? 'check-circle' : 'clock',
+            iconBg: isVer ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600',
+            title: `Payment of ${formatINR(inst.amount)} (${inst.type || 'Fee'})`,
+            desc: `Student: ${p.studentName} • Via: ${inst.paymentApp || 'UPI'} • Status: ${inst.status || 'Pending Verification'}`,
+            timestamp: Number(inst.recordedAt || p.createdAt || Date.now()),
+            actor: p.studentName
+          });
+        });
+      });
+
+      // 3. Attendance Check-Ins
+      studentList.forEach(p => {
+        if (p.boarded) {
+          events.push({
+            id: 'att_b_' + p.id,
+            category: 'attendance',
+            icon: 'bus',
+            iconBg: 'bg-teal-50 text-teal-600',
+            title: `Boarding Check-In: ${p.studentName}`,
+            desc: `Marked boarded at departure campus • Pass ID: ${p.studentTripId || p.receiptCode || 'Pass'}`,
+            timestamp: Number(p.boardedAt || p.createdAt || Date.now()),
+            actor: p.studentName
+          });
+        }
+        if (p.arrived) {
+          events.push({
+            id: 'att_a_' + p.id,
+            category: 'attendance',
+            icon: 'map-pin',
+            iconBg: 'bg-sky-50 text-sky-600',
+            title: `Destination Arrival: ${p.studentName}`,
+            desc: 'Marked arrived at destination',
+            timestamp: Number(p.arrivedAt || p.createdAt || Date.now()),
+            actor: p.studentName
+          });
+        }
+      });
+
+      // 4. Railway Seat Allocations
+      studentList.forEach(p => {
+        if (p.trainAllocation) {
+          events.push({
+            id: 'rail_' + p.id,
+            category: 'railway',
+            icon: 'train',
+            iconBg: 'bg-purple-50 text-purple-600',
+            title: `Train Seat Allocated: ${p.studentName}`,
+            desc: `Coach ${p.trainAllocation.coach || 'S4'} • Seat ${p.trainAllocation.seatNumber || '-'} • PNR: ${p.trainAllocation.pnrNumber || '-'}`,
+            timestamp: Number(p.trainAllocation.allocatedAt || p.createdAt || Date.now()),
+            actor: p.studentName
+          });
+        }
+      });
+
+      // 5. Admin & Security Audits
+      targetAudit.forEach(l => {
+        events.push({
+          id: 'audit_' + (l.id || l.timestamp),
+          category: 'admin',
+          icon: l.action.includes('FAIL') ? 'shield-alert' : 'shield-check',
+          iconBg: l.action.includes('FAIL') ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-700',
+          title: `Admin Action: ${l.action}`,
+          desc: `Target: ${l.target || 'System'} • ${l.details || ''}`,
+          timestamp: Number(l.timestamp),
+          actor: l.adminName || 'Admin'
+        });
+      });
+
+      // 6. Broadcasts & Announcements
+      targetNotifs.forEach(n => {
+        events.push({
+          id: 'notif_' + n.id,
+          category: 'admin',
+          icon: n.channel === 'whatsapp' ? 'message-circle' : (n.isEmergency ? 'alert-triangle' : 'bell'),
+          iconBg: n.isEmergency ? 'bg-rose-100 text-rose-700' : 'bg-indigo-50 text-indigo-600',
+          title: `Broadcast: ${n.title || 'Announcement'}`,
+          desc: `Type: ${n.type || 'Notice'} • Channel: ${n.channel || 'In-App'} • By: ${n.sender || 'Admin'}`,
+          timestamp: Number(n.createdAt),
+          actor: n.sender || 'Admin'
+        });
+      });
+
+      // Filter by category
+      let filtered = events;
+      if (activeActivityStreamFilter !== 'all') {
+        filtered = filtered.filter(e => e.category === activeActivityStreamFilter);
+      }
+
+      // Filter by search query
+      if (activitySearchQuery) {
+        filtered = filtered.filter(e =>
+          e.title.toLowerCase().includes(activitySearchQuery) ||
+          e.desc.toLowerCase().includes(activitySearchQuery) ||
+          e.actor.toLowerCase().includes(activitySearchQuery)
+        );
+      }
+
+      // Sort reverse-chronologically
+      filtered.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+      if (badge) badge.textContent = `${filtered.length} Events`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center text-slate-400 text-xs">
+            <i data-lucide="activity" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
+            No activity events found matching filter.
+          </div>
+        `;
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        return;
+      }
+
+      // Render top 50 events
+      const topEvents = filtered.slice(0, 50);
+      container.innerHTML = topEvents.map(e => `
+        <div class="p-3 rounded-2xl border border-slate-100 bg-white hover:border-indigo-100 hover:shadow-xs transition flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl ${e.iconBg} flex items-center justify-center shrink-0 mt-0.5">
+              <i data-lucide="${e.icon}" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="font-extrabold text-xs text-slate-900">${escapeHtml(e.title)}</p>
+              <p class="text-[11px] text-slate-500 font-medium mt-0.5">${escapeHtml(e.desc)}</p>
+            </div>
+          </div>
+          <div class="text-right shrink-0">
+            <span class="text-[10px] font-bold text-slate-400 font-mono" title="${new Date(e.timestamp).toLocaleString()}">
+              ${formatRelativeTime(e.timestamp)}
+            </span>
+          </div>
+        </div>
+      `).join('');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    // Feature Export CSV Helpers
+    function exportExecutiveAnalyticsCSV() {
+      const isGlobal = (currentAnalyticsScope === 'global');
+      const studentList = isGlobal ? rawPaymentsList : payments;
+      const targetTrip = allTrips.find(t => t.id === currentTripId) || allTrips[0] || {};
+
+      const rows = [
+        ['EXECUTIVE ANALYTICS & OPERATIONS SUMMARY'],
+        ['Trip Title', targetTrip.tripTitle || currentTripId],
+        ['Destination', targetTrip.destination || 'Munnar'],
+        ['Scope', isGlobal ? 'All Platform Trips' : 'Active Trip'],
+        ['Generated At', new Date().toLocaleString()],
+        [],
+        ['METRIC', 'VALUE'],
+        ['Total Registered Students', studentList.length],
+        ['Total Managed Trips', allTrips.length],
+        ['Trip Base Fee Rate', targetTrip.tripAmount || 1500],
+        ['Target Revenue', studentList.length * (Number(targetTrip.tripAmount) || 1500)],
+        ['Total Collection', studentList.reduce((acc, p) => acc + (getStudentPaymentSummary(p).netPaid || 0), 0)],
+        ['Total Outstanding Balances', studentList.reduce((acc, p) => acc + (getStudentPaymentSummary(p).balanceDue || 0), 0)],
+        ['Fully Paid Students', studentList.filter(p => getStudentPaymentSummary(p).isFullyPaid && getStudentPaymentSummary(p).netPaid > 0).length],
+        ['Partially Paid Students', studentList.filter(p => getStudentPaymentSummary(p).netPaid > 0 && getStudentPaymentSummary(p).balanceDue > 0).length],
+        ['Unpaid Students', studentList.filter(p => getStudentPaymentSummary(p).netPaid === 0).length],
+        ['Departure Boarded Students', studentList.filter(p => p.boarded).length],
+        ['Destination Arrived Students', studentList.filter(p => p.arrived).length],
+        [],
+        ['STUDENT ROSTER BREAKDOWN'],
+        ['Student Name', 'Phone', 'Department', 'Total Fee', 'Net Paid', 'Balance Due', 'Status', 'Boarded', 'Train Coach', 'Train Seat']
+      ];
+
+      studentList.forEach(p => {
+        const sum = getStudentPaymentSummary(p);
+        rows.push([
+          p.studentName || 'N/A',
+          p.phone || 'N/A',
+          p.department || 'N/A',
+          sum.totalFee,
+          sum.netPaid,
+          sum.balanceDue,
+          p.status || 'Pending Verification',
+          p.boarded ? 'YES' : 'NO',
+          p.trainAllocation ? (p.trainAllocation.coach || 'Unassigned') : 'Unassigned',
+          p.trainAllocation ? (p.trainAllocation.seatNumber || 'Unassigned') : 'Unassigned'
+        ]);
+      });
+
+      const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(e => e.map(val => `"${String(val).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `Executive_Analytics_${currentTripId}_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Executive Analytics CSV exported successfully!', 'success');
+    }
+
+    function exportActivityLogCSV() {
+      const rows = [
+        ['LIVE ACTIVITY & AUDIT LOG'],
+        ['Trip', currentTripId],
+        ['Exported At', new Date().toLocaleString()],
+        [],
+        ['Category', 'Event', 'Description', 'Actor', 'Timestamp']
+      ];
+
+      const feedContainer = document.getElementById('analyticsActivityFeedContainer');
+      const cards = feedContainer ? feedContainer.querySelectorAll('.p-3') : [];
+      cards.forEach(c => {
+        const title = c.querySelector('p.font-extrabold')?.textContent?.trim() || '';
+        const desc = c.querySelector('p.text-slate-500')?.textContent?.trim() || '';
+        const time = c.querySelector('span.font-mono')?.getAttribute('title') || '';
+        rows.push(['Activity', title, desc, 'User/Admin', time]);
+      });
+
+      const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(e => e.map(val => `"${String(val).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `Activity_Audit_Log_${currentTripId}_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Activity Log CSV exported successfully!', 'success');
+    }
+
     Object.assign(window, {
+      setAnalyticsScope,
+      refreshExecutiveAnalytics,
+      jumpToStudentsWithFilter,
+      filterAnalyticsDeptTable,
+      setActivityStreamFilter,
+      handleActivitySearch,
+      renderExecutiveAnalytics,
+      renderAnalyticsDepartmentStats,
+      renderAnalyticsTripsComparison,
+      renderAnalyticsActivityFeed,
+      jumpToStudentsWithDept,
+      exportExecutiveAnalyticsCSV,
+      exportActivityLogCSV,
+      formatRelativeTime,
       openManualPnrModal,
       closeManualPnrModal,
       addManualPassengerSlot,
