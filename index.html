@@ -1592,78 +1592,213 @@
         </div>
       </div>
 
-      <!-- SUB-TAB 1.2: QR CHECK-IN & PARTICIPATION TRACKER -->
+      <!-- SUB-TAB 1.2: LIVE TRIP ATTENDANCE & VERIFICATION SUITE (Features 75-85) -->
       <div id="managerSection-checkin" class="hidden space-y-5">
         <div class="expressive-card border border-slate-200 rounded-3xl p-5 sm:p-6 space-y-5">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+          <!-- Header Bar with Multi-Action Suite -->
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
               <div
                 class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-bold border border-emerald-200 mb-1">
                 <i data-lucide="scan-line" class="w-3.5 h-3.5"></i>
-                <span>Live Boarding & Attendance Verification</span>
+                <span>Live Boarding & Destination Arrival Attendance Suite</span>
               </div>
-              <h3 class="font-display font-extrabold text-lg text-slate-900">Participant Boarding & QR Check-In Roster
-              </h3>
+              <h3 class="font-display font-extrabold text-lg text-slate-900">Attendance & Participation Command Center</h3>
               <p class="text-xs text-slate-500">
-                Scan student Boarding Pass QR codes or mark attendance manually during bus boarding.
+                Live QR attendance scanning, coach-wise roll-call, departure boarding & destination arrival checkpoints, and automated absentee management.
               </p>
             </div>
+            <!-- Actions Ribbon (Features 75, 78, 85) -->
             <div class="flex items-center gap-2 flex-wrap">
               <button type="button" onclick="openQrScannerModal()"
-                class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center gap-2 shadow-md transition">
+                class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-extrabold text-xs flex items-center gap-2 shadow-md transition">
                 <i data-lucide="camera" class="w-4 h-4"></i>
-                <span>Launch Camera QR Scanner</span>
+                <span>Launch QR Scanner</span>
               </button>
-              <button type="button" onclick="copyBoardingAttendanceWhatsApp()"
-                class="px-3.5 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition">
+              <button type="button" onclick="markAllVisibleAttendance(true)"
+                class="px-3.5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-sm transition"
+                title="Mark all currently visible students present for the active session">
+                <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
+                <span>Mark All Present</span>
+              </button>
+              <button type="button" onclick="exportAttendancePDF()"
+                class="px-3 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+                title="Download printable official Attendance Register PDF">
+                <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span class="hidden sm:inline">Export PDF</span>
+                <span class="sm:hidden">PDF</span>
+              </button>
+              <button type="button" onclick="exportAttendanceCSV()"
+                class="px-3 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold text-xs flex items-center gap-1.5 transition"
+                title="Download CSV spreadsheet for Excel / Google Sheets">
+                <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>
+                <span>CSV</span>
+              </button>
+              <button type="button" onclick="shareAttendanceWhatsApp()"
+                class="px-3.5 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+                title="Share formatted Attendance Report on WhatsApp">
                 <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
-                <span>Share Attendance</span>
+                <span class="hidden sm:inline">Share Report</span>
+                <span class="sm:hidden">Share</span>
               </button>
             </div>
           </div>
 
-          <!-- Participation Progress KPI Strip -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div class="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 flex items-center justify-between">
+          <!-- Attendance Statistics & Percentages Strip (Feature 84) -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <!-- 1. Boarding Attendance (Feature 76) -->
+            <div class="p-4 rounded-2xl bg-emerald-50/90 border border-emerald-200/80 flex items-center justify-between shadow-2xs">
               <div>
-                <p class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700">Checked-In / Boarded</p>
-                <p id="checkinCountBoarded" class="font-display text-2xl font-extrabold text-emerald-800 mt-0.5">0</p>
+                <p class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700">1. Boarding (Campus)</p>
+                <div class="flex items-baseline gap-2 mt-0.5">
+                  <p id="checkinCountBoarded" class="font-display text-2xl font-extrabold text-emerald-900">0</p>
+                  <span id="checkinPctBoarded" class="text-xs font-mono font-bold text-emerald-700 bg-emerald-200/60 px-1.5 py-0.2 rounded-md">0%</span>
+                </div>
+                <p class="text-[10px] text-emerald-700/80 mt-1">Bus Departure Attendance</p>
               </div>
-              <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
-                <i data-lucide="user-check" class="w-5 h-5"></i>
-              </div>
-            </div>
-            <div class="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 flex items-center justify-between">
-              <div>
-                <p class="text-[10px] font-extrabold uppercase tracking-wider text-amber-700">Awaiting Boarding</p>
-                <p id="checkinCountWaiting" class="font-display text-2xl font-extrabold text-amber-800 mt-0.5">0</p>
-              </div>
-              <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center">
-                <i data-lucide="clock" class="w-5 h-5"></i>
-              </div>
-            </div>
-            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
-              <div>
-                <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Total Participants</p>
-                <p id="checkinCountTotal" class="font-display text-2xl font-extrabold text-slate-900 mt-0.5">0</p>
-              </div>
-              <div class="w-10 h-10 rounded-xl bg-slate-800 text-white flex items-center justify-center">
+              <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
                 <i data-lucide="bus" class="w-5 h-5"></i>
               </div>
             </div>
+
+            <!-- 2. Arrival Attendance (Feature 77) -->
+            <div class="p-4 rounded-2xl bg-sky-50/90 border border-sky-200/80 flex items-center justify-between shadow-2xs">
+              <div>
+                <p class="text-[10px] font-extrabold uppercase tracking-wider text-sky-700">2. Destination Arrival</p>
+                <div class="flex items-baseline gap-2 mt-0.5">
+                  <p id="checkinCountArrived" class="font-display text-2xl font-extrabold text-sky-900">0</p>
+                  <span id="checkinPctArrived" class="text-xs font-mono font-bold text-sky-700 bg-sky-200/60 px-1.5 py-0.2 rounded-md">0%</span>
+                </div>
+                <p class="text-[10px] text-sky-700/80 mt-1">Destination Check-In</p>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center shrink-0">
+                <i data-lucide="map-pin" class="w-5 h-5"></i>
+              </div>
+            </div>
+
+            <!-- 3. Absent / Pending Students (Feature 81) -->
+            <div class="p-4 rounded-2xl bg-amber-50/90 border border-amber-200/80 flex items-center justify-between shadow-2xs">
+              <div>
+                <p class="text-[10px] font-extrabold uppercase tracking-wider text-amber-700">Missing / Absent</p>
+                <div class="flex items-baseline gap-2 mt-0.5">
+                  <p id="checkinCountAbsent" class="font-display text-2xl font-extrabold text-amber-900">0</p>
+                  <span id="checkinPctAbsent" class="text-xs font-mono font-bold text-amber-700 bg-amber-200/60 px-1.5 py-0.2 rounded-md">0%</span>
+                </div>
+                <p class="text-[10px] text-amber-700/80 mt-1">Pending Checkpoint</p>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0">
+                <i data-lucide="clock" class="w-5 h-5"></i>
+              </div>
+            </div>
+
+            <!-- 4. Total Trip Enrollment -->
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between shadow-2xs">
+              <div>
+                <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Trip Capacity</p>
+                <div class="flex items-baseline gap-2 mt-0.5">
+                  <p id="checkinCountTotal" class="font-display text-2xl font-extrabold text-slate-900">0</p>
+                  <span class="text-xs text-slate-500 font-bold">Students</span>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-1">Verified & Active Roster</p>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-slate-800 text-white flex items-center justify-center shrink-0">
+                <i data-lucide="users" class="w-5 h-5"></i>
+              </div>
+            </div>
           </div>
 
-          <!-- Participation Roster Table -->
+          <!-- Overall Attendance Progress Bar -->
+          <div class="bg-slate-100 rounded-full h-3 overflow-hidden flex shadow-inner">
+            <div id="attendanceProgressBarBoarded" class="bg-emerald-500 h-full transition-all duration-500" style="width: 0%" title="Boarding %"></div>
+            <div id="attendanceProgressBarArrived" class="bg-sky-500 h-full transition-all duration-500" style="width: 0%" title="Arrival %"></div>
+          </div>
+
+          <!-- Real-Time Absentee Alert Banner (Feature 81) -->
+          <div id="attendanceAbsenteeAlertBox" class="hidden rounded-2xl border-2 border-amber-300 bg-amber-50/90 p-4 space-y-3 transition">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0">
+                  <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h4 class="font-extrabold text-sm text-amber-950 flex items-center gap-2">
+                    <span>Absentee Identification Alert</span>
+                    <span id="absenteeCountBadge" class="bg-amber-200 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded-full">0 Absent</span>
+                  </h4>
+                  <p class="text-xs text-amber-800">The following students have not checked in for the active checkpoint.</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="broadcastAbsenteesWhatsApp()"
+                  class="px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition">
+                  <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                  <span>Broadcast Absentee List</span>
+                </button>
+              </div>
+            </div>
+            <!-- Absentee pills list -->
+            <div id="absenteePillsList" class="flex flex-wrap items-center gap-1.5 pt-1"></div>
+          </div>
+
+          <!-- Filters & Controls Bar (Features 78, 80, 81) -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 text-xs">
+            <!-- Search Input -->
+            <div class="relative flex-1 min-w-[200px]">
+              <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+              <input type="text" id="attendanceSearchInput" oninput="renderCheckinRoster()"
+                placeholder="Search by student name, Roll No, Phone, Coach..."
+                class="w-full pl-9 pr-3.5 py-2 rounded-xl bg-white border border-slate-200 focus:outline-none focus:border-emerald-500 text-xs text-slate-900 font-bold" />
+            </div>
+
+            <!-- Session Tabs (Boarding vs Arrival vs Dual) (Features 76, 77) -->
+            <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shrink-0">
+              <button type="button" id="attSessionBtn-boarding" onclick="switchAttendanceSessionView('boarding')"
+                class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-600 text-white shadow-xs transition">
+                🚌 Boarding
+              </button>
+              <button type="button" id="attSessionBtn-arrival" onclick="switchAttendanceSessionView('arrival')"
+                class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600 hover:text-slate-900 transition">
+                📍 Arrival
+              </button>
+              <button type="button" id="attSessionBtn-both" onclick="switchAttendanceSessionView('both')"
+                class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600 hover:text-slate-900 transition">
+                📋 Dual Summary
+              </button>
+            </div>
+
+            <!-- Coach-Wise Filter (Feature 80) -->
+            <div class="flex items-center gap-1.5 shrink-0">
+              <label for="attendanceCoachFilter" class="font-bold text-slate-600 text-[11px] shrink-0">Coach:</label>
+              <select id="attendanceCoachFilter" onchange="renderCheckinRoster()"
+                class="px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none">
+                <option value="all">All Coaches</option>
+              </select>
+            </div>
+
+            <!-- Status Filter (Present / Absent) -->
+            <div class="flex items-center gap-1.5 shrink-0">
+              <label for="attendanceStatusFilter" class="font-bold text-slate-600 text-[11px] shrink-0">Status:</label>
+              <select id="attendanceStatusFilter" onchange="renderCheckinRoster()"
+                class="px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none">
+                <option value="all">All Students</option>
+                <option value="present">Present Only ✅</option>
+                <option value="absent">Absent / Missing ⚠️</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Attendance Roster Table -->
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
                 <tr
                   class="border-b border-slate-200 bg-slate-50/90 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                  <th class="py-3 px-4">Participant</th>
-                  <th class="py-3 px-4">Ticket / Pass</th>
-                  <th class="py-3 px-4">Fee Status</th>
-                  <th class="py-3 px-4">Participation Status</th>
-                  <th class="py-3 px-4 text-right">Check-In Action</th>
+                  <th class="py-3 px-4">#</th>
+                  <th class="py-3 px-4">Participant Profile</th>
+                  <th class="py-3 px-4">Coach / Berth</th>
+                  <th class="py-3 px-4">1. Boarding Attendance</th>
+                  <th class="py-3 px-4">2. Destination Arrival</th>
+                  <th class="py-3 px-4 text-right">Attendance Actions</th>
                 </tr>
               </thead>
               <tbody id="checkinRosterTableBody" class="divide-y divide-slate-200/70 text-sm"></tbody>
@@ -4928,16 +5063,30 @@
         </button>
       </div>
 
+      <!-- Active Checkpoint Selector (Features 75, 76, 77) -->
+      <div class="p-1 bg-slate-100 rounded-2xl grid grid-cols-2 gap-1 text-xs">
+        <button type="button" id="btnScanSessionBoarding" onclick="setScannerAttendanceSession('boarding')"
+          class="py-2 px-3 rounded-xl font-extrabold flex items-center justify-center gap-1.5 transition bg-white text-emerald-800 shadow-xs">
+          <i data-lucide="bus" class="w-3.5 h-3.5"></i>
+          <span>1. Boarding (Departure)</span>
+        </button>
+        <button type="button" id="btnScanSessionArrival" onclick="setScannerAttendanceSession('arrival')"
+          class="py-2 px-3 rounded-xl font-extrabold flex items-center justify-center gap-1.5 transition text-slate-600 hover:text-slate-900">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+          <span>2. Destination Arrival</span>
+        </button>
+      </div>
+
       <!-- Auto Check-In Option Bar -->
       <div
         class="flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
         <label class="flex items-center gap-2 cursor-pointer font-bold text-slate-700">
           <input type="checkbox" id="autoCheckInToggle" checked class="w-4 h-4 accent-emerald-600 rounded" />
-          <span>Auto Mark "Boarded" on Valid QR Scan</span>
+          <span id="autoCheckInToggleLabel">Auto Mark Present on Valid QR Scan</span>
         </label>
         <span id="scannerLiveCountBadge"
           class="font-mono text-[11px] font-extrabold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full">
-          0 Boarded
+          0 Recorded
         </span>
       </div>
 
@@ -4988,6 +5137,150 @@
 
       <!-- Scanned Participant Result Card -->
       <div id="scannedResultContainer" class="hidden rounded-2xl border-2 p-4 space-y-3 transition-all"></div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: AUTHORIZED ATTENDANCE CORRECTION (Feature 82)                      -->
+  <!-- ========================================================================= -->
+  <div id="attendanceCorrectionModal"
+    class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl my-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+            <i data-lucide="edit-3" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-display text-base font-extrabold text-slate-900">Attendance Correction</h3>
+            <p class="text-[11px] text-slate-500">Authorized manual override for boarding or arrival</p>
+          </div>
+        </div>
+        <button onclick="closeAttendanceCorrectionModal()"
+          class="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="attendanceCorrectionForm" onsubmit="handleAttendanceCorrectionSubmit(event)" class="space-y-4">
+        <input type="hidden" id="corrStudentId" />
+
+        <!-- Student Profile Card -->
+        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center gap-3">
+          <div id="corrStudentAvatar" class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 font-extrabold flex items-center justify-center text-sm shrink-0">
+            MS
+          </div>
+          <div class="min-w-0 flex-1">
+            <h4 id="corrStudentName" class="font-extrabold text-sm text-slate-900 truncate">Student Name</h4>
+            <p id="corrStudentDetails" class="text-xs text-slate-500 truncate font-mono">TP-000 • BCA</p>
+          </div>
+        </div>
+
+        <!-- 1. Boarding Checkpoint -->
+        <div class="p-3 bg-emerald-50/50 rounded-2xl border border-emerald-200 space-y-2">
+          <label class="block text-xs font-extrabold text-emerald-900">1. Boarding Checkpoint (Campus Departure)</label>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <label class="flex items-center gap-2 p-2 bg-white rounded-xl border border-emerald-200 cursor-pointer font-bold text-slate-800">
+              <input type="radio" name="corrBoardingState" value="present" id="corrBoardingPresent" class="accent-emerald-600" />
+              <span>✅ Present / Boarded</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 bg-white rounded-xl border border-slate-200 cursor-pointer font-bold text-slate-600">
+              <input type="radio" name="corrBoardingState" value="absent" id="corrBoardingAbsent" class="accent-rose-600" />
+              <span>❌ Absent / Missing</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 2. Arrival Checkpoint -->
+        <div class="p-3 bg-sky-50/50 rounded-2xl border border-sky-200 space-y-2">
+          <label class="block text-xs font-extrabold text-sky-900">2. Destination Arrival Checkpoint</label>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <label class="flex items-center gap-2 p-2 bg-white rounded-xl border border-sky-200 cursor-pointer font-bold text-slate-800">
+              <input type="radio" name="corrArrivalState" value="present" id="corrArrivalPresent" class="accent-sky-600" />
+              <span>✅ Present / Arrived</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 bg-white rounded-xl border border-slate-200 cursor-pointer font-bold text-slate-600">
+              <input type="radio" name="corrArrivalState" value="absent" id="corrArrivalAbsent" class="accent-rose-600" />
+              <span>❌ Absent / Missing</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Correction Reason (Feature 82) -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Reason for Correction *</label>
+          <select id="corrPresetReason" onchange="handleCorrectionPresetChange(this.value)"
+            class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 mb-2">
+            <option value="">Select standard reason or enter custom...</option>
+            <option value="Late arrival - personal transport to assembly point">Late arrival - personal transport to assembly point</option>
+            <option value="Boarded alternate bus / coach with coordinator consent">Boarded alternate bus / coach with coordinator consent</option>
+            <option value="Medical exemption / illness confirmed by faculty">Medical exemption / illness confirmed by faculty</option>
+            <option value="QR camera scan error - student was present">QR camera scan error - student was present</option>
+            <option value="Erroneous scan undone by coordinator">Erroneous scan undone by coordinator</option>
+            <option value="custom">Other / Custom reason...</option>
+          </select>
+          <input type="text" id="corrCustomReason" placeholder="Enter specific correction reason..."
+            class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium" />
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeAttendanceCorrectionModal()"
+            class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-200 transition">
+            Cancel
+          </button>
+          <button type="submit"
+            class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold shadow-sm transition">
+            Save Correction
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: STUDENT ATTENDANCE HISTORY TIMELINE (Feature 83)                   -->
+  <!-- ========================================================================= -->
+  <div id="studentAttendanceHistoryModal"
+    class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl my-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
+            <i data-lucide="history" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-display text-base font-extrabold text-slate-900">Attendance Audit History</h3>
+            <p class="text-[11px] text-slate-500">Timeline of scans, manual marks, and corrections</p>
+          </div>
+        </div>
+        <button onclick="closeStudentAttendanceHistoryModal()"
+          class="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Student Banner -->
+      <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between">
+        <div class="min-w-0">
+          <h4 id="attHistStudentName" class="font-extrabold text-sm text-slate-900 truncate">Muhammed Sinan</h4>
+          <p id="attHistStudentDetails" class="text-xs text-slate-500 font-mono">TP-000 • BCA • Coach S1</p>
+        </div>
+        <div id="attHistStatusBadge" class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">
+          Active Pass
+        </div>
+      </div>
+
+      <!-- Timeline Scroll Area -->
+      <div id="attHistTimelineContainer" class="space-y-3 max-h-72 overflow-y-auto pr-1">
+        <!-- Rendered dynamically via renderAttendanceTimeline() -->
+      </div>
+
+      <div class="flex justify-end pt-2 border-t border-slate-100">
+        <button type="button" onclick="closeStudentAttendanceHistoryModal()"
+          class="px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition">
+          Close History
+        </button>
+      </div>
     </div>
   </div>
 
@@ -9116,10 +9409,64 @@
       document.getElementById('qrScannerModal').classList.add('hidden');
     }
 
+    // =========================================================================
+    // FEATURES 75-85: ATTENDANCE & PARTICIPATION MANAGEMENT SUITE
+    // =========================================================================
+
+    // Active session for QR scanner ('boarding' | 'arrival')
+    window.activeScannerSession = 'boarding';
+
+    // Active view for attendance roster table ('boarding' | 'arrival' | 'both')
+    window.activeAttendanceSessionView = 'boarding';
+
+    // Feature 75, 76, 77: Scanner Attendance Session Switcher
+    function setScannerAttendanceSession(session) {
+      window.activeScannerSession = session || 'boarding';
+      const btnBoarding = document.getElementById('btnScanSessionBoarding');
+      const btnArrival = document.getElementById('btnScanSessionArrival');
+      const autoLabel = document.getElementById('autoCheckInToggleLabel');
+
+      if (window.activeScannerSession === 'arrival') {
+        if (btnArrival) btnArrival.className = 'py-2 px-3 rounded-xl font-extrabold flex items-center justify-center gap-1.5 transition bg-white text-sky-800 shadow-xs';
+        if (btnBoarding) btnBoarding.className = 'py-2 px-3 rounded-xl font-extrabold flex items-center justify-center gap-1.5 transition text-slate-600 hover:text-slate-900';
+        if (autoLabel) autoLabel.textContent = 'Auto Mark "Arrived" on Valid QR Scan';
+      } else {
+        if (btnBoarding) btnBoarding.className = 'py-2 px-3 rounded-xl font-extrabold flex items-center justify-center gap-1.5 transition bg-white text-emerald-800 shadow-xs';
+        if (btnArrival) btnArrival.className = 'py-2 px-3 rounded-xl font-extrabold flex items-center justify-center gap-1.5 transition text-slate-600 hover:text-slate-900';
+        if (autoLabel) autoLabel.textContent = 'Auto Mark "Boarded" on Valid QR Scan';
+      }
+      updateScannerModalCounters();
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    // Switch Attendance Table View ('boarding' | 'arrival' | 'both')
+    function switchAttendanceSessionView(view) {
+      window.activeAttendanceSessionView = view || 'boarding';
+      ['boarding', 'arrival', 'both'].forEach(v => {
+        const btn = document.getElementById(`attSessionBtn-${v}`);
+        if (!btn) return;
+        if (v === window.activeAttendanceSessionView) {
+          if (v === 'arrival') {
+            btn.className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold bg-sky-600 text-white shadow-xs transition';
+          } else if (v === 'both') {
+            btn.className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold bg-indigo-600 text-white shadow-xs transition';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-600 text-white shadow-xs transition';
+          }
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600 hover:text-slate-900 transition';
+        }
+      });
+      renderCheckinRoster();
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
     function updateScannerModalCounters() {
-      const boardedCount = payments.filter(p => p.boarded).length;
+      const isArr = (window.activeScannerSession === 'arrival');
+      const count = payments.filter(p => isArr ? p.arrived : p.boarded).length;
       const badge = document.getElementById('scannerLiveCountBadge');
-      if (badge) badge.textContent = `${boardedCount} / ${payments.length} Boarded`;
+      const sessionName = isArr ? 'Arrived' : 'Boarded';
+      if (badge) badge.textContent = `${count} / ${payments.length} ${sessionName}`;
     }
 
     async function startCameraQrScanner() {
@@ -9180,7 +9527,7 @@
       processScannedBoardingPassPayload(raw);
     }
 
-    // Feature 72 & 74: Secure QR Payload Validation and Duplicate Boarding Prevention
+    // Feature 72, 75, 76, 77, 79: Secure Attendance Scanner with Duplicate Scan Safeguards
     async function processScannedBoardingPassPayload(rawText) {
       const clean = String(rawText || '').trim();
       let matchedStudent = null;
@@ -9248,7 +9595,7 @@
         return;
       }
 
-      // Feature 73: Check Pass Activation Status (Deactivated / Suspended passes rejected)
+      // Feature 73: Deactivated Pass Check
       if (matchedStudent.accessStatus === 'Deactivated' || matchedStudent.accessStatus === 'Suspended') {
         playScanBeep(false);
         resultBox.className = 'rounded-2xl border-2 border-rose-400 bg-rose-50 p-4 space-y-3';
@@ -9260,7 +9607,7 @@
           <div class="p-3 bg-white rounded-xl border border-rose-200">
             <p class="font-extrabold text-sm text-slate-900">${escapeHtml(matchedStudent.studentName)}</p>
             <p class="text-xs text-slate-500 font-mono mt-0.5">${escapeHtml(getStudentTripId(matchedStudent))} • ${escapeHtml(matchedStudent.department)}</p>
-            <p class="text-xs text-rose-600 font-bold mt-2">Boarding entry rejected: This student pass has been suspended. Please contact the trip coordinator.</p>
+            <p class="text-xs text-rose-600 font-bold mt-2">Attendance rejected: This student pass has been suspended. Please contact the trip coordinator.</p>
           </div>
           <div class="flex items-center gap-2">
             <button type="button" onclick="togglePassActivation('${matchedStudent.id}')"
@@ -9275,19 +9622,24 @@
             </button>
           </div>
         `;
-        logSecurityEvent('PASS_DEACTIVATED_SCAN_BLOCKED', matchedStudent.phone, `Blocked entry attempt for deactivated pass ${matchedStudent.studentName}`);
+        logSecurityEvent('PASS_DEACTIVATED_SCAN_BLOCKED', matchedStudent.phone, `Blocked attendance attempt for deactivated pass ${matchedStudent.studentName}`);
         lucide.createIcons();
         return;
       }
 
-      // Feature 74: Prevent Duplicate Digital Passes / Already Boarded Warning
-      if (matchedStudent.boarded) {
+      // Feature 79: Prevent Duplicate Attendance Scans for active session
+      const currentSession = window.activeScannerSession || 'boarding';
+      const isAlreadyMarked = (currentSession === 'arrival') ? Boolean(matchedStudent.arrived) : Boolean(matchedStudent.boarded);
+      const sessionLabel = (currentSession === 'arrival') ? 'Destination Arrival' : 'Departure Boarding';
+      const recordedTime = (currentSession === 'arrival') ? matchedStudent.arrivedAtStr : matchedStudent.boardedAtStr;
+
+      if (isAlreadyMarked) {
         playScanBeep(false);
         resultBox.className = 'rounded-2xl border-2 border-amber-400 bg-amber-50 p-4 space-y-3';
         resultBox.innerHTML = `
           <div class="flex items-center gap-2 text-amber-900 font-extrabold text-sm">
             <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600 shrink-0"></i>
-            <span>⚠️ DUPLICATE PASS SCAN DETECTED</span>
+            <span>⚠️ DUPLICATE ${sessionLabel.toUpperCase()} SCAN DETECTED</span>
           </div>
           <div class="p-3 bg-white rounded-xl border border-amber-200">
             <div class="flex items-center justify-between gap-2">
@@ -9297,14 +9649,14 @@
             <p class="text-xs text-slate-500 mt-0.5">${escapeHtml(matchedStudent.department)} • +91 ${escapeHtml(matchedStudent.phone)}</p>
             <div class="mt-2 text-xs font-semibold text-amber-800 bg-amber-100/60 p-2 rounded-lg flex items-center gap-1.5">
               <i data-lucide="clock" class="w-3.5 h-3.5 shrink-0 text-amber-700"></i>
-              <span>Already checked-in & boarded at: <strong>${escapeHtml(matchedStudent.boardedAtStr || 'Confirmed')}</strong></span>
+              <span>Already marked Present for <strong>${sessionLabel}</strong> at: <strong>${escapeHtml(recordedTime || 'Confirmed')}</strong></span>
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <button type="button" onclick="markParticipantBoardingStatus('${matchedStudent.id}', false)"
+            <button type="button" onclick="markStudentAttendance('${matchedStudent.id}', '${currentSession}', false)"
               class="flex-1 py-2 px-3 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs flex items-center justify-center gap-1 transition">
               <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-              <span>Undo Check-In</span>
+              <span>Undo ${sessionLabel}</span>
             </button>
             <button type="button" onclick="openBoardingPassByStudentId('${matchedStudent.id}')"
               class="py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-1 transition">
@@ -9313,16 +9665,17 @@
             </button>
           </div>
         `;
-        logSecurityEvent('DUPLICATE_BOARDING_SCAN_WARNING', matchedStudent.phone, `Duplicate scan for ${matchedStudent.studentName}`);
+        logSecurityEvent('DUPLICATE_ATTENDANCE_SCAN', matchedStudent.phone, `Duplicate ${sessionLabel} scan for ${matchedStudent.studentName}`);
         lucide.createIcons();
         return;
       }
 
+      // Valid fresh scan
       playScanBeep(true);
 
       const autoCheckIn = document.getElementById('autoCheckInToggle')?.checked;
-      if (autoCheckIn && !matchedStudent.boarded) {
-        await markParticipantBoardingStatus(matchedStudent.id, true, true);
+      if (autoCheckIn) {
+        await markStudentAttendance(matchedStudent.id, currentSession, true, 'QR_SCAN', `Live QR scan at ${sessionLabel}`, true);
         const refreshed = payments.find(p => p.id === matchedStudent.id);
         if (refreshed) matchedStudent = refreshed;
       }
@@ -9330,6 +9683,7 @@
       renderScannedStudentCard(matchedStudent);
     }
 
+    // Render Scanned Student Card with Dual Checkpoints (Features 76, 77)
     function renderScannedStudentCard(st) {
       const resultBox = document.getElementById('scannedResultContainer');
       if (!resultBox || !st) return;
@@ -9337,6 +9691,7 @@
       const bal = getBalanceDue(st);
       const isVer = st.status === 'Verified';
       const isBoarded = Boolean(st.boarded);
+      const isArrived = Boolean(st.arrived);
       const stTripId = getStudentTripId(st);
       const isDeactivated = st.accessStatus === 'Deactivated' || st.accessStatus === 'Suspended';
 
@@ -9352,7 +9707,7 @@
            </div>`
         : '';
 
-      resultBox.className = `rounded-2xl border-2 p-4 space-y-3 ${isBoarded ? 'border-emerald-400 bg-emerald-50/70' : 'border-indigo-300 bg-indigo-50/50'}`;
+      resultBox.className = `rounded-2xl border-2 p-4 space-y-3 ${(isBoarded || isArrived) ? 'border-emerald-400 bg-emerald-50/70' : 'border-indigo-300 bg-indigo-50/50'}`;
       resultBox.innerHTML = `
         <div class="flex items-start justify-between gap-3">
           <div class="flex items-center gap-3 min-w-0">
@@ -9360,10 +9715,10 @@
             <div class="min-w-0">
               <div class="flex items-center gap-1.5 flex-wrap">
                 <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${isBoarded ? 'bg-emerald-600 text-white' : 'bg-amber-100 text-amber-800'}">
-                  ${isBoarded ? '✅ BOARDED' : '⏳ NOT CHECKED-IN'}
+                  ${isBoarded ? '🚌 BOARDED' : '⏳ PENDING BOARDING'}
                 </span>
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isVer ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
-                  ${escapeHtml(st.status)}
+                <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${isArrived ? 'bg-sky-600 text-white' : 'bg-slate-200 text-slate-700'}">
+                  ${isArrived ? '📍 ARRIVED' : '⏳ AWAITING ARRIVAL'}
                 </span>
                 ${isDeactivated ? '<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-rose-600 text-white">⛔ SUSPENDED</span>' : ''}
               </div>
@@ -9381,52 +9736,54 @@
 
         ${trainStrip}
 
-        <div class="grid grid-cols-3 gap-2 bg-white p-2.5 rounded-xl border border-slate-200 text-xs text-center">
+        <!-- Checkpoints Timing Strip -->
+        <div class="grid grid-cols-2 gap-2 bg-white p-2.5 rounded-xl border border-slate-200 text-xs">
           <div>
-            <span class="text-[10px] text-slate-400 block font-bold uppercase">Paid</span>
-            <strong class="text-emerald-700 font-display">${formatINR(st.amountPaid)}</strong>
+            <span class="text-[10px] text-slate-400 font-bold block uppercase">1. Boarding Departure</span>
+            <strong class="${isBoarded ? 'text-emerald-700' : 'text-slate-400'} font-medium">
+              ${isBoarded ? (st.boardedAtStr || 'Present ✅') : 'Not Checked-In'}
+            </strong>
           </div>
-          <div class="border-x border-slate-100">
-            <span class="text-[10px] text-slate-400 block font-bold uppercase">Balance Due</span>
-            <strong class="${bal > 0 ? 'text-rose-600' : 'text-emerald-700'} font-display">${formatINR(bal)}</strong>
-          </div>
-          <div>
-            <span class="text-[10px] text-slate-400 block font-bold uppercase">Access Pass</span>
-            <strong class="text-indigo-700 font-mono">${escapeHtml(st.accessCode || 'None')}</strong>
+          <div class="border-l border-slate-100 pl-2.5">
+            <span class="text-[10px] text-slate-400 font-bold block uppercase">2. Destination Arrival</span>
+            <strong class="${isArrived ? 'text-sky-700' : 'text-slate-400'} font-medium">
+              ${isArrived ? (st.arrivedAtStr || 'Reached 📍') : 'Pending Arrival'}
+            </strong>
           </div>
         </div>
-
-        ${isBoarded && st.boardedAtStr ? `
-          <p class="text-[11px] font-semibold text-emerald-800 flex items-center gap-1">
-            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
-            <span>Checked-in at: ${escapeHtml(st.boardedAtStr)}</span>
-          </p>
-        ` : ''}
 
         <div class="flex flex-wrap items-center gap-2 pt-1">
           <button
             type="button"
-            onclick="markParticipantBoardingStatus('${st.id}', ${!isBoarded})"
-            class="flex-1 py-2.5 px-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm transition ${isBoarded ? 'bg-slate-200 hover:bg-slate-300 text-slate-800' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}"
+            onclick="markStudentAttendance('${st.id}', 'boarding', ${!isBoarded})"
+            class="flex-1 py-2 px-2.5 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1 shadow-sm transition ${isBoarded ? 'bg-slate-200 hover:bg-slate-300 text-slate-800' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}"
           >
-            <i data-lucide="${isBoarded ? 'rotate-ccw' : 'user-check'}" class="w-4 h-4"></i>
-            <span>${isBoarded ? 'Undo Boarding Check-In' : 'Confirm Check-In (Mark Boarded)'}</span>
+            <i data-lucide="${isBoarded ? 'rotate-ccw' : 'bus'}" class="w-3.5 h-3.5"></i>
+            <span>${isBoarded ? 'Undo Boarding' : 'Mark Boarded'}</span>
           </button>
           <button
             type="button"
-            onclick="openBoardingPassByStudentId('${st.id}')"
-            class="py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-1 shadow-sm transition"
+            onclick="markStudentAttendance('${st.id}', 'arrival', ${!isArrived})"
+            class="flex-1 py-2 px-2.5 rounded-xl font-extrabold text-xs flex items-center justify-center gap-1 shadow-sm transition ${isArrived ? 'bg-slate-200 hover:bg-slate-300 text-slate-800' : 'bg-sky-600 hover:bg-sky-500 text-white'}"
           >
-            <i data-lucide="ticket" class="w-3.5 h-3.5 text-emerald-400"></i>
-            <span>Pass</span>
+            <i data-lucide="${isArrived ? 'rotate-ccw' : 'map-pin'}" class="w-3.5 h-3.5"></i>
+            <span>${isArrived ? 'Undo Arrival' : 'Mark Arrived'}</span>
           </button>
           <button
             type="button"
-            onclick="shareStudentBoardingPassWhatsApp('${st.id}')"
-            class="py-2.5 px-3 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition"
+            onclick="openAttendanceCorrectionModal('${st.id}')"
+            class="p-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 transition"
+            title="Attendance Correction (Feature 82)"
           >
-            <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-            <span>WhatsApp</span>
+            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+          </button>
+          <button
+            type="button"
+            onclick="openStudentAttendanceHistoryModal('${st.id}')"
+            class="p-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition"
+            title="Attendance History Log (Feature 83)"
+          >
+            <i data-lucide="history" class="w-3.5 h-3.5"></i>
           </button>
         </div>
       `;
@@ -9434,41 +9791,81 @@
       lucide.createIcons();
     }
 
-    async function markParticipantBoardingStatus(studentId, boardedState, silentFromScanner = false) {
+    // Feature 76, 77, 78, 83: Unified Attendance Recording Engine
+    async function markStudentAttendance(studentId, session, presentState, method = 'MANUAL', note = '', silentFromScanner = false) {
       const st = payments.find(p => p.id === studentId);
       if (!st) return;
 
-      const timeStr = boardedState
+      const now = Date.now();
+      const timeStr = presentState
         ? new Date().toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })
         : '';
 
-      const payload = {
-        boarded: Boolean(boardedState),
-        boardedAt: boardedState ? Date.now() : 0,
-        boardedAtStr: timeStr
+      const isBoarding = (session === 'boarding');
+      const payload = {};
+
+      if (isBoarding) {
+        payload.boarded = Boolean(presentState);
+        payload.boardedAt = presentState ? now : 0;
+        payload.boardedAtStr = timeStr;
+        payload.boardingMethod = method;
+        // Auto-verify & generate access code if coordinator marks present at boarding
+        if (presentState && st.status !== 'Verified') {
+          payload.status = 'Verified';
+          if (!st.accessCode) payload.accessCode = generateSecureAccessCode();
+        }
+      } else {
+        payload.arrived = Boolean(presentState);
+        payload.arrivedAt = presentState ? now : 0;
+        payload.arrivedAtStr = timeStr;
+        payload.arrivalMethod = method;
+      }
+
+      // Feature 83: Append individual attendance history entry
+      const historyItem = {
+        id: 'att_' + now + '_' + Math.random().toString(36).substr(2, 4),
+        session: isBoarding ? 'Boarding' : 'Arrival',
+        status: presentState ? 'Present' : 'Absent',
+        timestamp: now,
+        timeStr: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+        method: method,
+        markedBy: (currentAdminUser?.displayName || tripConfig.receiverName || 'Trip Coordinator'),
+        note: note || (method === 'QR_SCAN' ? 'Scanned via Camera QR' : (presentState ? 'Marked Present' : 'Marked Absent'))
       };
 
-      // Also auto-verify & generate access code if Admin checks them in at boarding
-      if (boardedState && st.status !== 'Verified') {
-        payload.status = 'Verified';
-        if (!st.accessCode) payload.accessCode = generateSecureAccessCode();
-      }
+      const currentHist = Array.isArray(st.attendanceHistory) ? [...st.attendanceHistory] : [];
+      currentHist.unshift(historyItem);
+      payload.attendanceHistory = currentHist;
 
       try {
         const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', studentId);
         await updateDoc(ref, payload);
-        st.boarded = payload.boarded;
-        st.boardedAtStr = payload.boardedAtStr;
-        if (payload.status) st.status = payload.status;
-        if (payload.accessCode) st.accessCode = payload.accessCode;
+
+        // Update local object
+        if (isBoarding) {
+          st.boarded = payload.boarded;
+          st.boardedAtStr = payload.boardedAtStr;
+          st.boardingMethod = payload.boardingMethod;
+          if (payload.status) st.status = payload.status;
+          if (payload.accessCode) st.accessCode = payload.accessCode;
+        } else {
+          st.arrived = payload.arrived;
+          st.arrivedAtStr = payload.arrivedAtStr;
+          st.arrivalMethod = payload.arrivalMethod;
+        }
+        st.attendanceHistory = payload.attendanceHistory;
 
         logSecurityEvent(
-          boardedState ? 'BOARDING_CHECKIN' : 'BOARDING_UNDO',
+          isBoarding
+            ? (presentState ? 'BOARDING_CHECKIN' : 'BOARDING_UNDO')
+            : (presentState ? 'ARRIVAL_CHECKIN' : 'ARRIVAL_UNDO'),
           st.phone,
-          `${st.studentName} (${st.receiptCode}) marked as ${boardedState ? 'Boarded' : 'Not Boarded'}`
+          `${st.studentName} (${st.receiptCode}) marked as ${presentState ? 'Present' : 'Absent'} for ${isBoarding ? 'Boarding' : 'Arrival'} via ${method}`
         );
 
-        showToast(boardedState ? `✅ ${st.studentName} checked-in & boarded!` : `Boarding check-in removed for ${st.studentName}.`);
+        const sessionTitle = isBoarding ? 'Boarding' : 'Destination Arrival';
+        showToast(presentState ? `✅ ${st.studentName} marked Present for ${sessionTitle}!` : `${sessionTitle} attendance removed for ${st.studentName}.`);
+
         if (!silentFromScanner) {
           const resultBox = document.getElementById('scannedResultContainer');
           if (resultBox && !resultBox.classList.contains('hidden')) {
@@ -9477,91 +9874,326 @@
         }
         renderCheckinRoster();
         updateScannerModalCounters();
+        updateNavBadge();
       } catch (e) {
-        showToast('Failed to update participation record.', 'error');
+        console.error('Error marking attendance:', e);
+        showToast('Failed to update attendance record.', 'error');
       }
     }
 
-    function renderCheckinRoster() {
-      const tbody = document.getElementById('checkinRosterTableBody');
-      const badge = document.getElementById('subTabBadgeCheckin');
-      const boardedCount = payments.filter(p => p.boarded).length;
-      const waitingCount = Math.max(0, payments.length - boardedCount);
+    // Backward compatibility wrapper
+    function markParticipantBoardingStatus(studentId, boardedState, silentFromScanner = false) {
+      return markStudentAttendance(studentId, 'boarding', boardedState, 'MANUAL', '', silentFromScanner);
+    }
 
-      if (badge) badge.textContent = `${boardedCount}/${payments.length}`;
+    // Feature 78: Mark All Visible Students Present or Absent
+    async function markAllVisibleAttendance(presentState) {
+      const activeSession = (window.activeAttendanceSessionView === 'arrival') ? 'arrival' : 'boarding';
+      const sessionLabel = (activeSession === 'arrival') ? 'Destination Arrival' : 'Departure Boarding';
 
-      const elBoarded = document.getElementById('checkinCountBoarded');
-      const elWaiting = document.getElementById('checkinCountWaiting');
-      const elTotal = document.getElementById('checkinCountTotal');
-      if (elBoarded) elBoarded.textContent = boardedCount;
-      if (elWaiting) elWaiting.textContent = waitingCount;
-      if (elTotal) elTotal.textContent = payments.length;
-
-      if (!tbody) return;
-
-      if (payments.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-xs text-slate-400">No participants registered yet.</td></tr>`;
+      const visibleStudents = getFilteredAttendanceStudents();
+      if (visibleStudents.length === 0) {
+        showToast('No students visible in current filter.', 'error');
         return;
       }
 
-      tbody.innerHTML = payments.map(p => {
-        const due = getBalanceDue(p);
-        const isBoarded = Boolean(p.boarded);
-        return `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="py-3 px-4">
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <span class="font-bold text-slate-900">${escapeHtml(p.studentName)}</span>
-                <span class="font-mono text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-indigo-50 border border-indigo-200 text-indigo-700">${escapeHtml(getStudentTripId(p))}</span>
-                ${p.accessStatus === 'Deactivated' ? '<span class="bg-rose-100 text-rose-700 font-extrabold text-[9px] px-1.5 py-0.2 rounded">⛔ Suspended</span>' : ''}
-              </div>
-              <span class="text-xs text-slate-500 block mt-0.5">${escapeHtml(p.department)} • ${escapeHtml(p.phone)}</span>
-            </td>
-            <td class="py-3 px-4 font-mono text-xs">
-              <span class="font-bold text-slate-800 block">${escapeHtml(p.receiptCode)}</span>
-              <span class="text-[11px] text-indigo-700 font-bold">Code: ${escapeHtml(p.accessCode || 'Pending')}</span>
-            </td>
-            <td class="py-3 px-4">
-              <span class="font-display font-extrabold text-emerald-700">${formatINR(p.amountPaid)}</span>
-              <span class="ml-1 text-[10px] font-bold px-1.5 py-0.5 rounded ${due > 0 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">
-                ${due > 0 ? `Due: ${formatINR(due)}` : 'Full Paid'}
+      const confirmed = window.confirm(
+        `Are you sure you want to mark all ${visibleStudents.length} visible students as ${presentState ? 'PRESENT' : 'ABSENT'} for ${sessionLabel}?`
+      );
+      if (!confirmed) return;
+
+      let count = 0;
+      for (const s of visibleStudents) {
+        const isAlready = (activeSession === 'arrival') ? s.arrived : s.boarded;
+        if (Boolean(isAlready) !== Boolean(presentState)) {
+          await markStudentAttendance(s.id, activeSession, presentState, 'MANUAL_BULK', `Bulk marked by coordinator`, true);
+          count++;
+        }
+      }
+      showToast(`Updated ${count} students for ${sessionLabel} attendance.`);
+      renderCheckinRoster();
+    }
+
+    // Helper: Retrieve filtered attendance students based on inputs and coach filter
+    function getFilteredAttendanceStudents() {
+      const searchInput = document.getElementById('attendanceSearchInput');
+      const q = (searchInput?.value || '').toLowerCase().trim();
+      const coachF = document.getElementById('attendanceCoachFilter')?.value || 'all';
+      const statusF = document.getElementById('attendanceStatusFilter')?.value || 'all';
+      const sessionView = window.activeAttendanceSessionView || 'boarding';
+
+      return payments.filter(p => {
+        // Coach filter (Feature 80)
+        const pCoach = (p.trainAllocation && p.trainAllocation.coach) ? String(p.trainAllocation.coach).trim() : 'Unassigned';
+        if (coachF !== 'all' && pCoach !== coachF) return false;
+
+        // Status filter
+        const isPresent = (sessionView === 'arrival') ? Boolean(p.arrived) : Boolean(p.boarded);
+        if (statusF === 'present' && !isPresent) return false;
+        if (statusF === 'absent' && isPresent) return false;
+
+        // Search query
+        if (q) {
+          const name = (p.studentName || '').toLowerCase();
+          const tripId = getStudentTripId(p).toLowerCase();
+          const roll = (p.studentRollNo || '').toLowerCase();
+          const phone = (p.phone || '');
+          const dept = (p.department || '').toLowerCase();
+          const coach = pCoach.toLowerCase();
+          if (!name.includes(q) && !tripId.includes(q) && !roll.includes(q) && !phone.includes(q) && !dept.includes(q) && !coach.includes(q)) {
+            return false;
+          }
+        }
+        return true;
+      });
+    }
+
+    // Feature 80, 81, 84: Main Attendance Dashboard & Roster Table
+    function renderCheckinRoster() {
+      const totalStudents = payments.length;
+      const boardedCount = payments.filter(p => p.boarded).length;
+      const arrivedCount = payments.filter(p => p.arrived).length;
+
+      const activeView = window.activeAttendanceSessionView || 'boarding';
+      const currentPresentCount = (activeView === 'arrival') ? arrivedCount : boardedCount;
+      const currentAbsentCount = Math.max(0, totalStudents - currentPresentCount);
+
+      // Feature 84: Calculate exact percentages
+      const boardedPct = totalStudents > 0 ? Math.round((boardedCount / totalStudents) * 100) : 0;
+      const arrivedPct = totalStudents > 0 ? Math.round((arrivedCount / totalStudents) * 100) : 0;
+      const absentPct = totalStudents > 0 ? Math.round((currentAbsentCount / totalStudents) * 100) : 0;
+
+      // Update KPI Cards
+      const elBoarded = document.getElementById('checkinCountBoarded');
+      const elPctBoarded = document.getElementById('checkinPctBoarded');
+      const elArrived = document.getElementById('checkinCountArrived');
+      const elPctArrived = document.getElementById('checkinPctArrived');
+      const elAbsent = document.getElementById('checkinCountAbsent');
+      const elPctAbsent = document.getElementById('checkinPctAbsent');
+      const elTotal = document.getElementById('checkinCountTotal');
+
+      if (elBoarded) elBoarded.textContent = `${boardedCount} / ${totalStudents}`;
+      if (elPctBoarded) elPctBoarded.textContent = `${boardedPct}% Present`;
+      if (elArrived) elArrived.textContent = `${arrivedCount} / ${totalStudents}`;
+      if (elPctArrived) elPctArrived.textContent = `${arrivedPct}% Reached`;
+      if (elAbsent) elAbsent.textContent = `${currentAbsentCount} Absent`;
+      if (elPctAbsent) elPctAbsent.textContent = `${absentPct}%`;
+      if (elTotal) elTotal.textContent = totalStudents;
+
+      // Update Animated Progress Bars
+      const barBoarded = document.getElementById('attendanceProgressBarBoarded');
+      const barArrived = document.getElementById('attendanceProgressBarArrived');
+      if (barBoarded) barBoarded.style.width = `${boardedPct}%`;
+      if (barArrived) barArrived.style.width = `${arrivedPct}%`;
+
+      // Sub-tab nav badge
+      const badge = document.getElementById('subTabBadgeCheckin');
+      if (badge) badge.textContent = `${boardedCount}/${totalStudents}`;
+
+      // Feature 80: Populate Coach Filter dropdown with coach counts & percentages
+      const coachSelect = document.getElementById('attendanceCoachFilter');
+      if (coachSelect) {
+        const currentSelectedCoach = coachSelect.value || 'all';
+        const coachesMap = {};
+        payments.forEach(p => {
+          const c = (p.trainAllocation && p.trainAllocation.coach) ? String(p.trainAllocation.coach).trim() : 'Unassigned';
+          if (!coachesMap[c]) coachesMap[c] = { total: 0, boarded: 0, arrived: 0 };
+          coachesMap[c].total++;
+          if (p.boarded) coachesMap[c].boarded++;
+          if (p.arrived) coachesMap[c].arrived++;
+        });
+
+        const coachOptions = ['<option value="all">All Coaches (' + totalStudents + ')</option>'];
+        Object.keys(coachesMap).sort().forEach(c => {
+          const data = coachesMap[c];
+          const cPresent = (activeView === 'arrival') ? data.arrived : data.boarded;
+          const cPct = data.total > 0 ? Math.round((cPresent / data.total) * 100) : 0;
+          const label = `Coach ${c} (${cPresent}/${data.total} • ${cPct}%)`;
+          coachOptions.push(`<option value="${escapeHtml(c)}" ${c === currentSelectedCoach ? 'selected' : ''}>${escapeHtml(label)}</option>`);
+        });
+        coachSelect.innerHTML = coachOptions.join('');
+      }
+
+      // Feature 81: Real-Time Absentee Alert Banner
+      const absentBox = document.getElementById('attendanceAbsenteeAlertBox');
+      const absentBadge = document.getElementById('absenteeCountBadge');
+      const absentPillsList = document.getElementById('absenteePillsList');
+
+      const absentStudents = payments.filter(p => (activeView === 'arrival') ? !p.arrived : !p.boarded);
+
+      if (absentBox && absentBadge && absentPillsList) {
+        if (absentStudents.length > 0 && payments.length > 0) {
+          absentBox.classList.remove('hidden');
+          absentBadge.textContent = `${absentStudents.length} Absent for ${activeView === 'arrival' ? 'Arrival' : 'Boarding'}`;
+          absentPillsList.innerHTML = absentStudents.slice(0, 15).map(s => {
+            const coachName = (s.trainAllocation && s.trainAllocation.coach) ? s.trainAllocation.coach : 'Unassigned';
+            return `
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-amber-300 text-xs font-bold text-slate-800 shadow-2xs">
+                <span>${escapeHtml(s.studentName)} (${escapeHtml(coachName)})</span>
+                <a href="https://wa.me/91${normalizePhone(s.phone)}" target="_blank" class="text-[#25D366] hover:opacity-80" title="WhatsApp Absentee">
+                  <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                </a>
+                <a href="tel:${normalizePhone(s.phone)}" class="text-slate-600 hover:text-slate-900" title="Call Student">
+                  <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+                </a>
               </span>
+            `;
+          }).join('') + (absentStudents.length > 15 ? `<span class="text-xs text-amber-900 font-bold ml-1">+ ${absentStudents.length - 15} more</span>` : '');
+        } else {
+          absentBox.classList.add('hidden');
+        }
+      }
+
+      // Table body
+      const tbody = document.getElementById('checkinRosterTableBody');
+      if (!tbody) return;
+
+      const filteredStudents = getFilteredAttendanceStudents();
+
+      if (filteredStudents.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="py-12 text-center text-xs text-slate-400">
+              <i data-lucide="users" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
+              <p class="font-bold text-slate-700 text-sm">${payments.length === 0 ? 'No participants enrolled in this trip yet.' : 'No students match current attendance filters.'}</p>
             </td>
+          </tr>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      tbody.innerHTML = filteredStudents.map((p, idx) => {
+        const isBoarded = Boolean(p.boarded);
+        const isArrived = Boolean(p.arrived);
+        const isDeactivated = p.accessStatus === 'Deactivated' || p.accessStatus === 'Suspended';
+        const stTripId = getStudentTripId(p);
+
+        const avatar = (p.photoUrl && String(p.photoUrl).trim().length > 10)
+          ? `<img src="${escapeHtml(p.photoUrl)}" alt="${escapeHtml(p.studentName)}" class="w-8 h-8 rounded-lg object-cover border border-slate-200 shadow-2xs shrink-0" />`
+          : `<div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 font-extrabold flex items-center justify-center shrink-0 text-xs">${escapeHtml(getStudentInitials(p.studentName))}</div>`;
+
+        const ta = p.trainAllocation;
+        const coachInfo = (ta && ta.coach)
+          ? `<span class="font-bold text-slate-800 block text-xs">Coach ${escapeHtml(ta.coach)}</span>
+             <span class="text-[10px] text-slate-400 font-mono">Seat ${escapeHtml(ta.seatNumber || '-')} (${escapeHtml(ta.berthType || 'Berth')})</span>`
+          : `<span class="text-slate-400 text-xs italic">Unassigned</span>`;
+
+        return `
+          <tr class="hover:bg-slate-50/80 transition ${isDeactivated ? 'bg-rose-50/20' : ''}">
+            <td class="py-3 px-4 font-mono text-xs text-slate-400 font-bold">${idx + 1}</td>
+            <td class="py-3 px-4">
+              <div class="flex items-center gap-2.5">
+                ${avatar}
+                <div class="min-w-0">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="font-bold text-slate-900 text-sm">${escapeHtml(p.studentName)}</span>
+                    <span class="font-mono text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-indigo-50 border border-indigo-200 text-indigo-700">${escapeHtml(stTripId)}</span>
+                    ${isDeactivated ? '<span class="bg-rose-100 text-rose-700 font-extrabold text-[9px] px-1.5 py-0.2 rounded">⛔ Suspended</span>' : ''}
+                  </div>
+                  <p class="text-xs text-slate-500 mt-0.5">${escapeHtml(p.department)} • +91 ${escapeHtml(p.phone)}</p>
+                </div>
+              </div>
+            </td>
+
+            <td class="py-3 px-4">
+              ${coachInfo}
+            </td>
+
+            <!-- Boarding Checkpoint Column (Feature 76) -->
             <td class="py-3 px-4">
               ${isBoarded ? `
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i>
-                  <span>Boarded (${escapeHtml(p.boardedAtStr || 'Yes')})</span>
-                </span>
+                <div class="space-y-0.5">
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i>
+                    <span>Boarded</span>
+                  </span>
+                  <p class="text-[10px] text-slate-500 font-mono">${escapeHtml(p.boardedAtStr || 'Confirmed')}</p>
+                  ${p.boardingMethod ? `<span class="text-[9px] text-emerald-700 font-bold bg-emerald-50 px-1 rounded">${p.boardingMethod === 'QR_SCAN' ? '📷 QR Scan' : (p.boardingMethod === 'ADMIN_CORRECTION' ? '✏️ Corrected' : '⚡ Manual')}</span>` : ''}
+                </div>
               ` : `
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600">
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-500">
                   <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-                  <span>Awaiting Check-In</span>
+                  <span>Awaiting</span>
                 </span>
               `}
             </td>
+
+            <!-- Arrival Checkpoint Column (Feature 77) -->
+            <td class="py-3 px-4">
+              ${isArrived ? `
+                <div class="space-y-0.5">
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-sky-100 text-sky-800 border border-sky-300">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-sky-600"></i>
+                    <span>Arrived</span>
+                  </span>
+                  <p class="text-[10px] text-slate-500 font-mono">${escapeHtml(p.arrivedAtStr || 'Reached')}</p>
+                  ${p.arrivalMethod ? `<span class="text-[9px] text-sky-700 font-bold bg-sky-50 px-1 rounded">${p.arrivalMethod === 'QR_SCAN' ? '📷 QR Scan' : (p.arrivalMethod === 'ADMIN_CORRECTION' ? '✏️ Corrected' : '⚡ Manual')}</span>` : ''}
+                </div>
+              ` : `
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-500">
+                  <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                  <span>Pending</span>
+                </span>
+              `}
+            </td>
+
+            <!-- Actions (Features 78, 82, 83) -->
             <td class="py-3 px-4 text-right">
-              <div class="inline-flex items-center gap-1.5">
+              <div class="inline-flex items-center gap-1.5 justify-end flex-wrap">
+                <!-- 1-Click Boarding Toggle (Feature 78) -->
                 <button
-                  onclick="markParticipantBoardingStatus('${p.id}', ${!isBoarded})"
-                  class="px-3 py-1.5 rounded-xl text-xs font-extrabold transition shadow-sm ${isBoarded ? 'bg-slate-200 text-slate-700 hover:bg-slate-300' : 'bg-emerald-600 text-white hover:bg-emerald-500'}"
+                  type="button"
+                  onclick="markStudentAttendance('${p.id}', 'boarding', ${!isBoarded})"
+                  class="px-2.5 py-1.5 rounded-xl text-xs font-extrabold transition shadow-2xs ${isBoarded ? 'bg-slate-200 text-slate-700 hover:bg-slate-300' : 'bg-emerald-600 text-white hover:bg-emerald-500'}"
+                  title="Toggle Departure Boarding Attendance"
                 >
-                  ${isBoarded ? 'Undo' : 'Mark Boarded'}
+                  <i data-lucide="${isBoarded ? 'rotate-ccw' : 'bus'}" class="w-3.5 h-3.5 inline"></i>
+                  <span>${isBoarded ? 'Undo' : 'Board'}</span>
                 </button>
+
+                <!-- 1-Click Arrival Toggle (Feature 78) -->
                 <button
-                  onclick="openBoardingPassByStudentId('${p.id}')"
-                  class="p-1.5 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200"
-                  title="View / Print Boarding Pass"
+                  type="button"
+                  onclick="markStudentAttendance('${p.id}', 'arrival', ${!isArrived})"
+                  class="px-2.5 py-1.5 rounded-xl text-xs font-extrabold transition shadow-2xs ${isArrived ? 'bg-slate-200 text-slate-700 hover:bg-slate-300' : 'bg-sky-600 text-white hover:bg-sky-500'}"
+                  title="Toggle Destination Arrival Attendance"
                 >
-                  <i data-lucide="ticket" class="w-4 h-4"></i>
+                  <i data-lucide="${isArrived ? 'rotate-ccw' : 'map-pin'}" class="w-3.5 h-3.5 inline"></i>
+                  <span>${isArrived ? 'Undo' : 'Arrive'}</span>
                 </button>
+
+                <!-- Correction Modal Button (Feature 82) -->
                 <button
-                  onclick="shareStudentBoardingPassWhatsApp('${p.id}')"
-                  class="p-1.5 rounded-xl bg-[#25D366]/15 text-[#25D366] hover:bg-[#25D366]/25"
-                  title="Share Boarding Pass on WhatsApp"
+                  type="button"
+                  onclick="openAttendanceCorrectionModal('${p.id}')"
+                  class="p-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 transition"
+                  title="Attendance Correction (Feature 82)"
                 >
-                  <i data-lucide="message-circle" class="w-4 h-4"></i>
+                  <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                 </button>
+
+                <!-- History Modal Button (Feature 83) -->
+                <button
+                  type="button"
+                  onclick="openStudentAttendanceHistoryModal('${p.id}')"
+                  class="p-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition"
+                  title="Attendance History Timeline (Feature 83)"
+                >
+                  <i data-lucide="history" class="w-3.5 h-3.5"></i>
+                </button>
+
+                <!-- Contact Absentee Button (Feature 81) -->
+                ${(!isBoarded || !isArrived) ? `
+                  <button
+                    type="button"
+                    onclick="contactAbsenteeWhatsApp('${p.id}', '${!isBoarded ? 'boarding' : 'arrival'}')"
+                    class="p-1.5 rounded-xl bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#25D366] transition"
+                    title="Send WhatsApp Absentee Reminder"
+                  >
+                    <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                  </button>
+                ` : ''}
               </div>
             </td>
           </tr>
@@ -9570,25 +10202,485 @@
       lucide.createIcons();
     }
 
-    function copyBoardingAttendanceWhatsApp() {
-      const boardedList = payments.filter(p => p.boarded);
-      const waitingList = payments.filter(p => !p.boarded);
+    // Feature 82: Attendance Correction Modal Handlers
+    function openAttendanceCorrectionModal(studentId) {
+      const st = payments.find(p => p.id === studentId);
+      if (!st) {
+        showToast('Participant record not found.', 'error');
+        return;
+      }
+
+      document.getElementById('corrStudentId').value = st.id;
+      document.getElementById('corrStudentName').textContent = st.studentName;
+      document.getElementById('corrStudentDetails').textContent = `${getStudentTripId(st)} • ${st.department} • Coach: ${st.trainAllocation?.coach || 'Unassigned'}`;
+
+      const avatarEl = document.getElementById('corrStudentAvatar');
+      if (avatarEl) {
+        if (st.photoUrl && String(st.photoUrl).trim().length > 10) {
+          avatarEl.innerHTML = `<img src="${escapeHtml(st.photoUrl)}" class="w-full h-full object-cover rounded-xl" />`;
+        } else {
+          avatarEl.innerHTML = escapeHtml(getStudentInitials(st.studentName));
+        }
+      }
+
+      // Checkpoint radio selections
+      const bPresent = document.getElementById('corrBoardingPresent');
+      const bAbsent = document.getElementById('corrBoardingAbsent');
+      if (st.boarded) bPresent.checked = true;
+      else bAbsent.checked = true;
+
+      const aPresent = document.getElementById('corrArrivalPresent');
+      const aAbsent = document.getElementById('corrArrivalAbsent');
+      if (st.arrived) aPresent.checked = true;
+      else aAbsent.checked = true;
+
+      document.getElementById('corrPresetReason').value = '';
+      document.getElementById('corrCustomReason').value = '';
+
+      document.getElementById('attendanceCorrectionModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeAttendanceCorrectionModal() {
+      document.getElementById('attendanceCorrectionModal').classList.add('hidden');
+    }
+
+    function handleCorrectionPresetChange(val) {
+      const inp = document.getElementById('corrCustomReason');
+      if (inp && val && val !== 'custom') {
+        inp.value = val;
+      }
+    }
+
+    async function handleAttendanceCorrectionSubmit(e) {
+      e.preventDefault();
+      const studentId = document.getElementById('corrStudentId').value;
+      const st = payments.find(p => p.id === studentId);
+      if (!st) return;
+
+      const bState = document.querySelector('input[name="corrBoardingState"]:checked')?.value === 'present';
+      const aState = document.querySelector('input[name="corrArrivalState"]:checked')?.value === 'present';
+      const reason = (document.getElementById('corrCustomReason')?.value || '').trim() || 'Authorized coordinator correction';
+
+      closeAttendanceCorrectionModal();
+
+      // Update boarding if changed
+      if (Boolean(st.boarded) !== bState) {
+        await markStudentAttendance(st.id, 'boarding', bState, 'ADMIN_CORRECTION', reason);
+      }
+      // Update arrival if changed
+      if (Boolean(st.arrived) !== aState) {
+        await markStudentAttendance(st.id, 'arrival', aState, 'ADMIN_CORRECTION', reason);
+      }
+
+      showToast(`Attendance corrected for ${st.studentName}.`);
+    }
+
+    // Feature 83: Individual Attendance History Timeline Modal
+    function openStudentAttendanceHistoryModal(studentId) {
+      const st = payments.find(p => p.id === studentId);
+      if (!st) {
+        showToast('Participant record not found.', 'error');
+        return;
+      }
+
+      document.getElementById('attHistStudentName').textContent = st.studentName;
+      document.getElementById('attHistStudentDetails').textContent = `${getStudentTripId(st)} • ${st.department} • ${st.phone}`;
+
+      const badge = document.getElementById('attHistStatusBadge');
+      if (badge) {
+        badge.textContent = st.accessStatus === 'Deactivated' ? '⛔ Pass Suspended' : '✅ Pass Active';
+        badge.className = `px-2.5 py-1 rounded-full text-[10px] font-extrabold ${st.accessStatus === 'Deactivated' ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'}`;
+      }
+
+      const container = document.getElementById('attHistTimelineContainer');
+      if (container) {
+        let history = Array.isArray(st.attendanceHistory) ? [...st.attendanceHistory] : [];
+
+        // Synthesize fallback history entries if student was marked before array initialized
+        if (history.length === 0) {
+          if (st.boarded) {
+            history.push({
+              session: 'Boarding',
+              status: 'Present',
+              timeStr: st.boardedAtStr || 'Confirmed',
+              method: st.boardingMethod || 'QR_SCAN',
+              markedBy: 'Coordinator',
+              note: 'Initial departure check-in'
+            });
+          }
+          if (st.arrived) {
+            history.push({
+              session: 'Arrival',
+              status: 'Present',
+              timeStr: st.arrivedAtStr || 'Confirmed',
+              method: st.arrivalMethod || 'QR_SCAN',
+              markedBy: 'Coordinator',
+              note: 'Destination arrival check-in'
+            });
+          }
+        }
+
+        if (history.length === 0) {
+          container.innerHTML = `
+            <div class="p-6 text-center text-slate-400 bg-slate-50 rounded-2xl border border-slate-100 text-xs">
+              <i data-lucide="calendar-x" class="w-6 h-6 mx-auto mb-2 text-slate-300"></i>
+              <p class="font-bold text-slate-700">No attendance activity recorded yet.</p>
+              <p class="mt-0.5">Scans and manual overrides will appear here chronologically.</p>
+            </div>
+          `;
+        } else {
+          container.innerHTML = history.map((item, idx) => {
+            const isPres = (item.status === 'Present');
+            const isBoard = (item.session === 'Boarding');
+            return `
+              <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200/80 transition hover:bg-slate-100/60">
+                <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${isPres ? (isBoard ? 'bg-emerald-100 text-emerald-800' : 'bg-sky-100 text-sky-800') : 'bg-rose-100 text-rose-800'}">
+                  <i data-lucide="${isPres ? (isBoard ? 'bus' : 'map-pin') : 'x-circle'}" class="w-4 h-4"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center justify-between gap-2">
+                    <h5 class="font-bold text-xs text-slate-900">${escapeHtml(item.session)} Checkpoint</h5>
+                    <span class="text-[10px] font-extrabold px-2 py-0.2 rounded-full ${isPres ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                      ${escapeHtml(item.status)}
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 font-mono mt-0.5">${escapeHtml(item.timeStr || '')} • ${escapeHtml(item.method || 'MANUAL')}</p>
+                  ${item.note ? `<p class="text-xs text-slate-700 font-medium mt-1 bg-white p-1.5 rounded-lg border border-slate-200/60">Note: ${escapeHtml(item.note)}</p>` : ''}
+                  <p class="text-[10px] text-slate-400 mt-0.5">Recorded by: ${escapeHtml(item.markedBy || 'Coordinator')}</p>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      document.getElementById('studentAttendanceHistoryModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeStudentAttendanceHistoryModal() {
+      document.getElementById('studentAttendanceHistoryModal').classList.add('hidden');
+    }
+
+    // Feature 81: WhatsApp reminder to single absentee
+    function contactAbsenteeWhatsApp(studentId, session = 'boarding') {
+      const st = payments.find(p => p.id === studentId);
+      if (!st) return;
+
+      const checkpoint = (session === 'arrival') ? 'Destination Arrival' : 'Departure Bus Boarding';
+      const msg = `*🚨 TRIP ATTENDANCE NOTICE — ${tripConfig.tripTitle}*\n` +
+        `Dear *${st.studentName}*,\n` +
+        `Our attendance records show that you have not checked in yet for *${checkpoint}*.\n\n` +
+        `📍 *Route:* College Campus ➔ ${tripConfig.destination}\n` +
+        `🎫 *Ticket:* ${st.receiptCode} | *Trip ID:* ${getStudentTripId(st)}\n` +
+        `--------------------------------\n` +
+        `Please report to the trip coordinator (*${tripConfig.receiverName}*) immediately or call +91 ${tripConfig.adminPhone || 'Coordinator'}.\n` +
+        `Have your Digital Boarding Pass ready for QR scan.`;
+
+      const phone = normalizePhone(st.phone);
+      const url = `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
+
+    // Feature 81: Broadcast complete absentee list to coordinators
+    function broadcastAbsenteesWhatsApp() {
+      const activeView = window.activeAttendanceSessionView || 'boarding';
+      const sessionLabel = (activeView === 'arrival') ? 'Destination Arrival' : 'Departure Boarding';
+      const absentees = payments.filter(p => (activeView === 'arrival') ? !p.arrived : !p.boarded);
+
+      if (absentees.length === 0) {
+        showToast('No absent students! 100% attendance achieved 🎉');
+        return;
+      }
+
       const lines = [
-        `*🚌 LIVE TRIP BOARDING & PARTICIPATION REPORT*`,
-        `Trip: *${tripConfig.tripTitle}*`,
-        `Checked-In: *${boardedList.length} / ${payments.length}*`,
-        `--------------------------------`,
-        `*✅ BOARDED PARTICIPANTS (${boardedList.length}):*`,
-        ...(boardedList.length > 0
-          ? boardedList.map((p, i) => `${i + 1}. *${p.studentName}* (${p.department}) — ${p.boardedAtStr || 'Boarded'}`)
-          : ['None yet']),
-        `--------------------------------`,
-        `*⏳ AWAITING BOARDING (${waitingList.length}):*`,
-        ...(waitingList.length > 0
-          ? waitingList.map((p, i) => `${i + 1}. ${p.studentName} (${p.department}) - ${p.phone}`)
-          : ['All students have boarded! 🎉'])
+        `*🚨 ${sessionLabel.toUpperCase()} ABSENTEE REPORT — ${tripConfig.tripTitle}*`,
+        `Total Missing / Absent: *${absentees.length} / ${payments.length}* (${Math.round((absentees.length / payments.length) * 100)}%)`,
+        `Generated: ${new Date().toLocaleString('en-IN')}`,
+        `================================`,
+        ...absentees.map((s, idx) => {
+          const coach = (s.trainAllocation && s.trainAllocation.coach) ? s.trainAllocation.coach : 'Unassigned';
+          return `${idx + 1}. *${s.studentName}* (${s.department})\n   Coach: ${coach} | Mobile: +91 ${s.phone} | ID: ${getStudentTripId(s)}`;
+        }),
+        `================================`,
+        `Bus coordinators please confirm status before departure.`
       ];
-      copyText(lines.join('\n'), 'Boarding participation report copied for WhatsApp!');
+
+      copyText(lines.join('\n'), 'Absentee report copied for WhatsApp broadcast!');
+    }
+
+    // Feature 85: Export Official Attendance Register PDF
+    async function exportAttendancePDF() {
+      if (typeof html2pdf === 'undefined') {
+        showToast('PDF export library loading, please wait.', 'error');
+        return;
+      }
+
+      const totalStudents = payments.length;
+      const boardedCount = payments.filter(p => p.boarded).length;
+      const arrivedCount = payments.filter(p => p.arrived).length;
+      const boardedPct = totalStudents > 0 ? Math.round((boardedCount / totalStudents) * 100) : 0;
+      const arrivedPct = totalStudents > 0 ? Math.round((arrivedCount / totalStudents) * 100) : 0;
+
+      // Group coach summary
+      const coachMap = {};
+      payments.forEach(p => {
+        const c = (p.trainAllocation && p.trainAllocation.coach) ? String(p.trainAllocation.coach).trim() : 'Unassigned';
+        if (!coachMap[c]) coachMap[c] = { total: 0, boarded: 0, arrived: 0 };
+        coachMap[c].total++;
+        if (p.boarded) coachMap[c].boarded++;
+        if (p.arrived) coachMap[c].arrived++;
+      });
+
+      const printDiv = document.createElement('div');
+      printDiv.style.cssText = 'padding:24px; font-family:"Plus Jakarta Sans",Arial,sans-serif; color:#0f172a; background:#ffffff;';
+
+      printDiv.innerHTML = `
+        <div style="border-bottom:2px solid #059669; padding-bottom:12px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h1 style="font-size:20px; font-weight:900; margin:0; color:#065f46;">OFFICIAL TRIP ATTENDANCE REGISTER</h1>
+            <p style="font-size:13px; font-weight:700; margin:2px 0 0; color:#1e293b;">${escapeHtml(tripConfig.tripTitle)}</p>
+            <p style="font-size:11px; color:#64748b; margin:2px 0 0;">Route: College Campus ➔ ${escapeHtml(tripConfig.destination)} • Date: ${escapeHtml(tripConfig.tripDate)}</p>
+          </div>
+          <div style="text-align:right;">
+            <span style="font-size:10px; font-family:monospace; background:#ecfdf5; color:#047857; padding:4px 8px; border-radius:6px; font-weight:800; border:1px solid #a7f3d0;">
+              OFFICIAL PARTICIPATION AUDIT
+            </span>
+            <p style="font-size:10px; color:#64748b; margin:4px 0 0; font-family:monospace;">Generated: ${new Date().toLocaleString('en-IN')}</p>
+          </div>
+        </div>
+
+        <!-- Executive Summary Cards -->
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px; margin-bottom:14px; font-size:11px;">
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:8px 12px; border-radius:8px;">
+            <span style="color:#64748b; font-weight:700; display:block; font-size:9px;">TOTAL ENROLLED</span>
+            <strong style="font-size:16px; color:#0f172a;">${totalStudents} Students</strong>
+          </div>
+          <div style="background:#ecfdf5; border:1px solid #a7f3d0; padding:8px 12px; border-radius:8px;">
+            <span style="color:#047857; font-weight:700; display:block; font-size:9px;">BOARDING ATTENDANCE</span>
+            <strong style="font-size:16px; color:#065f46;">${boardedCount} / ${totalStudents} (${boardedPct}%)</strong>
+          </div>
+          <div style="background:#f0f9ff; border:1px solid #bae6fd; padding:8px 12px; border-radius:8px;">
+            <span style="color:#0369a1; font-weight:700; display:block; font-size:9px;">DESTINATION ARRIVAL</span>
+            <strong style="font-size:16px; color:#0c4a6e;">${arrivedCount} / ${totalStudents} (${arrivedPct}%)</strong>
+          </div>
+          <div style="background:#fffbeb; border:1px solid #fde68a; padding:8px 12px; border-radius:8px;">
+            <span style="color:#92400e; font-weight:700; display:block; font-size:9px;">COORDINATOR</span>
+            <strong style="font-size:13px; color:#78350f;">${escapeHtml(tripConfig.receiverName || 'In-Charge')}</strong>
+          </div>
+        </div>
+
+        <!-- Coach-Wise Breakdown Table -->
+        <div style="margin-bottom:14px;">
+          <p style="font-size:11px; font-weight:800; color:#334155; margin:0 0 6px; text-transform:uppercase; letter-spacing:0.05em;">Coach / Bus Breakdown</p>
+          <table style="width:100%; border-collapse:collapse; font-size:10px; text-align:left;">
+            <thead>
+              <tr style="background:#f1f5f9; border-bottom:1px solid #cbd5e1;">
+                <th style="padding:4px 8px;">Coach Name</th>
+                <th style="padding:4px 8px;">Capacity</th>
+                <th style="padding:4px 8px;">Boarding Attendance</th>
+                <th style="padding:4px 8px;">Arrival Attendance</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${Object.keys(coachMap).sort().map(c => {
+                const item = coachMap[c];
+                const bP = item.total > 0 ? Math.round((item.boarded / item.total) * 100) : 0;
+                const aP = item.total > 0 ? Math.round((item.arrived / item.total) * 100) : 0;
+                return `
+                  <tr style="border-bottom:1px solid #e2e8f0;">
+                    <td style="padding:4px 8px; font-weight:bold;">Coach ${escapeHtml(c)}</td>
+                    <td style="padding:4px 8px;">${item.total}</td>
+                    <td style="padding:4px 8px; color:#047857; font-weight:bold;">${item.boarded} / ${item.total} (${bP}%)</td>
+                    <td style="padding:4px 8px; color:#0369a1; font-weight:bold;">${item.arrived} / ${item.total} (${aP}%)</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Student Attendance Register -->
+        <p style="font-size:11px; font-weight:800; color:#334155; margin:0 0 6px; text-transform:uppercase; letter-spacing:0.05em;">Student Participation Register</p>
+        <table style="width:100%; border-collapse:collapse; font-size:10px; text-align:left;">
+          <thead>
+            <tr style="background:#0f172a; color:#ffffff;">
+              <th style="padding:6px 6px;">#</th>
+              <th style="padding:6px 8px;">Student Name</th>
+              <th style="padding:6px 8px;">Trip ID</th>
+              <th style="padding:6px 8px;">Dept</th>
+              <th style="padding:6px 8px;">Coach / Seat</th>
+              <th style="padding:6px 8px;">Boarding Status</th>
+              <th style="padding:6px 8px;">Arrival Status</th>
+              <th style="padding:6px 8px;">Coordinator Sign</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${payments.map((s, i) => {
+              const coachStr = (s.trainAllocation && s.trainAllocation.coach) ? `Coach ${s.trainAllocation.coach} - ${s.trainAllocation.seatNumber || ''}` : '-';
+              return `
+                <tr style="border-bottom:1px solid #e2e8f0; background:${i % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+                  <td style="padding:5px 6px; font-family:monospace;">${i + 1}</td>
+                  <td style="padding:5px 8px; font-weight:bold;">${escapeHtml(s.studentName)}</td>
+                  <td style="padding:5px 8px; font-family:monospace; color:#4338ca;">${escapeHtml(getStudentTripId(s))}</td>
+                  <td style="padding:5px 8px;">${escapeHtml(s.department)}</td>
+                  <td style="padding:5px 8px;">${escapeHtml(coachStr)}</td>
+                  <td style="padding:5px 8px; color:${s.boarded ? '#047857' : '#b91c1c'}; font-weight:bold;">
+                    ${s.boarded ? 'PRESENT (' + (s.boardedAtStr || 'Yes') + ')' : 'ABSENT'}
+                  </td>
+                  <td style="padding:5px 8px; color:${s.arrived ? '#0369a1' : '#b91c1c'}; font-weight:bold;">
+                    ${s.arrived ? 'ARRIVED (' + (s.arrivedAtStr || 'Yes') + ')' : 'PENDING'}
+                  </td>
+                  <td style="padding:5px 8px; border-bottom:1px dotted #cbd5e1; width:70px;"></td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+
+        <!-- Signature Footer -->
+        <div style="margin-top:28px; display:flex; justify-content:space-between; align-items:flex-end; font-size:11px;">
+          <div>
+            <p style="margin:0; border-top:1px solid #94a3b8; width:160px; padding-top:4px; font-weight:bold;">Student Coordinator</p>
+          </div>
+          <div style="text-align:center;">
+            <p style="margin:0; border-top:1px solid #94a3b8; width:160px; padding-top:4px; font-weight:bold;">Faculty In-Charge</p>
+          </div>
+          <div style="text-align:right;">
+            <p style="margin:0; border-top:1px solid #94a3b8; width:160px; padding-top:4px; font-weight:bold;">Principal / HoD</p>
+          </div>
+        </div>
+      `;
+
+      const opt = {
+        margin: [8, 8, 8, 8],
+        filename: `TripPay_Attendance_${(tripConfig.tripTitle || 'Trip').replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      try {
+        await html2pdf().set(opt).from(printDiv).save();
+        showToast('Official Attendance Register PDF exported!');
+      } catch (e) {
+        console.error('PDF export error:', e);
+        showToast('PDF generation failed. Try CSV export.', 'error');
+      }
+    }
+
+    // Feature 85: Export Attendance CSV
+    function exportAttendanceCSV() {
+      const headers = [
+        'Sl No',
+        'Student Trip ID',
+        'Roll No',
+        'Student Name',
+        'Department',
+        'Mobile',
+        'Coach',
+        'Seat Number',
+        'Booking Status',
+        'Fee Status',
+        'Boarding Attendance',
+        'Boarding Time',
+        'Boarding Method',
+        'Arrival Attendance',
+        'Arrival Time',
+        'Arrival Method',
+        'Pass Status',
+        'Remarks'
+      ];
+
+      const rows = payments.map((p, idx) => {
+        const ta = p.trainAllocation;
+        return [
+          idx + 1,
+          `"${getStudentTripId(p)}"`,
+          `"${p.studentRollNo || ''}"`,
+          `"${(p.studentName || '').replace(/"/g, '""')}"`,
+          `"${p.department || ''}"`,
+          `"+91 ${p.phone || ''}"`,
+          `"${ta?.coach || 'Unassigned'}"`,
+          `"${ta?.seatNumber || ''}"`,
+          `"${ta?.ticketStatus || 'CNF'}"`,
+          `"${p.status || 'Pending'}"`,
+          p.boarded ? 'PRESENT' : 'ABSENT',
+          `"${p.boardedAtStr || ''}"`,
+          `"${p.boardingMethod || ''}"`,
+          p.arrived ? 'PRESENT' : 'ABSENT',
+          `"${p.arrivedAtStr || ''}"`,
+          `"${p.arrivalMethod || ''}"`,
+          p.accessStatus === 'Deactivated' ? 'DEACTIVATED' : 'ACTIVE',
+          `"${(p.remarks || '').replace(/"/g, '""')}"`
+        ].join(',');
+      });
+
+      const csvContent = [headers.join(','), ...rows].join('\r\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `TripPay_Attendance_${(tripConfig.tripTitle || 'Trip').replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 6000);
+      showToast('Attendance CSV exported successfully!');
+    }
+
+    // Feature 85: Share Attendance WhatsApp Summary
+    function shareAttendanceWhatsApp() {
+      const total = payments.length;
+      const bCount = payments.filter(p => p.boarded).length;
+      const aCount = payments.filter(p => p.arrived).length;
+      const bPct = total > 0 ? Math.round((bCount / total) * 100) : 0;
+      const aPct = total > 0 ? Math.round((aCount / total) * 100) : 0;
+
+      const coachMap = {};
+      payments.forEach(p => {
+        const c = (p.trainAllocation && p.trainAllocation.coach) ? String(p.trainAllocation.coach).trim() : 'Unassigned';
+        if (!coachMap[c]) coachMap[c] = { total: 0, boarded: 0, arrived: 0 };
+        coachMap[c].total++;
+        if (p.boarded) coachMap[c].boarded++;
+        if (p.arrived) coachMap[c].arrived++;
+      });
+
+      const bAbsentees = payments.filter(p => !p.boarded);
+
+      const lines = [
+        `*📊 OFFICIAL TRIP ATTENDANCE REPORT*`,
+        `*Trip:* ${tripConfig.tripTitle}`,
+        `*Route:* Campus ➔ ${tripConfig.destination}`,
+        `*Date:* ${tripConfig.tripDate}`,
+        `================================`,
+        `🚌 *1. Campus Departure Boarding:* *${bCount} / ${total}* (${bPct}%)`,
+        `📍 *2. Destination Arrival:* *${aCount} / ${total}* (${aPct}%)`,
+        `--------------------------------`,
+        `*🚍 COACH-WISE BREAKDOWN:*\n` +
+          Object.keys(coachMap).sort().map(c => {
+            const d = coachMap[c];
+            const pct = d.total > 0 ? Math.round((d.boarded / d.total) * 100) : 0;
+            return `• *Coach ${c}:* ${d.boarded}/${d.total} Present (${pct}%)`;
+          }).join('\n'),
+        `--------------------------------`,
+        (bAbsentees.length > 0
+          ? `*⚠️ ABSENT AT BOARDING (${bAbsentees.length}):*\n` +
+            bAbsentees.map((s, i) => `${i + 1}. ${s.studentName} (${s.department}) - +91 ${s.phone}`).join('\n')
+          : `*🎉 100% BOARDING ATTENDANCE CONFIRMED!*`),
+        `================================`,
+        `Generated via TripPay College Attendance Command Center.`
+      ];
+
+      copyText(lines.join('\n'), 'Attendance summary copied for WhatsApp!');
+      const waUrl = `https://wa.me/?text=${encodeURIComponent(lines.join('\n'))}`;
+      window.open(waUrl, '_blank');
+    }
+
+    // Retain legacy alias for existing buttons
+    function copyBoardingAttendanceWhatsApp() {
+      return shareAttendanceWhatsApp();
     }
 
     // =========================================================================
@@ -24806,6 +25898,21 @@ Guidelines:
       buildBoardingQrPayload,
       togglePassActivation,
       togglePassActivationFromModal,
+      setScannerAttendanceSession,
+      switchAttendanceSessionView,
+      markStudentAttendance,
+      markAllVisibleAttendance,
+      openAttendanceCorrectionModal,
+      closeAttendanceCorrectionModal,
+      handleCorrectionPresetChange,
+      handleAttendanceCorrectionSubmit,
+      openStudentAttendanceHistoryModal,
+      closeStudentAttendanceHistoryModal,
+      contactAbsenteeWhatsApp,
+      broadcastAbsenteesWhatsApp,
+      exportAttendancePDF,
+      exportAttendanceCSV,
+      shareAttendanceWhatsApp,
       openBoardingPassModal,
       openBoardingPassByStudentId,
       openBoardingPassFromLastReceipt,
