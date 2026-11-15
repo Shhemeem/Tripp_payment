@@ -310,8 +310,34 @@
         margin: 0 !important;
       }
 
-      body>*:not(#boardingPassModal) {
+      body>*:not(#boardingPassModal):not(#masterReportPreviewModal) {
         display: none !important;
+      }
+
+      #masterReportPreviewModal {
+        position: static !important;
+        display: block !important;
+        background: #ffffff !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        z-index: 99999 !important;
+      }
+
+      #masterReportPreviewModal .no-print {
+        display: none !important;
+      }
+
+      #masterReportPrintableArea {
+        box-shadow: none !important;
+        border: none !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .report-page-break {
+        page-break-before: always;
       }
 
       #boardingPassModal {
@@ -1464,6 +1490,15 @@
             class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-indigo-100 text-indigo-800 font-extrabold">Live</span>
         </button>
 
+        <!-- SUB-TAB BUTTON: MASTER REPORTS & EXPORTS (Features 125-138) -->
+        <button onclick="switchManagerSubTab('reports')" id="subTabBtn-reports"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900">
+          <i data-lucide="file-text" class="w-4 h-4 text-sky-600"></i>
+          <span>Reports & Exports Hub</span>
+          <span id="subTabBadgeReports"
+            class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-sky-100 text-sky-800 font-extrabold">10 Reports</span>
+        </button>
+
         <button onclick="switchManagerSubTab('checkin')" id="subTabBtn-checkin"
           class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900">
           <i data-lucide="scan-line" class="w-4 h-4 text-emerald-600"></i>
@@ -2046,6 +2081,94 @@
           <div id="analyticsActivityFeedContainer" class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
             <!-- Injected dynamically -->
           </div>
+        </div>
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- SUB-TAB: MASTER REPORTS & EXPORTS HUB (Features 125-138)                  -->
+      <!-- ========================================================================= -->
+      <div id="managerSection-reports" class="hidden space-y-6">
+        <!-- Reports Hub Header Banner -->
+        <div class="expressive-card border border-slate-200 rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-sky-950 via-slate-900 to-indigo-950 text-white shadow-xl relative overflow-hidden">
+          <div class="absolute -right-16 -top-16 w-64 h-64 bg-sky-500/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-sky-500/30 text-sky-200 border border-sky-400/30 flex items-center gap-1.5">
+                  <i data-lucide="file-check" class="w-3.5 h-3.5"></i>
+                  Official Document Suite
+                </span>
+                <span id="reportsScopeBadge" class="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-white/10 text-slate-200 border border-white/15">
+                  Active Trip
+                </span>
+                <span class="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  PDF • Excel • CSV • Print
+                </span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-extrabold font-display tracking-tight text-white mt-2">
+                Enterprise Reports & Official Document Center
+              </h2>
+              <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl font-medium">
+                Generate high-resolution printable reports, statements, and manifests with multi-format export capabilities for administrative audits, faculty reviews, and student verifications.
+              </p>
+            </div>
+
+            <!-- Quick Batch Exports & Scope Switcher -->
+            <div class="flex items-center gap-2 flex-wrap shrink-0">
+              <div class="inline-flex p-1 bg-white/10 rounded-xl border border-white/15 backdrop-blur-sm">
+                <button type="button" id="reportsScopeBtn-active" onclick="setReportsScope('active')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-sky-600 text-white shadow-xs transition">
+                  Active Trip
+                </button>
+                <button type="button" id="reportsScopeBtn-global" onclick="setReportsScope('global')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition">
+                  All Trips
+                </button>
+              </div>
+
+              <button type="button" onclick="exportBulkSummaryZip()"
+                class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                <i data-lucide="archive" class="w-4 h-4"></i>
+                <span>Download All (CSV)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Controls Bar -->
+        <div class="expressive-card border border-slate-200 bg-white rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xs">
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <div class="relative flex-1 sm:w-72">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+              <input type="text" id="reportsCatalogSearchInput" oninput="filterReportsCatalog(this.value)"
+                placeholder="Search reports by title, category, format..."
+                class="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-sky-500" />
+            </div>
+
+            <select id="reportsCategoryFilter" onchange="filterReportsByCategory(this.value)"
+              class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 focus:bg-white focus:outline-none">
+              <option value="all">All Categories (10)</option>
+              <option value="financial">Financial & Payments (4)</option>
+              <option value="logistics">Railway & Logistics (3)</option>
+              <option value="attendance">Attendance & Students (2)</option>
+              <option value="executive">Executive Dossier (1)</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-2 text-xs text-slate-500">
+            <span class="font-bold text-slate-700">Supported Formats:</span>
+            <span class="px-2 py-0.5 rounded bg-rose-50 text-rose-700 font-bold border border-rose-200/60">PDF</span>
+            <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold border border-emerald-200/60">Excel (.xls)</span>
+            <span class="px-2 py-0.5 rounded bg-sky-50 text-sky-700 font-bold border border-sky-200/60">CSV</span>
+            <span class="px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-bold border border-purple-200/60">Print View</span>
+          </div>
+        </div>
+
+        <!-- 10-REPORT CATALOG GRID (Features 125-134) -->
+        <div id="reportsCatalogGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Injected dynamically via renderReportsHub() -->
         </div>
       </div>
 
@@ -3446,6 +3569,72 @@
   <!-- ========================================================================= -->
   <!-- MODAL: EXPRESSIVE OFFICIAL BOARDING PASS TICKET & PDF PRINT ENGINE        -->
   <!-- ========================================================================= -->
+  <!-- ========================================================================= -->
+  <!-- MASTER REPORT PREVIEW & PRINT MODAL (Features 125-138)                     -->
+  <!-- ========================================================================= -->
+  <div id="masterReportPreviewModal" class="fixed inset-0 z-50 hidden flex flex-col"
+    style="background:rgba(15,23,42,0.92);backdrop-filter:blur(10px);">
+
+    <!-- Modal Header Toolbar (Hidden during browser print) -->
+    <div class="no-print p-4 sm:p-5 bg-slate-900 border-b border-slate-800 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center shrink-0">
+          <i data-lucide="file-text" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 id="masterReportModalTitle" class="font-display font-extrabold text-base sm:text-lg text-white">
+            Document Preview
+          </h3>
+          <p id="masterReportModalSubtitle" class="text-xs text-slate-400">
+            Official Document & Print Layout
+          </p>
+        </div>
+      </div>
+
+      <!-- Export Action Buttons -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <button type="button" onclick="triggerReportModalPrint()"
+          class="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+          <i data-lucide="printer" class="w-4 h-4"></i>
+          <span>Print Document</span>
+        </button>
+
+        <button type="button" onclick="downloadCurrentReportPDF()"
+          class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+          <i data-lucide="file-down" class="w-4 h-4"></i>
+          <span>Download PDF</span>
+        </button>
+
+        <button type="button" onclick="downloadCurrentReportExcel()"
+          class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+          <i data-lucide="sheet" class="w-4 h-4"></i>
+          <span>Excel (.xls)</span>
+        </button>
+
+        <button type="button" onclick="downloadCurrentReportCSV()"
+          class="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+          <i data-lucide="table" class="w-4 h-4"></i>
+          <span>CSV</span>
+        </button>
+
+        <button type="button" onclick="closeReportPreviewModal()"
+          class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition"
+          title="Close Preview">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Scrollable Document Container -->
+    <div class="flex-1 overflow-y-auto p-4 sm:p-8 flex justify-center bg-slate-900/40">
+      <!-- Printable Document Canvas -->
+      <div id="masterReportPrintableArea"
+        class="bg-white text-slate-900 rounded-2xl shadow-2xl p-6 sm:p-10 max-w-4xl w-full my-auto transition-all duration-300 border border-slate-200">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
   <div id="boardingPassModal" class="fixed inset-0 z-50 hidden flex flex-col"
     style="background:rgba(15,23,42,0.88);backdrop-filter:blur(8px);">
 
@@ -9195,6 +9384,7 @@
       renderContacts();
       if (typeof renderRailwayManagerUI === 'function') renderRailwayManagerUI();
       if (typeof renderExecutiveAnalytics === 'function') renderExecutiveAnalytics();
+      if (typeof renderReportsHub === 'function') renderReportsHub();
 
       if (currentPaymentMode === 'balance') renderBalanceLookupResults();
       if (isAdminLoggedIn) {
@@ -13678,7 +13868,7 @@
     }
 
     function switchManagerSubTab(sub) {
-      ['students', 'analytics', 'checkin', 'access-codes', 'audit-logs', 'expenses', 'itinerary', 'contacts', 'notifications', 'admins', 'railway'].forEach(s => {
+      ['students', 'analytics', 'reports', 'checkin', 'access-codes', 'audit-logs', 'expenses', 'itinerary', 'contacts', 'notifications', 'admins', 'railway'].forEach(s => {
         const sec = document.getElementById(`managerSection-${s}`);
         const btn = document.getElementById(`subTabBtn-${s}`);
         if (!sec || !btn) return;
@@ -13692,6 +13882,8 @@
             btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-rose-600 text-white shadow-sm';
           } else if (s === 'analytics') {
             btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-indigo-600 text-white shadow-sm';
+          } else if (s === 'reports') {
+            btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-sky-600 text-white shadow-sm';
           } else {
             btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-emerald-600 text-white shadow-sm';
           }
@@ -13701,6 +13893,7 @@
         }
       });
       if (sub === 'analytics') renderExecutiveAnalytics();
+      if (sub === 'reports') renderReportsHub();
       if (sub === 'checkin') renderCheckinRoster();
       if (sub === 'access-codes') renderAccessCodesSuite();
       if (sub === 'audit-logs') renderAuditLogs();
@@ -29505,7 +29698,1116 @@ Guidelines:
       showToast('Activity Log CSV exported successfully!', 'success');
     }
 
+    
+    // =========================================================================
+    // FEATURES 125-138: MASTER REPORTING & EXPORTS ENGINE
+    // =========================================================================
+    let currentReportsScope = 'active'; // 'active' or 'global'
+    let currentActiveReportType = 'trip_summary';
+    let currentActiveReportOptions = {};
+    let reportsCatalogSearchQuery = '';
+    let reportsActiveCategoryFilter = 'all';
+
+    function setReportsScope(scope) {
+      currentReportsScope = scope;
+      const btnActive = document.getElementById('reportsScopeBtn-active');
+      const btnGlobal = document.getElementById('reportsScopeBtn-global');
+      const badge = document.getElementById('reportsScopeBadge');
+      if (btnActive && btnGlobal) {
+        if (scope === 'active') {
+          btnActive.className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold bg-sky-600 text-white shadow-xs transition';
+          btnGlobal.className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition';
+          if (badge) badge.textContent = `Active: ${tripConfig.tripTitle || currentTripId}`;
+        } else {
+          btnGlobal.className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold bg-sky-600 text-white shadow-xs transition';
+          btnActive.className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition';
+          if (badge) badge.textContent = `Global: All ${allTrips.length} Trips`;
+        }
+      }
+      renderReportsHub();
+    }
+
+    function filterReportsCatalog(query) {
+      reportsCatalogSearchQuery = (query || '').toLowerCase().trim();
+      renderReportsHub();
+    }
+
+    function filterReportsByCategory(category) {
+      reportsActiveCategoryFilter = category;
+      renderReportsHub();
+    }
+
+    // Reports Metadata Definition (10 Official Reports)
+    const MASTER_REPORTS_REGISTRY = [
+      {
+        id: 'registrations',
+        feature: 125,
+        title: 'Student Registration Master Report',
+        category: 'attendance',
+        icon: 'users',
+        color: 'indigo',
+        desc: 'Comprehensive enrollment roster with roll numbers, departments, contacts, and verification timestamps.',
+        getStatsText: (students) => `${students.length} Registered Students`
+      },
+      {
+        id: 'payments',
+        feature: 126,
+        title: 'Payment Collection & Verification Report',
+        category: 'financial',
+        icon: 'credit-card',
+        color: 'emerald',
+        desc: 'Financial audit ledger tracking gross collected, verified UPI UTR references, receipts, and approval statuses.',
+        getStatsText: (students) => {
+          const tot = students.reduce((a, p) => a + (getStudentPaymentSummary(p).netPaid || 0), 0);
+          return `${formatINR(tot)} Total Collected`;
+        }
+      },
+      {
+        id: 'pending_balances',
+        feature: 127,
+        title: 'Pending Balance & Defaulter Report',
+        category: 'financial',
+        icon: 'alert-triangle',
+        color: 'amber',
+        desc: 'Defaulters list identifying students with uncollected trip fees, advance balances, and WhatsApp contact links.',
+        getStatsText: (students) => {
+          const dues = students.reduce((a, p) => a + (getStudentPaymentSummary(p).balanceDue || 0), 0);
+          const count = students.filter(p => getStudentPaymentSummary(p).balanceDue > 0).length;
+          return `${count} with Dues (${formatINR(dues)})`;
+        }
+      },
+      {
+        id: 'student_statement',
+        feature: 128,
+        title: 'Individual Student Payment Statements',
+        category: 'financial',
+        icon: 'file-text',
+        color: 'purple',
+        desc: 'Official individual statement of account with installment payment breakdown, refunds, and verified authorization seal.',
+        hasStudentSelector: true,
+        getStatsText: (students) => `${students.length} Individual Statements Available`
+      },
+      {
+        id: 'train_passengers',
+        feature: 129,
+        title: 'Complete Train Passenger Manifest Report',
+        category: 'logistics',
+        icon: 'train',
+        color: 'sky',
+        desc: 'Master railway travel manifest detailing every student\'s train number, PNR, coach, seat, and current status.',
+        getStatsText: (students, pnrs) => {
+          let booked = 0;
+          pnrs.forEach(r => (r.passengerMappings || []).forEach(m => { if (m.assignedUserId) booked++; }));
+          return `${booked} Train Passengers Booked`;
+        }
+      },
+      {
+        id: 'coach_manifest',
+        feature: 130,
+        title: 'Coach-Wise Passenger Manifest Report',
+        category: 'logistics',
+        icon: 'layout-grid',
+        color: 'indigo',
+        desc: 'Compartment-wise passenger manifests segmented coach-by-coach (S3, S4, B1) for train ticket examiners and crew.',
+        hasCoachSelector: true,
+        getStatsText: (students, pnrs) => {
+          const coaches = new Set();
+          pnrs.forEach(r => (r.passengerMappings || []).forEach(m => { if (m.coach) coaches.add(m.coach.toUpperCase()); }));
+          return `${coaches.size} Active Train Coaches`;
+        }
+      },
+      {
+        id: 'pnr_records',
+        feature: 131,
+        title: 'PNR Master Status & Allocation Report',
+        category: 'logistics',
+        icon: 'ticket',
+        color: 'teal',
+        desc: 'High-level train PNR registry covering train schedules, stations, chart preparations, and seat fulfillment rates.',
+        getStatsText: (students, pnrs) => `${pnrs.length} Saved PNR Records`
+      },
+      {
+        id: 'attendance',
+        feature: 132,
+        title: 'Student Attendance & Participation Report',
+        category: 'attendance',
+        icon: 'clipboard-check',
+        color: 'rose',
+        desc: 'Checkpoint attendance verification covering departure campus boarding and destination arrival check-ins.',
+        getStatsText: (students) => {
+          const b = students.filter(p => p.boarded).length;
+          return `${b} / ${students.length} Boarded`;
+        }
+      },
+      {
+        id: 'departments',
+        feature: 133,
+        title: 'Department-Wise Performance Report',
+        category: 'financial',
+        icon: 'building-2',
+        color: 'blue',
+        desc: 'Academic department breakdown ranking student turnout, payment recovery, dues, and train seat fulfillments.',
+        getStatsText: (students) => {
+          const depts = new Set(students.map(p => (p.department || 'General').trim()));
+          return `${depts.size} Departments Enrolled`;
+        }
+      },
+      {
+        id: 'trip_summary',
+        feature: 134,
+        title: 'Complete Comprehensive Trip Dossier',
+        category: 'executive',
+        icon: 'award',
+        color: 'amber',
+        desc: 'The complete administrative dossier synthesizing itinerary, financials, railway logistics, attendance, and emergency crew.',
+        getStatsText: () => 'Consolidated Master Dossier'
+      }
+    ];
+
+    // Render Master Reports Hub Cards (Feature 125-134)
+    function renderReportsHub() {
+      const container = document.getElementById('reportsCatalogGrid');
+      if (!container) return;
+
+      const isGlobal = (currentReportsScope === 'global');
+      const studentList = isGlobal ? rawPaymentsList : payments;
+      const pnrList = isGlobal ? rawPnrList : pnrRecords;
+
+      let reports = [...MASTER_REPORTS_REGISTRY];
+
+      if (reportsActiveCategoryFilter !== 'all') {
+        reports = reports.filter(r => r.category === reportsActiveCategoryFilter);
+      }
+
+      if (reportsCatalogSearchQuery) {
+        reports = reports.filter(r =>
+          r.title.toLowerCase().includes(reportsCatalogSearchQuery) ||
+          r.desc.toLowerCase().includes(reportsCatalogSearchQuery) ||
+          r.category.toLowerCase().includes(reportsCatalogSearchQuery)
+        );
+      }
+
+      if (reports.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full p-10 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">
+            <i data-lucide="file-question" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
+            No reports found matching your search.
+          </div>
+        `;
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        return;
+      }
+
+      // Collect coaches for coach selector
+      const availableCoaches = new Set();
+      pnrList.forEach(r => {
+        (r.passengerMappings || []).forEach(m => {
+          if (m.coach && m.coach !== 'No Coach') availableCoaches.add(m.coach.toUpperCase());
+        });
+      });
+      const sortedCoaches = Array.from(availableCoaches).sort();
+
+      container.innerHTML = reports.map(r => {
+        const stats = r.getStatsText(studentList, pnrList);
+
+        // Optional selectors
+        let extraControls = '';
+        if (r.hasStudentSelector) {
+          extraControls = `
+            <div class="mt-2.5 pt-2.5 border-t border-slate-100 flex items-center gap-2">
+              <label class="text-[11px] font-bold text-slate-600 shrink-0">Student:</label>
+              <select id="reportSelectStudent_${r.id}" class="w-full text-xs py-1 px-2 rounded-lg bg-slate-50 border border-slate-200 font-medium text-slate-800 focus:outline-none">
+                <option value="all">All Students (Consolidated)</option>
+                ${studentList.map(s => `<option value="${s.id}">${escapeHtml(s.studentName)} (${escapeHtml(s.department || 'Gen')})</option>`).join('')}
+              </select>
+            </div>
+          `;
+        } else if (r.hasCoachSelector) {
+          extraControls = `
+            <div class="mt-2.5 pt-2.5 border-t border-slate-100 flex items-center gap-2">
+              <label class="text-[11px] font-bold text-slate-600 shrink-0">Coach:</label>
+              <select id="reportSelectCoach_${r.id}" class="w-full text-xs py-1 px-2 rounded-lg bg-slate-50 border border-slate-200 font-medium text-slate-800 focus:outline-none">
+                <option value="all">All Coaches Combined</option>
+                ${sortedCoaches.map(c => `<option value="${c}">Coach ${c}</option>`).join('')}
+              </select>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="expressive-card border border-slate-200 bg-white rounded-3xl p-5 flex flex-col justify-between hover:shadow-md transition shadow-2xs">
+            <div>
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-2xl bg-${r.color}-50 text-${r.color}-600 flex items-center justify-center shrink-0 border border-${r.color}-100">
+                    <i data-lucide="${r.icon}" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                      <span class="px-2 py-0.2 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-slate-100 text-slate-700">
+                        Feature ${r.feature}
+                      </span>
+                      <span class="px-2 py-0.2 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-${r.color}-50 text-${r.color}-700">
+                        ${r.category}
+                      </span>
+                    </div>
+                    <h3 class="font-display font-extrabold text-sm sm:text-base text-slate-900 mt-1">
+                      ${r.title}
+                    </h3>
+                  </div>
+                </div>
+              </div>
+
+              <p class="text-xs text-slate-500 mt-2 font-medium leading-relaxed">
+                ${r.desc}
+              </p>
+
+              <div class="mt-3 flex items-center gap-1.5 text-xs font-bold text-slate-700">
+                <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i>
+                <span>${stats}</span>
+              </div>
+
+              ${extraControls}
+            </div>
+
+            <!-- Action Buttons Strip (Features 135-138) -->
+            <div class="mt-4 pt-3.5 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <!-- Feature 138: Print / Preview -->
+              <button type="button" onclick="generateAndPreviewReport('${r.id}')"
+                class="px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold transition flex items-center justify-center gap-1">
+                <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                <span>Print</span>
+              </button>
+
+              <!-- Feature 135: PDF -->
+              <button type="button" onclick="generateAndDownloadReportPDF('${r.id}')"
+                class="px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition flex items-center justify-center gap-1">
+                <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
+                <span>PDF</span>
+              </button>
+
+              <!-- Feature 136: Excel -->
+              <button type="button" onclick="generateAndDownloadReportExcel('${r.id}')"
+                class="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition flex items-center justify-center gap-1">
+                <i data-lucide="sheet" class="w-3.5 h-3.5"></i>
+                <span>Excel</span>
+              </button>
+
+              <!-- Feature 137: CSV -->
+              <button type="button" onclick="generateAndDownloadReportCSV('${r.id}')"
+                class="px-2.5 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 text-xs font-bold transition flex items-center justify-center gap-1">
+                <i data-lucide="table" class="w-3.5 h-3.5"></i>
+                <span>CSV</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    // Build Structured Data for Any Report (Features 125-134)
+    function buildMasterReportData(reportType, customOpts = {}) {
+      const isGlobal = (currentReportsScope === 'global');
+      const studentList = isGlobal ? rawPaymentsList : payments;
+      const pnrList = isGlobal ? rawPnrList : pnrRecords;
+      const targetTrip = allTrips.find(t => t.id === currentTripId) || allTrips[0] || {};
+      const generatedAt = new Date().toLocaleString();
+
+      const baseMeta = {
+        collegeName: 'COLLEGE INDUSTRIAL & STUDY TOUR COMMITTEE',
+        tripTitle: targetTrip.tripTitle || tripConfig.tripTitle || 'Annual College Tour',
+        destination: targetTrip.destination || tripConfig.destination || 'Munnar, Kerala',
+        dates: formatTripDates(targetTrip.startDate || tripConfig.tripDate, targetTrip.endDate),
+        refNumber: `REF/TRIP/${currentTripId.toUpperCase()}/${new Date().getFullYear()}`,
+        generatedAt,
+        scope: isGlobal ? 'All Platform Trips' : `Trip ${currentTripId}`
+      };
+
+      // 1. Feature 125: Student Registration Reports
+      if (reportType === 'registrations') {
+        const headers = ['Sl No', 'Trip ID', 'Roll No', 'Student Name', 'Department', 'Phone', 'Email', 'Registered Date', 'Access Code', 'Status'];
+        const rows = studentList.map((p, idx) => [
+          idx + 1,
+          p.studentTripId || p.receiptCode || `TRIP-${idx + 1}`,
+          p.studentRollNo || '-',
+          p.studentName || 'N/A',
+          p.department || 'General',
+          p.phone || 'N/A',
+          p.email || 'N/A',
+          p.createdAt ? formatDisplayDate(p.createdAt) : 'Registered',
+          p.accessCode || '-',
+          p.status || 'Verified'
+        ]);
+
+        const verifiedCount = studentList.filter(p => p.status === 'Verified').length;
+        const deptsCount = new Set(studentList.map(p => p.department)).size;
+
+        return {
+          id: 'registrations',
+          title: 'STUDENT REGISTRATION MASTER REPORT',
+          subtitle: 'Official Enrollment & Student Directory',
+          meta: baseMeta,
+          kpis: [
+            { label: 'Total Enrolled', value: studentList.length },
+            { label: 'Verified Registrations', value: verifiedCount },
+            { label: 'Academic Departments', value: deptsCount },
+            { label: 'Turnout vs Limit', value: targetTrip.maxStudentsLimit ? `${studentList.length}/${targetTrip.maxStudentsLimit}` : 'Unlimited' }
+          ],
+          headers,
+          rows
+        };
+      }
+
+      // 2. Feature 126: Payment Collection Reports
+      if (reportType === 'payments') {
+        const headers = ['Sl No', 'Receipt Code', 'Student Name', 'Department', 'Phone', 'Total Fee', 'Net Paid', 'Balance Due', 'Payment App', 'UTR Number', 'Status', 'Date'];
+        let totalColl = 0;
+        let totalDues = 0;
+
+        const rows = studentList.map((p, idx) => {
+          const sum = getStudentPaymentSummary(p);
+          totalColl += sum.netPaid;
+          totalDues += sum.balanceDue;
+
+          return [
+            idx + 1,
+            p.receiptCode || '-',
+            p.studentName || 'N/A',
+            p.department || 'General',
+            p.phone || 'N/A',
+            sum.totalFee,
+            sum.netPaid,
+            sum.balanceDue,
+            p.paymentApp || 'UPI',
+            p.utr || '-',
+            p.status || 'Pending Verification',
+            p.createdAt ? formatDisplayDate(p.createdAt) : '-'
+          ];
+        });
+
+        const verifiedAmount = studentList
+          .filter(p => p.status === 'Verified')
+          .reduce((a, p) => a + (getStudentPaymentSummary(p).netPaid || 0), 0);
+
+        return {
+          id: 'payments',
+          title: 'PAYMENT COLLECTION & AUDIT REPORT',
+          subtitle: 'Fee Realization, Installments & UPI Verification Ledger',
+          meta: baseMeta,
+          kpis: [
+            { label: 'Total Enrolled', value: studentList.length },
+            { label: 'Total Collected', value: formatINR(totalColl) },
+            { label: 'Verified Amount', value: formatINR(verifiedAmount) },
+            { label: 'Pending Collections', value: formatINR(Math.max(0, totalColl - verifiedAmount)) }
+          ],
+          headers,
+          rows
+        };
+      }
+
+      // 3. Feature 127: Pending Balance Reports
+      if (reportType === 'pending_balances') {
+        const defaulters = studentList.filter(p => getStudentPaymentSummary(p).balanceDue > 0);
+        let totalOutstanding = 0;
+
+        const headers = ['Sl No', 'Student Name', 'Roll No', 'Department', 'Phone', 'Total Trip Fee', 'Paid Amount', 'Outstanding Due (₹)', 'Payment Status'];
+        const rows = defaulters.map((p, idx) => {
+          const sum = getStudentPaymentSummary(p);
+          totalOutstanding += sum.balanceDue;
+
+          return [
+            idx + 1,
+            p.studentName || 'N/A',
+            p.studentRollNo || '-',
+            p.department || 'General',
+            p.phone || 'N/A',
+            sum.totalFee,
+            sum.netPaid,
+            sum.balanceDue,
+            sum.netPaid > 0 ? 'Advance Paid (Balance Due)' : 'Unpaid'
+          ];
+        });
+
+        const avgDue = defaulters.length > 0 ? Math.round(totalOutstanding / defaulters.length) : 0;
+
+        return {
+          id: 'pending_balances',
+          title: 'PENDING BALANCE & DEFAULTER REPORT',
+          subtitle: 'Students with Outstanding Financial Dues',
+          meta: baseMeta,
+          kpis: [
+            { label: 'Students with Dues', value: defaulters.length },
+            { label: 'Total Outstanding', value: formatINR(totalOutstanding) },
+            { label: 'Average Due', value: `${formatINR(avgDue)} / student` },
+            { label: 'Total Students', value: studentList.length }
+          ],
+          headers,
+          rows
+        };
+      }
+
+      // 4. Feature 128: Individual Student Payment Statements
+      if (reportType === 'student_statement') {
+        let selectedStudentId = customOpts.studentId;
+        const selectorEl = document.getElementById('reportSelectStudent_student_statement');
+        if (!selectedStudentId && selectorEl) selectedStudentId = selectorEl.value;
+
+        let targetStudent = studentList.find(s => s.id === selectedStudentId);
+        if (!targetStudent && studentList.length > 0) targetStudent = studentList[0];
+
+        if (!targetStudent) {
+          return {
+            id: 'student_statement',
+            title: 'STUDENT PAYMENT STATEMENT',
+            subtitle: 'No student enrolled',
+            meta: baseMeta,
+            kpis: [],
+            headers: ['Message'],
+            rows: [['No student records available.']]
+          };
+        }
+
+        const sum = getStudentPaymentSummary(targetStudent);
+        const headers = ['Installment #', 'Recorded Date', 'Amount Paid (₹)', 'Payment Method', 'UTR Number', 'Approval Status', 'Remarks'];
+        const rows = (sum.installments || []).map((inst, idx) => [
+          idx + 1,
+          formatDisplayDate(inst.recordedAt || targetStudent.createdAt),
+          inst.amount,
+          inst.paymentApp || 'UPI',
+          inst.utr || '-',
+          inst.status || 'Pending Verification',
+          inst.remarks || 'Trip Fee Installment'
+        ]);
+
+        return {
+          id: 'student_statement',
+          title: 'OFFICIAL STUDENT PAYMENT STATEMENT',
+          subtitle: `Account Statement for ${targetStudent.studentName} (${targetStudent.studentTripId || targetStudent.id})`,
+          meta: baseMeta,
+          isStatement: true,
+          student: targetStudent,
+          summary: sum,
+          kpis: [
+            { label: 'Total Trip Fee', value: formatINR(sum.totalFee) },
+            { label: 'Net Paid Amount', value: formatINR(sum.netPaid) },
+            { label: 'Outstanding Balance', value: formatINR(sum.balanceDue) },
+            { label: 'Clearance Status', value: sum.balanceDue === 0 ? 'PAID IN FULL' : 'BALANCE DUE' }
+          ],
+          headers,
+          rows
+        };
+      }
+
+      // 5. Feature 129: Complete Train Passenger Reports
+      if (reportType === 'train_passengers') {
+        const headers = ['Sl No', 'Passenger Name', 'Student ID', 'Phone', 'Department', 'Train No & Name', 'PNR No', 'Journey', 'Coach', 'Seat', 'Berth', 'Status'];
+        const rows = [];
+        let cnfCount = 0;
+        let racCount = 0;
+        let wlCount = 0;
+
+        pnrList.forEach(record => {
+          (record.passengerMappings || []).forEach(m => {
+            const student = studentList.find(s => s.id === m.assignedUserId);
+            const st = (m.ticketStatus || m.currentStatus || 'CNF').toUpperCase();
+            if (st.includes('CNF')) cnfCount++;
+            else if (st.includes('RAC')) racCount++;
+            else if (st.includes('WL')) wlCount++;
+
+            rows.push([
+              rows.length + 1,
+              m.assignedUserName || (student ? student.studentName : 'Unassigned Passenger'),
+              student ? (student.studentRollNo || student.studentTripId || '-') : '-',
+              student ? student.phone : '-',
+              student ? student.department : '-',
+              `${record.trainNumber || ''} ${record.trainName || ''}`.trim(),
+              record.pnrNumber || '-',
+              record.journeyType === 'return' ? 'Return' : 'Onward',
+              m.coach || 'S4',
+              m.seatNumber || '-',
+              m.berthType || '-',
+              st
+            ]);
+          });
+        });
+
+        return {
+          id: 'train_passengers',
+          title: 'COMPLETE RAILWAY PASSENGER MANIFEST',
+          subtitle: 'All Booked Train Passengers & Berth Allocations',
+          meta: baseMeta,
+          kpis: [
+            { label: 'Total Passengers', value: rows.length },
+            { label: 'Confirmed (CNF)', value: cnfCount },
+            { label: 'RAC', value: racCount },
+            { label: 'Waiting List (WL)', value: wlCount }
+          ],
+          headers,
+          rows
+        };
+      }
+
+      // 6. Feature 130: Coach-Wise Passenger Reports
+      if (reportType === 'coach_manifest') {
+        let selectedCoach = customOpts.coach;
+        const selectorEl = document.getElementById('reportSelectCoach_coach_manifest');
+        if (!selectedCoach && selectorEl) selectedCoach = selectorEl.value;
+        if (!selectedCoach) selectedCoach = 'all';
+
+        const headers = ['Sl No', 'Coach', 'Seat No', 'Berth Type', 'Passenger Name', 'Roll No', 'Phone', 'Department', 'Train & PNR', 'Status'];
+        const rows = [];
+
+        pnrList.forEach(record => {
+          (record.passengerMappings || []).forEach(m => {
+            const coachName = (m.coach || 'Unassigned').toUpperCase();
+            if (selectedCoach !== 'all' && coachName !== selectedCoach.toUpperCase()) return;
+
+            const student = studentList.find(s => s.id === m.assignedUserId);
+            rows.push([
+              rows.length + 1,
+              coachName,
+              m.seatNumber || '-',
+              m.berthType || '-',
+              m.assignedUserName || (student ? student.studentName : 'Unassigned'),
+              student ? (student.studentRollNo || '-') : '-',
+              student ? student.phone : '-',
+              student ? student.department : '-',
+              `${record.trainNumber || ''} (PNR: ${record.pnrNumber})`,
+              m.ticketStatus || 'CNF'
+            ]);
+          });
+        });
+
+        // Sort by coach, then seat number
+        rows.sort((a, b) => {
+          if (a[1] !== b[1]) return a[1].localeCompare(b[1]);
+          return (parseInt(a[2]) || 0) - (parseInt(b[2]) || 0);
+        });
+
+        return {
+          id: 'coach_manifest',
+          title: 'COACH-WISE PASSENGER MANIFEST',
+          subtitle: selectedCoach === 'all' ? 'All Train Coaches Combined' : `Coach ${selectedCoach} Detailed Manifest`,
+          meta: baseMeta,
+          kpis: [
+            { label: 'Selected Coach', value: selectedCoach === 'all' ? 'All Coaches' : selectedCoach },
+            { label: 'Total Seats', value: rows.length },
+            { label: 'Confirmed Seats', value: rows.filter(r => String(r[9]).includes('CNF')).length },
+            { label: 'Train Records', value: pnrList.length }
+          ],
+          headers,
+          rows
+        };
+      }
+
+      // 7. Feature 131: PNR Reports
+      if (reportType === 'pnr_records') {
+        const headers = ['Sl No', 'PNR Number', 'Train Number & Name', 'Journey Type', 'Route (From - To)', 'Class', 'Chart Status', 'Total Slots', 'Assigned Students', 'Last Synced'];
+        let totalSlots = 0;
+        let totalAssigned = 0;
+
+        const rows = pnrList.map((record, idx) => {
+          const slots = (record.passengerMappings || []).length;
+          const assigned = (record.passengerMappings || []).filter(m => m.assignedUserId).length;
+          totalSlots += slots;
+          totalAssigned += assigned;
+
+          return [
+            idx + 1,
+            record.pnrNumber || '-',
+            `${record.trainNumber || ''} ${record.trainName || ''}`.trim(),
+            record.journeyType === 'return' ? 'Return Journey' : 'Onward Journey',
+            `${record.fromStation || 'Origin'} -> ${record.toStation || 'Destination'}`,
+            record.journeyClass || 'SL (Sleeper)',
+            record.chartPrepared ? 'Chart Prepared' : 'Chart Not Prepared',
+            slots,
+            assigned,
+            record.lastSyncedAt ? formatDisplayDate(record.lastSyncedAt) : 'Saved'
+          ];
+        });
+
+        return {
+          id: 'pnr_records',
+          title: 'PNR MASTER STATUS & ALLOCATION REPORT',
+          subtitle: 'Railway Booking PNR Roster & Seat Fulfillment',
+          meta: baseMeta,
+          kpis: [
+            { label: 'Total PNRs', value: pnrList.length },
+            { label: 'Total Train Slots', value: totalSlots },
+            { label: 'Assigned Students', value: totalAssigned },
+            { label: 'Unallocated Slots', value: Math.max(0, totalSlots - totalAssigned) }
+          ],
+          headers,
+          rows
+        };
+      }
+
+      // 8. Feature 132: Attendance Reports
+      if (reportType === 'attendance') {
+        const headers = ['Sl No', 'Student Name', 'Roll No', 'Department', 'Phone', 'Boarding Status', 'Boarded At', 'Arrival Status', 'Arrived At', 'Coach & Seat'];
+        let boardedCount = 0;
+        let arrivedCount = 0;
+
+        const rows = studentList.map((p, idx) => {
+          if (p.boarded) boardedCount++;
+          if (p.arrived) arrivedCount++;
+
+          const coachSeat = p.trainAllocation
+            ? `${p.trainAllocation.coach || 'S4'}/${p.trainAllocation.seatNumber || '-'}`
+            : 'Unassigned';
+
+          return [
+            idx + 1,
+            p.studentName || 'N/A',
+            p.studentRollNo || '-',
+            p.department || 'General',
+            p.phone || 'N/A',
+            p.boarded ? 'BOARDED' : 'ABSENT',
+            p.boardedAt ? formatDisplayTime(p.boardedAt) : '-',
+            p.arrived ? 'ARRIVED' : 'PENDING',
+            p.arrivedAt ? formatDisplayTime(p.arrivedAt) : '-',
+            coachSeat
+          ];
+        });
+
+        const boardedPct = studentList.length > 0 ? Math.round((boardedCount / studentList.length) * 100) : 0;
+        const arrivedPct = studentList.length > 0 ? Math.round((arrivedCount / studentList.length) * 100) : 0;
+
+        return {
+          id: 'attendance',
+          title: 'STUDENT ATTENDANCE & PARTICIPATION REPORT',
+          subtitle: 'Departure Campus Boarding & Destination Arrival Log',
+          meta: baseMeta,
+          kpis: [
+            { label: 'Total Registered', value: studentList.length },
+            { label: 'Departure Boarded', value: `${boardedCount} (${boardedPct}%)` },
+            { label: 'Destination Arrived', value: `${arrivedCount} (${arrivedPct}%)` },
+            { label: 'Departure Absentees', value: Math.max(0, studentList.length - boardedCount) }
+          ],
+          headers,
+          rows
+        };
+      }
+
+      // 9. Feature 133: Department-Wise Reports
+      if (reportType === 'departments') {
+        const deptMap = {};
+        studentList.forEach(p => {
+          const dept = (p.department || 'General').trim();
+          if (!deptMap[dept]) {
+            deptMap[dept] = { name: dept, total: 0, paid: 0, partial: 0, unpaid: 0, collected: 0, dues: 0, cnfSeats: 0, boarded: 0 };
+          }
+          const d = deptMap[dept];
+          d.total++;
+          const sum = getStudentPaymentSummary(p);
+          if (sum.isFullyPaid && sum.netPaid > 0) d.paid++;
+          else if (sum.netPaid > 0) d.partial++;
+          else d.unpaid++;
+          d.collected += sum.netPaid;
+          d.dues += sum.balanceDue;
+          if (p.trainAllocation && (p.trainAllocation.ticketStatus || '').toUpperCase().includes('CNF')) d.cnfSeats++;
+          if (p.boarded) d.boarded++;
+        });
+
+        const depts = Object.values(deptMap).sort((a, b) => b.collected - a.collected);
+        const headers = ['Sl No', 'Department Name', 'Enrolled', 'Fully Paid', 'Partially Paid', 'Unpaid', 'Collected (₹)', 'Outstanding Dues (₹)', 'Train CNF', 'Boarding Rate'];
+
+        const rows = depts.map((d, idx) => [
+          idx + 1,
+          d.name,
+          d.total,
+          d.paid,
+          d.partial,
+          d.unpaid,
+          d.collected,
+          d.dues,
+          d.cnfSeats,
+          d.total > 0 ? `${Math.round((d.boarded / d.total) * 100)}%` : '0%'
+        ]);
+
+        const totalColl = depts.reduce((a, d) => a + d.collected, 0);
+        const totalDues = depts.reduce((a, d) => a + d.dues, 0);
+
+        return {
+          id: 'departments',
+          title: 'DEPARTMENT-WISE PERFORMANCE REPORT',
+          subtitle: 'Academic Departments Enrollment, Recovery & Attendance',
+          meta: baseMeta,
+          kpis: [
+            { label: 'Total Departments', value: depts.length },
+            { label: 'Total Enrolled', value: studentList.length },
+            { label: 'Total Collection', value: formatINR(totalColl) },
+            { label: 'Outstanding Dues', value: formatINR(totalDues) }
+          ],
+          headers,
+          rows
+        };
+      }
+
+      // 10. Feature 134: Complete Trip Summary Reports (Executive Dossier)
+      if (reportType === 'trip_summary') {
+        const totalStudents = studentList.length;
+        const totalColl = studentList.reduce((a, p) => a + (getStudentPaymentSummary(p).netPaid || 0), 0);
+        const totalDues = studentList.reduce((a, p) => a + (getStudentPaymentSummary(p).balanceDue || 0), 0);
+        const totalExp = expenses.reduce((a, e) => a + (Number(e.amount) || 0), 0);
+        const netCash = totalColl - totalExp;
+
+        const boarded = studentList.filter(p => p.boarded).length;
+        const boardedPct = totalStudents > 0 ? Math.round((boarded / totalStudents) * 100) : 0;
+
+        let totalTrainSeats = 0;
+        pnrList.forEach(r => (r.passengerMappings || []).forEach(m => { if (m.assignedUserId) totalTrainSeats++; }));
+
+        const headers = ['Executive Dossier Section', 'Operational Highlights & Key Metrics', 'Verification Status'];
+        const rows = [
+          ['1. General Trip Overview', `Title: ${baseMeta.tripTitle} • Destination: ${baseMeta.destination} • Dates: ${baseMeta.dates}`, 'Official Active Trip'],
+          ['2. Student Registrations', `${totalStudents} Students Enrolled across ${new Set(studentList.map(p => p.department)).size} Academic Departments`, targetTrip.maxStudentsLimit ? `Capacity: ${totalStudents}/${targetTrip.maxStudentsLimit}` : 'Unlimited Cap'],
+          ['3. Financial Realization', `Collected: ${formatINR(totalColl)} • Outstanding Dues: ${formatINR(totalDues)} • Expenses: ${formatINR(totalExp)}`, `Net Balance: ${formatINR(netCash)}`],
+          ['4. Railway Travel Logistics', `${pnrList.length} PNRs booked • ${totalTrainSeats} Train Seats Allocated`, 'Manifest Approved'],
+          ['5. Departure Attendance', `${boarded} of ${totalStudents} Boarded at Campus Departure Gate (${boardedPct}%)`, 'Verified by Check-In Crew'],
+          ['6. Helpline & Crew', `${contacts.length} Designated Faculty & Medical Coordinators on Duty`, '24/7 Helpline Active'],
+          ['7. Daily Schedule & Itinerary', `${itineraries.length} Day Schedule Activities Planned with Hotel Lodging`, 'Itinerary Published']
+        ];
+
+        return {
+          id: 'trip_summary',
+          title: 'OFFICIAL TRIP EXECUTIVE SUMMARY & DOSSIER',
+          subtitle: 'Comprehensive Institutional Operations & Audit Dossier',
+          meta: baseMeta,
+          isDossier: true,
+          kpis: [
+            { label: 'Total Enrolled', value: totalStudents },
+            { label: 'Net Collected', value: formatINR(totalColl) },
+            { label: 'Trip Expenses', value: formatINR(totalExp) },
+            { label: 'Net Balance', value: formatINR(netCash) }
+          ],
+          headers,
+          rows
+        };
+      }
+
+      return null;
+    }
+
+    // Render HTML Document Canvas for Preview & Printing (Feature 138)
+    function renderReportDocumentHtml(reportData) {
+      if (!reportData) return '<p class="text-center text-slate-400">No report data generated.</p>';
+
+      const m = reportData.meta;
+
+      const kpisHtml = (reportData.kpis || []).map(k => `
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
+          <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">${escapeHtml(k.label)}</p>
+          <p class="font-display text-xl font-extrabold text-slate-900 mt-0.5">${escapeHtml(String(k.value))}</p>
+        </div>
+      `).join('');
+
+      let customBodyHtml = '';
+
+      // If Statement (Feature 128)
+      if (reportData.isStatement && reportData.student) {
+        const s = reportData.student;
+        customBodyHtml = `
+          <div class="my-6 p-4 rounded-xl border border-indigo-200 bg-indigo-50/40 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div>
+              <span class="text-slate-500 font-medium">Student Name:</span>
+              <p class="font-extrabold text-slate-900">${escapeHtml(s.studentName)}</p>
+            </div>
+            <div>
+              <span class="text-slate-500 font-medium">Roll / Reg No:</span>
+              <p class="font-bold text-slate-900">${escapeHtml(s.studentRollNo || '-')}</p>
+            </div>
+            <div>
+              <span class="text-slate-500 font-medium">Department:</span>
+              <p class="font-bold text-slate-900">${escapeHtml(s.department || 'General')}</p>
+            </div>
+            <div>
+              <span class="text-slate-500 font-medium">Trip Pass ID:</span>
+              <p class="font-mono font-bold text-indigo-700">${escapeHtml(s.studentTripId || s.receiptCode || '-')}</p>
+            </div>
+          </div>
+        `;
+      }
+
+      // Generate Tabular Rows
+      const headersHtml = reportData.headers.map(h => `
+        <th class="py-2.5 px-3 font-extrabold text-[10px] uppercase tracking-wider border-b border-slate-300 text-slate-700 bg-slate-100 text-left">${escapeHtml(h)}</th>
+      `).join('');
+
+      const rowsHtml = reportData.rows.map((row, rIdx) => `
+        <tr class="${rIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50/60'} border-b border-slate-200 text-slate-800 text-xs">
+          ${row.map(cell => `<td class="py-2.5 px-3 whitespace-nowrap">${escapeHtml(String(cell !== undefined ? cell : ''))}</td>`).join('')}
+        </tr>
+      `).join('');
+
+      return `
+        <!-- Institutional Letterhead Header -->
+        <div class="border-b-2 border-slate-900 pb-5 mb-6 text-center">
+          <div class="flex items-center justify-center gap-2 mb-1.5">
+            <span class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold font-display text-sm">TP</span>
+            <span class="font-display font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 uppercase">
+              ${escapeHtml(m.collegeName)}
+            </span>
+          </div>
+          <p class="text-xs font-extrabold text-slate-600 uppercase tracking-widest">${escapeHtml(m.tripTitle)}</p>
+          <p class="text-[11px] text-slate-500 font-medium mt-0.5">${escapeHtml(m.destination)} • Travel Dates: ${escapeHtml(m.dates)}</p>
+
+          <div class="mt-4 pt-3 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between text-[11px] text-slate-500 font-mono gap-1">
+            <span>Ref: ${escapeHtml(m.refNumber)}</span>
+            <span class="font-bold text-slate-800 font-sans text-xs">${escapeHtml(reportData.title)}</span>
+            <span>Generated: ${escapeHtml(m.generatedAt)}</span>
+          </div>
+        </div>
+
+        <!-- KPI Summary Ribbon -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-5">
+          ${kpisHtml}
+        </div>
+
+        ${customBodyHtml}
+
+        <!-- Main Document Table -->
+        <div class="overflow-x-auto my-6 border border-slate-200 rounded-xl">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr>${headersHtml}</tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Official Signatures & Seal Block (Feature 138) -->
+        <div class="mt-12 pt-8 border-t-2 border-slate-200 grid grid-cols-2 sm:grid-cols-3 gap-6 text-center text-xs">
+          <div>
+            <div class="h-12 border-b border-dashed border-slate-300 mb-2"></div>
+            <p class="font-extrabold text-slate-900">Faculty Coordinator</p>
+            <p class="text-[10px] text-slate-500">Trip Operations Committee</p>
+          </div>
+          <div>
+            <div class="h-12 border-b border-dashed border-slate-300 mb-2 flex items-center justify-center">
+              <span class="px-3 py-1 rounded-full border border-emerald-500 text-emerald-800 font-extrabold text-[9px] uppercase tracking-wider">
+                Official Document Seal
+              </span>
+            </div>
+            <p class="font-extrabold text-slate-900">Accountant / Treasurer</p>
+            <p class="text-[10px] text-slate-500">Finance & Fee Audit</p>
+          </div>
+          <div class="col-span-2 sm:col-span-1">
+            <div class="h-12 border-b border-dashed border-slate-300 mb-2"></div>
+            <p class="font-extrabold text-slate-900">Principal / Head of Institution</p>
+            <p class="text-[10px] text-slate-500">Approved & Verified</p>
+          </div>
+        </div>
+
+        <div class="mt-8 text-center text-[10px] text-slate-400 font-mono">
+          Document generated by TripPay Management System • Validated without physical alteration
+        </div>
+      `;
+    }
+
+    // Modal Control & Preview Trigger (Feature 138)
+    function generateAndPreviewReport(reportType, customOpts = {}) {
+      currentActiveReportType = reportType;
+      currentActiveReportOptions = customOpts;
+
+      const reportData = buildMasterReportData(reportType, customOpts);
+      if (!reportData) {
+        showToast('Could not compile report data.', 'error');
+        return;
+      }
+
+      const modal = document.getElementById('masterReportPreviewModal');
+      const titleEl = document.getElementById('masterReportModalTitle');
+      const subtitleEl = document.getElementById('masterReportModalSubtitle');
+      const container = document.getElementById('masterReportPrintableArea');
+
+      if (titleEl) titleEl.textContent = reportData.title;
+      if (subtitleEl) subtitleEl.textContent = reportData.subtitle;
+      if (container) container.innerHTML = renderReportDocumentHtml(reportData);
+
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function closeReportPreviewModal() {
+      const modal = document.getElementById('masterReportPreviewModal');
+      if (modal) modal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    // Feature 138: Print Report Trigger
+    function triggerReportModalPrint() {
+      window.print();
+    }
+
+    // Feature 135: Download PDF
+    function generateAndDownloadReportPDF(reportType, customOpts = {}) {
+      if (typeof html2pdf === 'undefined') {
+        showToast('PDF export library is loading, please try again.', 'error');
+        return;
+      }
+
+      const reportData = buildMasterReportData(reportType, customOpts);
+      if (!reportData) return;
+
+      showToast(`Generating PDF for ${reportData.title}...`, 'info');
+
+      // Create off-screen container
+      const container = document.createElement('div');
+      container.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;background:#ffffff;padding:24px;color:#0f172a;font-family:Inter,sans-serif;';
+      container.innerHTML = renderReportDocumentHtml(reportData);
+      document.body.appendChild(container);
+
+      const opt = {
+        margin: [8, 8, 10, 8],
+        filename: `${reportData.id}_${currentTripId}_${Date.now()}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(container).save().then(() => {
+        document.body.removeChild(container);
+        showToast('PDF downloaded successfully! ✅', 'success');
+      }).catch(err => {
+        console.error('PDF generation error:', err);
+        if (document.body.contains(container)) document.body.removeChild(container);
+        showToast('Failed to generate PDF.', 'error');
+      });
+    }
+
+    function downloadCurrentReportPDF() {
+      generateAndDownloadReportPDF(currentActiveReportType, currentActiveReportOptions);
+    }
+
+    // Feature 136: Download Excel (.xls)
+    function generateAndDownloadReportExcel(reportType, customOpts = {}) {
+      const reportData = buildMasterReportData(reportType, customOpts);
+      if (!reportData) return;
+
+      const title = reportData.title;
+      const headers = reportData.headers;
+      const rows = reportData.rows;
+
+      const tableRowsHtml = [
+        `<tr><th colspan="${headers.length}" style="background-color:#0284c7;color:#ffffff;font-size:16px;font-weight:bold;height:35px;text-align:center;">${escapeHtml(reportData.meta.collegeName)}</th></tr>`,
+        `<tr><th colspan="${headers.length}" style="background-color:#0369a1;color:#ffffff;font-size:14px;font-weight:bold;height:30px;text-align:center;">${escapeHtml(title)} - ${escapeHtml(reportData.meta.tripTitle)}</th></tr>`,
+        `<tr><td colspan="${headers.length}" style="color:#64748b;font-size:11px;height:24px;text-align:center;">Generated on ${escapeHtml(reportData.meta.generatedAt)} | Scope: ${escapeHtml(reportData.meta.scope)}</td></tr>`,
+        `<tr></tr>`,
+        `<tr>${headers.map(h => `<th style="background-color:#f1f5f9;color:#334155;border:1px solid #cbd5e1;padding:8px;font-weight:bold;font-size:12px;">${escapeHtml(h)}</th>`).join('')}</tr>`,
+        ...rows.map((row, idx) => `
+          <tr style="background-color:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+            ${row.map(cell => `<td style="border:1px solid #e2e8f0;padding:6px;font-size:11px;">${escapeHtml(String(cell !== undefined ? cell : ''))}</td>`).join('')}
+          </tr>
+        `)
+      ].join('');
+
+      const excelTemplate = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+          <meta charset="utf-8">
+          <!--[if gte mso 9]>
+          <xml>
+            <x:ExcelWorkbook>
+              <x:ExcelWorksheets>
+                <x:ExcelWorksheet>
+                  <x:Name>${reportData.id.slice(0, 31)}</x:Name>
+                  <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>
+                </x:ExcelWorksheet>
+              </x:ExcelWorksheets>
+            </x:ExcelWorkbook>
+          </xml>
+          <![endif]-->
+        </head>
+        <body>
+          <table>${tableRowsHtml}</table>
+        </body>
+        </html>
+      `;
+
+      const blob = new Blob([excelTemplate], { type: 'application/vnd.ms-excel;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${reportData.id}_${currentTripId}_${Date.now()}.xls`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast(`${reportData.title} exported to Excel! ✅`, 'success');
+    }
+
+    function downloadCurrentReportExcel() {
+      generateAndDownloadReportExcel(currentActiveReportType, currentActiveReportOptions);
+    }
+
+    // Feature 137: Download CSV
+    function generateAndDownloadReportCSV(reportType, customOpts = {}) {
+      const reportData = buildMasterReportData(reportType, customOpts);
+      if (!reportData) return;
+
+      const rows = [
+        [`"${reportData.meta.collegeName}"`],
+        [`"${reportData.title} - ${reportData.meta.tripTitle}"`],
+        [`"Destination: ${reportData.meta.destination}"`, `"Dates: ${reportData.meta.dates}"`],
+        [`"Generated: ${reportData.meta.generatedAt}"`, `"Scope: ${reportData.meta.scope}"`],
+        [],
+        reportData.headers.map(h => `"${String(h).replace(/"/g, '""')}"`),
+        ...reportData.rows.map(row => row.map(cell => `"${String(cell !== undefined ? cell : '').replace(/"/g, '""')}"`))
+      ];
+
+      const csvContent = '﻿' + rows.map(r => r.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${reportData.id}_${currentTripId}_${Date.now()}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast(`${reportData.title} exported to CSV! ✅`, 'success');
+    }
+
+    function downloadCurrentReportCSV() {
+      generateAndDownloadReportCSV(currentActiveReportType, currentActiveReportOptions);
+    }
+
+    // Quick Bulk Export Helper (Exports All 10 Reports in Sequence)
+    function exportBulkSummaryZip() {
+      showToast('Exporting all reports to CSV format...', 'info');
+      let delay = 0;
+      MASTER_REPORTS_REGISTRY.forEach(r => {
+        setTimeout(() => {
+          generateAndDownloadReportCSV(r.id);
+        }, delay);
+        delay += 350;
+      });
+    }
+
     Object.assign(window, {
+      setReportsScope,
+      filterReportsCatalog,
+      filterReportsByCategory,
+      renderReportsHub,
+      generateAndPreviewReport,
+      closeReportPreviewModal,
+      triggerReportModalPrint,
+      generateAndDownloadReportPDF,
+      downloadCurrentReportPDF,
+      generateAndDownloadReportExcel,
+      downloadCurrentReportExcel,
+      generateAndDownloadReportCSV,
+      downloadCurrentReportCSV,
+      exportBulkSummaryZip,
       setAnalyticsScope,
       refreshExecutiveAnalytics,
       jumpToStudentsWithFilter,
