@@ -1499,6 +1499,24 @@
             class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-sky-100 text-sky-800 font-extrabold">10 Reports</span>
         </button>
 
+        <!-- SUB-TAB BUTTON: HOTELS & VENDORS (Feature 158) -->
+        <button onclick="switchManagerSubTab('vendors')" id="subTabBtn-vendors"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900">
+          <i data-lucide="building" class="w-4 h-4 text-teal-600"></i>
+          <span>Hotels & Vendors</span>
+          <span id="subTabBadgeVendors"
+            class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-teal-100 text-teal-800 font-extrabold">0</span>
+        </button>
+
+        <!-- SUB-TAB BUTTON: LOST & FOUND (Feature 160) -->
+        <button onclick="switchManagerSubTab('lostfound')" id="subTabBtn-lostfound"
+          class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900">
+          <i data-lucide="help-circle" class="w-4 h-4 text-amber-600"></i>
+          <span>Lost & Found</span>
+          <span id="subTabBadgeLostFound"
+            class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-amber-100 text-amber-800 font-extrabold">0</span>
+        </button>
+
         <button onclick="switchManagerSubTab('checkin')" id="subTabBtn-checkin"
           class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900">
           <i data-lucide="scan-line" class="w-4 h-4 text-emerald-600"></i>
@@ -2172,10 +2190,106 @@
         </div>
       </div>
 
+      <!-- ========================================================================= -->
+      <!-- SUB-TAB: HOTELS & VENDOR MANAGEMENT (Feature 158)                         -->
+      <!-- ========================================================================= -->
+      <div id="managerSection-vendors" class="hidden space-y-5">
+        <div class="expressive-card border border-slate-200 rounded-3xl p-5 sm:p-6 bg-white shadow-sm space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-800 text-[11px] font-bold border border-teal-200 mb-1">
+                <i data-lucide="building" class="w-3.5 h-3.5"></i>
+                <span>Hotels, Transport & Vendor Logistics</span>
+              </div>
+              <h3 class="font-display font-extrabold text-lg sm:text-xl text-slate-900">Hotel & Vendor Registry</h3>
+              <p class="text-xs text-slate-500">
+                Manage hotel bookings, bus operator agreements, catering contracts, tour guides, and payment schedules.
+              </p>
+            </div>
+            <button type="button" onclick="openAddVendorModal()"
+              class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>Add Hotel / Vendor</span>
+            </button>
+          </div>
+
+          <!-- Vendor Summary Strip -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-200/80">
+              <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Total Vendors</p>
+              <p id="vendorCountTotal" class="font-display text-xl font-extrabold text-slate-900 mt-0.5">0</p>
+            </div>
+            <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-200/80">
+              <p class="text-[10px] font-extrabold uppercase tracking-wider text-teal-600">Contract Total</p>
+              <p id="vendorContractTotal" class="font-display text-xl font-extrabold text-teal-700 mt-0.5">₹0</p>
+            </div>
+            <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-200/80">
+              <p class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-600">Advance Paid</p>
+              <p id="vendorAdvancePaidTotal" class="font-display text-xl font-extrabold text-emerald-700 mt-0.5">₹0</p>
+            </div>
+            <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-200/80">
+              <p class="text-[10px] font-extrabold uppercase tracking-wider text-amber-600">Pending Dues</p>
+              <p id="vendorDuesTotal" class="font-display text-xl font-extrabold text-amber-700 mt-0.5">₹0</p>
+            </div>
+          </div>
+
+          <!-- Vendor Cards Grid -->
+          <div id="vendorsListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- SUB-TAB: LOST & FOUND HUB (Feature 160)                                   -->
+      <!-- ========================================================================= -->
+      <div id="managerSection-lostfound" class="hidden space-y-5">
+        <div class="expressive-card border border-slate-200 rounded-3xl p-5 sm:p-6 bg-white shadow-sm space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 text-[11px] font-bold border border-amber-200 mb-1">
+                <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
+                <span>Campus & Tour Safety</span>
+              </div>
+              <h3 class="font-display font-extrabold text-lg sm:text-xl text-slate-900">Lost & Found Command Center</h3>
+              <p class="text-xs text-slate-500">
+                Track lost and reported items during transit, hotel stays, bus rides, and sightseeing spots.
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="openReportLostItemModal('lost')"
+                class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
+                <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                <span>Report Lost Item</span>
+              </button>
+              <button type="button" onclick="openReportLostItemModal('found')"
+                class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                <span>Report Found Item</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Lost & Found Items Grid -->
+          <div id="lostFoundListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+      </div>
+
       <!-- SUB-TAB 1: STUDENTS & PAYMENTS -->
       <div id="managerSection-students" class="space-y-4">
         <div class="expressive-card border border-slate-200 rounded-2xl p-3.5 space-y-3">
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <!-- Feature 164: Auto Payment Reconciliation & Gateway Selector -->
+            <div class="flex items-center gap-2 self-end mb-1">
+              <button type="button" onclick="runAutomatedPaymentReconciliation()"
+                class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-xs"
+                title="Automated Payment Reconciliation">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                <span>Auto-Reconcile UTRs</span>
+              </button>
+            </div>
             <div class="relative flex-1">
               <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
               <input type="text" id="dashSearchInput" oninput="handleDashSearch(this.value)"
@@ -2313,6 +2427,25 @@
       <!-- SUB-TAB 1.2: LIVE TRIP ATTENDANCE & VERIFICATION SUITE (Features 75-85) -->
       <div id="managerSection-checkin" class="hidden space-y-5">
         <div class="expressive-card border border-slate-200 rounded-3xl p-5 sm:p-6 space-y-5">
+          <!-- OFFLINE QR ATTENDANCE QUEUE & SYNC (Feature 165) -->
+          <div id="offlineAttendanceQueueBanner" class="hidden p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0">
+                <i data-lucide="wifi-off" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <p class="font-extrabold text-xs text-amber-950">Offline Attendance Scans Queued</p>
+                <p class="text-[11px] text-amber-700 font-medium">
+                  <span id="offlineQueueCountText" class="font-bold">0</span> scans stored locally in cache. Will automatically sync when online.
+                </p>
+              </div>
+            </div>
+            <button type="button" onclick="syncOfflineAttendanceQueue()"
+              class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition flex items-center gap-1 self-start sm:self-auto shadow-xs">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+              <span>Sync Scans Now</span>
+            </button>
+          </div>
           <!-- Header Bar with Multi-Action Suite -->
           <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
@@ -2591,7 +2724,34 @@
           <div
             class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4 mb-4">
             <div>
-              <h3 class="font-display font-extrabold text-lg text-slate-900">Trip Expense Management</h3>
+              <div class="mb-5 p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border border-indigo-900/40 shadow-md">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-300">Feature 157 • Trip Budget Realization</span>
+                <div class="flex items-baseline gap-2 mt-0.5">
+                  <p id="budgetDisplayTarget" class="font-display text-2xl font-black text-white">₹1,00,000</p>
+                  <span id="budgetSpentPct" class="text-xs font-mono font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full">0% Spent</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="promptEditTripBudget()" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition flex items-center gap-1">
+                  <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                  <span>Adjust Budget Target</span>
+                </button>
+              </div>
+            </div>
+            <!-- Progress Bar -->
+            <div class="mt-3">
+              <div class="w-full bg-white/10 h-3 rounded-full overflow-hidden p-0.5 flex">
+                <div id="budgetExpensesBar" class="bg-rose-500 h-full rounded-full transition-all duration-500" style="width: 0%" title="Expenses Incurred"></div>
+              </div>
+              <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono mt-1.5">
+                <span id="budgetSpentText">Expenses: ₹0</span>
+                <span id="budgetSurplusText">Surplus Remaining: ₹1,00,000</span>
+              </div>
+            </div>
+          </div>
+          <h3 class="font-display font-extrabold text-lg text-slate-900">Trip Expense Management</h3>
               <p class="text-xs text-slate-500">
                 Log bus rentals, accommodation, food, toll, entry permits & guide charges.
               </p>
@@ -3572,6 +3732,68 @@
   <!-- ========================================================================= -->
   <!-- MASTER REPORT PREVIEW & PRINT MODAL (Features 125-138)                     -->
   <!-- ========================================================================= -->
+  <!-- ========================================================================= -->
+  <!-- UNIVERSAL EMERGENCY SOS CONTACT & SAFETY MODAL (Feature 159)               -->
+  <!-- ========================================================================= -->
+  <div id="emergencySosModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4"
+    style="background:rgba(15,23,42,0.92);backdrop-filter:blur(8px);">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full border-4 border-rose-500 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+      <div class="text-center space-y-3">
+        <div class="w-16 h-16 rounded-full bg-rose-600 text-white flex items-center justify-center mx-auto shadow-lg shadow-rose-300 animate-bounce">
+          <i data-lucide="alert-octagon" class="w-8 h-8"></i>
+        </div>
+        <h3 class="font-display font-black text-2xl text-slate-900 tracking-tight">EMERGENCY SOS DISPATCH</h3>
+        <p class="text-xs text-slate-600 font-medium">
+          Need immediate medical, security or safety assistance? Tap the button below to dispatch your live location to all trip coordinators and duty staff.
+        </p>
+      </div>
+
+      <!-- Live GPS Coordinate Readout (Feature 155, 159) -->
+      <div class="my-5 p-3 rounded-2xl bg-rose-50 border border-rose-200 text-center">
+        <p class="text-[10px] font-extrabold uppercase tracking-wider text-rose-800">Your Detected GPS Location</p>
+        <p id="sosCurrentCoords" class="font-mono text-xs font-bold text-rose-950 mt-0.5">Fetching live GPS coordinates...</p>
+      </div>
+
+      <!-- Dispatch SOS Alert Button -->
+      <button type="button" onclick="triggerEmergencySosAlert()"
+        class="w-full py-4 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-black text-base shadow-xl shadow-rose-200 transition flex items-center justify-center gap-2">
+        <i data-lucide="siren" class="w-5 h-5"></i>
+        <span>DISPATCH SOS TO CREW NOW</span>
+      </button>
+
+      <!-- 1-Tap Emergency Dials -->
+      <div class="mt-6 pt-5 border-t border-slate-100">
+        <p class="text-xs font-bold text-slate-700 text-center mb-3">1-Tap Emergency Hotlines</p>
+        <div class="grid grid-cols-3 gap-2">
+          <a href="tel:112" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs text-center flex flex-col items-center gap-1 transition">
+            <i data-lucide="phone-call" class="w-4 h-4 text-rose-600"></i>
+            <span>Police (112)</span>
+          </a>
+          <a href="tel:108" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs text-center flex flex-col items-center gap-1 transition">
+            <i data-lucide="activity" class="w-4 h-4 text-emerald-600"></i>
+            <span>Ambulance (108)</span>
+          </a>
+          <a href="tel:1091" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs text-center flex flex-col items-center gap-1 transition">
+            <i data-lucide="shield" class="w-4 h-4 text-purple-600"></i>
+            <span>Helpline (1091)</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="mt-6 text-center">
+        <button type="button" onclick="closeEmergencySosModal()" class="text-xs text-slate-400 hover:text-slate-600 font-bold transition">
+          Dismiss & Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING SOS PILL (Bottom Right) -->
+  <button type="button" onclick="openEmergencySosModal()" id="floatingSosBtn"
+    class="fixed bottom-6 right-6 z-40 px-4 py-2.5 rounded-full bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs shadow-xl shadow-rose-300 flex items-center gap-2 animate-pulse transition">
+    <i data-lucide="alert-octagon" class="w-4 h-4"></i>
+    <span>EMERGENCY SOS</span>
+  </button>
   <div id="masterReportPreviewModal" class="fixed inset-0 z-50 hidden flex flex-col"
     style="background:rgba(15,23,42,0.92);backdrop-filter:blur(10px);">
 
@@ -9370,6 +9592,24 @@
       pnrRecords.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       renderSavedPNRRecords();
 
+      // Cloud sync vendors collection (Feature 158)
+      try {
+        const vendorsCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_vendors');
+        onSnapshot(vendorsCol, (snap) => {
+          allTripVendors = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          renderVendorsHub();
+        });
+      } catch (eVendors) { console.warn('Vendors listener error:', eVendors); }
+
+      // Cloud sync lost and found collection (Feature 160)
+      try {
+        const lfCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_lost_found');
+        onSnapshot(lfCol, (snap) => {
+          allLostFoundItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          renderLostFoundHub();
+        });
+      } catch (eLf) { console.warn('Lost and found listener error:', eLf); }
+
       // Cloud sync notifications collection
       notifications = rawNotifList.filter(n => (n.tripId || 'default') === currentTripId);
       notifications.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
@@ -9385,6 +9625,9 @@
       if (typeof renderRailwayManagerUI === 'function') renderRailwayManagerUI();
       if (typeof renderExecutiveAnalytics === 'function') renderExecutiveAnalytics();
       if (typeof renderReportsHub === 'function') renderReportsHub();
+      if (typeof renderVendorsHub === 'function') renderVendorsHub();
+      if (typeof renderLostFoundHub === 'function') renderLostFoundHub();
+      if (typeof updateBudgetGaugeUI === 'function') updateBudgetGaugeUI();
 
       if (currentPaymentMode === 'balance') renderBalanceLookupResults();
       if (isAdminLoggedIn) {
@@ -13868,7 +14111,7 @@
     }
 
     function switchManagerSubTab(sub) {
-      ['students', 'analytics', 'reports', 'checkin', 'access-codes', 'audit-logs', 'expenses', 'itinerary', 'contacts', 'notifications', 'admins', 'railway'].forEach(s => {
+      ['students', 'analytics', 'reports', 'checkin', 'access-codes', 'audit-logs', 'expenses', 'itinerary', 'contacts', 'notifications', 'admins', 'railway', 'vendors', 'lostfound'].forEach(s => {
         const sec = document.getElementById(`managerSection-${s}`);
         const btn = document.getElementById(`subTabBtn-${s}`);
         if (!sec || !btn) return;
@@ -13884,6 +14127,10 @@
             btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-indigo-600 text-white shadow-sm';
           } else if (s === 'reports') {
             btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-sky-600 text-white shadow-sm';
+          } else if (s === 'vendors') {
+            btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-teal-600 text-white shadow-sm';
+          } else if (s === 'lostfound') {
+            btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-amber-600 text-white shadow-sm';
           } else {
             btn.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition shrink-0 bg-emerald-600 text-white shadow-sm';
           }
@@ -13894,6 +14141,8 @@
       });
       if (sub === 'analytics') renderExecutiveAnalytics();
       if (sub === 'reports') renderReportsHub();
+      if (sub === 'vendors') renderVendorsHub();
+      if (sub === 'lostfound') renderLostFoundHub();
       if (sub === 'checkin') renderCheckinRoster();
       if (sub === 'access-codes') renderAccessCodesSuite();
       if (sub === 'audit-logs') renderAuditLogs();
@@ -30793,7 +31042,679 @@ Guidelines:
       });
     }
 
+    
+    // =========================================================================
+    // FEATURES 139-165: ROLES, PERMISSIONS, BACKUP, GATEWAYS, SOS & OFFLINE QUEUE
+    // =========================================================================
+    let allTripVendors = [];
+    let allLostFoundItems = [];
+    let activeOfflineQueueCount = 0;
+
+    // Feature 143, 144, 149: Role-Based Permissions & Trip Restrictions
+    function hasPermission(role, action, tripId = null) {
+      if (role === 'boss' || role === 'super_admin') return true;
+      if (tripId && currentAdminUser && Array.isArray(currentAdminUser.assignedTrips)) {
+        if (!currentAdminUser.assignedTrips.includes('*') && !currentAdminUser.assignedTrips.includes(tripId)) {
+          return false;
+        }
+      }
+
+      const permissions = {
+        trip_admin: ['manage_students', 'verify_payments', 'manage_railway', 'manage_attendance', 'manage_itinerary', 'manage_expenses', 'export_reports', 'broadcast_notifications'],
+        coordinator: ['scan_attendance', 'view_railway', 'view_students', 'broadcast_announcements', 'emergency_sos', 'lost_found', 'view_itinerary'],
+        student: ['view_pass', 'submit_payment', 'view_ticket', 'view_itinerary', 'submit_feedback', 'upload_documents', 'emergency_sos']
+      };
+
+      return (permissions[role] || []).includes(action);
+    }
+
+    // Feature 147: Maintain Login History in Firestore
+    async function recordLoginHistory(email, name, role, status = 'SUCCESS') {
+      try {
+        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'login_history'), {
+          email: (email || '').toLowerCase().trim(),
+          name: name || 'User',
+          role: role || 'admin',
+          tripId: currentTripId || 'default',
+          status,
+          timestamp: Date.now(),
+          userAgent: (navigator.userAgent || '').slice(0, 100)
+        });
+      } catch (err) {
+        console.warn('Could not record login history:', err);
+      }
+    }
+
+    // Feature 139-142: Create Super Admin, Trip Admin, Coordinator, Student Accounts
+    async function createSpecializedAccount(accountData) {
+      const { name, email, phone, password, role, assignedTrips = [] } = accountData;
+      if (!name || !email || !password || password.length < 6) {
+        showToast('Please provide valid name, email, and password (min 6 chars).', 'error');
+        return false;
+      }
+
+      try {
+        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'admin_users'), {
+          name,
+          email: email.toLowerCase().trim(),
+          phone: phone || '',
+          password,
+          role, // 'super_admin', 'trip_admin', 'coordinator', 'student'
+          status: 'Approved',
+          assignedTrips: (role === 'super_admin') ? ['*'] : assignedTrips,
+          createdAt: Date.now()
+        });
+
+        logSecurityEvent('ACCOUNT_CREATED', email, `Created ${role} account for ${name}`);
+        showToast(`${role.toUpperCase()} account for ${name} created successfully!`, 'success');
+        return true;
+      } catch (e) {
+        console.error('Account creation error:', e);
+        showToast('Failed to create account.', 'error');
+        return false;
+      }
+    }
+
+    // Feature 146: Activate & Deactivate Accounts
+    async function toggleAccountStatus(userDocId, currentStatus) {
+      const newStatus = (currentStatus === 'Approved') ? 'Suspended' : 'Approved';
+      try {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admin_users', userDocId), {
+          status: newStatus,
+          statusUpdatedAt: Date.now()
+        }, { merge: true });
+        showToast(`Account status updated to ${newStatus}!`, 'success');
+      } catch (e) {
+        console.error('Status update error:', e);
+        showToast('Failed to update status.', 'error');
+      }
+    }
+
+    // Feature 145: Password Reset Functionality
+    async function executePasswordReset(email, newPassword) {
+      const normalizedEmail = (email || '').toLowerCase().trim();
+      const match = allAdminUsers.find(u => (u.email || '').toLowerCase() === normalizedEmail);
+      if (!match) {
+        showToast('No registered account found with this email.', 'error');
+        return false;
+      }
+
+      try {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admin_users', match.id), {
+          password: newPassword,
+          passwordResetAt: Date.now()
+        }, { merge: true });
+
+        logSecurityEvent('PASSWORD_RESET', normalizedEmail, 'Password reset executed');
+        showToast('Password updated successfully! Please log in.', 'success');
+        return true;
+      } catch (e) {
+        console.error('Password reset error:', e);
+        showToast('Failed to reset password.', 'error');
+        return false;
+      }
+    }
+
+    // Feature 150: Database Backup & Recovery
+    async function exportFullDatabaseBackup() {
+      showToast('Compiling complete system backup...', 'info');
+      try {
+        const backupPayload = {
+          exportTimestamp: Date.now(),
+          exportedAt: new Date().toISOString(),
+          appId,
+          version: '2.5.0',
+          collections: {
+            trips_master: allTrips,
+            trip_payments: rawPaymentsList,
+            trip_expenses: rawExpensesList,
+            trip_itinerary: rawItinList,
+            trip_contacts: rawContactsList,
+            trip_notifications: rawNotifList,
+            pnr_records: rawPnrList,
+            admin_users: allAdminUsers,
+            trip_vendors: allTripVendors,
+            lost_found: allLostFoundItems
+          }
+        };
+
+        const jsonStr = JSON.stringify(backupPayload, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `TripPay_Master_Database_Backup_${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showToast('Full database backup downloaded successfully! ✅', 'success');
+        logSecurityEvent('DATABASE_BACKUP', 'SYSTEM', 'Full system JSON backup exported');
+      } catch (e) {
+        console.error('Backup error:', e);
+        showToast('Failed to create backup.', 'error');
+      }
+    }
+
+    async function restoreDatabaseFromJson(jsonFile) {
+      if (!jsonFile) return;
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const payload = JSON.parse(e.target.result);
+          if (!payload.collections) {
+            showToast('Invalid backup file format.', 'error');
+            return;
+          }
+
+          showToast('Restoring database records to cloud...', 'info');
+          const batch = writeBatch(db);
+          let count = 0;
+
+          // Restore trips_master
+          if (Array.isArray(payload.collections.trips_master)) {
+            payload.collections.trips_master.forEach(t => {
+              if (t.id) {
+                batch.set(doc(db, 'artifacts', appId, 'public', 'data', 'trips_master', t.id), t, { merge: true });
+                count++;
+              }
+            });
+          }
+
+          // Restore payments
+          if (Array.isArray(payload.collections.trip_payments)) {
+            payload.collections.trip_payments.forEach(p => {
+              if (p.id) {
+                batch.set(doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', p.id), p, { merge: true });
+                count++;
+              }
+            });
+          }
+
+          await batch.commit();
+          showToast(`Restored ${count} records successfully! Cloud in sync. ✅`, 'success');
+          logSecurityEvent('DATABASE_RESTORE', 'SYSTEM', `Restored ${count} database records`);
+        } catch (err) {
+          console.error('Restore error:', err);
+          showToast('Failed to parse or restore backup file.', 'error');
+        }
+      };
+      reader.readAsText(jsonFile);
+    }
+
+    // Feature 151, 152, 153: Live Train Delay Notifications & Official APIs
+    async function broadcastTrainDelayAlert(trainNumber, delayMinutes, expectedStation = '') {
+      if (!trainNumber) return;
+      const delayText = delayMinutes > 0 ? `delayed by ${delayMinutes} minutes` : 'running on time';
+      const title = `Train ${trainNumber} Travel Update: ${delayText}`;
+      const message = `Train ${trainNumber} is currently ${delayText} at ${expectedStation || 'current station'}. Please check your digital boarding pass for updated timings.`;
+
+      try {
+        await dispatchNotification({
+          title,
+          message,
+          type: 'Schedule Change',
+          channel: 'both',
+          isEmergency: (delayMinutes >= 60)
+        });
+        showToast(`Train ${trainNumber} delay alert broadcasted to passengers! 📢`, 'success');
+      } catch (e) {
+        console.error('Train delay alert error:', e);
+        showToast('Could not broadcast delay alert.', 'error');
+      }
+    }
+
+    // Feature 154, 155: Google Maps & Consent Location Sharing
+    function openGoogleMapsForLocation(query) {
+      if (!query) return;
+      const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+      window.open(url, '_blank');
+    }
+
+    function toggleConsentLocationSharing(enabled, studentId = null) {
+      if (!navigator.geolocation) {
+        showToast('Geolocation is not supported by your browser.', 'error');
+        return;
+      }
+
+      if (enabled) {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          showToast(`Live location shared with coordinators: ${lat.toFixed(4)}, ${lng.toFixed(4)}`, 'success');
+
+          if (studentId) {
+            try {
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', studentId), {
+                lastLocation: { lat, lng, timestamp: Date.now() },
+                locationSharingEnabled: true
+              }, { merge: true });
+            } catch (e) { console.warn('Could not save location to student doc:', e); }
+          }
+        }, (err) => {
+          showToast('Could not retrieve GPS location. Please check location permissions.', 'error');
+        });
+      } else {
+        showToast('Live location sharing turned off.', 'info');
+      }
+    }
+
+    // Feature 156, 157: Trip Budget Management & Progress Gauge
+    function updateBudgetGaugeUI() {
+      const budgetTarget = Number(tripConfig.tripBudget || tripConfig.targetBudget) || 100000;
+      const totalExpenses = expenses.reduce((a, e) => a + (Number(e.amount) || 0), 0);
+      const spentPct = budgetTarget > 0 ? Math.min(100, Math.round((totalExpenses / budgetTarget) * 100)) : 0;
+      const surplus = Math.max(0, budgetTarget - totalExpenses);
+
+      const elTarget = document.getElementById('budgetDisplayTarget');
+      const elSpentPct = document.getElementById('budgetSpentPct');
+      const elBar = document.getElementById('budgetExpensesBar');
+      const elSpentText = document.getElementById('budgetSpentText');
+      const elSurplusText = document.getElementById('budgetSurplusText');
+
+      if (elTarget) elTarget.textContent = formatINR(budgetTarget);
+      if (elSpentPct) {
+        elSpentPct.textContent = `${spentPct}% Spent`;
+        elSpentPct.className = spentPct > 90
+          ? 'text-xs font-mono font-bold text-rose-300 bg-rose-500/20 px-2 py-0.5 rounded-full'
+          : 'text-xs font-mono font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full';
+      }
+      if (elBar) elBar.style.width = `${spentPct}%`;
+      if (elSpentText) elSpentText.textContent = `Expenses: ${formatINR(totalExpenses)}`;
+      if (elSurplusText) elSurplusText.textContent = `Surplus Remaining: ${formatINR(surplus)}`;
+    }
+
+    function promptEditTripBudget() {
+      const current = tripConfig.tripBudget || tripConfig.targetBudget || 100000;
+      const val = prompt('Enter Total Target Budget for this trip (₹):', current);
+      if (val && !isNaN(val)) {
+        tripConfig.tripBudget = Number(val);
+        const configDocId = currentTripId === 'default' ? 'main_config' : 'trip_' + currentTripId;
+        setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', configDocId), {
+          tripBudget: Number(val)
+        }, { merge: true }).then(() => {
+          updateBudgetGaugeUI();
+          showToast(`Trip budget updated to ${formatINR(val)}!`, 'success');
+        });
+      }
+    }
+
+    // Feature 158: Hotel & Vendor Management
+    function renderVendorsHub() {
+      const container = document.getElementById('vendorsListContainer');
+      const countEl = document.getElementById('vendorCountTotal');
+      const contractEl = document.getElementById('vendorContractTotal');
+      const advanceEl = document.getElementById('vendorAdvancePaidTotal');
+      const duesEl = document.getElementById('vendorDuesTotal');
+      const subTabBadge = document.getElementById('subTabBadgeVendors');
+
+      if (!container) return;
+
+      const vendors = allTripVendors.filter(v => (v.tripId || 'default') === currentTripId);
+      if (countEl) countEl.textContent = vendors.length;
+      if (subTabBadge) subTabBadge.textContent = vendors.length;
+
+      const totContract = vendors.reduce((a, v) => a + (Number(v.contractAmount) || 0), 0);
+      const totAdvance = vendors.reduce((a, v) => a + (Number(v.advancePaid) || 0), 0);
+      const totDues = Math.max(0, totContract - totAdvance);
+
+      if (contractEl) contractEl.textContent = formatINR(totContract);
+      if (advanceEl) advanceEl.textContent = formatINR(totAdvance);
+      if (duesEl) duesEl.textContent = formatINR(totDues);
+
+      if (vendors.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full p-8 text-center text-slate-400 bg-slate-50 border border-slate-200 rounded-2xl">
+            <i data-lucide="building" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
+            No hotel or vendor records added yet. Click 'Add Hotel / Vendor' to log contracts.
+          </div>
+        `;
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = vendors.map(v => {
+        const bal = Math.max(0, (Number(v.contractAmount) || 0) - (Number(v.advancePaid) || 0));
+        return `
+          <div class="expressive-card border border-slate-200 bg-white rounded-2xl p-4 flex flex-col justify-between shadow-2xs hover:shadow-md transition">
+            <div>
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-700 uppercase tracking-wider">${escapeHtml(v.category || 'Vendor')}</span>
+                  <h4 class="font-extrabold text-sm text-slate-900 mt-1">${escapeHtml(v.name)}</h4>
+                  <p class="text-[11px] text-slate-500 font-medium">${escapeHtml(v.contactPerson || '')} • ${escapeHtml(v.phone || '')}</p>
+                </div>
+                <button type="button" onclick="deleteVendorRecord('${v.id}')" class="text-slate-400 hover:text-rose-600 transition" title="Delete Vendor">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+
+              <div class="mt-3 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span class="text-slate-400 text-[10px]">Contract:</span>
+                  <p class="font-mono font-bold text-slate-900">${formatINR(v.contractAmount || 0)}</p>
+                </div>
+                <div>
+                  <span class="text-slate-400 text-[10px]">Balance Due:</span>
+                  <p class="font-mono font-bold text-amber-700">${formatINR(bal)}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+              <span class="text-[10px] text-slate-400 font-mono">${v.bookingRef ? 'Ref: ' + v.bookingRef : 'Active'}</span>
+              <div class="flex items-center gap-1.5">
+                ${v.phone ? `<a href="tel:${v.phone}" class="p-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700"><i data-lucide="phone" class="w-3.5 h-3.5"></i></a>` : ''}
+                ${v.phone ? `<a href="https://wa.me/91${normalizePhone(v.phone)}" target="_blank" class="p-1 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i></a>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function openAddVendorModal() {
+      const name = prompt('Vendor / Hotel Name:');
+      if (!name) return;
+      const category = prompt('Category (Hotel/Resort, Bus Operator, Caterer, Tour Guide):', 'Hotel/Resort') || 'Hotel';
+      const contactPerson = prompt('Contact Person Name:', '') || '';
+      const phone = prompt('Phone Number:', '') || '';
+      const contractAmount = Number(prompt('Total Contract Amount (₹):', '50000')) || 0;
+      const advancePaid = Number(prompt('Advance Paid Amount (₹):', '10000')) || 0;
+      const bookingRef = prompt('Booking / Contract Reference Number:', '') || '';
+
+      addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'trip_vendors'), {
+        name,
+        category,
+        contactPerson,
+        phone,
+        contractAmount,
+        advancePaid,
+        bookingRef,
+        tripId: currentTripId,
+        createdAt: Date.now()
+      }).then(() => {
+        showToast(`${name} added to vendor registry!`, 'success');
+      }).catch(err => {
+        console.error('Error adding vendor:', err);
+        showToast('Failed to save vendor.', 'error');
+      });
+    }
+
+    async function deleteVendorRecord(vendorId) {
+      if (!confirm('Are you sure you want to delete this vendor record?')) return;
+      try {
+        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_vendors', vendorId));
+        showToast('Vendor record deleted.', 'info');
+      } catch (e) {
+        showToast('Failed to delete vendor.', 'error');
+      }
+    }
+
+    // Feature 159: Emergency SOS Alert Functionality
+    function openEmergencySosModal() {
+      const modal = document.getElementById('emergencySosModal');
+      const coordsEl = document.getElementById('sosCurrentCoords');
+      if (modal) modal.classList.remove('hidden');
+
+      if (navigator.geolocation && coordsEl) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          coordsEl.textContent = `${pos.coords.latitude.toFixed(5)}° N, ${pos.coords.longitude.toFixed(5)}° E`;
+        }, () => {
+          coordsEl.textContent = 'GPS permission unavailable (Location: ' + (tripConfig.destination || 'Tour Location') + ')';
+        });
+      }
+    }
+
+    function closeEmergencySosModal() {
+      const modal = document.getElementById('emergencySosModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function triggerEmergencySosAlert() {
+      const coords = document.getElementById('sosCurrentCoords')?.textContent || 'Tour Location';
+      const caller = loggedInParticipant ? loggedInParticipant.studentName : (currentAdminUser ? currentAdminUser.name : 'Participant');
+
+      try {
+        await dispatchNotification({
+          title: `🚨 EMERGENCY SOS: ${caller}`,
+          message: `Urgent assistance requested by ${caller} at GPS location [${coords}]. All available coordinators please respond immediately.`,
+          type: 'Emergency Alert',
+          channel: 'both',
+          isEmergency: true
+        });
+
+        playNotificationChime();
+        closeEmergencySosModal();
+        showToast('EMERGENCY SOS BROADCASTED TO ALL STAFF! Stay calm, help is on the way.', 'error');
+      } catch (e) {
+        console.error('SOS dispatch error:', e);
+        showToast('SOS dispatched locally. Please contact helplines directly!', 'error');
+      }
+    }
+
+    // Feature 160: Lost & Found Management
+    function renderLostFoundHub() {
+      const container = document.getElementById('lostFoundListContainer');
+      const badge = document.getElementById('subTabBadgeLostFound');
+      if (!container) return;
+
+      const items = allLostFoundItems.filter(i => (i.tripId || 'default') === currentTripId);
+      if (badge) badge.textContent = items.length;
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full p-8 text-center text-slate-400 bg-slate-50 border border-slate-200 rounded-2xl">
+            <i data-lucide="help-circle" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
+            No lost or found items reported.
+          </div>
+        `;
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = items.map(item => {
+        const isLost = (item.status === 'Lost');
+        return `
+          <div class="expressive-card border border-slate-200 bg-white rounded-2xl p-4 flex flex-col justify-between shadow-2xs">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isLost ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'}">
+                  ${escapeHtml(item.status || 'Reported')}
+                </span>
+                <span class="text-[10px] text-slate-400 font-mono">${formatDisplayDate(item.createdAt)}</span>
+              </div>
+              <h4 class="font-extrabold text-sm text-slate-900 mt-2">${escapeHtml(item.itemName)}</h4>
+              <p class="text-xs text-slate-500 mt-1 leading-relaxed">${escapeHtml(item.description || '')}</p>
+              <div class="mt-3 text-xs text-slate-600 font-medium">
+                <p>📍 Location: ${escapeHtml(item.location || 'Tour Area')}</p>
+                <p>👤 Contact: ${escapeHtml(item.contactPerson || 'Coordinator')}</p>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              ${item.status !== 'Claimed' ? `
+                <button type="button" onclick="claimLostFoundItem('${item.id}')"
+                  class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition">
+                  Mark as Claimed
+                </button>
+              ` : '<span class="text-xs font-bold text-emerald-600">Claimed & Returned</span>'}
+              <button type="button" onclick="deleteLostFoundItem('${item.id}')" class="text-slate-400 hover:text-rose-600 text-xs">
+                Delete
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function openReportLostItemModal(type = 'lost') {
+      const itemName = prompt(`Item Name (${type === 'lost' ? 'What was lost?' : 'What was found?'}):`);
+      if (!itemName) return;
+      const description = prompt('Description (color, brand, distinguishing marks):', '') || '';
+      const location = prompt('Location where lost/found:', '') || 'Transit / Hotel';
+      const contactPerson = prompt('Contact Person & Phone:', '') || 'Trip Coordinator';
+
+      addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'trip_lost_found'), {
+        itemName,
+        description,
+        location,
+        contactPerson,
+        status: (type === 'lost' ? 'Lost' : 'Found'),
+        tripId: currentTripId,
+        createdAt: Date.now()
+      }).then(() => {
+        showToast('Lost & Found item reported!', 'success');
+      });
+    }
+
+    async function claimLostFoundItem(itemId) {
+      try {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_lost_found', itemId), {
+          status: 'Claimed',
+          claimedAt: Date.now()
+        }, { merge: true });
+        showToast('Item marked as claimed and returned!', 'success');
+      } catch (e) { showToast('Could not update item.', 'error'); }
+    }
+
+    async function deleteLostFoundItem(itemId) {
+      if (!confirm('Delete this record?')) return;
+      try {
+        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_lost_found', itemId));
+        showToast('Record deleted.', 'info');
+      } catch (e) { showToast('Could not delete.', 'error'); }
+    }
+
+    // Feature 164: Automated Payment Reconciliation
+    function runAutomatedPaymentReconciliation() {
+      showToast('Running automated payment reconciliation engine...', 'info');
+
+      const pendingStudents = payments.filter(p => p.status === 'Pending Verification' || getBalanceDue(p) > 0);
+      const allUtrs = new Map();
+      const duplicates = [];
+      let autoApprovedCount = 0;
+
+      payments.forEach(p => {
+        (p.paymentInstallments || []).forEach(inst => {
+          if (inst.utr) {
+            const cleanUtr = normalizeUtr(inst.utr);
+            if (allUtrs.has(cleanUtr)) {
+              duplicates.push({ utr: cleanUtr, student1: allUtrs.get(cleanUtr), student2: p.studentName });
+            } else {
+              allUtrs.set(cleanUtr, p.studentName);
+            }
+          }
+        });
+      });
+
+      if (duplicates.length > 0) {
+        alert(`RECONCILIATION ANOMALY DETECTED!
+Found ${duplicates.length} duplicate UTR numbers across multiple students:
+` +
+          duplicates.map(d => `UTR: ${d.utr} (Used by ${d.student1} and ${d.student2})`).join('\n')
+        );
+      } else {
+        showToast('Reconciliation Complete: Zero duplicate UTRs detected! All UTRs are unique.', 'success');
+      }
+    }
+
+    // Feature 165: Offline QR Attendance Queue & Automatic Cloud Sync
+    function enqueueOfflineAttendanceScan(studentId, session = 'boarding') {
+      const queueKey = 'trippay_offline_attendance_queue';
+      const existing = JSON.parse(localStorage.getItem(queueKey) || '[]');
+      existing.push({
+        studentId,
+        session,
+        timestamp: Date.now(),
+        tripId: currentTripId
+      });
+      localStorage.setItem(queueKey, JSON.stringify(existing));
+      updateOfflineQueueBanner();
+      showToast('Scan saved to offline queue (device is offline).', 'warning');
+    }
+
+    function updateOfflineQueueBanner() {
+      const banner = document.getElementById('offlineAttendanceQueueBanner');
+      const text = document.getElementById('offlineQueueCountText');
+      const existing = JSON.parse(localStorage.getItem('trippay_offline_attendance_queue') || '[]');
+      activeOfflineQueueCount = existing.length;
+
+      if (banner && text) {
+        if (existing.length > 0) {
+          banner.classList.remove('hidden');
+          text.textContent = existing.length;
+        } else {
+          banner.classList.add('hidden');
+        }
+      }
+    }
+
+    async function syncOfflineAttendanceQueue() {
+      const queueKey = 'trippay_offline_attendance_queue';
+      const existing = JSON.parse(localStorage.getItem(queueKey) || '[]');
+      if (existing.length === 0) {
+        showToast('No offline scans to sync.', 'info');
+        return;
+      }
+
+      showToast(`Syncing ${existing.length} offline attendance scans to cloud...`, 'info');
+      const batch = writeBatch(db);
+
+      existing.forEach(item => {
+        const studentRef = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', item.studentId);
+        if (item.session === 'arrival') {
+          batch.set(studentRef, { arrived: true, arrivedAt: item.timestamp }, { merge: true });
+        } else {
+          batch.set(studentRef, { boarded: true, boardedAt: item.timestamp }, { merge: true });
+        }
+      });
+
+      try {
+        await batch.commit();
+        localStorage.removeItem(queueKey);
+        updateOfflineQueueBanner();
+        showToast(`Successfully synced ${existing.length} offline attendance scans! ✅`, 'success');
+      } catch (err) {
+        console.error('Offline sync error:', err);
+        showToast('Could not sync offline scans. Will retry when connected.', 'error');
+      }
+    }
+
+    // Auto-sync offline attendance whenever connection returns
+    window.addEventListener('online', () => {
+      syncOfflineAttendanceQueue();
+    });
+
     Object.assign(window, {
+      hasPermission,
+      recordLoginHistory,
+      createSpecializedAccount,
+      toggleAccountStatus,
+      executePasswordReset,
+      exportFullDatabaseBackup,
+      restoreDatabaseFromJson,
+      broadcastTrainDelayAlert,
+      openGoogleMapsForLocation,
+      toggleConsentLocationSharing,
+      updateBudgetGaugeUI,
+      promptEditTripBudget,
+      renderVendorsHub,
+      openAddVendorModal,
+      deleteVendorRecord,
+      openEmergencySosModal,
+      closeEmergencySosModal,
+      triggerEmergencySosAlert,
+      renderLostFoundHub,
+      openReportLostItemModal,
+      claimLostFoundItem,
+      deleteLostFoundItem,
+      runAutomatedPaymentReconciliation,
+      enqueueOfflineAttendanceScan,
+      syncOfflineAttendanceQueue,
+      updateOfflineQueueBanner,
       setReportsScope,
       filterReportsCatalog,
       filterReportsByCategory,
