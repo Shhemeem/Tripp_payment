@@ -1199,11 +1199,18 @@
             <h3 class="font-display font-extrabold text-xl text-slate-900">Trip Day-to-Day Itinerary</h3>
             <p class="text-xs text-slate-500">Live timetable, assembly locations, and sightseeing halts</p>
           </div>
-          <button onclick="shareItineraryToWhatsApp()"
-            class="px-3.5 py-2 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shrink-0 shadow-sm">
-            <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
-            <span>Share on WhatsApp</span>
-          </button>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="downloadItineraryPDF()"
+              class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shrink-0 shadow-sm">
+              <i data-lucide="file-down" class="w-3.5 h-3.5 text-emerald-400"></i>
+              <span>Download PDF Itinerary</span>
+            </button>
+            <button onclick="shareItineraryToWhatsApp()"
+              class="px-3.5 py-2 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shrink-0 shadow-sm">
+              <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+              <span>Share on WhatsApp</span>
+            </button>
+          </div>
         </div>
         <div id="userItineraryListContainer" class="space-y-3"></div>
 
@@ -1919,6 +1926,11 @@
                 class="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition shadow-sm">
                 <i data-lucide="eye" class="w-3.5 h-3.5 text-indigo-600"></i>
                 <span id="itinHeaderToggleText">Disable User View</span>
+              </button>
+              <button onclick="downloadItineraryPDF()"
+                class="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition shadow-sm">
+                <i data-lucide="file-down" class="w-3.5 h-3.5 text-emerald-600"></i>
+                <span>Download PDF</span>
               </button>
               <button onclick="shareItineraryToWhatsApp()"
                 class="px-3.5 py-2 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs flex items-center gap-1.5 transition shadow-sm">
@@ -5284,61 +5296,175 @@
     </div>
   </div>
 
-  <!-- MODAL: ADD / EDIT ITINERARY -->
+  <!-- MODAL: ADD / EDIT ITINERARY (Features 86-94) -->
   <div id="itineraryModal"
-    class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
-    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+    class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print overflow-y-auto">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl my-6 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4 sticky top-0 bg-white z-10">
         <div>
-          <h3 id="itineraryModalTitle" class="font-display text-base sm:text-lg font-extrabold text-slate-900">Add
-            Itinerary Item</h3>
-          <p class="text-xs text-slate-500">Day schedule and destination activities</p>
+          <h3 id="itineraryModalTitle" class="font-display text-base sm:text-lg font-extrabold text-slate-900">Add Itinerary Item</h3>
+          <p class="text-xs text-slate-500">Day schedule, activities, locations, boarding points, hotels & meals</p>
         </div>
         <button onclick="closeItineraryModal()" class="p-1 text-slate-400 hover:text-slate-700">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <form onsubmit="handleSaveItinerarySubmit(event)" class="space-y-3.5">
+      <form onsubmit="handleSaveItinerarySubmit(event)" class="space-y-4">
         <input type="hidden" id="itinId" />
-        <div class="grid grid-cols-2 gap-3">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Day Tag *</label>
-            <input type="text" id="itinDay" required placeholder="e.g., Day 1 or 15 Nov"
-              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800" />
+            <label class="block text-xs font-bold text-slate-700 mb-1">Day Schedule Tag * (Feature 86)</label>
+            <input type="text" id="itinDay" required placeholder="e.g., Day 1 (15 Nov) or Day 2"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800" />
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Time Slot *</label>
-            <input type="text" id="itinTime" required placeholder="e.g., 06:00 AM"
-              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800" />
+            <label class="block text-xs font-bold text-slate-700 mb-1">Activity Category * (Feature 88)</label>
+            <select id="itinActivityType" onchange="toggleItinCategoryFields(this.value)"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800">
+              <option value="activity">🏔️ Sightseeing / Visit</option>
+              <option value="travel">🚌 Transport / Boarding</option>
+              <option value="stay">🏨 Hotel / Accommodation</option>
+              <option value="meal">🍽️ Food & Meals</option>
+              <option value="briefing">ℹ️ Briefing / Assembly</option>
+            </select>
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Activity Title *</label>
-          <input type="text" id="itinTitle" required placeholder="e.g., Departure from College Main Gate"
+          <label class="block text-xs font-bold text-slate-700 mb-1">Activity Title * (Feature 88)</label>
+          <input type="text" id="itinTitle" required placeholder="e.g., Tea Museum & Lockhart Gap Viewpoint"
             class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900" />
         </div>
 
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Location / Venue</label>
-          <input type="text" id="itinLocation" placeholder="e.g., Tea Museum, Munnar"
-            class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800" />
+        <!-- Schedule Timings (Features 90, 91) -->
+        <div class="bg-slate-50 border border-slate-200/90 rounded-2xl p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-extrabold uppercase text-slate-700 flex items-center gap-1.5">
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span>Timings & Schedule (Features 90, 91)</span>
+            </span>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Departure Time (Feature 90)</label>
+              <input type="text" id="itinDepartureTime" placeholder="e.g., 06:00 AM"
+                class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-800" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Arrival Time (Feature 91)</label>
+              <input type="text" id="itinArrivalTime" placeholder="e.g., 08:30 AM"
+                class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-800" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Custom Display Time / Slot</label>
+            <input type="text" id="itinTime" placeholder="e.g., 06:00 AM - 08:30 AM"
+              class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-800" />
+          </div>
         </div>
 
+        <!-- Locations: Destination Venue & Boarding Point (Features 87, 89) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-rose-500"></i>
+              <span>Destination Location * (Feature 87)</span>
+            </label>
+            <input type="text" id="itinLocation" placeholder="e.g., Tea Museum, Munnar"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+              <i data-lucide="bus" class="w-3.5 h-3.5 text-indigo-600"></i>
+              <span>Boarding Location * (Feature 89)</span>
+            </label>
+            <input type="text" id="itinBoardingLocation" placeholder="e.g., College Main Gate Ground"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium" />
+          </div>
+        </div>
+
+        <!-- Hotel & Accommodation Fields (Feature 92) -->
+        <div id="itinHotelFields" class="bg-indigo-50/60 border border-indigo-200/80 rounded-2xl p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-extrabold uppercase text-indigo-900 flex items-center gap-1.5">
+              <i data-lucide="hotel" class="w-3.5 h-3.5 text-indigo-600"></i>
+              <span>Hotel & Accommodation Info (Feature 92)</span>
+            </span>
+            <span class="text-[10px] text-indigo-700 font-bold bg-indigo-100 px-2 py-0.5 rounded-full">Resort / Stay</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-700 mb-1">Hotel / Resort Name</label>
+              <input type="text" id="itinHotelName" placeholder="e.g., Mountain Club Resort & Spa"
+                class="w-full px-3 py-2 rounded-xl bg-white border border-indigo-200 text-xs text-slate-800 font-medium" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-700 mb-1">Hotel Desk / Manager Phone</label>
+              <input type="text" id="itinHotelContact" placeholder="e.g., +91 98470 12345"
+                class="w-full px-3 py-2 rounded-xl bg-white border border-indigo-200 text-xs text-slate-800 font-mono" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Hotel Full Address</label>
+            <input type="text" id="itinHotelAddress" placeholder="e.g., Chithirapuram PO, Munnar, Idukki, Kerala 685565"
+              class="w-full px-3 py-2 rounded-xl bg-white border border-indigo-200 text-xs text-slate-800" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Room Allocation & Sharing Notes</label>
+            <input type="text" id="itinRoomNotes" placeholder="e.g., Quad sharing (Rooms 201-225). Check-in 12 PM, Check-out 10 AM"
+              class="w-full px-3 py-2 rounded-xl bg-white border border-indigo-200 text-xs text-slate-800" />
+          </div>
+        </div>
+
+        <!-- Food & Meal Schedules (Feature 93) -->
+        <div id="itinMealFields" class="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-extrabold uppercase text-amber-900 flex items-center gap-1.5">
+              <i data-lucide="utensils" class="w-3.5 h-3.5 text-amber-600"></i>
+              <span>Food & Meal Schedule (Feature 93)</span>
+            </span>
+            <span class="text-[10px] text-amber-800 font-bold bg-amber-100 px-2 py-0.5 rounded-full">Dining / Refreshment</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-700 mb-1">Meal Type</label>
+              <select id="itinMealType"
+                class="w-full px-3 py-2 rounded-xl bg-white border border-amber-200 text-xs text-slate-800 font-semibold">
+                <option value="">-- Select Meal Type --</option>
+                <option value="Breakfast">🍳 Breakfast Buffet</option>
+                <option value="Lunch">🍛 Lunch (Veg / Non-Veg Thali)</option>
+                <option value="High Tea & Snacks">☕ High Tea & Evening Snacks</option>
+                <option value="Dinner">🍲 Dinner & Campfire Buffet</option>
+                <option value="Midnight Refreshment">🥪 Midnight Refreshment</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-700 mb-1">Menu & Dining Highlights</label>
+              <input type="text" id="itinMealMenu" placeholder="e.g., Idli, Dosa, Poori Masala, Tea/Coffee"
+                class="w-full px-3 py-2 rounded-xl bg-white border border-amber-200 text-xs text-slate-800" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Travel Instructions & Student Advisory (Feature 94) -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Instructions / Note for Students</label>
-          <textarea id="itinNote" rows="2" placeholder="e.g., Carry college ID card and warm jacket."
-            class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800"></textarea>
+          <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+            <i data-lucide="alert-circle" class="w-3.5 h-3.5 text-amber-600"></i>
+            <span>Important Travel Instructions & Student Advisory (Feature 94)</span>
+          </label>
+          <textarea id="itinNote" rows="2" placeholder="e.g., Mandatory: Carry college ID card, jacket, comfortable sports shoes. Punctual boarding at 05:45 AM."
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
           <button type="button" onclick="closeItineraryModal()"
-            class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold">
+            class="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold">
             Cancel
           </button>
           <button type="submit"
-            class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm">
+            class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm">
             Save Activity
           </button>
         </div>
@@ -5346,15 +5472,14 @@
     </div>
   </div>
 
-  <!-- MODAL: ADD / EDIT HELPLINE CONTACT -->
+  <!-- MODAL: ADD / EDIT HELPLINE CONTACT (Features 95, 96) -->
   <div id="contactModal"
-    class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
-    <div class="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-5 sm:p-6 shadow-2xl">
+    class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print overflow-y-auto">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl my-6">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
         <div>
-          <h3 id="contactModalTitle" class="font-display text-base sm:text-lg font-extrabold text-slate-900">Add
-            Emergency Contact</h3>
-          <p class="text-xs text-slate-500">Helpline / Driver / Tour Staff</p>
+          <h3 id="contactModalTitle" class="font-display text-base sm:text-lg font-extrabold text-slate-900">Add Contact</h3>
+          <p class="text-xs text-slate-500">Trip Coordinators, Emergency Helplines & Tour Drivers</p>
         </div>
         <button onclick="closeContactModal()" class="p-1 text-slate-400 hover:text-slate-700">
           <i data-lucide="x" class="w-5 h-5"></i>
@@ -5363,27 +5488,40 @@
 
       <form onsubmit="handleSaveContactSubmit(event)" class="space-y-3.5">
         <input type="hidden" id="contactId" />
+
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Person / Agency Name *</label>
-          <input type="text" id="contactName" required placeholder="e.g., Rajesh (Bus Driver 1)"
+          <label class="block text-xs font-bold text-slate-700 mb-1">Contact Category *</label>
+          <select id="contactCategory" required
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800">
+            <option value="coordinator">👔 Staff / Student Coordinator (Feature 96)</option>
+            <option value="emergency">🚨 Medical / Police / Emergency Helpline (Feature 95)</option>
+            <option value="driver">🚌 Bus / Transport Crew & Driver</option>
+            <option value="hotel">🏨 Hotel / Accommodation Desk</option>
+            <option value="general">ℹ️ General Support / Other</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Person / Agency / Hospital Name *</label>
+          <input type="text" id="contactName" required placeholder="e.g., Prof. Rajesh Kumar or Munnar General Hospital"
             class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900" />
         </div>
 
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Role / Designation *</label>
-          <input type="text" id="contactRole" required placeholder="e.g., Chief Bus Driver / Faculty Lead"
+          <input type="text" id="contactRole" required placeholder="e.g., Faculty Staff Lead / Emergency Medical Officer"
             class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-800" />
         </div>
 
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Phone Number *</label>
-          <input type="tel" id="contactPhone" required inputmode="numeric" placeholder="10-digit mobile number"
+          <input type="tel" id="contactPhone" required inputmode="numeric" placeholder="10-digit mobile number or helpline"
             class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-mono font-bold text-slate-900" />
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Optional Note / Vehicle No</label>
-          <input type="text" id="contactNote" placeholder="e.g., Bus Reg: KL-10-AZ-4500"
+          <label class="block text-xs font-bold text-slate-700 mb-1">Additional Note / Vehicle Reg / Desk Info</label>
+          <input type="text" id="contactNote" placeholder="e.g., Bus Reg: KL-10-AZ-4500, Available 24x7"
             class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800" />
         </div>
 
@@ -13840,79 +13978,343 @@ Thank you!`;
       }
     }
 
-    // ITINERARY SYSTEM
+    // ITINERARY & DESTINATION MANAGEMENT SYSTEM (Features 86-94, 97)
+    function toggleItinCategoryFields(type) {
+      const hotelBox = document.getElementById('itinHotelFields');
+      const mealBox = document.getElementById('itinMealFields');
+      if (hotelBox) {
+        if (type === 'stay') {
+          hotelBox.classList.remove('hidden');
+        } else {
+          // Keep accessible but non-intrusive
+        }
+      }
+      if (mealBox) {
+        if (type === 'meal') {
+          mealBox.classList.remove('hidden');
+        } else {
+          // Keep accessible but non-intrusive
+        }
+      }
+    }
+
+    function getActivityTypeBadge(type) {
+      switch(type) {
+        case 'travel':
+          return `<span class="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">
+            <i data-lucide="bus" class="w-3 h-3 text-indigo-600"></i> Transport / Boarding
+          </span>`;
+        case 'stay':
+          return `<span class="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-violet-100 text-violet-800 border border-violet-200">
+            <i data-lucide="hotel" class="w-3 h-3 text-violet-600"></i> Hotel & Stay
+          </span>`;
+        case 'meal':
+          return `<span class="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+            <i data-lucide="utensils" class="w-3 h-3 text-amber-600"></i> Food & Meal
+          </span>`;
+        case 'briefing':
+          return `<span class="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 border border-sky-200">
+            <i data-lucide="info" class="w-3 h-3 text-sky-600"></i> Briefing & Assembly
+          </span>`;
+        case 'activity':
+        default:
+          return `<span class="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+            <i data-lucide="map-pin" class="w-3 h-3 text-emerald-600"></i> Sightseeing / Visit
+          </span>`;
+      }
+    }
+
     function renderItinerary() {
       const container = document.getElementById('itineraryListContainer');
       const userContainer = document.getElementById('userItineraryListContainer');
       const empty = document.getElementById('itineraryEmptyBox');
-      document.getElementById('subTabBadgeItinerary').textContent = itineraries.length;
+      const countBadge = document.getElementById('subTabBadgeItinerary');
+      if (countBadge) countBadge.textContent = itineraries.length;
 
-      const userItinHtml = itineraries.length === 0
-        ? `<div class="p-8 text-center text-slate-400 text-xs bg-slate-50 rounded-2xl border border-slate-200">Trip itinerary will be announced soon!</div>`
-        : itineraries.map((itin, idx) => `
-          <div class="bg-white border border-slate-200 rounded-2xl p-4 flex items-start gap-3 shadow-sm">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-700 flex flex-col items-center justify-center shrink-0 border border-emerald-200 font-extrabold text-xs">
-              <span>${idx + 1}</span>
-            </div>
-            <div class="space-y-1 flex-1">
-              <div class="flex flex-wrap items-center gap-2">
-                <span class="text-xs font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">${escapeHtml(itin.day)}</span>
-                <span class="text-xs font-mono font-bold text-slate-500">${escapeHtml(itin.time)}</span>
-              </div>
-              <h4 class="font-display font-extrabold text-slate-900 text-sm sm:text-base">${escapeHtml(itin.title)}</h4>
-              ${itin.location ? `<p class="text-xs text-slate-600 flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-600"></i> ${escapeHtml(itin.location)}</p>` : ''}
-              ${itin.note ? `<p class="text-xs text-amber-900 bg-amber-50/90 border border-amber-200 p-2.5 rounded-xl mt-1 leading-relaxed">${escapeHtml(itin.note)}</p>` : ''}
-            </div>
-          </div>
-        `).join('');
+      // Group activities by Day (Feature 86)
+      const dayGroups = {};
+      itineraries.forEach(it => {
+        const d = (it.day && it.day.trim()) ? it.day.trim() : 'Day 1';
+        if (!dayGroups[d]) dayGroups[d] = [];
+        dayGroups[d].push(it);
+      });
+      const dayKeys = Object.keys(dayGroups);
 
-      if (userContainer) userContainer.innerHTML = userItinHtml;
-
-      if (!container) return;
-      if (itineraries.length === 0) {
-        empty.classList.remove('hidden');
-        container.innerHTML = '';
-        return;
+      // Collect all hotels mentioned (Feature 92)
+      const hotelsList = [];
+      const seenHotels = new Set();
+      itineraries.forEach(it => {
+        if (it.hotelName && it.hotelName.trim() && !seenHotels.has(it.hotelName.trim())) {
+          seenHotels.add(it.hotelName.trim());
+          hotelsList.push({
+            name: it.hotelName.trim(),
+            address: it.hotelAddress || '',
+            contact: it.hotelContact || '',
+            roomNotes: it.roomNotes || ''
+          });
+        }
+      });
+      if (tripConfig.hotelName && !seenHotels.has(tripConfig.hotelName.trim())) {
+        hotelsList.push({
+          name: tripConfig.hotelName.trim(),
+          address: tripConfig.hotelAddress || '',
+          contact: tripConfig.hotelPhone || tripConfig.hotelContact || '',
+          roomNotes: tripConfig.roomNotes || ''
+        });
       }
-      empty.classList.add('hidden');
 
-      container.innerHTML = itineraries.map((itin, idx) => `
-        <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-start justify-between gap-3 shadow-sm">
-          <div class="flex items-start gap-3">
-            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex flex-col items-center justify-center shrink-0 border border-emerald-200 font-extrabold text-xs">
-              <span>${idx + 1}</span>
-            </div>
-            <div class="space-y-1">
-              <div class="flex flex-wrap items-center gap-2">
-                <span class="text-xs font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">${escapeHtml(itin.day)}</span>
-                <span class="text-xs font-mono font-bold text-slate-500">${escapeHtml(itin.time)}</span>
+      // 1. Important Travel Instructions & Guidelines Card (Feature 94)
+      const travelAdvisoryHtml = `
+        <div class="bg-gradient-to-r from-amber-500/10 via-amber-50/80 to-orange-50 border border-amber-200 rounded-3xl p-4 sm:p-5 shadow-sm space-y-3 mb-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-800 flex items-center justify-center font-bold">
+                <i data-lucide="shield-alert" class="w-4 h-4 text-amber-600"></i>
               </div>
-              <h4 class="font-display font-extrabold text-slate-900 text-sm sm:text-base">${escapeHtml(itin.title)}</h4>
-              ${itin.location ? `<p class="text-xs text-slate-500 flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-600"></i> ${escapeHtml(itin.location)}</p>` : ''}
-              ${itin.note ? `<p class="text-xs text-amber-800 bg-amber-50 p-2 rounded-xl mt-1">${escapeHtml(itin.note)}</p>` : ''}
+              <div>
+                <h4 class="font-display font-extrabold text-sm sm:text-base text-amber-950">Official Travel Advisory & Guidelines</h4>
+                <p class="text-[11px] text-amber-800">Essential rules and instructions for all participants</p>
+              </div>
             </div>
+            <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+              Mandatory Notice
+            </span>
           </div>
-          <div class="flex items-center gap-1 self-end sm:self-center">
-            <button onclick="openEditItineraryModal('${itin.id}')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">
-              Edit
-            </button>
-            <button onclick="openDeleteDialog('itinerary', '${itin.id}', '${escapeHtml(itin.title)}')" class="p-1.5 rounded-lg bg-rose-50 text-rose-600">
-              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            </button>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 text-xs">
+            <div class="bg-white/90 p-3 rounded-2xl border border-amber-200/80 shadow-xs">
+              <p class="font-extrabold text-slate-900 flex items-center gap-1.5 mb-1">
+                <i data-lucide="id-card" class="w-3.5 h-3.5 text-indigo-600"></i> Mandatory ID
+              </p>
+              <p class="text-[11px] text-slate-600">Carry your college ID card & Govt Photo ID (Aadhaar) at all times.</p>
+            </div>
+            <div class="bg-white/90 p-3 rounded-2xl border border-amber-200/80 shadow-xs">
+              <p class="font-extrabold text-slate-900 flex items-center gap-1.5 mb-1">
+                <i data-lucide="clock" class="w-3.5 h-3.5 text-emerald-600"></i> Punctuality
+              </p>
+              <p class="text-[11px] text-slate-600">Report to assembly/boarding points at least 15 minutes prior to scheduled departure.</p>
+            </div>
+            <div class="bg-white/90 p-3 rounded-2xl border border-amber-200/80 shadow-xs">
+              <p class="font-extrabold text-slate-900 flex items-center gap-1.5 mb-1">
+                <i data-lucide="users" class="w-3.5 h-3.5 text-sky-600"></i> Group Protocol
+              </p>
+              <p class="text-[11px] text-slate-600">Stay within assigned coach/batch. Do not leave sightseeing areas unannounced.</p>
+            </div>
+            <div class="bg-white/90 p-3 rounded-2xl border border-amber-200/80 shadow-xs">
+              <p class="font-extrabold text-slate-900 flex items-center gap-1.5 mb-1">
+                <i data-lucide="phone-call" class="w-3.5 h-3.5 text-rose-600"></i> Emergency
+              </p>
+              <p class="text-[11px] text-slate-600">Contact Faculty In-Charge or dial National Emergency (112 / 108) immediately.</p>
+            </div>
           </div>
         </div>
-      `).join('');
-      lucide.createIcons();
+      `;
+
+      // 2. Hotel & Accommodation Overview Card (Feature 92)
+      let hotelsOverviewHtml = '';
+      if (hotelsList.length > 0) {
+        hotelsOverviewHtml = `
+          <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-indigo-900 text-white rounded-3xl p-5 sm:p-6 shadow-md border border-indigo-800/40 space-y-4 mb-4">
+            <div class="flex items-center justify-between border-b border-indigo-800/40 pb-3">
+              <div class="flex items-center gap-2.5">
+                <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-sm">
+                  <i data-lucide="hotel" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h4 class="font-display font-extrabold text-base text-white">Hotel & Accommodation Details</h4>
+                  <p class="text-xs text-indigo-200">Resort stay, room allocations & front desk helplines</p>
+                </div>
+              </div>
+              <span class="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+                ${hotelsList.length} ${hotelsList.length === 1 ? 'Hotel' : 'Hotels'} Registered
+              </span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-${Math.min(hotelsList.length, 2)} gap-3.5">
+              ${hotelsList.map(h => `
+                <div class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl p-4 space-y-2.5">
+                  <div class="flex items-start justify-between gap-2">
+                    <div>
+                      <h5 class="font-bold text-sm text-white flex items-center gap-1.5">
+                        <i data-lucide="building" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+                        <span>${escapeHtml(h.name)}</span>
+                      </h5>
+                      ${h.address ? `<p class="text-xs text-indigo-200 flex items-center gap-1 mt-0.5"><i data-lucide="map-pin" class="w-3 h-3 text-rose-400 shrink-0"></i> ${escapeHtml(h.address)}</p>` : ''}
+                    </div>
+                  </div>
+                  ${h.roomNotes ? `
+                    <div class="bg-indigo-900/60 border border-indigo-700/50 rounded-xl p-2.5 text-xs text-indigo-100">
+                      <span class="font-bold text-white">Room Allocation:</span> ${escapeHtml(h.roomNotes)}
+                    </div>
+                  ` : ''}
+                  ${h.contact ? `
+                    <div class="pt-1 flex items-center gap-2">
+                      <a href="tel:${escapeHtml(h.contact)}" class="px-3 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-xs flex items-center gap-1.5 transition">
+                        <i data-lucide="phone" class="w-3.5 h-3.5 text-emerald-300"></i>
+                        <span>Call Reception (${escapeHtml(h.contact)})</span>
+                      </a>
+                    </div>
+                  ` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // Build Day-by-Day schedule HTML (Feature 86)
+      const renderDaySection = (dayKey, items, isAdminView) => {
+        return `
+          <div class="bg-slate-50/70 border border-slate-200 rounded-3xl p-4 sm:p-5 space-y-3.5">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <h4 class="font-display font-extrabold text-base text-slate-900">${escapeHtml(dayKey)}</h4>
+              </div>
+              <span class="text-xs font-bold text-slate-500 bg-white px-2.5 py-0.5 rounded-full border border-slate-200">
+                ${items.length} ${items.length === 1 ? 'Activity' : 'Activities'}
+              </span>
+            </div>
+
+            <div class="space-y-3">
+              ${items.map((itin, idx) => `
+                <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs hover:shadow-sm transition space-y-2.5">
+                  <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-2.5">
+                    <div class="flex items-start gap-3">
+                      <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-800 flex flex-col items-center justify-center shrink-0 border border-emerald-200 font-black text-xs">
+                        <span>${idx + 1}</span>
+                      </div>
+                      <div class="space-y-1">
+                        <div class="flex flex-wrap items-center gap-2">
+                          ${getActivityTypeBadge(itin.activityType)}
+                          <span class="text-xs font-mono font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md flex items-center gap-1">
+                            <i data-lucide="clock" class="w-3 h-3 text-slate-500"></i>
+                            ${escapeHtml(itin.time || [itin.departureTime, itin.arrivalTime].filter(Boolean).join(' ➔ ') || 'TBA')}
+                          </span>
+                          ${itin.departureTime ? `<span class="text-[11px] font-semibold text-slate-500">Dep: ${escapeHtml(itin.departureTime)}</span>` : ''}
+                          ${itin.arrivalTime ? `<span class="text-[11px] font-semibold text-slate-500">Arr: ${escapeHtml(itin.arrivalTime)}</span>` : ''}
+                        </div>
+                        <h4 class="font-display font-extrabold text-slate-900 text-sm sm:text-base">${escapeHtml(itin.title)}</h4>
+                      </div>
+                    </div>
+
+                    ${isAdminView ? `
+                      <div class="flex items-center gap-1 self-end sm:self-start shrink-0">
+                        <button onclick="openEditItineraryModal('${itin.id}')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+                          Edit
+                        </button>
+                        <button onclick="openDeleteDialog('itinerary', '${itin.id}', '${escapeHtml(itin.title)}')" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition">
+                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                      </div>
+                    ` : ''}
+                  </div>
+
+                  <!-- Locations Strip: Destination & Boarding (Features 87, 89) -->
+                  ${(itin.location || itin.boardingLocation) ? `
+                    <div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
+                      ${itin.location ? `
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold">
+                          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-600"></i>
+                          <span>Venue: ${escapeHtml(itin.location)}</span>
+                        </span>
+                      ` : ''}
+                      ${itin.boardingLocation ? `
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-indigo-50 text-indigo-800 border border-indigo-200 font-semibold">
+                          <i data-lucide="bus" class="w-3.5 h-3.5 text-indigo-600"></i>
+                          <span>Boarding: ${escapeHtml(itin.boardingLocation)}</span>
+                        </span>
+                      ` : ''}
+                    </div>
+                  ` : ''}
+
+                  <!-- Hotel / Accommodation Info (Feature 92) -->
+                  ${(itin.hotelName || itin.roomNotes) ? `
+                    <div class="bg-indigo-50/70 border border-indigo-200/80 rounded-xl p-3 text-xs text-indigo-950 space-y-1">
+                      <div class="flex items-center justify-between flex-wrap gap-2">
+                        <span class="font-extrabold text-indigo-900 flex items-center gap-1.5">
+                          <i data-lucide="hotel" class="w-3.5 h-3.5 text-indigo-600"></i>
+                          ${escapeHtml(itin.hotelName || 'Stay Halt')}
+                        </span>
+                        ${itin.hotelContact ? `<a href="tel:${escapeHtml(itin.hotelContact)}" class="text-[11px] font-bold text-indigo-700 underline flex items-center gap-1"><i data-lucide="phone" class="w-3 h-3"></i> ${escapeHtml(itin.hotelContact)}</a>` : ''}
+                      </div>
+                      ${itin.hotelAddress ? `<p class="text-[11px] text-slate-600"><span class="font-medium text-slate-500">Address:</span> ${escapeHtml(itin.hotelAddress)}</p>` : ''}
+                      ${itin.roomNotes ? `<p class="text-[11px] text-indigo-900 bg-indigo-100/60 p-1.5 rounded-lg font-medium"><span class="font-bold">Room Notes:</span> ${escapeHtml(itin.roomNotes)}</p>` : ''}
+                    </div>
+                  ` : ''}
+
+                  <!-- Food & Meal Info (Feature 93) -->
+                  ${(itin.mealType || itin.mealMenu) ? `
+                    <div class="bg-amber-50/70 border border-amber-200/80 rounded-xl p-3 text-xs text-amber-950 space-y-1">
+                      <span class="font-extrabold text-amber-900 flex items-center gap-1.5">
+                        <i data-lucide="utensils" class="w-3.5 h-3.5 text-amber-600"></i>
+                        Meal: ${escapeHtml(itin.mealType || 'Scheduled Refreshment')}
+                      </span>
+                      ${itin.mealMenu ? `<p class="text-[11px] text-amber-900"><span class="font-semibold text-amber-800">Menu Highlights:</span> ${escapeHtml(itin.mealMenu)}</p>` : ''}
+                    </div>
+                  ` : ''}
+
+                  <!-- Travel Instructions / Specific Note (Feature 94) -->
+                  ${itin.note ? `
+                    <div class="text-xs text-amber-950 bg-amber-50/90 border border-amber-200/90 p-2.5 rounded-xl leading-relaxed flex items-start gap-1.5">
+                      <i data-lucide="info" class="w-3.5 h-3.5 text-amber-700 shrink-0 mt-0.5"></i>
+                      <span><strong>Instructions:</strong> ${escapeHtml(itin.note)}</span>
+                    </div>
+                  ` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      };
+
+      // Compile Student HTML
+      if (userContainer) {
+        if (itineraries.length === 0) {
+          userContainer.innerHTML = `
+            ${travelAdvisoryHtml}
+            <div class="p-8 text-center text-slate-400 text-xs bg-slate-50 rounded-2xl border border-slate-200">
+              Trip itinerary will be announced soon! Check back later for schedule updates.
+            </div>
+          `;
+        } else {
+          userContainer.innerHTML = travelAdvisoryHtml + hotelsOverviewHtml + dayKeys.map(k => renderDaySection(k, dayGroups[k], false)).join('');
+        }
+      }
+
+      // Compile Admin HTML
+      if (container) {
+        if (itineraries.length === 0) {
+          empty.classList.remove('hidden');
+          container.innerHTML = '';
+        } else {
+          empty.classList.add('hidden');
+          container.innerHTML = travelAdvisoryHtml + hotelsOverviewHtml + dayKeys.map(k => renderDaySection(k, dayGroups[k], true)).join('');
+        }
+      }
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
     }
 
     function openAddItineraryModal() {
       document.getElementById('itineraryModalTitle').textContent = 'Add Activity to Itinerary';
       document.getElementById('itinId').value = '';
       document.getElementById('itinDay').value = 'Day 1';
-      document.getElementById('itinTime').value = '06:00 AM';
+      document.getElementById('itinActivityType').value = 'activity';
       document.getElementById('itinTitle').value = '';
+      document.getElementById('itinDepartureTime').value = '06:00 AM';
+      document.getElementById('itinArrivalTime').value = '08:30 AM';
+      document.getElementById('itinTime').value = '06:00 AM - 08:30 AM';
       document.getElementById('itinLocation').value = '';
+      document.getElementById('itinBoardingLocation').value = '';
+      document.getElementById('itinHotelName').value = '';
+      document.getElementById('itinHotelAddress').value = '';
+      document.getElementById('itinHotelContact').value = '';
+      document.getElementById('itinRoomNotes').value = '';
+      document.getElementById('itinMealType').value = '';
+      document.getElementById('itinMealMenu').value = '';
       document.getElementById('itinNote').value = '';
+      toggleItinCategoryFields('activity');
       document.getElementById('itineraryModal').classList.remove('hidden');
     }
 
@@ -13921,11 +14323,22 @@ Thank you!`;
       if (!it) return;
       document.getElementById('itineraryModalTitle').textContent = 'Edit Activity';
       document.getElementById('itinId').value = it.id;
-      document.getElementById('itinDay').value = it.day;
-      document.getElementById('itinTime').value = it.time;
-      document.getElementById('itinTitle').value = it.title;
+      document.getElementById('itinDay').value = it.day || 'Day 1';
+      document.getElementById('itinActivityType').value = it.activityType || 'activity';
+      document.getElementById('itinTitle').value = it.title || '';
+      document.getElementById('itinDepartureTime').value = it.departureTime || '';
+      document.getElementById('itinArrivalTime').value = it.arrivalTime || '';
+      document.getElementById('itinTime').value = it.time || '';
       document.getElementById('itinLocation').value = it.location || '';
+      document.getElementById('itinBoardingLocation').value = it.boardingLocation || '';
+      document.getElementById('itinHotelName').value = it.hotelName || '';
+      document.getElementById('itinHotelAddress').value = it.hotelAddress || '';
+      document.getElementById('itinHotelContact').value = it.hotelContact || '';
+      document.getElementById('itinRoomNotes').value = it.roomNotes || '';
+      document.getElementById('itinMealType').value = it.mealType || '';
+      document.getElementById('itinMealMenu').value = it.mealMenu || '';
       document.getElementById('itinNote').value = it.note || '';
+      toggleItinCategoryFields(it.activityType || 'activity');
       document.getElementById('itineraryModal').classList.remove('hidden');
     }
 
@@ -13936,12 +14349,29 @@ Thank you!`;
     async function handleSaveItinerarySubmit(e) {
       e.preventDefault();
       const id = document.getElementById('itinId').value;
+      const depTime = document.getElementById('itinDepartureTime').value.trim();
+      const arrTime = document.getElementById('itinArrivalTime').value.trim();
+      let customTime = document.getElementById('itinTime').value.trim();
+      if (!customTime && (depTime || arrTime)) {
+        customTime = [depTime, arrTime].filter(Boolean).join(' ➔ ');
+      }
+
       const data = {
         tripId: currentTripId,
-        day: document.getElementById('itinDay').value.trim(),
-        time: document.getElementById('itinTime').value.trim(),
+        day: document.getElementById('itinDay').value.trim() || 'Day 1',
+        activityType: document.getElementById('itinActivityType').value || 'activity',
         title: document.getElementById('itinTitle').value.trim(),
+        departureTime: depTime,
+        arrivalTime: arrTime,
+        time: customTime || depTime || 'TBA',
         location: document.getElementById('itinLocation').value.trim(),
+        boardingLocation: document.getElementById('itinBoardingLocation').value.trim(),
+        hotelName: document.getElementById('itinHotelName').value.trim(),
+        hotelAddress: document.getElementById('itinHotelAddress').value.trim(),
+        hotelContact: document.getElementById('itinHotelContact').value.trim(),
+        roomNotes: document.getElementById('itinRoomNotes').value.trim(),
+        mealType: document.getElementById('itinMealType').value.trim(),
+        mealMenu: document.getElementById('itinMealMenu').value.trim(),
         note: document.getElementById('itinNote').value.trim(),
         createdAt: Date.now()
       };
@@ -13971,91 +14401,281 @@ Thank you!`;
         `Destination: ${tripConfig.destination}`,
         `Date: ${tripConfig.tripDate}`,
         `--------------------------------`,
-        ...itineraries.map((it, idx) => `${idx + 1}. *[${it.day} - ${it.time}]* ${it.title} ${it.location ? '(@ ' + it.location + ')' : ''}`),
+        ...itineraries.map((it, idx) => {
+          let line = `${idx + 1}. *[${it.day} - ${it.time || it.departureTime || 'TBA'}]* ${it.title}`;
+          if (it.boardingLocation) line += ` (Boarding: ${it.boardingLocation})`;
+          if (it.location) line += ` (@ ${it.location})`;
+          if (it.hotelName) line += ` [Hotel: ${it.hotelName}]`;
+          if (it.mealType) line += ` [Meal: ${it.mealType}]`;
+          if (it.note) line += ` (Note: ${it.note})`;
+          return line;
+        }),
         `--------------------------------`,
+        `*Emergency Helplines:* Ambulance: 108 | Police: 112 | Tourist: 1363`,
         `Have a safe & wonderful trip!`
       ];
       copyText(lines.join('\n'), 'Trip Itinerary copied to clipboard!');
     }
 
-    // HELPLINE & CREW SYSTEM
+    // HELPLINE, COORDINATOR & CREW SYSTEM (Features 95, 96)
     function renderContacts() {
       const container = document.getElementById('contactsListContainer');
       const userContainer = document.getElementById('userContactsListContainer');
       const empty = document.getElementById('contactsEmptyBox');
-      document.getElementById('subTabBadgeContacts').textContent = contacts.length;
+      const countBadge = document.getElementById('subTabBadgeContacts');
+      if (countBadge) countBadge.textContent = contacts.length;
 
-      const userContactHtml = contacts.length === 0
-        ? `<div class="col-span-full p-8 text-center text-slate-400 text-xs bg-slate-50 rounded-2xl border border-slate-200">Emergency crew & helpline numbers will be listed here.</div>`
-        : contacts.map(c => `
-          <div class="bg-white border border-slate-200 rounded-2xl p-4 space-y-2 shadow-sm">
-            <div class="flex items-start justify-between">
+      // Group contacts by Category
+      const coordinators = contacts.filter(c => c.category === 'coordinator');
+      const emergencies = contacts.filter(c => c.category === 'emergency');
+      const drivers = contacts.filter(c => c.category === 'driver' || /driver|bus/i.test(c.role || ''));
+      const others = contacts.filter(c => !['coordinator', 'emergency'].includes(c.category) && !drivers.includes(c));
+
+      // 1. Assigned Trip Coordinators Card (Feature 96)
+      const leadStaffName = tripConfig.receiverName || 'Faculty Staff In-Charge';
+      const leadStaffPhone = (tripConfig.adminPhone || tripConfig.upiId || '').split('@')[0].replace(/\D/g, '').slice(-10) || '9876543210';
+
+      const coordinatorsCardHtml = `
+        <div class="col-span-full bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 text-white rounded-3xl p-5 sm:p-6 shadow-md border border-emerald-800/40 space-y-4">
+          <div class="flex items-center justify-between border-b border-emerald-800/40 pb-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-black shadow-sm">
+                <i data-lucide="user-check" class="w-5 h-5"></i>
+              </div>
               <div>
-                <h4 class="font-bold text-slate-900 text-sm">${escapeHtml(c.name)}</h4>
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">
-                  ${escapeHtml(c.role)}
-                </span>
+                <h4 class="font-display font-extrabold text-base text-white">Assigned Trip Coordinators</h4>
+                <p class="text-xs text-emerald-200">Official faculty staff in-charge & student tour leaders</p>
               </div>
             </div>
+            <span class="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+              Feature 96
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            <!-- Lead Faculty Staff -->
+            <div class="bg-white/10 backdrop-blur-sm border border-emerald-500/30 rounded-2xl p-4 space-y-2.5">
+              <div class="flex items-start justify-between">
+                <div>
+                  <h5 class="font-extrabold text-sm text-white">${escapeHtml(leadStaffName)}</h5>
+                  <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-200 border border-emerald-400/30">
+                    Lead Faculty In-Charge
+                  </span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 pt-1 border-t border-white/10 text-xs">
+                <a href="tel:${escapeHtml(leadStaffPhone)}" class="flex-1 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold flex items-center justify-center gap-1.5 transition">
+                  <i data-lucide="phone" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span>Call</span>
+                </a>
+                <a href="https://wa.me/91${normalizePhone(leadStaffPhone)}" target="_blank" class="flex-1 py-2 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold flex items-center justify-center gap-1.5 transition shadow-sm">
+                  <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                  <span>WhatsApp</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Other Registered Coordinators -->
+            ${coordinators.map(c => `
+              <div class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl p-4 space-y-2.5">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <h5 class="font-extrabold text-sm text-white">${escapeHtml(c.name)}</h5>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-200 border border-teal-400/30">
+                      ${escapeHtml(c.role || 'Trip Coordinator')}
+                    </span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 pt-1 border-t border-white/10 text-xs">
+                  <a href="tel:${escapeHtml(c.phone)}" class="flex-1 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold flex items-center justify-center gap-1.5 transition">
+                    <i data-lucide="phone" class="w-3.5 h-3.5 text-emerald-400"></i>
+                    <span>Call</span>
+                  </a>
+                  <a href="https://wa.me/91${normalizePhone(c.phone)}" target="_blank" class="flex-1 py-2 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold flex items-center justify-center gap-1.5 transition shadow-sm">
+                    <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                    <span>WhatsApp</span>
+                  </a>
+                </div>
+                ${c.note ? `<p class="text-[11px] text-emerald-200/80 truncate pt-0.5">${escapeHtml(c.note)}</p>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      // 2. Emergency Helplines & Medical Desk Card (Feature 95)
+      const emergencyCardHtml = `
+        <div class="col-span-full bg-gradient-to-r from-rose-950 via-slate-900 to-rose-900 text-white rounded-3xl p-5 sm:p-6 shadow-md border border-rose-800/40 space-y-4">
+          <div class="flex items-center justify-between border-b border-rose-800/40 pb-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-2xl bg-rose-600 text-white flex items-center justify-center font-black shadow-sm">
+                <i data-lucide="shield-alert" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h4 class="font-display font-extrabold text-base text-white">Emergency Helplines & Medical Desk</h4>
+                <p class="text-xs text-rose-200">24/7 National Emergency Services, Police & Medical Aid</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/30">
+              Feature 95
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+            <a href="tel:108" class="bg-white/10 hover:bg-white/20 border border-rose-500/30 rounded-2xl p-3.5 transition flex flex-col items-center">
+              <div class="w-9 h-9 rounded-xl bg-rose-500/30 text-rose-300 flex items-center justify-center mb-1">
+                <i data-lucide="ambulance" class="w-5 h-5"></i>
+              </div>
+              <span class="font-extrabold text-base text-white">108</span>
+              <span class="text-[11px] text-rose-200">Ambulance</span>
+            </a>
+
+            <a href="tel:112" class="bg-white/10 hover:bg-white/20 border border-rose-500/30 rounded-2xl p-3.5 transition flex flex-col items-center">
+              <div class="w-9 h-9 rounded-xl bg-rose-500/30 text-rose-300 flex items-center justify-center mb-1">
+                <i data-lucide="shield" class="w-5 h-5"></i>
+              </div>
+              <span class="font-extrabold text-base text-white">112</span>
+              <span class="text-[11px] text-rose-200">Police / SOS</span>
+            </a>
+
+            <a href="tel:1363" class="bg-white/10 hover:bg-white/20 border border-rose-500/30 rounded-2xl p-3.5 transition flex flex-col items-center">
+              <div class="w-9 h-9 rounded-xl bg-rose-500/30 text-rose-300 flex items-center justify-center mb-1">
+                <i data-lucide="compass" class="w-5 h-5"></i>
+              </div>
+              <span class="font-extrabold text-base text-white">1363</span>
+              <span class="text-[11px] text-rose-200">Tourist Helpline</span>
+            </a>
+
+            <a href="tel:1091" class="bg-white/10 hover:bg-white/20 border border-rose-500/30 rounded-2xl p-3.5 transition flex flex-col items-center">
+              <div class="w-9 h-9 rounded-xl bg-rose-500/30 text-rose-300 flex items-center justify-center mb-1">
+                <i data-lucide="heart-handshake" class="w-5 h-5"></i>
+              </div>
+              <span class="font-extrabold text-base text-white">1091</span>
+              <span class="text-[11px] text-rose-200">Women Helpline</span>
+            </a>
+          </div>
+
+          ${emergencies.length > 0 ? `
+            <div class="pt-2 border-t border-rose-800/40">
+              <h5 class="font-bold text-xs uppercase tracking-wider text-rose-200 mb-2.5">Local Hospital & Trip Emergency Contacts</h5>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                ${emergencies.map(c => `
+                  <div class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl p-3.5 space-y-2">
+                    <div class="flex items-start justify-between">
+                      <div>
+                        <h6 class="font-bold text-sm text-white">${escapeHtml(c.name)}</h6>
+                        <span class="text-[10px] font-bold text-rose-300">${escapeHtml(c.role || 'Emergency Contact')}</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2 pt-1 border-t border-white/10 text-xs">
+                      <a href="tel:${escapeHtml(c.phone)}" class="flex-1 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold flex items-center justify-center gap-1.5 transition">
+                        <i data-lucide="phone" class="w-3 h-3 text-rose-400"></i>
+                        <span>Call</span>
+                      </a>
+                      <a href="https://wa.me/91${normalizePhone(c.phone)}" target="_blank" class="flex-1 py-1.5 rounded-xl bg-[#25D366] text-white font-bold flex items-center justify-center gap-1.5 transition">
+                        <i data-lucide="message-circle" class="w-3 h-3"></i>
+                        <span>WhatsApp</span>
+                      </a>
+                    </div>
+                    ${c.note ? `<p class="text-[11px] text-rose-200/80 truncate pt-0.5">${escapeHtml(c.note)}</p>` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+
+      // 3. Contact Card Renderers for Crew, Drivers & General
+      const renderContactCard = (c, isAdmin) => {
+        let badgeColor = 'bg-sky-100 text-sky-800';
+        if (c.category === 'coordinator') badgeColor = 'bg-teal-100 text-teal-800';
+        if (c.category === 'emergency') badgeColor = 'bg-rose-100 text-rose-800';
+        if (c.category === 'driver') badgeColor = 'bg-amber-100 text-amber-800';
+        if (c.category === 'hotel') badgeColor = 'bg-indigo-100 text-indigo-800';
+
+        return `
+          <div class="bg-white border border-slate-200 rounded-2xl p-4 space-y-2.5 shadow-sm hover:shadow-md transition">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <h4 class="font-bold text-slate-900 text-sm">${escapeHtml(c.name)}</h4>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeColor}">
+                  ${escapeHtml(c.role || c.category || 'Tour Staff')}
+                </span>
+              </div>
+              ${isAdmin ? `
+                <div class="flex items-center gap-1">
+                  <button onclick="openEditContactModal('${c.id}')" class="p-1 text-slate-400 hover:text-slate-700">
+                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <button onclick="openDeleteDialog('contact', '${c.id}', '${escapeHtml(c.name)}')" class="p-1 text-slate-400 hover:text-rose-600">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              ` : ''}
+            </div>
+
             <div class="flex items-center gap-2 pt-1 border-t border-slate-100 text-xs">
-              <a href="tel:${escapeHtml(c.phone)}" class="flex-1 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold flex items-center justify-center gap-1.5">
+              <a href="tel:${escapeHtml(c.phone)}" class="flex-1 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold flex items-center justify-center gap-1.5 transition">
                 <i data-lucide="phone" class="w-3.5 h-3.5 text-emerald-600"></i>
                 <span>Call Now</span>
               </a>
-              <a href="https://wa.me/91${normalizePhone(c.phone)}" target="_blank" class="flex-1 py-2 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold flex items-center justify-center gap-1.5 shadow-sm">
+              <a href="https://wa.me/91${normalizePhone(c.phone)}" target="_blank" class="flex-1 py-2 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold flex items-center justify-center gap-1.5 transition shadow-sm">
                 <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
                 <span>WhatsApp</span>
               </a>
             </div>
-            ${c.note ? `<p class="text-[11px] text-slate-500 font-medium truncate pt-0.5"><span class="text-slate-400 font-normal">Info:</span> ${escapeHtml(c.note)}</p>` : ''}
+
+            ${c.note ? `
+              <p class="text-[11px] text-slate-500 font-medium truncate pt-0.5">
+                <span class="text-slate-400 font-normal">Info:</span> ${escapeHtml(c.note)}
+              </p>
+            ` : ''}
           </div>
-        `).join('');
+        `;
+      };
 
-      if (userContainer) userContainer.innerHTML = userContactHtml;
-
-      if (!container) return;
-      if (contacts.length === 0) {
-        empty.classList.remove('hidden');
-        container.innerHTML = '';
-        return;
+      // Compile Student Helplines View
+      if (userContainer) {
+        userContainer.innerHTML = coordinatorsCardHtml + emergencyCardHtml + contacts.map(c => renderContactCard(c, false)).join('');
       }
-      empty.classList.add('hidden');
 
-      container.innerHTML = contacts.map(c => `
-        <div class="bg-white border border-slate-200 rounded-2xl p-4 space-y-2 shadow-sm">
-          <div class="flex items-start justify-between">
-            <div>
-              <h4 class="font-bold text-slate-900 text-sm">${escapeHtml(c.name)}</h4>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">
-                ${escapeHtml(c.role)}
-              </span>
-            </div>
-            <button onclick="openDeleteDialog('contact', '${c.id}', '${escapeHtml(c.name)}')" class="text-slate-400 hover:text-rose-600">
-              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            </button>
-          </div>
-          <div class="flex items-center gap-2 pt-1 border-t border-slate-100 text-xs">
-            <a href="tel:${escapeHtml(c.phone)}" class="flex-1 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold flex items-center justify-center gap-1">
-              <i data-lucide="phone" class="w-3 h-3 text-emerald-600"></i>
-              <span>Call</span>
-            </a>
-            <a href="https://wa.me/91${normalizePhone(c.phone)}" target="_blank" class="flex-1 py-1.5 rounded-xl bg-[#25D366] text-white font-bold flex items-center justify-center gap-1">
-              <i data-lucide="message-circle" class="w-3 h-3"></i>
-              <span>WhatsApp</span>
-            </a>
-          </div>
-          ${c.note ? `<p class="text-[10px] text-slate-400 truncate">${escapeHtml(c.note)}</p>` : ''}
-        </div>
-      `).join('');
-      lucide.createIcons();
+      // Compile Admin Contacts View
+      if (container) {
+        if (contacts.length === 0) {
+          empty.classList.add('hidden'); // We still show coordinators & emergency cards!
+        } else {
+          empty.classList.add('hidden');
+        }
+        container.innerHTML = coordinatorsCardHtml + emergencyCardHtml + contacts.map(c => renderContactCard(c, true)).join('');
+      }
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
     }
 
     function openAddContactModal() {
+      document.getElementById('contactModalTitle').textContent = 'Add Helpline / Coordinator Contact';
       document.getElementById('contactId').value = '';
+      document.getElementById('contactCategory').value = 'coordinator';
       document.getElementById('contactName').value = '';
       document.getElementById('contactRole').value = '';
       document.getElementById('contactPhone').value = '';
       document.getElementById('contactNote').value = '';
+      document.getElementById('contactModal').classList.remove('hidden');
+    }
+
+    function openEditContactModal(id) {
+      const c = contacts.find(x => x.id === id);
+      if (!c) return;
+      document.getElementById('contactModalTitle').textContent = 'Edit Contact';
+      document.getElementById('contactId').value = c.id;
+      document.getElementById('contactCategory').value = c.category || 'general';
+      document.getElementById('contactName').value = c.name || '';
+      document.getElementById('contactRole').value = c.role || '';
+      document.getElementById('contactPhone').value = c.phone || '';
+      document.getElementById('contactNote').value = c.note || '';
       document.getElementById('contactModal').classList.remove('hidden');
     }
 
@@ -14065,8 +14685,10 @@ Thank you!`;
 
     async function handleSaveContactSubmit(e) {
       e.preventDefault();
+      const id = document.getElementById('contactId').value;
       const data = {
         tripId: currentTripId,
+        category: document.getElementById('contactCategory').value || 'general',
         name: document.getElementById('contactName').value.trim(),
         role: document.getElementById('contactRole').value.trim(),
         phone: normalizePhone(document.getElementById('contactPhone').value),
@@ -14074,11 +14696,191 @@ Thank you!`;
         createdAt: Date.now()
       };
       try {
-        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'trip_contacts'), data);
-        showToast('Contact added!');
+        if (id) {
+          await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_contacts', id), data);
+          showToast('Contact updated!');
+        } else {
+          await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'trip_contacts'), data);
+          showToast('Contact added!');
+        }
         closeContactModal();
       } catch (err) {
-        showToast('Failed to add contact.', 'error');
+        showToast('Failed to save contact.', 'error');
+      }
+    }
+
+    // DOWNLOADABLE ITINERARY PDF GENERATOR (Feature 97)
+    async function downloadItineraryPDF() {
+      if (itineraries.length === 0) {
+        showToast('No itinerary activities found to generate PDF!', 'warning');
+        return;
+      }
+
+      showToast('Generating Official Itinerary PDF...', 'info');
+
+      // Create temporary printable A4 container
+      const printDiv = document.createElement('div');
+      printDiv.id = 'itineraryPdfPrintContainer';
+      printDiv.style.position = 'fixed';
+      printDiv.style.left = '-9999px';
+      printDiv.style.top = '0';
+      printDiv.style.width = '210mm';
+      printDiv.style.backgroundColor = '#ffffff';
+      printDiv.style.color = '#0f172a';
+      printDiv.style.fontFamily = 'system-ui, -apple-system, sans-serif';
+      printDiv.style.padding = '12mm';
+      printDiv.style.boxSizing = 'border-box';
+
+      const leadStaffName = tripConfig.receiverName || 'Faculty Staff In-Charge';
+      const leadStaffPhone = (tripConfig.adminPhone || tripConfig.upiId || '').split('@')[0].replace(/\D/g, '').slice(-10) || '9876543210';
+
+      // Find any hotel entries
+      const hotels = [];
+      const seenHotels = new Set();
+      itineraries.forEach(it => {
+        if (it.hotelName && !seenHotels.has(it.hotelName)) {
+          seenHotels.add(it.hotelName);
+          hotels.push(it);
+        }
+      });
+
+      // Group activities by Day
+      const dayGroups = {};
+      itineraries.forEach(it => {
+        const d = (it.day && it.day.trim()) ? it.day.trim() : 'Day 1';
+        if (!dayGroups[d]) dayGroups[d] = [];
+        dayGroups[d].push(it);
+      });
+
+      const htmlContent = `
+        <div style="border-bottom: 2px solid #059669; padding-bottom: 12px; margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <h1 style="font-size: 20px; font-weight: 800; color: #064e3b; margin: 0; text-transform: uppercase;">${escapeHtml(tripConfig.tripTitle || 'College Tour')}</h1>
+              <p style="font-size: 13px; font-weight: 600; color: #047857; margin: 4px 0 0 0;">Official Day-to-Day Travel Itinerary & Student Schedule</p>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 10px; font-weight: 700; color: #065f46; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 3px 8px; border-radius: 9999px;">OFFICIAL CIRCULAR</span>
+              <p style="font-size: 10px; color: #64748b; margin: 4px 0 0 0;">Generated: ${new Date().toLocaleDateString('en-GB')}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trip Details Strip -->
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 11px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <tr>
+            <td style="padding: 6px 10px; font-weight: 700; color: #475569; width: 25%;">Destination:</td>
+            <td style="padding: 6px 10px; font-weight: 800; color: #0f172a; width: 25%;">${escapeHtml(tripConfig.destination || 'N/A')}</td>
+            <td style="padding: 6px 10px; font-weight: 700; color: #475569; width: 25%;">Travel Dates:</td>
+            <td style="padding: 6px 10px; font-weight: 800; color: #0f172a; width: 25%;">${escapeHtml(tripConfig.tripDate || 'Official Schedule')}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 10px; font-weight: 700; color: #475569;">Faculty In-Charge:</td>
+            <td style="padding: 6px 10px; font-weight: 800; color: #0f172a;">${escapeHtml(leadStaffName)} (${escapeHtml(leadStaffPhone)})</td>
+            <td style="padding: 6px 10px; font-weight: 700; color: #475569;">24x7 Emergency Helplines:</td>
+            <td style="padding: 6px 10px; font-weight: 800; color: #b91c1c;">108 (Ambulance) | 112 (Police) | 1363 (Tourist)</td>
+          </tr>
+        </table>
+
+        ${hotels.length > 0 ? `
+          <!-- Hotel & Accommodation Summary (Feature 92) -->
+          <div style="margin-bottom: 14px; border: 1px solid #c7d2fe; background: #f5f3ff; border-radius: 8px; padding: 10px;">
+            <h3 style="font-size: 12px; font-weight: 800; color: #3730a3; margin: 0 0 6px 0; text-transform: uppercase;">🏨 Hotel & Accommodation Information (Feature 92)</h3>
+            <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+              ${hotels.map(h => `
+                <tr>
+                  <td style="padding: 4px 0; font-weight: 800; color: #1e1b4b; width: 30%;">${escapeHtml(h.hotelName)}</td>
+                  <td style="padding: 4px 0; color: #4338ca; width: 40%;">${escapeHtml(h.hotelAddress || 'Address in itinerary')}</td>
+                  <td style="padding: 4px 0; font-weight: 700; color: #1e1b4b; width: 30%;">Reception: ${escapeHtml(h.hotelContact || 'Listed on board')} ${h.roomNotes ? ' | ' + escapeHtml(h.roomNotes) : ''}</td>
+                </tr>
+              `).join('')}
+            </table>
+          </div>
+        ` : ''}
+
+        <!-- Day-by-Day Schedule Table (Features 86, 87, 88, 89, 90, 91, 93, 94) -->
+        <h3 style="font-size: 13px; font-weight: 800; color: #0f172a; margin: 0 0 8px 0; text-transform: uppercase;">📅 Detailed Schedule & Activity Manifest</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 10px; border: 1px solid #cbd5e1;">
+          <thead>
+            <tr style="background: #0f172a; color: #ffffff; text-align: left;">
+              <th style="padding: 6px 8px; width: 18%; border: 1px solid #334155;">Day & Timings</th>
+              <th style="padding: 6px 8px; width: 30%; border: 1px solid #334155;">Activity & Destination</th>
+              <th style="padding: 6px 8px; width: 22%; border: 1px solid #334155;">Boarding / Venue Location</th>
+              <th style="padding: 6px 8px; width: 30%; border: 1px solid #334155;">Meals & Student Instructions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${Object.keys(dayGroups).map(dayKey => `
+              <tr style="background: #f1f5f9;">
+                <td colspan="4" style="padding: 5px 8px; font-weight: 800; color: #065f46; font-size: 11px; border: 1px solid #cbd5e1;">
+                  ● ${escapeHtml(dayKey)}
+                </td>
+              </tr>
+              ${dayGroups[dayKey].map((it, idx) => `
+                <tr style="background: ${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+                  <td style="padding: 6px 8px; border: 1px solid #e2e8f0; vertical-align: top;">
+                    <div style="font-weight: 800; color: #0f172a;">${escapeHtml(it.time || [it.departureTime, it.arrivalTime].filter(Boolean).join(' - ') || 'TBA')}</div>
+                    ${it.departureTime ? `<div style="color: #64748b; font-size: 9px;">Dep: ${escapeHtml(it.departureTime)}</div>` : ''}
+                    ${it.arrivalTime ? `<div style="color: #64748b; font-size: 9px;">Arr: ${escapeHtml(it.arrivalTime)}</div>` : ''}
+                  </td>
+                  <td style="padding: 6px 8px; border: 1px solid #e2e8f0; vertical-align: top;">
+                    <div style="font-weight: 800; color: #0f172a; font-size: 11px;">${escapeHtml(it.title)}</div>
+                    <span style="font-size: 9px; font-weight: 700; color: #047857; text-transform: uppercase;">[${escapeHtml(it.activityType || 'Activity')}]</span>
+                  </td>
+                  <td style="padding: 6px 8px; border: 1px solid #e2e8f0; vertical-align: top;">
+                    ${it.location ? `<div style="color: #0f172a; font-weight: 600;">📍 ${escapeHtml(it.location)}</div>` : ''}
+                    ${it.boardingLocation ? `<div style="color: #4338ca; font-size: 9px; margin-top: 2px;">🚌 Boarding: ${escapeHtml(it.boardingLocation)}</div>` : ''}
+                  </td>
+                  <td style="padding: 6px 8px; border: 1px solid #e2e8f0; vertical-align: top;">
+                    ${(it.mealType || it.mealMenu) ? `<div style="color: #b45309; font-weight: 700; font-size: 9px;">🍽️ ${escapeHtml(it.mealType || 'Meal')}: ${escapeHtml(it.mealMenu || '')}</div>` : ''}
+                    ${it.note ? `<div style="color: #475569; font-size: 9px; margin-top: 2px; font-style: italic;">Note: ${escapeHtml(it.note)}</div>` : ''}
+                  </td>
+                </tr>
+              `).join('')}
+            `).join('')}
+          </tbody>
+        </table>
+
+        <!-- Official Guidelines Footer (Feature 94) -->
+        <div style="margin-top: 14px; border: 1px solid #fde68a; background: #fffbeb; border-radius: 8px; padding: 10px; font-size: 9px; color: #92400e; line-height: 1.4;">
+          <strong>IMPORTANT STUDENT INSTRUCTIONS (Feature 94):</strong>
+          1. Original College ID card and Govt Photo ID must be carried at all times.
+          2. Assemble at designated boarding locations 15 minutes prior to scheduled departure.
+          3. Roll-call attendance is mandatory at both departure boarding and destination arrival checkpoints.
+          4. Strictly adhere to college code of conduct. In case of any illness or emergency, report to Faculty Coordinators immediately.
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 25px; padding-top: 10px; font-size: 10px; color: #64748b;">
+          <div>Student Signature: _______________________</div>
+          <div>Faculty In-Charge: _______________________</div>
+          <div>Principal / Head of Institution: _______________________</div>
+        </div>
+      `;
+
+      printDiv.innerHTML = htmlContent;
+      document.body.appendChild(printDiv);
+
+      if (typeof html2pdf !== 'undefined') {
+        const cleanTitle = (tripConfig.tripTitle || 'TripPay_Tour').replace(/[^a-zA-Z0-9_-]/g, '_');
+        const opt = {
+          margin: [8, 8, 8, 8],
+          filename: `${cleanTitle}_Official_Itinerary_${new Date().toISOString().slice(0, 10)}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(printDiv).save().then(() => {
+          document.body.removeChild(printDiv);
+          showToast('Itinerary PDF downloaded successfully!', 'success');
+        }).catch(err => {
+          console.error(err);
+          document.body.removeChild(printDiv);
+          window.print();
+        });
+      } else {
+        window.print();
+        document.body.removeChild(printDiv);
       }
     }
 
@@ -25859,6 +26661,9 @@ Guidelines:
       toggleInlineCustomCategoryBox,
       saveInlineCustomCategory,
       openAddItineraryModal,
+      downloadItineraryPDF,
+      openEditContactModal,
+      toggleItinCategoryFields,
       openEditItineraryModal,
       closeItineraryModal,
       handleSaveItinerarySubmit,
