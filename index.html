@@ -10677,7 +10677,14 @@
         if (titleEl) titleEl.textContent = tripConfig.tripTitle || 'College Trip';
 
         const idBadge = document.getElementById('userTripIdBadge');
-        if (idBadge) idBadge.textContent = '#' + (currentTripId || 'default');
+        if (idBadge) {
+          if (isAdminLoggedIn) {
+            idBadge.textContent = '#' + (currentTripId || 'default');
+            idBadge.classList.remove('hidden');
+          } else {
+            idBadge.classList.add('hidden');
+          }
+        }
 
         const destText = document.getElementById('userTripDestText');
         if (destText) destText.textContent = tripConfig.destination || 'Destination';
@@ -18641,14 +18648,7 @@ Thank you!`;
       const publicNotice = document.getElementById('publicNoTripNotice');
       const payGrid = document.getElementById('paymentFormGrid');
 
-      // Users access strictly via their unique trip link
-      if (!urlTrip && !isAdminLoggedIn) {
-        if (publicNotice) publicNotice.classList.remove('hidden');
-        if (payGrid) payGrid.classList.add('hidden');
-        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
-        return;
-      }
-
+      // Seamless access: always show payment grid, fallback to default trip if none specified
       if (publicNotice) publicNotice.classList.add('hidden');
       if (payGrid) payGrid.classList.remove('hidden');
 
