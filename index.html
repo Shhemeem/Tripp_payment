@@ -8114,6 +8114,57 @@
   </div>
 
   <!-- EDIT TRIP MODAL (FULL FEATURE UPGRADE) -->
+  <!-- Quick Trip Seat Capacity Modal -->
+  <div id="quickTripCapacityModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto no-print">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center font-black">
+            <i data-lucide="armchair" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display text-base font-extrabold text-slate-900">Trip Seat Capacity</h3>
+            <p id="quickCapTripSubtitle" class="text-xs text-slate-500 font-mono">#trip_id</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeQuickTripCapacityModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <input type="hidden" id="quickCapTripId" />
+
+      <div class="p-3.5 rounded-2xl bg-purple-50/70 border border-purple-100 space-y-1.5">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-slate-600 font-medium">Currently Enrolled:</span>
+          <span id="quickCapCurrentEnrolled" class="font-bold text-slate-900 font-mono">0 students</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-slate-600 font-medium">Verified Paid:</span>
+          <span id="quickCapCurrentVerified" class="font-bold text-emerald-700">0 verified</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">Max Seat Capacity Limit</label>
+        <div class="relative">
+          <input type="number" id="quickCapLimitInput" min="0" placeholder="e.g. 120 (0 for Unlimited)"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-extrabold text-purple-700 focus:bg-white focus:border-purple-500 focus:outline-none" />
+        </div>
+        <p class="text-[11px] text-slate-400 mt-1">Enter total passenger seats available for this trip. Set to 0 for unlimited registration.</p>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+        <button type="button" onclick="closeQuickTripCapacityModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+          Cancel
+        </button>
+        <button type="button" id="btnSaveQuickTripCapacity" onclick="saveQuickTripCapacity()" class="flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-extrabold transition shadow-sm">
+          Save &amp; Sync Capacity
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div id="editTripModal"
     class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print">
     <div
@@ -8442,7 +8493,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Total Fee (₹)</label>
             <input type="number" id="setTripAmount" min="1" required
@@ -8453,6 +8504,15 @@
             <input type="number" id="setAdvanceAmount" min="1" required
               class="w-full px-3.5 py-2 rounded-xl bg-amber-50 border border-amber-200 text-sm font-extrabold text-amber-800" />
           </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center justify-between">
+              <span>Seat Capacity</span>
+              <span class="text-[10px] text-purple-700 font-normal">0 = Unlimited</span>
+            </label>
+            <input type="number" id="setSeatCapacity" min="0" placeholder="e.g. 120"
+              class="w-full px-3.5 py-2 rounded-xl bg-purple-50 border border-purple-200 text-sm font-extrabold text-purple-700 focus:bg-white focus:border-purple-500 focus:outline-none" />
+          </div>
+        </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -18490,6 +18550,8 @@ Thank you!`;
       document.getElementById('setTripDate').value = tripConfig.tripDate;
       document.getElementById('setTripAmount').value = tripConfig.tripAmount;
       document.getElementById('setAdvanceAmount').value = tripConfig.advanceAmount || 500;
+      const setCapEl = document.getElementById('setSeatCapacity');
+      if (setCapEl) setCapEl.value = tripConfig.maxStudentsLimit || '';
       document.getElementById('setUpiId').value = tripConfig.upiId;
       document.getElementById('setReceiverName').value = tripConfig.receiverName;
       document.getElementById('setAdminEmail').value = tripConfig.adminEmail || 'admin@trippay.com';
@@ -20440,7 +20502,6 @@ Thank you!`;
         );
       }
 
-      // Boss Status Filter
       if (currentBossTripStatusFilter !== 'all') {
         tripsList = tripsList.filter(t => {
           const st = (t.status || 'Active').toLowerCase();
@@ -20466,15 +20527,33 @@ Thank you!`;
 
       container.innerHTML = tripsList.map(t => {
         const isActive = t.id === currentTripId;
-        const tripPayments = rawPaymentsList.filter(p => (p.tripId || '') === t.id);
+        const tripPayments = rawPaymentsList.filter(p => (p.tripId || 'default') === t.id);
         const verifiedCount = tripPayments.filter(p => p.status === 'Verified').length;
         const totalCollected = tripPayments.filter(p => p.status === 'Verified').reduce((sum, p) => sum + (Number(p.amountPaid) || 0), 0);
         const totalDue = tripPayments.reduce((sum, p) => sum + getBalanceDue(p), 0);
         const isArchived = t.status === 'Archived' || t.isArchived === true;
-        const maxLimit = Number(t.maxStudentsLimit) || 0;
-        const capacityPct = maxLimit > 0 ? Math.min(100, Math.round((tripPayments.length / maxLimit) * 100)) : 0;
 
-        // Find assigned admins for this trip
+        const maxLimit = Number(t.maxStudentsLimit) || (t.id === currentTripId ? (Number(tripConfig.maxStudentsLimit) || 0) : 0);
+        const capacityPct = maxLimit > 0 ? Math.min(100, Math.round((tripPayments.length / maxLimit) * 100)) : 0;
+        const availableSeats = maxLimit > 0 ? Math.max(0, maxLimit - tripPayments.length) : 'Open';
+
+        const tripPnrs = rawPnrList.filter(r => (r.tripId || 'default') === t.id);
+        const onwardPnrs = tripPnrs.filter(r => r.journeyType !== 'return');
+        const returnPnrs = tripPnrs.filter(r => r.journeyType === 'return');
+
+        let onwardAssignedSeats = 0;
+        onwardPnrs.forEach(r => (r.passengerMappings || []).forEach(m => { if (m.assignedUserId) onwardAssignedSeats++; }));
+
+        let returnAssignedSeats = 0;
+        returnPnrs.forEach(r => (r.passengerMappings || []).forEach(m => { if (m.assignedUserId) returnAssignedSeats++; }));
+
+        const onwardTrainDesc = onwardPnrs.length > 0
+          ? `${onwardPnrs[0].trainNumber || ''} ${onwardPnrs[0].trainName || 'Express'}`.trim()
+          : (t.onwardTrain || 'Not Configured');
+        const returnTrainDesc = returnPnrs.length > 0
+          ? `${returnPnrs[0].trainNumber || ''} ${returnPnrs[0].trainName || 'Express'}`.trim()
+          : (t.returnTrain || 'Not Configured');
+
         const assignedAdmins = nonBossAdmins.filter(u =>
           (Array.isArray(t.assignedAdmins) && (t.assignedAdmins.includes(u.email) || t.assignedAdmins.includes(u.id))) ||
           (Array.isArray(u.assignedTrips) && (u.assignedTrips.includes('*') || u.assignedTrips.includes(t.id))) ||
@@ -20498,9 +20577,13 @@ Thank you!`;
                 </p>
                 ${t.description ? `<p class="text-xs text-slate-500 line-clamp-1 mt-1">${escapeHtml(t.description)}</p>` : ''}
               </div>
+              <button type="button" onclick="syncTripDetailsWithCloud('${t.id}')"
+                class="p-2 rounded-xl bg-slate-100 hover:bg-purple-100 text-slate-600 hover:text-purple-700 transition shrink-0"
+                title="Sync All Details & Seat Capacity with Cloud Firestore">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+              </button>
             </div>
 
-            
             <div class="p-2.5 rounded-xl bg-purple-50/70 border border-purple-100 text-xs mb-3 space-y-1.5">
               <div class="flex items-center justify-between text-[11px]">
                 <span class="text-purple-900 font-extrabold flex items-center gap-1">
@@ -20519,44 +20602,87 @@ Thank you!`;
               </div>
               <div class="flex items-center gap-1.5 flex-wrap pt-0.5">
                 ${assignedAdmins.length > 0 ? assignedAdmins.map((a, aIdx) => {
-          const globalIdx = nonBossAdmins.findIndex(u => u.id === a.id);
-          const adminNum = globalIdx >= 0 ? globalIdx + 1 : aIdx + 1;
-          return `
+                  const globalIdx = nonBossAdmins.findIndex(u => u.id === a.id);
+                  const adminNum = globalIdx >= 0 ? globalIdx + 1 : aIdx + 1;
+                  return `
                     <span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-white text-purple-950 border border-purple-200 flex items-center gap-1 shadow-2xs" title="${escapeHtml(a.email || '')}">
                       <span class="w-4 h-4 rounded-full bg-purple-600 text-white text-[9px] flex items-center justify-center font-black">A${adminNum}</span>
                       <span>Admin ${adminNum}: ${escapeHtml(a.name || 'Unnamed')}</span>
                     </span>
                   `;
-        }).join('') : '<span class="text-amber-700 bg-amber-50 px-2 py-0.5 rounded text-[11px] font-medium border border-amber-200">⚠️ No Admins Assigned — Click Assign Admins</span>'}
+                }).join('') : '<span class="text-amber-700 bg-amber-50 px-2 py-0.5 rounded text-[11px] font-medium border border-amber-200">⚠️ No Admins Assigned — Click Assign Admins</span>'}
               </div>
             </div>
 
-            
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs mb-3 space-y-1.5">
+            <div class="p-3 rounded-xl bg-gradient-to-r from-purple-50/90 via-slate-50 to-indigo-50/80 border border-purple-100 text-xs mb-3 space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-slate-500 font-medium">Trip Fee / Advance:</span>
-                <span class="font-bold text-slate-800">${formatINR(t.tripAmount || 1500)} (Adv: ${formatINR(t.advanceAmount || 500)})</span>
+                <span class="text-slate-700 font-bold flex items-center gap-1.5">
+                  <i data-lucide="armchair" class="w-3.5 h-3.5 text-purple-600"></i>
+                  <span>Seat Capacity:</span>
+                  <span class="font-extrabold text-purple-900 font-mono">${maxLimit > 0 ? `${tripPayments.length} / ${maxLimit} seats` : `${tripPayments.length} enrolled (Unlimited)`}</span>
+                </span>
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold border ${tripPayments.length >= maxLimit && maxLimit > 0 ? 'bg-rose-100 text-rose-700 border-rose-200' : 'bg-emerald-100 text-emerald-700 border-emerald-200'}">
+                    ${maxLimit > 0 ? `${capacityPct}% Filled` : 'Open Enrollment'}
+                  </span>
+                  <button type="button" onclick="openQuickTripCapacityModal('${t.id}')"
+                    class="px-2 py-0.5 rounded-md bg-white border border-purple-200 text-purple-700 hover:bg-purple-50 text-[10px] font-bold shadow-2xs transition"
+                    title="Edit seat capacity directly">
+                    Edit Capacity
+                  </button>
+                </div>
               </div>
+
               ${maxLimit > 0 ? `
-                <div class="space-y-1 pt-1 border-t border-slate-200/60">
-                  <div class="flex items-center justify-between text-[11px]">
-                    <span class="font-bold text-slate-600">Capacity: ${tripPayments.length} / ${maxLimit} seats</span>
-                    <span class="font-extrabold ${tripPayments.length >= maxLimit ? 'text-rose-600' : 'text-purple-700'}">${capacityPct}% filled</span>
-                  </div>
-                  <div class="w-full h-1.5 rounded-full bg-slate-200 overflow-hidden">
-                    <div class="h-full ${tripPayments.length >= maxLimit ? 'bg-rose-500' : 'bg-purple-600'} rounded-full" style="width: ${capacityPct}%"></div>
-                  </div>
+                <div class="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                  <div class="h-full rounded-full transition-all duration-300 ${tripPayments.length >= maxLimit ? 'bg-rose-500' : (capacityPct >= 80 ? 'bg-amber-500' : 'bg-purple-600')}"
+                    style="width: ${capacityPct}%"></div>
                 </div>
-              ` : ''}
-              ${t.registrationDeadline ? `
-                <div class="flex items-center justify-between text-[10px] pt-1 text-slate-500">
-                  <span>Registration Deadline:</span>
-                  <span class="font-bold text-amber-800 font-mono">${escapeHtml(t.registrationDeadline.replace('T', ' '))}</span>
+                <div class="flex items-center justify-between text-[10px] text-slate-500">
+                  <span>Vacant: <strong class="text-emerald-700 font-bold">${availableSeats} available seats</strong></span>
+                  <span>Verified: <strong class="text-indigo-700 font-bold">${verifiedCount} confirmed</strong></span>
                 </div>
-              ` : ''}
+              ` : `
+                <div class="flex items-center justify-between text-[10px] text-slate-400">
+                  <span>No hard capacity limit enforced. Click "Edit Capacity" to set a limit.</span>
+                  <span>Verified: <strong class="text-indigo-700 font-bold">${verifiedCount} paid</strong></span>
+                </div>
+              `}
             </div>
 
-            
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs mb-3 space-y-1.5">
+              <div class="flex items-center justify-between text-[11px] font-extrabold text-slate-700">
+                <span class="flex items-center gap-1">
+                  <i data-lucide="train" class="w-3.5 h-3.5 text-sky-600"></i>
+                  <span>Railway Logistics (Separated Journeys):</span>
+                </span>
+                <span class="text-[10px] font-mono text-slate-400">${tripPnrs.length} PNR Record(s)</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
+                <div class="p-2 rounded-lg bg-emerald-50/70 border border-emerald-200/80">
+                  <div class="flex items-center justify-between font-bold text-emerald-950">
+                    <span class="flex items-center gap-1">
+                      <span>🚂 Onward:</span>
+                      <span class="truncate max-w-[130px] font-extrabold">${escapeHtml(onwardTrainDesc)}</span>
+                    </span>
+                    <span class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-200 text-emerald-900">${onwardAssignedSeats} Seats</span>
+                  </div>
+                  <p class="text-[10px] text-emerald-700 mt-0.5 font-medium">${onwardPnrs.length} PNR(s) Booked</p>
+                </div>
+
+                <div class="p-2 rounded-lg bg-purple-50/70 border border-purple-200/80">
+                  <div class="flex items-center justify-between font-bold text-purple-950">
+                    <span class="flex items-center gap-1">
+                      <span>🔄 Return:</span>
+                      <span class="truncate max-w-[130px] font-extrabold">${escapeHtml(returnTrainDesc)}</span>
+                    </span>
+                    <span class="text-[10px] px-1.5 py-0.2 rounded bg-purple-200 text-purple-900">${returnAssignedSeats} Seats</span>
+                  </div>
+                  <p class="text-[10px] text-purple-700 mt-0.5 font-medium">${returnPnrs.length} PNR(s) Booked</p>
+                </div>
+              </div>
+            </div>
+
             <div class="grid grid-cols-3 gap-2 text-center mb-4">
               <button type="button" onclick="openTripStudentsModal('${t.id}')"
                 class="p-2 rounded-xl bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-200 transition text-center"
@@ -20571,78 +20697,80 @@ Thank you!`;
               <div class="p-2 rounded-xl bg-emerald-50/60 border border-emerald-100">
                 <p class="text-[10px] font-bold text-emerald-700 uppercase">Collected</p>
                 <p class="text-sm font-extrabold text-emerald-800 mt-0.5">${formatINR(totalCollected)}</p>
-                <p class="text-[9px] text-emerald-600 font-medium">Verified</p>
+                <p class="text-[9px] text-emerald-600 font-medium">Fee: ${formatINR(t.tripAmount || 1500)}</p>
               </div>
               <div class="p-2 rounded-xl bg-amber-50/60 border border-amber-100">
                 <p class="text-[10px] font-bold text-amber-700 uppercase">Dues</p>
                 <p class="text-sm font-extrabold text-amber-800 mt-0.5">${formatINR(totalDue)}</p>
-                <p class="text-[9px] text-amber-600 font-medium">Pending</p>
+                <p class="text-[9px] text-amber-600 font-medium">Adv: ${formatINR(t.advanceAmount || 500)}</p>
               </div>
             </div>
 
-            
             <div class="flex items-center gap-1.5 pt-3 border-t border-slate-100 flex-wrap">
               <button
                 type="button"
                 onclick="openTripStudentsModal('${t.id}')"
-                class="py-2 px-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200/80 text-xs font-bold transition flex items-center justify-center gap-1 shadow-2xs"
-                title="View Students Roster"
+                class="py-2 px-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200/80 text-xs font-bold transition flex items-center gap-1.5 shadow-2xs"
+                title="View registered student roster"
               >
                 <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-600"></i>
-                <span>Students</span>
+                <span>Students (${tripPayments.length})</span>
+              </button>
+
+              <button
+                type="button"
+                onclick="openQuickTripCapacityModal('${t.id}')"
+                class="py-2 px-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200/80 text-xs font-bold transition flex items-center gap-1 shadow-2xs"
+                title="Sync and adjust trip seat capacity"
+              >
+                <i data-lucide="armchair" class="w-3.5 h-3.5 text-purple-600"></i>
+                <span>Capacity</span>
+              </button>
+
+              <button
+                type="button"
+                onclick="openEditTripModal('${t.id}')"
+                class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/80 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-2xs"
+                title="Edit trip details and pricing"
+              >
+                <i data-lucide="edit-3" class="w-3.5 h-3.5 text-amber-600"></i>
+                <span class="hidden xs:inline">Edit</span>
+              </button>
+
+              <button
+                type="button"
+                onclick="${isArchived ? `unarchiveTrip('${t.id}')` : `archiveTrip('${t.id}')`}"
+                class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-2xs"
+                title="${isArchived ? 'Restore / Unarchive trip' : 'Archive trip safely (data protected)'}"
+              >
+                <i data-lucide="${isArchived ? 'rotate-ccw' : 'archive'}" class="w-3.5 h-3.5"></i>
+                <span class="hidden xs:inline">${isArchived ? 'Unarchive' : 'Archive'}</span>
+              </button>
+
+              <button
+                type="button"
+                onclick="promptDeleteTrip('${t.id}')"
+                class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/80 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-2xs"
+                title="Delete trip"
+              >
+                <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-600"></i>
+                <span class="hidden xs:inline">Delete</span>
               </button>
 
               ${!isActive ? `
                 <button
                   type="button"
                   onclick="switchActiveTrip('${t.id}')"
-                  class="flex-1 min-w-[80px] py-2 px-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition flex items-center justify-center gap-1 shadow-xs"
+                  class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm shadow-indigo-100"
                 >
-                  <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                  <i data-lucide="arrow-right-left" class="w-3.5 h-3.5"></i>
                   <span>Switch</span>
                 </button>
               ` : `
-                <div class="flex-1 min-w-[80px] py-2 px-2.5 rounded-xl bg-purple-100 text-purple-800 text-xs font-extrabold text-center flex items-center justify-center gap-1">
-                  <i data-lucide="activity" class="w-3.5 h-3.5"></i>
-                  <span>Current</span>
-                </div>
+                <span class="text-xs font-bold text-indigo-700 px-2.5 py-1.5 bg-indigo-100/70 border border-indigo-200 rounded-xl flex items-center gap-1">
+                  <i data-lucide="check" class="w-3.5 h-3.5"></i> Active
+                </span>
               `}
-
-              <button
-                type="button"
-                onclick="openEditTripModal('${t.id}')"
-                class="p-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/90 text-xs font-bold transition shadow-2xs"
-                title="Edit Trip Details, Dates, Capacity & Pricing"
-              >
-                <i data-lucide="edit-3" class="w-4 h-4 text-amber-600"></i>
-              </button>
-
-              <button
-                type="button"
-                onclick="openShareTripModal('${t.id}')"
-                class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition shadow-2xs"
-                title="Share Trip Link & QR"
-              >
-                <i data-lucide="share-2" class="w-4 h-4"></i>
-              </button>
-
-              <button
-                type="button"
-                onclick="${isArchived ? `unarchiveTrip('${t.id}')` : `archiveTrip('${t.id}')`}"
-                class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition shadow-2xs"
-                title="${isArchived ? 'Restore / Unarchive Trip' : 'Archive Trip Safely'}"
-              >
-                <i data-lucide="${isArchived ? 'rotate-ccw' : 'archive'}" class="w-4 h-4 text-slate-600"></i>
-              </button>
-
-              <button
-                type="button"
-                onclick="promptDeleteTrip('${t.id}')"
-                class="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/90 text-xs font-bold transition shadow-2xs"
-                title="Delete Trip (Requires Unique Key)"
-              >
-                <i data-lucide="trash-2" class="w-4 h-4 text-rose-600"></i>
-              </button>
             </div>
           </div>
         `;
@@ -20650,6 +20778,121 @@ Thank you!`;
 
       if (window.lucide && typeof lucide.createIcons === 'function') {
         lucide.createIcons();
+      }
+    }
+
+    function openQuickTripCapacityModal(tripId) {
+      const target = allTrips.find(t => t.id === tripId) || (tripId === currentTripId ? { id: currentTripId, ...tripConfig } : null);
+      if (!target) {
+        showToast('Trip record not found.', 'error');
+        return;
+      }
+      const modal = document.getElementById('quickTripCapacityModal');
+      const tripIdInput = document.getElementById('quickCapTripId');
+      const subTitle = document.getElementById('quickCapTripSubtitle');
+      const enrolledEl = document.getElementById('quickCapCurrentEnrolled');
+      const verifiedEl = document.getElementById('quickCapCurrentVerified');
+      const limitInput = document.getElementById('quickCapLimitInput');
+
+      const tripPayments = rawPaymentsList.filter(p => (p.tripId || 'default') === tripId);
+      const verifiedCount = tripPayments.filter(p => p.status === 'Verified').length;
+      const currentLimit = Number(target.maxStudentsLimit) || (tripId === currentTripId ? Number(tripConfig.maxStudentsLimit) : 0) || 0;
+
+      if (tripIdInput) tripIdInput.value = tripId;
+      if (subTitle) subTitle.textContent = `#${tripId} • ${target.tripTitle || target.destination || 'College Trip'}`;
+      if (enrolledEl) enrolledEl.textContent = `${tripPayments.length} students enrolled`;
+      if (verifiedEl) verifiedEl.textContent = `${verifiedCount} verified`;
+      if (limitInput) limitInput.value = currentLimit > 0 ? currentLimit : '';
+
+      if (modal) modal.classList.remove('hidden');
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function closeQuickTripCapacityModal() {
+      const modal = document.getElementById('quickTripCapacityModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function saveQuickTripCapacity() {
+      const tripIdInput = document.getElementById('quickCapTripId');
+      const tripId = tripIdInput ? tripIdInput.value.trim() : '';
+      if (!tripId) return;
+
+      const limitInput = document.getElementById('quickCapLimitInput');
+      const val = limitInput ? limitInput.value.trim() : '';
+      const newLimit = (val && !isNaN(Number(val)) && Number(val) > 0) ? Number(val) : 0;
+
+      const btn = document.getElementById('btnSaveQuickTripCapacity');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Syncing Cloud...';
+      }
+
+      try {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trips_master', tripId), {
+          maxStudentsLimit: newLimit,
+          updatedAt: Date.now()
+        }, { merge: true });
+
+        const configDocId = tripId === 'default' ? 'main_config' : 'trip_' + tripId;
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', configDocId), {
+          maxStudentsLimit: newLimit,
+          updatedAt: Date.now()
+        }, { merge: true });
+
+        if (tripId === currentTripId) {
+          tripConfig.maxStudentsLimit = newLimit;
+          const setCapEl = document.getElementById('setSeatCapacity');
+          if (setCapEl) setCapEl.value = newLimit > 0 ? newLimit : '';
+          updateActiveTripUI();
+          if (isAdminLoggedIn) renderDashboard();
+        }
+
+        const idx = allTrips.findIndex(t => t.id === tripId);
+        if (idx !== -1) {
+          allTrips[idx].maxStudentsLimit = newLimit;
+        }
+
+        renderBossTripsHub();
+        if (typeof updateBossGlobalKPIs === 'function') updateBossGlobalKPIs();
+        closeQuickTripCapacityModal();
+        showToast(`Seat capacity for #${tripId} synced to ${newLimit > 0 ? newLimit + ' seats' : 'Unlimited'}! ✅`, 'success');
+      } catch (err) {
+        console.error('Error saving seat capacity:', err);
+        showToast('Failed to sync seat capacity to cloud.', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Save & Sync Capacity';
+        }
+      }
+    }
+
+    async function syncTripDetailsWithCloud(tripId) {
+      showToast(`Syncing details & capacity for #${tripId} with cloud...`, 'info');
+      try {
+        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'trips_master', tripId);
+        const snap = await getDoc(docRef);
+        if (snap.exists()) {
+          const freshData = snap.data();
+          const idx = allTrips.findIndex(t => t.id === tripId);
+          if (idx !== -1) {
+            allTrips[idx] = { id: tripId, ...freshData };
+          } else {
+            allTrips.push({ id: tripId, ...freshData });
+          }
+          if (tripId === currentTripId) {
+            tripConfig = { ...tripConfig, ...freshData };
+            applyTripConfigToUI();
+            updateActiveTripUI();
+          }
+        }
+        renderBossTripsHub();
+        if (typeof updateBossGlobalKPIs === 'function') updateBossGlobalKPIs();
+        showToast(`Trip #${tripId} successfully synchronized! ✅`, 'success');
+      } catch (err) {
+        console.error('Cloud sync error:', err);
+        showToast('Sync completed with cached state.', 'info');
       }
     }
 
@@ -24282,12 +24525,42 @@ Thank you!`;
       if (modal) modal.classList.add('hidden');
     }
 
+    let currentCoachManifestJourneyFilter = 'all';
+
+    function setCoachManifestJourneyFilter(filter) {
+      currentCoachManifestJourneyFilter = filter;
+      ['all', 'onward', 'return'].forEach(f => {
+        const btn = document.getElementById(`manifestJourneyBtn_${f}`);
+        if (!btn) return;
+        if (f === filter) {
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-extrabold bg-white text-slate-900 shadow-2xs transition';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition';
+        }
+      });
+      const counter = document.getElementById('manifestActiveJourneyCounter');
+      if (counter) {
+        counter.textContent = filter === 'onward' ? 'Onward Coaches' : (filter === 'return' ? 'Return Coaches' : 'All Journeys');
+      }
+      currentManifestSelectedCoach = 'ALL';
+      renderCoachManifestModal();
+    }
+
     function renderCoachManifestModal() {
       const coachMap = {};
+      const onwardCoaches = new Set();
+      const returnCoaches = new Set();
+
       pnrRecords.forEach(record => {
+        const isReturn = record.journeyType === 'return';
+        if (currentCoachManifestJourneyFilter === 'onward' && isReturn) return;
+        if (currentCoachManifestJourneyFilter === 'return' && !isReturn) return;
+
         (record.passengerMappings || []).forEach(m => {
           const coachKey = (m.coach && m.coach !== 'No Coach') ? m.coach.toUpperCase() : 'WAITLIST';
           if (!coachMap[coachKey]) coachMap[coachKey] = [];
+          if (isReturn) returnCoaches.add(coachKey); else onwardCoaches.add(coachKey);
+
           const student = payments.find(p => p.id === m.assignedUserId);
           coachMap[coachKey].push({
             ...m,
@@ -24295,7 +24568,7 @@ Thank you!`;
             trainNumber: record.trainNumber,
             trainName: record.trainName,
             journeyType: record.journeyType || 'onward',
-            studentRoll: student ? (student.rollNumber || '-') : '-',
+            studentRoll: student ? (student.rollNumber || student.studentRollNo || '-') : '-',
             studentDept: student ? (student.department || '-') : '-',
             studentPhone: student ? student.phone : (m.assignedUserPhone || '-')
           });
@@ -24310,18 +24583,32 @@ Thank you!`;
             class="px-3 py-1 rounded-xl text-xs font-extrabold transition whitespace-nowrap ${currentManifestSelectedCoach === 'ALL' ? 'bg-slate-900 text-white shadow-xs' : 'bg-white text-slate-700 hover:bg-slate-100'}">
             All Coaches (${coaches.length})
           </button>
-          ${coaches.map(c => `
-            <button type="button" onclick="setManifestSelectedCoach('${c}')"
-              class="px-3 py-1 rounded-xl text-xs font-extrabold transition whitespace-nowrap ${currentManifestSelectedCoach === c ? 'bg-amber-600 text-white shadow-xs' : 'bg-white text-slate-700 hover:bg-slate-100'}">
-              Coach ${c} (${coachMap[c].length})
-            </button>
-          `).join('')}
+          ${coaches.map(c => {
+            const hasOnward = onwardCoaches.has(c);
+            const hasReturn = returnCoaches.has(c);
+            const badgeIcon = (hasOnward && hasReturn) ? '⇄' : (hasReturn ? '🔄' : '🚂');
+            return `
+              <button type="button" onclick="setManifestSelectedCoach('${c}')"
+                class="px-3 py-1 rounded-xl text-xs font-extrabold transition whitespace-nowrap ${currentManifestSelectedCoach === c ? 'bg-amber-600 text-white shadow-xs' : 'bg-white text-slate-700 hover:bg-slate-100'}">
+                ${badgeIcon} Coach ${c} (${coachMap[c].length})
+              </button>
+            `;
+          }).join('')}
         `;
       }
 
       const contentArea = document.getElementById('coachManifestContentArea');
       if (contentArea) {
         const coachesToRender = currentManifestSelectedCoach === 'ALL' ? coaches : [currentManifestSelectedCoach];
+
+        if (coachesToRender.length === 0) {
+          contentArea.innerHTML = `
+            <div class="p-8 text-center text-slate-400 bg-slate-50 rounded-2xl border border-slate-200">
+              <p class="font-bold">No coaches found for ${currentCoachManifestJourneyFilter === 'onward' ? 'Onward Journey' : (currentCoachManifestJourneyFilter === 'return' ? 'Return Journey' : 'this trip')}.</p>
+            </div>
+          `;
+          return;
+        }
 
         contentArea.innerHTML = coachesToRender.map(cName => {
           const passengers = coachMap[cName] || [];
@@ -24331,12 +24618,17 @@ Thank you!`;
             return numA - numB;
           });
 
+          const hasOnward = passengers.some(p => p.journeyType !== 'return');
+          const hasReturn = passengers.some(p => p.journeyType === 'return');
+          const journeyBadge = (hasOnward && hasReturn) ? '🚂 Onward & 🔄 Return' : (hasReturn ? '🔄 Return Journey' : '🚂 Onward Journey');
+
           return `
             <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-2xs space-y-0">
               <div class="bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <span class="w-6 h-6 rounded-lg bg-amber-500 text-slate-950 font-black flex items-center justify-center text-xs">C</span>
                   <h4 class="font-bold text-sm">COACH ${escapeHtml(cName)}</h4>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full font-extrabold bg-slate-800 text-amber-300 border border-slate-700">${journeyBadge}</span>
                 </div>
                 <span class="text-xs text-amber-300 font-mono font-bold">${passengers.length} Passengers</span>
               </div>
@@ -24346,28 +24638,34 @@ Thank you!`;
                     <tr>
                       <th class="py-2 px-3">Seat #</th>
                       <th class="py-2 px-3">Berth</th>
+                      <th class="py-2 px-3">Journey</th>
                       <th class="py-2 px-3">Passenger Name</th>
                       <th class="py-2 px-3">Roll No</th>
                       <th class="py-2 px-3">Department</th>
                       <th class="py-2 px-3">Mobile</th>
                       <th class="py-2 px-3 font-mono">PNR</th>
-                      <th class="py-2 px-3 font-mono">Current Status</th>
-                      <th class="py-2 px-3 text-center">Verify</th>
+                      <th class="py-2 px-3 font-mono">Status</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-slate-100 font-medium">
                     ${passengers.map(p => `
                       <tr class="hover:bg-slate-50/60">
-                        <td class="py-2 px-3 font-mono font-black text-amber-900">${escapeHtml(p.seatNumber || '-')}</td>
-                        <td class="py-2 px-3 font-bold text-slate-700">${escapeHtml(p.berthType ? (BERTH_MAP[p.berthType] || p.berthType) : '-')}</td>
-                        <td class="py-2 px-3 font-bold text-slate-900">${escapeHtml(p.assignedUserName || 'Unassigned')}</td>
+                        <td class="py-2 px-3 font-bold text-slate-900 font-mono">${escapeHtml(p.seatNumber || '-')}</td>
+                        <td class="py-2 px-3 text-slate-600">${escapeHtml(p.berthType ? (BERTH_MAP[p.berthType] || p.berthType) : '-')}</td>
+                        <td class="py-2 px-3">
+                          <span class="text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${p.journeyType === 'return' ? 'bg-purple-100 text-purple-800' : 'bg-emerald-100 text-emerald-800'}">
+                            ${p.journeyType === 'return' ? 'Return' : 'Onward'}
+                          </span>
+                        </td>
+                        <td class="py-2 px-3 font-extrabold text-slate-900">${escapeHtml(p.assignedUserName || 'Unassigned')}</td>
                         <td class="py-2 px-3 font-mono text-slate-600">${escapeHtml(p.studentRoll || '-')}</td>
                         <td class="py-2 px-3 text-slate-600">${escapeHtml(p.studentDept || '-')}</td>
                         <td class="py-2 px-3 font-mono text-slate-600">${escapeHtml(p.studentPhone || '-')}</td>
-                        <td class="py-2 px-3 font-mono text-[11px] text-slate-500">${escapeHtml(p.pnrNumber || '-')}</td>
-                        <td class="py-2 px-3 font-mono font-bold ${p.ticketStatus === 'CNF' ? 'text-emerald-700' : 'text-amber-700'}">${escapeHtml(p.currentStatus || p.ticketStatus || 'CNF')}</td>
-                        <td class="py-2 px-3 text-center">
-                          <input type="checkbox" class="w-4 h-4 text-emerald-600 rounded border-slate-300" title="Check-in verification" />
+                        <td class="py-2 px-3 font-mono text-slate-500 text-[11px]">${escapeHtml(p.pnrNumber || '-')}</td>
+                        <td class="py-2 px-3">
+                          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${(p.ticketStatus || p.currentStatus || 'CNF').includes('CNF') ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">
+                            ${escapeHtml(p.ticketStatus || p.currentStatus || 'CNF')}
+                          </span>
                         </td>
                       </tr>
                     `).join('')}
@@ -24379,7 +24677,9 @@ Thank you!`;
         }).join('');
       }
 
-      lucide.createIcons();
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
     }
 
     function setManifestSelectedCoach(coach) {
@@ -25245,49 +25545,43 @@ Thank you!`;
       }
 
       const rows = [
-        [
-          'Trip Name',
-          'Train Number',
-          'Train Name',
-          'Journey Type',
-          'PNR Number',
-          'Coach',
-          'Seat Number',
-          'Berth Type',
-          'Passenger Name',
-          'Student ID',
-          'Department',
-          'Phone',
-          'Booking Status',
-          'Current Status',
-          'Ticket Status'
-        ]
+        ['COLLEGE EXPEDITION RAILWAY COACH MANIFEST'],
+        [`Trip: ${tripConfig.tripTitle}`, `Destination: ${tripConfig.destination}`, `Generated: ${new Date().toLocaleString('en-IN')}`],
+        []
       ];
 
-      pnrRecords.forEach(record => {
-        const journey = record.journeyType || 'onward';
-        const mappings = record.passengerMappings || [];
-        mappings.forEach(m => {
-          const student = payments.find(p => p.id === m.assignedUserId);
-          rows.push([
-            tripConfig.tripTitle || 'Trip',
-            record.trainNumber || '',
-            record.trainName || '',
-            journey.toUpperCase(),
-            record.pnrNumber || '',
-            m.coach || 'Unassigned',
-            m.seatNumber || '',
-            m.berthType || '',
-            m.assignedUserName || 'Unassigned',
-            student?.studentId || '',
-            student?.department || '',
-            m.assignedUserPhone || student?.phone || '',
-            m.bookingStatus || m.ticketStatus || 'CNF',
-            m.currentStatus || m.ticketStatus || 'CNF',
-            m.ticketStatus || 'CNF'
-          ]);
+      const parseCoachRowsForType = (jType, title) => {
+        rows.push([`=== ${title} ===`]);
+        rows.push([
+          'Train Number', 'Train Name', 'Journey Type', 'PNR Number', 'Coach', 'Seat Number', 'Berth Type',
+          'Passenger Name', 'Student ID', 'Department', 'Phone', 'Booking Status', 'Current Status'
+        ]);
+        const pnrListForExport = pnrRecords.filter(r => jType === 'onward' ? r.journeyType !== 'return' : r.journeyType === 'return');
+        pnrListForExport.forEach(record => {
+          (record.passengerMappings || []).forEach(m => {
+            const student = payments.find(p => p.id === m.assignedUserId);
+            rows.push([
+              record.trainNumber || '',
+              record.trainName || '',
+              (record.journeyType || 'onward').toUpperCase(),
+              record.pnrNumber || '',
+              m.coach || 'Unassigned',
+              m.seatNumber || '',
+              m.berthType || '',
+              m.assignedUserName || (student ? student.studentName : 'Unassigned'),
+              student?.studentRollNo || student?.studentTripId || '',
+              student?.department || '',
+              m.assignedUserPhone || student?.phone || '',
+              m.bookingStatus || 'CNF',
+              m.currentStatus || 'CNF'
+            ]);
+          });
         });
-      });
+        rows.push([]);
+      };
+
+      parseCoachRowsForType('onward', '🚂 ONWARD JOURNEY COACH PASSENGERS');
+      parseCoachRowsForType('return', '🔄 RETURN JOURNEY COACH PASSENGERS');
 
       const csvContent = '\uFEFF' + rows.map(r => r.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(',')).join('\r\n');
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -25299,7 +25593,7 @@ Thank you!`;
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      showToast('Coach-wise passenger list exported to Excel / CSV!', 'success');
+      showToast('Coach-wise passenger list (Onward & Return separated) exported! ✅', 'success');
     }
 
     function exportRailwayCoachManifestPDF() {
@@ -25308,37 +25602,35 @@ Thank you!`;
         return;
       }
 
-      const coachMap = {};
-      pnrRecords.forEach(record => {
-        const mappings = record.passengerMappings || [];
-        mappings.forEach(m => {
-          const coachKey = (m.coach && m.coach !== 'No Coach') ? m.coach.toUpperCase() : 'WAITLIST / UNASSIGNED';
-          if (!coachMap[coachKey]) coachMap[coachKey] = [];
-          const student = payments.find(p => p.id === m.assignedUserId);
-          coachMap[coachKey].push({
-            ...m,
-            pnrNumber: record.pnrNumber,
-            trainNumber: record.trainNumber,
-            trainName: record.trainName,
-            journeyType: record.journeyType || 'onward',
-            fromStation: record.fromStation,
-            toStation: record.toStation,
-            dateOfJourney: record.dateOfJourney,
-            studentId: student?.studentId || '-',
-            department: student?.department || '-'
+      const buildCoachMapForJourney = (jType) => {
+        const coachMap = {};
+        pnrRecords.filter(r => jType === 'all' || (jType === 'onward' ? r.journeyType !== 'return' : r.journeyType === 'return')).forEach(record => {
+          (record.passengerMappings || []).forEach(m => {
+            const coachKey = (m.coach && m.coach !== 'No Coach') ? m.coach.toUpperCase() : 'WAITLIST / UNASSIGNED';
+            if (!coachMap[coachKey]) coachMap[coachKey] = [];
+            const student = payments.find(p => p.id === m.assignedUserId);
+            coachMap[coachKey].push({
+              ...m,
+              pnrNumber: record.pnrNumber,
+              trainNumber: record.trainNumber,
+              trainName: record.trainName,
+              journeyType: record.journeyType || 'onward',
+              fromStation: record.fromStation,
+              toStation: record.toStation,
+              dateOfJourney: record.dateOfJourney,
+              studentRoll: student ? (student.studentRollNo || student.studentTripId || '-') : '-',
+              studentDept: student ? (student.department || '-') : '-'
+            });
           });
         });
-      });
-
-      Object.keys(coachMap).forEach(c => {
-        coachMap[c].sort((a, b) => {
-          const numA = parseInt(String(a.seatNumber).replace(/\D/g, ''), 10) || 999;
-          const numB = parseInt(String(b.seatNumber).replace(/\D/g, ''), 10) || 999;
-          return numA - numB;
+        Object.keys(coachMap).forEach(c => {
+          coachMap[c].sort((a, b) => (parseInt(String(a.seatNumber).replace(/\D/g, ''), 10) || 999) - (parseInt(String(b.seatNumber).replace(/\D/g, ''), 10) || 999));
         });
-      });
+        return coachMap;
+      };
 
-      const sortedCoaches = Object.keys(coachMap).sort();
+      const onwardCoachMap = buildCoachMapForJourney('onward');
+      const returnCoachMap = buildCoachMapForJourney('return');
 
       const printDiv = document.createElement('div');
       printDiv.id = 'tempRailwayManifestPrint';
@@ -25347,11 +25639,63 @@ Thank you!`;
       printDiv.style.color = '#0f172a';
       printDiv.style.background = '#ffffff';
 
+      const renderCoachSectionHtml = (title, coachMap, badgeColor) => {
+        const coaches = Object.keys(coachMap).sort();
+        if (coaches.length === 0) return '';
+
+        let secHtml = `
+          <div style="margin-top:20px; margin-bottom:12px; padding:8px 12px; background:${badgeColor === 'emerald' ? '#ecfdf5' : '#f5f3ff'}; border:1px solid ${badgeColor === 'emerald' ? '#a7f3d0' : '#ddd6fe'}; border-radius:8px;">
+            <h2 style="margin:0; font-size:14px; font-weight:bold; color:${badgeColor === 'emerald' ? '#065f46' : '#5b21b6'}; text-transform:uppercase;">
+              ${escapeHtml(title)}
+            </h2>
+          </div>
+        `;
+
+        coaches.forEach(c => {
+          const pass = coachMap[c];
+          secHtml += `
+            <div style="margin-bottom:18px; border:1px solid #cbd5e1; border-radius:6px; overflow:hidden;">
+              <div style="background:#1e293b; color:#ffffff; padding:6px 12px; font-weight:bold; font-size:12px; display:flex; justify-content:space-between;">
+                <span>COACH ${escapeHtml(c)}</span>
+                <span>${pass.length} Passengers</span>
+              </div>
+              <table style="width:100%; border-collapse:collapse; font-size:10px;">
+                <thead>
+                  <tr style="background:#f1f5f9; border-bottom:1px solid #cbd5e1;">
+                    <th style="padding:4px 6px; text-align:left;">Seat</th>
+                    <th style="padding:4px 6px; text-align:left;">Berth</th>
+                    <th style="padding:4px 6px; text-align:left;">Name</th>
+                    <th style="padding:4px 6px; text-align:left;">Roll / ID</th>
+                    <th style="padding:4px 6px; text-align:left;">Dept</th>
+                    <th style="padding:4px 6px; text-align:left;">Train &amp; PNR</th>
+                    <th style="padding:4px 6px; text-align:left;">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${pass.map(p => `
+                    <tr style="border-bottom:1px solid #e2e8f0;">
+                      <td style="padding:4px 6px; font-weight:bold;">${escapeHtml(p.seatNumber || '-')}</td>
+                      <td style="padding:4px 6px;">${escapeHtml(p.berthType ? (BERTH_MAP[p.berthType] || p.berthType) : '-')}</td>
+                      <td style="padding:4px 6px; font-weight:bold;">${escapeHtml(p.assignedUserName || 'Unassigned')}</td>
+                      <td style="padding:4px 6px;">${escapeHtml(p.studentRoll || '-')}</td>
+                      <td style="padding:4px 6px;">${escapeHtml(p.studentDept || '-')}</td>
+                      <td style="padding:4px 6px;">${escapeHtml(p.trainNumber || '')} (${escapeHtml(p.pnrNumber || '')})</td>
+                      <td style="padding:4px 6px; font-weight:bold;">${escapeHtml(p.ticketStatus || p.currentStatus || 'CNF')}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+        });
+        return secHtml;
+      };
+
       let htmlContent = `
         <div style="border-bottom:2px solid #0f172a; padding-bottom:12px; margin-bottom:16px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div>
-              <h1 style="font-size:20px; font-weight:bold; margin:0; text-transform:uppercase;">INDIAN RAILWAYS COACH MANIFEST</h1>
+              <h1 style="font-size:20px; font-weight:bold; margin:0; text-transform:uppercase;">INDIAN RAILWAYS COACH MANIFEST (SEPARATED)</h1>
               <p style="font-size:12px; margin:4px 0 0; color:#475569;">${escapeHtml(tripConfig.tripTitle)} • Official College Expedition Seating Chart</p>
             </div>
             <div style="text-align:right;">
@@ -25360,74 +25704,30 @@ Thank you!`;
             </div>
           </div>
         </div>
+        ${renderCoachSectionHtml('🚂 ONWARD JOURNEY COACH MANIFESTS', onwardCoachMap, 'emerald')}
+        ${renderCoachSectionHtml('🔄 RETURN JOURNEY COACH MANIFESTS', returnCoachMap, 'purple')}
       `;
-
-      sortedCoaches.forEach(coachName => {
-        const list = coachMap[coachName];
-        htmlContent += `
-          <div style="margin-bottom:24px; page-break-inside:avoid;">
-            <div style="background:#0f172a; color:#ffffff; padding:8px 12px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span style="font-weight:bold; font-size:14px;">COACH ${escapeHtml(coachName)}</span>
-              <span style="font-size:11px;">Total Passengers: ${list.length}</span>
-            </div>
-            <table style="width:100%; border-collapse:collapse; font-size:11px; text-align:left;">
-              <thead>
-                <tr style="background:#f1f5f9; border-bottom:1px solid #cbd5e1;">
-                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">Seat #</th>
-                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">Berth</th>
-                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">Passenger Name</th>
-                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">Student ID</th>
-                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">Dept</th>
-                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">Mobile</th>
-                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">PNR Number</th>
-                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">Booking Status</th>
-                  <th style="padding:6px 8px; border:1px solid #cbd5e1;">Current Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${list.map(p => `
-                  <tr style="border-bottom:1px solid #e2e8f0;">
-                    <td style="padding:6px 8px; border:1px solid #e2e8f0; font-weight:bold; font-family:monospace;">${escapeHtml(p.seatNumber || '-')}</td>
-                    <td style="padding:6px 8px; border:1px solid #e2e8f0; font-weight:bold;">${escapeHtml(p.berthType ? (BERTH_MAP[p.berthType] || p.berthType) : '-')}</td>
-                    <td style="padding:6px 8px; border:1px solid #e2e8f0; font-weight:bold;">${escapeHtml(p.assignedUserName || 'Unassigned')}</td>
-                    <td style="padding:6px 8px; border:1px solid #e2e8f0; font-family:monospace;">${escapeHtml(p.studentId || '-')}</td>
-                    <td style="padding:6px 8px; border:1px solid #e2e8f0;">${escapeHtml(p.department || '-')}</td>
-                    <td style="padding:6px 8px; border:1px solid #e2e8f0; font-family:monospace;">${escapeHtml(p.assignedUserPhone || '-')}</td>
-                    <td style="padding:6px 8px; border:1px solid #e2e8f0; font-family:monospace;">${escapeHtml(p.pnrNumber || '-')}</td>
-                    <td style="padding:6px 8px; border:1px solid #e2e8f0;">${escapeHtml(p.bookingStatus || p.ticketStatus || 'CNF')}</td>
-                    <td style="padding:6px 8px; border:1px solid #e2e8f0; font-weight:bold; color:${p.ticketStatus === 'CNF' ? '#047857' : '#b45309'};">${escapeHtml(p.currentStatus || p.ticketStatus || 'CNF')}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        `;
-      });
 
       printDiv.innerHTML = htmlContent;
       document.body.appendChild(printDiv);
 
-      if (typeof html2pdf !== 'undefined') {
-        showToast('Generating Coach Manifest PDF...', 'info');
-        const opt = {
-          margin: 8,
-          filename: `TripPay_Railway_Coach_Manifest_${new Date().toISOString().slice(0, 10)}.pdf`,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-        };
-        html2pdf().set(opt).from(printDiv).save().then(() => {
-          document.body.removeChild(printDiv);
-          showToast('Coach Manifest PDF downloaded!', 'success');
-        }).catch(err => {
-          console.error(err);
-          window.print();
-          document.body.removeChild(printDiv);
-        });
-      } else {
-        window.print();
+      const opt = {
+        margin: [8, 8, 8, 8],
+        filename: `Coach_Manifest_${currentTripId}_${Date.now()}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(printDiv).save().then(() => {
         document.body.removeChild(printDiv);
-      }
+        showToast('Separated coach manifest PDF downloaded! ✅', 'success');
+      }).catch(err => {
+        console.error('Coach manifest PDF generation error:', err);
+        if (document.body.contains(printDiv)) document.body.removeChild(printDiv);
+        showToast('Failed to export PDF, opening print preview instead.', 'info');
+        window.print();
+      });
     }
 
     async function handleRefreshPNRStatus(pnrNumber) {
@@ -31150,160 +31450,360 @@ Guidelines:
         };
       }
 
-      // 5. Feature 129: Complete Train Passenger Reports
+      // 5. Feature 129: Complete Train Passenger Reports (SEPARATED ONWARD & RETURN)
       if (reportType === 'train_passengers') {
-        const headers = ['Sl No', 'Passenger Name', 'Student ID', 'Phone', 'Department', 'Train No & Name', 'PNR No', 'Journey', 'Coach', 'Seat', 'Berth', 'Status'];
-        const rows = [];
-        let cnfCount = 0;
-        let racCount = 0;
-        let wlCount = 0;
+        const journeyChoice = customOpts.journey || document.getElementById('reportSelectJourney_train_passengers')?.value || 'both';
 
-        pnrList.forEach(record => {
-          (record.passengerMappings || []).forEach(m => {
-            const student = studentList.find(s => s.id === m.assignedUserId);
-            const st = (m.ticketStatus || m.currentStatus || 'CNF').toUpperCase();
-            if (st.includes('CNF')) cnfCount++;
-            else if (st.includes('RAC')) racCount++;
-            else if (st.includes('WL')) wlCount++;
+        const parseRowsForJourney = (jType) => {
+          const rows = [];
+          let cnf = 0, rac = 0, wl = 0;
+          pnrList.filter(record => jType === 'all' || (jType === 'onward' ? record.journeyType !== 'return' : record.journeyType === 'return')).forEach(record => {
+            (record.passengerMappings || []).forEach(m => {
+              const student = studentList.find(s => s.id === m.assignedUserId);
+              const st = (m.ticketStatus || m.currentStatus || 'CNF').toUpperCase();
+              if (st.includes('CNF')) cnf++;
+              else if (st.includes('RAC')) rac++;
+              else if (st.includes('WL')) wl++;
 
-            rows.push([
-              rows.length + 1,
-              m.assignedUserName || (student ? student.studentName : 'Unassigned Passenger'),
-              student ? (student.studentRollNo || student.studentTripId || '-') : '-',
-              student ? student.phone : '-',
-              student ? student.department : '-',
-              `${record.trainNumber || ''} ${record.trainName || ''}`.trim(),
-              record.pnrNumber || '-',
-              record.journeyType === 'return' ? 'Return' : 'Onward',
-              m.coach || 'S4',
-              m.seatNumber || '-',
-              m.berthType || '-',
-              st
-            ]);
+              rows.push([
+                rows.length + 1,
+                m.assignedUserName || (student ? student.studentName : 'Unassigned Passenger'),
+                student ? (student.studentRollNo || student.studentTripId || '-') : '-',
+                student ? student.phone : (m.assignedUserPhone || '-'),
+                student ? student.department : '-',
+                `${record.trainNumber || ''} ${record.trainName || ''}`.trim(),
+                record.pnrNumber || '-',
+                m.coach || 'S4',
+                m.seatNumber || '-',
+                m.berthType ? (BERTH_MAP[m.berthType] || m.berthType) : (m.berthName || '-'),
+                st
+              ]);
+            });
           });
-        });
-
-        return {
-          id: 'train_passengers',
-          title: 'COMPLETE RAILWAY PASSENGER MANIFEST',
-          subtitle: 'All Booked Train Passengers & Berth Allocations',
-          meta: baseMeta,
-          kpis: [
-            { label: 'Total Passengers', value: rows.length },
-            { label: 'Confirmed (CNF)', value: cnfCount },
-            { label: 'RAC', value: racCount },
-            { label: 'Waiting List (WL)', value: wlCount }
-          ],
-          headers,
-          rows
+          return { rows, cnf, rac, wl };
         };
+
+        const headers = ['Sl No', 'Passenger Name', 'Roll / ID', 'Phone', 'Department', 'Train No & Name', 'PNR No', 'Coach', 'Seat', 'Berth', 'Status'];
+
+        if (journeyChoice === 'onward') {
+          const onwardData = parseRowsForJourney('onward');
+          return {
+            id: 'train_passengers',
+            title: 'ONWARD JOURNEY TRAIN PASSENGER MANIFEST',
+            subtitle: 'Departure Train Passenger Roster & Berth Allocations',
+            meta: baseMeta,
+            kpis: [
+              { label: 'Onward Passengers', value: onwardData.rows.length },
+              { label: 'Confirmed (CNF)', value: onwardData.cnf },
+              { label: 'RAC', value: onwardData.rac },
+              { label: 'Waiting List (WL)', value: onwardData.wl }
+            ],
+            headers,
+            rows: onwardData.rows
+          };
+        } else if (journeyChoice === 'return') {
+          const returnData = parseRowsForJourney('return');
+          return {
+            id: 'train_passengers',
+            title: 'RETURN JOURNEY TRAIN PASSENGER MANIFEST',
+            subtitle: 'Return Train Passenger Roster & Berth Allocations',
+            meta: baseMeta,
+            kpis: [
+              { label: 'Return Passengers', value: returnData.rows.length },
+              { label: 'Confirmed (CNF)', value: returnData.cnf },
+              { label: 'RAC', value: returnData.rac },
+              { label: 'Waiting List (WL)', value: returnData.wl }
+            ],
+            headers,
+            rows: returnData.rows
+          };
+        } else {
+          const onwardData = parseRowsForJourney('onward');
+          const returnData = parseRowsForJourney('return');
+          const onwardPnrs = pnrList.filter(r => r.journeyType !== 'return');
+          const returnPnrs = pnrList.filter(r => r.journeyType === 'return');
+          const onwardTrainName = onwardPnrs.length > 0 ? `${onwardPnrs[0].trainNumber || ''} ${onwardPnrs[0].trainName || ''} (${onwardPnrs[0].fromStation || ''} ➔ ${onwardPnrs[0].toStation || ''})` : 'Departure Train';
+          const returnTrainName = returnPnrs.length > 0 ? `${returnPnrs[0].trainNumber || ''} ${returnPnrs[0].trainName || ''} (${returnPnrs[0].fromStation || ''} ➔ ${returnPnrs[0].toStation || ''})` : 'Return Train';
+
+          return {
+            id: 'train_passengers',
+            title: 'COMPLETE RAILWAY PASSENGER MANIFEST',
+            subtitle: 'All Booked Train Passengers & Berth Allocations (Separated Journeys)',
+            meta: baseMeta,
+            kpis: [
+              { label: 'Onward Booked', value: onwardData.rows.length },
+              { label: 'Return Booked', value: returnData.rows.length },
+              { label: 'Confirmed (CNF)', value: onwardData.cnf + returnData.cnf },
+              { label: 'RAC / WL', value: onwardData.rac + onwardData.wl + returnData.rac + returnData.wl }
+            ],
+            sections: [
+              {
+                title: '🚂 ONWARD JOURNEY PASSENGERS',
+                subtitle: onwardTrainName,
+                badge: 'ONWARD JOURNEY',
+                badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                kpis: [
+                  { label: 'Onward Passengers', value: onwardData.rows.length },
+                  { label: 'Confirmed', value: onwardData.cnf },
+                  { label: 'RAC', value: onwardData.rac },
+                  { label: 'Waiting List', value: onwardData.wl }
+                ],
+                headers,
+                rows: onwardData.rows
+              },
+              {
+                title: '🔄 RETURN JOURNEY PASSENGERS',
+                subtitle: returnTrainName,
+                badge: 'RETURN JOURNEY',
+                badgeClass: 'bg-purple-100 text-purple-800 border-purple-300',
+                kpis: [
+                  { label: 'Return Passengers', value: returnData.rows.length },
+                  { label: 'Confirmed', value: returnData.cnf },
+                  { label: 'RAC', value: returnData.rac },
+                  { label: 'Waiting List', value: returnData.wl }
+                ],
+                headers,
+                rows: returnData.rows
+              }
+            ]
+          };
+        }
       }
 
-      // 6. Feature 130: Coach-Wise Passenger Reports
+      // 6. Feature 130: Coach-Wise Passenger Reports (SEPARATED ONWARD & RETURN)
       if (reportType === 'coach_manifest') {
+        const journeyChoice = customOpts.journey || document.getElementById('reportSelectJourney_coach_manifest')?.value || 'both';
         let selectedCoach = customOpts.coach;
         const selectorEl = document.getElementById('reportSelectCoach_coach_manifest');
         if (!selectedCoach && selectorEl) selectedCoach = selectorEl.value;
         if (!selectedCoach) selectedCoach = 'all';
 
-        const headers = ['Sl No', 'Coach', 'Seat No', 'Berth Type', 'Passenger Name', 'Roll No', 'Phone', 'Department', 'Train & PNR', 'Status'];
-        const rows = [];
+        const parseCoachRows = (jType) => {
+          const rows = [];
+          pnrList.filter(record => jType === 'all' || (jType === 'onward' ? record.journeyType !== 'return' : record.journeyType === 'return')).forEach(record => {
+            (record.passengerMappings || []).forEach(m => {
+              const coachName = (m.coach || 'Unassigned').toUpperCase();
+              if (selectedCoach !== 'all' && coachName !== selectedCoach.toUpperCase()) return;
 
-        pnrList.forEach(record => {
-          (record.passengerMappings || []).forEach(m => {
-            const coachName = (m.coach || 'Unassigned').toUpperCase();
-            if (selectedCoach !== 'all' && coachName !== selectedCoach.toUpperCase()) return;
-
-            const student = studentList.find(s => s.id === m.assignedUserId);
-            rows.push([
-              rows.length + 1,
-              coachName,
-              m.seatNumber || '-',
-              m.berthType || '-',
-              m.assignedUserName || (student ? student.studentName : 'Unassigned'),
-              student ? (student.studentRollNo || '-') : '-',
-              student ? student.phone : '-',
-              student ? student.department : '-',
-              `${record.trainNumber || ''} (PNR: ${record.pnrNumber})`,
-              m.ticketStatus || 'CNF'
-            ]);
+              const student = studentList.find(s => s.id === m.assignedUserId);
+              rows.push([
+                rows.length + 1,
+                coachName,
+                m.seatNumber || '-',
+                m.berthType ? (BERTH_MAP[m.berthType] || m.berthType) : (m.berthName || '-'),
+                m.assignedUserName || (student ? student.studentName : 'Unassigned'),
+                student ? (student.studentRollNo || '-') : '-',
+                student ? student.phone : (m.assignedUserPhone || '-'),
+                student ? student.department : '-',
+                `${record.trainNumber || ''} (PNR: ${record.pnrNumber})`,
+                m.ticketStatus || m.currentStatus || 'CNF'
+              ]);
+            });
           });
-        });
-
-        // Sort by coach, then seat number
-        rows.sort((a, b) => {
-          if (a[1] !== b[1]) return a[1].localeCompare(b[1]);
-          return (parseInt(a[2]) || 0) - (parseInt(b[2]) || 0);
-        });
-
-        return {
-          id: 'coach_manifest',
-          title: 'COACH-WISE PASSENGER MANIFEST',
-          subtitle: selectedCoach === 'all' ? 'All Train Coaches Combined' : `Coach ${selectedCoach} Detailed Manifest`,
-          meta: baseMeta,
-          kpis: [
-            { label: 'Selected Coach', value: selectedCoach === 'all' ? 'All Coaches' : selectedCoach },
-            { label: 'Total Seats', value: rows.length },
-            { label: 'Confirmed Seats', value: rows.filter(r => String(r[9]).includes('CNF')).length },
-            { label: 'Train Records', value: pnrList.length }
-          ],
-          headers,
-          rows
+          rows.sort((a, b) => {
+            if (a[1] !== b[1]) return a[1].localeCompare(b[1]);
+            return (parseInt(a[2]) || 0) - (parseInt(b[2]) || 0);
+          });
+          return rows;
         };
+
+        const headers = ['Sl No', 'Coach', 'Seat No', 'Berth Type', 'Passenger Name', 'Roll No', 'Phone', 'Department', 'Train & PNR', 'Status'];
+
+        if (journeyChoice === 'onward') {
+          const rows = parseCoachRows('onward');
+          return {
+            id: 'coach_manifest',
+            title: 'ONWARD JOURNEY COACH MANIFEST',
+            subtitle: selectedCoach === 'all' ? 'All Onward Coaches' : `Onward Coach ${selectedCoach} Manifest`,
+            meta: baseMeta,
+            kpis: [
+              { label: 'Selected Coach', value: selectedCoach === 'all' ? 'All Onward' : selectedCoach },
+              { label: 'Total Seats', value: rows.length },
+              { label: 'Confirmed', value: rows.filter(r => String(r[9]).includes('CNF')).length },
+              { label: 'Onward Trains', value: pnrList.filter(r => r.journeyType !== 'return').length }
+            ],
+            headers,
+            rows
+          };
+        } else if (journeyChoice === 'return') {
+          const rows = parseCoachRows('return');
+          return {
+            id: 'coach_manifest',
+            title: 'RETURN JOURNEY COACH MANIFEST',
+            subtitle: selectedCoach === 'all' ? 'All Return Coaches' : `Return Coach ${selectedCoach} Manifest`,
+            meta: baseMeta,
+            kpis: [
+              { label: 'Selected Coach', value: selectedCoach === 'all' ? 'All Return' : selectedCoach },
+              { label: 'Total Seats', value: rows.length },
+              { label: 'Confirmed', value: rows.filter(r => String(r[9]).includes('CNF')).length },
+              { label: 'Return Trains', value: pnrList.filter(r => r.journeyType === 'return').length }
+            ],
+            headers,
+            rows
+          };
+        } else {
+          const onwardRows = parseCoachRows('onward');
+          const returnRows = parseCoachRows('return');
+          return {
+            id: 'coach_manifest',
+            title: 'COACH-WISE PASSENGER MANIFEST (SEPARATED)',
+            subtitle: selectedCoach === 'all' ? 'Separated Onward & Return Coach Manifests' : `Coach ${selectedCoach} Manifest`,
+            meta: baseMeta,
+            kpis: [
+              { label: 'Onward Coach Seats', value: onwardRows.length },
+              { label: 'Return Coach Seats', value: returnRows.length },
+              { label: 'Total Assigned', value: onwardRows.length + returnRows.length },
+              { label: 'Train Records', value: pnrList.length }
+            ],
+            sections: [
+              {
+                title: '🚂 ONWARD JOURNEY COACH MANIFESTS',
+                subtitle: 'Departure Train Compartment Allocations',
+                badge: 'ONWARD COACHES',
+                badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                kpis: [
+                  { label: 'Total Seats', value: onwardRows.length },
+                  { label: 'Confirmed', value: onwardRows.filter(r => String(r[9]).includes('CNF')).length }
+                ],
+                headers,
+                rows: onwardRows
+              },
+              {
+                title: '🔄 RETURN JOURNEY COACH MANIFESTS',
+                subtitle: 'Return Train Compartment Allocations',
+                badge: 'RETURN COACHES',
+                badgeClass: 'bg-purple-100 text-purple-800 border-purple-300',
+                kpis: [
+                  { label: 'Total Seats', value: returnRows.length },
+                  { label: 'Confirmed', value: returnRows.filter(r => String(r[9]).includes('CNF')).length }
+                ],
+                headers,
+                rows: returnRows
+              }
+            ]
+          };
+        }
       }
 
-      // 7. Feature 131: PNR Reports
+      // 7. Feature 131: PNR Reports (SEPARATED ONWARD & RETURN)
       if (reportType === 'pnr_records') {
-        const headers = ['Sl No', 'PNR Number', 'Train Number & Name', 'Journey Type', 'Route (From - To)', 'Class', 'Chart Status', 'Total Slots', 'Assigned Students', 'Last Synced'];
-        let totalSlots = 0;
-        let totalAssigned = 0;
+        const journeyChoice = customOpts.journey || document.getElementById('reportSelectJourney_pnr_records')?.value || 'both';
 
-        const rows = pnrList.map((record, idx) => {
-          const slots = (record.passengerMappings || []).length;
-          const assigned = (record.passengerMappings || []).filter(m => m.assignedUserId).length;
-          totalSlots += slots;
-          totalAssigned += assigned;
-
-          return [
-            idx + 1,
-            record.pnrNumber || '-',
-            `${record.trainNumber || ''} ${record.trainName || ''}`.trim(),
-            record.journeyType === 'return' ? 'Return Journey' : 'Onward Journey',
-            `${record.fromStation || 'Origin'} -> ${record.toStation || 'Destination'}`,
-            record.journeyClass || 'SL (Sleeper)',
-            record.chartPrepared ? 'Chart Prepared' : 'Chart Not Prepared',
-            slots,
-            assigned,
-            record.lastSyncedAt ? formatDisplayDate(record.lastSyncedAt) : 'Saved'
-          ];
-        });
-
-        return {
-          id: 'pnr_records',
-          title: 'PNR MASTER STATUS & ALLOCATION REPORT',
-          subtitle: 'Railway Booking PNR Roster & Seat Fulfillment',
-          meta: baseMeta,
-          kpis: [
-            { label: 'Total PNRs', value: pnrList.length },
-            { label: 'Total Train Slots', value: totalSlots },
-            { label: 'Assigned Students', value: totalAssigned },
-            { label: 'Unallocated Slots', value: Math.max(0, totalSlots - totalAssigned) }
-          ],
-          headers,
-          rows
+        const parsePnrRows = (jType) => {
+          let slots = 0, assigned = 0;
+          const rows = pnrList.filter(record => jType === 'all' || (jType === 'onward' ? record.journeyType !== 'return' : record.journeyType === 'return')).map((record, idx) => {
+            const s = (record.passengerMappings || []).length;
+            const a = (record.passengerMappings || []).filter(m => m.assignedUserId).length;
+            slots += s;
+            assigned += a;
+            return [
+              idx + 1,
+              record.pnrNumber || '-',
+              `${record.trainNumber || ''} ${record.trainName || ''}`.trim(),
+              record.journeyType === 'return' ? 'Return Journey' : 'Onward Journey',
+              `${record.fromStation || 'Origin'} -> ${record.toStation || 'Destination'}`,
+              record.journeyClass || 'SL (Sleeper)',
+              record.chartPrepared ? 'Chart Prepared' : 'Chart Not Prepared',
+              s,
+              a,
+              record.lastSyncedAt ? formatDisplayDate(record.lastSyncedAt) : 'Saved'
+            ];
+          });
+          return { rows, slots, assigned };
         };
+
+        const headers = ['Sl No', 'PNR Number', 'Train Number & Name', 'Journey Type', 'Route (From - To)', 'Class', 'Chart Status', 'Total Slots', 'Assigned Students', 'Last Synced'];
+
+        if (journeyChoice === 'onward') {
+          const onward = parsePnrRows('onward');
+          return {
+            id: 'pnr_records',
+            title: 'ONWARD JOURNEY PNR STATUS & ALLOCATION REPORT',
+            subtitle: 'Departure Train PNR Bookings & Seat Fulfillment',
+            meta: baseMeta,
+            kpis: [
+              { label: 'Onward PNRs', value: onward.rows.length },
+              { label: 'Total Slots', value: onward.slots },
+              { label: 'Assigned Students', value: onward.assigned },
+              { label: 'Vacant Slots', value: Math.max(0, onward.slots - onward.assigned) }
+            ],
+            headers,
+            rows: onward.rows
+          };
+        } else if (journeyChoice === 'return') {
+          const ret = parsePnrRows('return');
+          return {
+            id: 'pnr_records',
+            title: 'RETURN JOURNEY PNR STATUS & ALLOCATION REPORT',
+            subtitle: 'Return Train PNR Bookings & Seat Fulfillment',
+            meta: baseMeta,
+            kpis: [
+              { label: 'Return PNRs', value: ret.rows.length },
+              { label: 'Total Slots', value: ret.slots },
+              { label: 'Assigned Students', value: ret.assigned },
+              { label: 'Vacant Slots', value: Math.max(0, ret.slots - ret.assigned) }
+            ],
+            headers,
+            rows: ret.rows
+          };
+        } else {
+          const onward = parsePnrRows('onward');
+          const ret = parsePnrRows('return');
+          return {
+            id: 'pnr_records',
+            title: 'PNR MASTER STATUS & ALLOCATION REPORT (SEPARATED)',
+            subtitle: 'Railway Booking PNR Roster & Seat Fulfillment for Onward & Return',
+            meta: baseMeta,
+            kpis: [
+              { label: 'Onward PNRs', value: onward.rows.length },
+              { label: 'Return PNRs', value: ret.rows.length },
+              { label: 'Total Train Slots', value: onward.slots + ret.slots },
+              { label: 'Assigned Students', value: onward.assigned + ret.assigned }
+            ],
+            sections: [
+              {
+                title: '🚂 ONWARD JOURNEY PNR ROSTER',
+                subtitle: 'Departure Train Railway Records',
+                badge: 'ONWARD PNRS',
+                badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                kpis: [
+                  { label: 'PNR Count', value: onward.rows.length },
+                  { label: 'Slots', value: onward.slots },
+                  { label: 'Assigned', value: onward.assigned },
+                  { label: 'Vacant', value: Math.max(0, onward.slots - onward.assigned) }
+                ],
+                headers,
+                rows: onward.rows
+              },
+              {
+                title: '🔄 RETURN JOURNEY PNR ROSTER',
+                subtitle: 'Return Train Railway Records',
+                badge: 'RETURN PNRS',
+                badgeClass: 'bg-purple-100 text-purple-800 border-purple-300',
+                kpis: [
+                  { label: 'PNR Count', value: ret.rows.length },
+                  { label: 'Slots', value: ret.slots },
+                  { label: 'Assigned', value: ret.assigned },
+                  { label: 'Vacant', value: Math.max(0, ret.slots - ret.assigned) }
+                ],
+                headers,
+                rows: ret.rows
+              }
+            ]
+          };
+        }
       }
 
-      // 8. Feature 132: Attendance Reports
+      // 8. Feature 132: Attendance Reports (SEPARATED ONWARD & RETURN)
       if (reportType === 'attendance') {
-        const headers = ['Sl No', 'Student Name', 'Roll No', 'Department', 'Phone', 'Boarding Status', 'Boarded At', 'Arrival Status', 'Arrived At', 'Coach & Seat'];
-        let boardedCount = 0;
+        const journeyChoice = customOpts.journey || document.getElementById('reportSelectJourney_attendance')?.value || 'both';
+
+        let onwardBoardedCount = 0;
+        let returnBoardedCount = 0;
         let arrivedCount = 0;
 
-        const rows = studentList.map((p, idx) => {
-          if (p.boarded) boardedCount++;
-          if (p.arrived) arrivedCount++;
-
+        const onwardRows = studentList.map((p, idx) => {
+          if (p.boarded) onwardBoardedCount++;
           const coachSeat = p.trainAllocation
             ? `${p.trainAllocation.coach || 'S4'}/${p.trainAllocation.seatNumber || '-'}`
             : 'Unassigned';
@@ -31314,124 +31814,196 @@ Guidelines:
             p.studentRollNo || '-',
             p.department || 'General',
             p.phone || 'N/A',
+            coachSeat,
             p.boarded ? 'BOARDED' : 'ABSENT',
             p.boardedAt ? formatDisplayTime(p.boardedAt) : '-',
-            p.arrived ? 'ARRIVED' : 'PENDING',
-            p.arrivedAt ? formatDisplayTime(p.arrivedAt) : '-',
-            coachSeat
+            p.trainAllocation ? `${p.trainAllocation.trainNumber || ''} (PNR: ${p.trainAllocation.pnrNumber || '-'})` : '-'
           ];
         });
 
-        const boardedPct = studentList.length > 0 ? Math.round((boardedCount / studentList.length) * 100) : 0;
-        const arrivedPct = studentList.length > 0 ? Math.round((arrivedCount / studentList.length) * 100) : 0;
+        const returnRows = studentList.map((p, idx) => {
+          const retBoarded = p.returnBoarded || p.arrived || false;
+          if (retBoarded) returnBoardedCount++;
+          if (p.arrived) arrivedCount++;
+          const coachSeat = p.returnTrainAllocation
+            ? `${p.returnTrainAllocation.coach || 'S3'}/${p.returnTrainAllocation.seatNumber || '-'}`
+            : 'Unassigned';
 
-        return {
-          id: 'attendance',
-          title: 'STUDENT ATTENDANCE & PARTICIPATION REPORT',
-          subtitle: 'Departure Campus Boarding & Destination Arrival Log',
-          meta: baseMeta,
-          kpis: [
-            { label: 'Total Registered', value: studentList.length },
-            { label: 'Departure Boarded', value: `${boardedCount} (${boardedPct}%)` },
-            { label: 'Destination Arrived', value: `${arrivedCount} (${arrivedPct}%)` },
-            { label: 'Departure Absentees', value: Math.max(0, studentList.length - boardedCount) }
-          ],
-          headers,
-          rows
-        };
+          return [
+            idx + 1,
+            p.studentName || 'N/A',
+            p.studentRollNo || '-',
+            p.department || 'General',
+            p.phone || 'N/A',
+            coachSeat,
+            retBoarded ? 'BOARDED (RETURN)' : 'PENDING',
+            p.arrived ? 'ARRIVED CAMPUS' : 'EN ROUTE',
+            p.arrivedAt ? formatDisplayTime(p.arrivedAt) : '-',
+            p.returnTrainAllocation ? `${p.returnTrainAllocation.trainNumber || ''} (PNR: ${p.returnTrainAllocation.pnrNumber || '-'})` : '-'
+          ];
+        });
+
+        const onwardHeaders = ['Sl No', 'Student Name', 'Roll No', 'Department', 'Phone', 'Onward Coach/Seat', 'Departure Boarding', 'Boarded Time', 'Onward Train'];
+        const returnHeaders = ['Sl No', 'Student Name', 'Roll No', 'Department', 'Phone', 'Return Coach/Seat', 'Return Boarding', 'Campus Arrival', 'Arrival Time', 'Return Train'];
+
+        if (journeyChoice === 'onward') {
+          return {
+            id: 'attendance',
+            title: 'ONWARD JOURNEY / DEPARTURE ATTENDANCE REPORT',
+            subtitle: 'Campus Departure Check-in & Train Boarding Verification',
+            meta: baseMeta,
+            kpis: [
+              { label: 'Total Enrolled', value: studentList.length },
+              { label: 'Departure Boarded', value: onwardBoardedCount },
+              { label: 'Departure Absent', value: Math.max(0, studentList.length - onwardBoardedCount) },
+              { label: 'Boarding Turnout', value: studentList.length > 0 ? `${Math.round((onwardBoardedCount / studentList.length) * 100)}%` : '0%' }
+            ],
+            headers: onwardHeaders,
+            rows: onwardRows
+          };
+        } else if (journeyChoice === 'return') {
+          return {
+            id: 'attendance',
+            title: 'RETURN JOURNEY & CAMPUS ARRIVAL ATTENDANCE REPORT',
+            subtitle: 'Return Train Boarding & Final Arrival Verification',
+            meta: baseMeta,
+            kpis: [
+              { label: 'Total Enrolled', value: studentList.length },
+              { label: 'Return Boarded', value: returnBoardedCount },
+              { label: 'Campus Arrived', value: arrivedCount },
+              { label: 'Arrival Turnout', value: studentList.length > 0 ? `${Math.round((arrivedCount / studentList.length) * 100)}%` : '0%' }
+            ],
+            headers: returnHeaders,
+            rows: returnRows
+          };
+        } else {
+          return {
+            id: 'attendance',
+            title: 'STUDENT ATTENDANCE & PARTICIPATION REPORT (SEPARATED)',
+            subtitle: 'Departure Boarding & Return Journey Check-in Audit',
+            meta: baseMeta,
+            kpis: [
+              { label: 'Enrolled Students', value: studentList.length },
+              { label: 'Departure Boarded', value: onwardBoardedCount },
+              { label: 'Return Boarded', value: returnBoardedCount },
+              { label: 'Campus Arrived', value: arrivedCount }
+            ],
+            sections: [
+              {
+                title: '🚂 ONWARD JOURNEY / DEPARTURE ATTENDANCE',
+                subtitle: 'Campus Departure Gate & Initial Train Boarding Verification',
+                badge: 'DEPARTURE ATTENDANCE',
+                badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                kpis: [
+                  { label: 'Total Enrolled', value: studentList.length },
+                  { label: 'Boarded', value: onwardBoardedCount },
+                  { label: 'Absent', value: Math.max(0, studentList.length - onwardBoardedCount) }
+                ],
+                headers: onwardHeaders,
+                rows: onwardRows
+              },
+              {
+                title: '🔄 RETURN JOURNEY & ARRIVAL ATTENDANCE',
+                subtitle: 'Return Train Boarding & Final Campus Check-in Verification',
+                badge: 'RETURN ATTENDANCE',
+                badgeClass: 'bg-purple-100 text-purple-800 border-purple-300',
+                kpis: [
+                  { label: 'Return Boarded', value: returnBoardedCount },
+                  { label: 'Campus Arrived', value: arrivedCount },
+                  { label: 'Pending Arrival', value: Math.max(0, studentList.length - arrivedCount) }
+                ],
+                headers: returnHeaders,
+                rows: returnRows
+              }
+            ]
+          };
+        }
       }
 
       // 9. Feature 133: Department-Wise Reports
       if (reportType === 'departments') {
         const deptMap = {};
         studentList.forEach(p => {
-          const dept = (p.department || 'General').trim();
-          if (!deptMap[dept]) {
-            deptMap[dept] = { name: dept, total: 0, paid: 0, partial: 0, unpaid: 0, collected: 0, dues: 0, cnfSeats: 0, boarded: 0 };
-          }
-          const d = deptMap[dept];
-          d.total++;
+          const d = (p.department || 'General').trim();
+          if (!deptMap[d]) deptMap[d] = { count: 0, verified: 0, collected: 0, dues: 0, boarded: 0 };
+          deptMap[d].count++;
           const sum = getStudentPaymentSummary(p);
-          if (sum.isFullyPaid && sum.netPaid > 0) d.paid++;
-          else if (sum.netPaid > 0) d.partial++;
-          else d.unpaid++;
-          d.collected += sum.netPaid;
-          d.dues += sum.balanceDue;
-          if (p.trainAllocation && (p.trainAllocation.ticketStatus || '').toUpperCase().includes('CNF')) d.cnfSeats++;
-          if (p.boarded) d.boarded++;
+          deptMap[d].collected += sum.netPaid;
+          deptMap[d].dues += sum.balanceDue;
+          if (p.status === 'Verified') deptMap[d].verified++;
+          if (p.boarded) deptMap[d].boarded++;
         });
 
-        const depts = Object.values(deptMap).sort((a, b) => b.collected - a.collected);
-        const headers = ['Sl No', 'Department Name', 'Enrolled', 'Fully Paid', 'Partially Paid', 'Unpaid', 'Collected (₹)', 'Outstanding Dues (₹)', 'Train CNF', 'Boarding Rate'];
-
-        const rows = depts.map((d, idx) => [
-          idx + 1,
-          d.name,
-          d.total,
-          d.paid,
-          d.partial,
-          d.unpaid,
-          d.collected,
-          d.dues,
-          d.cnfSeats,
-          d.total > 0 ? `${Math.round((d.boarded / d.total) * 100)}%` : '0%'
-        ]);
-
-        const totalColl = depts.reduce((a, d) => a + d.collected, 0);
-        const totalDues = depts.reduce((a, d) => a + d.dues, 0);
+        const headers = ['Sl No', 'Department Name', 'Enrolled Students', 'Verified Registrations', 'Total Collected (₹)', 'Pending Dues (₹)', 'Boarding Turnout', 'Turnout Rate'];
+        const rows = Object.keys(deptMap).sort().map((dName, idx) => {
+          const item = deptMap[dName];
+          const rate = item.count > 0 ? Math.round((item.boarded / item.count) * 100) : 0;
+          return [
+            idx + 1,
+            dName,
+            item.count,
+            item.verified,
+            formatINR(item.collected),
+            formatINR(item.dues),
+            `${item.boarded} / ${item.count}`,
+            `${rate}%`
+          ];
+        });
 
         return {
           id: 'departments',
-          title: 'DEPARTMENT-WISE PERFORMANCE REPORT',
-          subtitle: 'Academic Departments Enrollment, Recovery & Attendance',
+          title: 'ACADEMIC DEPARTMENT PERFORMANCE REPORT',
+          subtitle: 'Turnout, Payment Recovery & Participation Audit by Department',
           meta: baseMeta,
           kpis: [
-            { label: 'Total Departments', value: depts.length },
-            { label: 'Total Enrolled', value: studentList.length },
-            { label: 'Total Collection', value: formatINR(totalColl) },
-            { label: 'Outstanding Dues', value: formatINR(totalDues) }
+            { label: 'Total Departments', value: Object.keys(deptMap).length },
+            { label: 'Total Students', value: studentList.length },
+            { label: 'Total Realized', value: formatINR(Object.values(deptMap).reduce((a, b) => a + b.collected, 0)) },
+            { label: 'Outstanding Balance', value: formatINR(Object.values(deptMap).reduce((a, b) => a + b.dues, 0)) }
           ],
           headers,
           rows
         };
       }
 
-      // 10. Feature 134: Complete Trip Summary Reports (Executive Dossier)
+      // 10. Feature 134: Complete Trip Summary Dossier
       if (reportType === 'trip_summary') {
         const totalStudents = studentList.length;
-        const totalColl = studentList.reduce((a, p) => a + (getStudentPaymentSummary(p).netPaid || 0), 0);
+        const verifiedCount = studentList.filter(p => p.status === 'Verified').length;
+        const totalCollected = studentList.reduce((a, p) => a + (getStudentPaymentSummary(p).netPaid || 0), 0);
         const totalDues = studentList.reduce((a, p) => a + (getStudentPaymentSummary(p).balanceDue || 0), 0);
-        const totalExp = expenses.reduce((a, e) => a + (Number(e.amount) || 0), 0);
-        const netCash = totalColl - totalExp;
+        const deptsCount = new Set(studentList.map(p => p.department)).size;
 
-        const boarded = studentList.filter(p => p.boarded).length;
-        const boardedPct = totalStudents > 0 ? Math.round((boarded / totalStudents) * 100) : 0;
+        const onwardPnrs = pnrList.filter(r => r.journeyType !== 'return');
+        const returnPnrs = pnrList.filter(r => r.journeyType === 'return');
+        const onwardTrainDesc = onwardPnrs.length > 0 ? `${onwardPnrs[0].trainNumber || ''} ${onwardPnrs[0].trainName || ''} (${onwardPnrs.length} PNRs)` : 'Not Configured';
+        const returnTrainDesc = returnPnrs.length > 0 ? `${returnPnrs[0].trainNumber || ''} ${returnPnrs[0].trainName || ''} (${returnPnrs.length} PNRs)` : 'Not Configured';
 
-        let totalTrainSeats = 0;
-        pnrList.forEach(r => (r.passengerMappings || []).forEach(m => { if (m.assignedUserId) totalTrainSeats++; }));
-
-        const headers = ['Executive Dossier Section', 'Operational Highlights & Key Metrics', 'Verification Status'];
+        const headers = ['Category / Domain', 'Key Metric Description', 'Recorded Value', 'Operational Status'];
         const rows = [
-          ['1. General Trip Overview', `Title: ${baseMeta.tripTitle} • Destination: ${baseMeta.destination} • Dates: ${baseMeta.dates}`, 'Official Active Trip'],
-          ['2. Student Registrations', `${totalStudents} Students Enrolled across ${new Set(studentList.map(p => p.department)).size} Academic Departments`, targetTrip.maxStudentsLimit ? `Capacity: ${totalStudents}/${targetTrip.maxStudentsLimit}` : 'Unlimited Cap'],
-          ['3. Financial Realization', `Collected: ${formatINR(totalColl)} • Outstanding Dues: ${formatINR(totalDues)} • Expenses: ${formatINR(totalExp)}`, `Net Balance: ${formatINR(netCash)}`],
-          ['4. Railway Travel Logistics', `${pnrList.length} PNRs booked • ${totalTrainSeats} Train Seats Allocated`, 'Manifest Approved'],
-          ['5. Departure Attendance', `${boarded} of ${totalStudents} Boarded at Campus Departure Gate (${boardedPct}%)`, 'Verified by Check-In Crew'],
-          ['6. Helpline & Crew', `${contacts.length} Designated Faculty & Medical Coordinators on Duty`, '24/7 Helpline Active'],
-          ['7. Daily Schedule & Itinerary', `${itineraries.length} Day Schedule Activities Planned with Hotel Lodging`, 'Itinerary Published']
+          ['1. Expedition Metadata', 'Trip Title & Scope', targetTrip.tripTitle || tripConfig.tripTitle, 'Official College Tour'],
+          ['1. Expedition Metadata', 'Destination & Route', targetTrip.destination || tripConfig.destination, 'Confirmed'],
+          ['1. Expedition Metadata', 'Travel Dates', formatTripDates(targetTrip.startDate || tripConfig.tripDate, targetTrip.endDate), 'Scheduled'],
+          ['2. Student Demographics', 'Total Registered Students', `${totalStudents} Students`, `${verifiedCount} Verified`],
+          ['2. Student Demographics', 'Academic Diversity', `${deptsCount} Academic Departments`, targetTrip.maxStudentsLimit ? `Capacity: ${totalStudents}/${targetTrip.maxStudentsLimit}` : 'Unlimited Cap'],
+          ['3. Financial Ledger', 'Total Realized Collection', formatINR(totalCollected), 'Bank Verified'],
+          ['3. Financial Ledger', 'Outstanding Financial Dues', formatINR(totalDues), totalDues > 0 ? 'Pending Recovery' : 'Settled'],
+          ['4A. Railway Logistics (Onward)', 'Onward Train Details', onwardTrainDesc, `${onwardPnrs.length} PNRs Booked`],
+          ['4B. Railway Logistics (Return)', 'Return Train Details', returnTrainDesc, `${returnPnrs.length} PNRs Booked`],
+          ['5. Attendance & Safety', 'Departure Boarding Rate', `${studentList.filter(p => p.boarded).length}/${totalStudents}`, 'Live QR Synchronized'],
+          ['5. Attendance & Safety', 'Destination Arrival Rate', `${studentList.filter(p => p.arrived).length}/${totalStudents}`, 'Checkpoint Monitored']
         ];
 
         return {
           id: 'trip_summary',
-          title: 'OFFICIAL TRIP EXECUTIVE SUMMARY & DOSSIER',
-          subtitle: 'Comprehensive Institutional Operations & Audit Dossier',
+          title: 'COMPLETE COMPREHENSIVE TRIP DOSSIER',
+          subtitle: 'Master Administrative & Operational Synthesis',
           meta: baseMeta,
-          isDossier: true,
           kpis: [
             { label: 'Total Enrolled', value: totalStudents },
-            { label: 'Net Collected', value: formatINR(totalColl) },
-            { label: 'Trip Expenses', value: formatINR(totalExp) },
-            { label: 'Net Balance', value: formatINR(netCash) }
+            { label: 'Realized Revenue', value: formatINR(totalCollected) },
+            { label: 'Outstanding Balance', value: formatINR(totalDues) },
+            { label: 'Saved PNRs', value: pnrList.length }
           ],
           headers,
           rows
@@ -31441,7 +32013,6 @@ Guidelines:
       return null;
     }
 
-    // Render HTML Document Canvas for Preview & Printing (Feature 138)
     function renderReportDocumentHtml(reportData) {
       if (!reportData) return '<p class="text-center text-slate-400">No report data generated.</p>';
 
@@ -31456,7 +32027,6 @@ Guidelines:
 
       let customBodyHtml = '';
 
-      // If Statement (Feature 128)
       if (reportData.isStatement && reportData.student) {
         const s = reportData.student;
         customBodyHtml = `
@@ -31481,19 +32051,126 @@ Guidelines:
         `;
       }
 
-      // Generate Tabular Rows
-      const headersHtml = reportData.headers.map(h => `
+      if (reportData.sections && Array.isArray(reportData.sections) && reportData.sections.length > 0) {
+        const sectionsHtml = reportData.sections.map((sec, secIdx) => {
+          const secKpisHtml = (sec.kpis || []).map(k => `
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-center">
+              <p class="text-[9px] font-extrabold uppercase tracking-wider text-slate-500">${escapeHtml(k.label)}</p>
+              <p class="font-display text-base font-extrabold text-slate-900 mt-0.5">${escapeHtml(String(k.value))}</p>
+            </div>
+          `).join('');
+
+          const secHeadersHtml = sec.headers.map(h => `
+            <th class="py-2.5 px-3 font-extrabold text-[10px] uppercase tracking-wider border-b border-slate-300 text-slate-700 bg-slate-100 text-left">${escapeHtml(h)}</th>
+          `).join('');
+
+          const secRowsHtml = sec.rows.length > 0 ? sec.rows.map((row, rIdx) => `
+            <tr class="${rIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50/60'} border-b border-slate-200 text-slate-800 text-xs">
+              ${row.map(cell => `<td class="py-2.5 px-3 whitespace-nowrap">${escapeHtml(String(cell !== undefined ? cell : ''))}</td>`).join('')}
+            </tr>
+          `).join('') : `
+            <tr>
+              <td colspan="${sec.headers.length}" class="py-6 text-center text-slate-400 text-xs italic bg-slate-50/50">
+                No passenger or attendance records registered for this journey yet.
+              </td>
+            </tr>
+          `;
+
+          return `
+            <div class="my-6 pt-4 border-t-2 border-slate-200">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${sec.badgeClass || 'bg-slate-100 text-slate-800 border-slate-200'}">
+                      ${escapeHtml(sec.badge || `Section ${secIdx + 1}`)}
+                    </span>
+                    <h4 class="font-display font-extrabold text-sm sm:text-base text-slate-900">${escapeHtml(sec.title)}</h4>
+                  </div>
+                  ${sec.subtitle ? `<p class="text-xs text-slate-500 mt-0.5 font-medium">${escapeHtml(sec.subtitle)}</p>` : ''}
+                </div>
+              </div>
+
+              ${sec.kpis && sec.kpis.length > 0 ? `
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 my-3">
+                  ${secKpisHtml}
+                </div>
+              ` : ''}
+
+              <div class="overflow-x-auto border border-slate-200 rounded-xl mt-3 shadow-2xs">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr>${secHeadersHtml}</tr>
+                  </thead>
+                  <tbody>
+                    ${secRowsHtml}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div class="border-b-2 border-slate-900 pb-5 mb-6 text-center">
+            <div class="flex items-center justify-center gap-2 mb-1.5">
+              <span class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold font-display text-sm">TP</span>
+              <span class="font-display font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 uppercase">
+                ${escapeHtml(m.collegeName)}
+              </span>
+            </div>
+            <p class="text-xs font-extrabold text-slate-600 uppercase tracking-widest">${escapeHtml(m.tripTitle)}</p>
+            <p class="text-[11px] text-slate-500 font-medium mt-0.5">${escapeHtml(m.destination)} • Travel Dates: ${escapeHtml(m.dates)}</p>
+
+            <div class="mt-4 pt-3 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between text-[11px] text-slate-500 font-mono gap-1">
+              <span>Ref: ${escapeHtml(m.refNumber)}</span>
+              <span class="font-bold text-slate-800 font-sans text-xs">${escapeHtml(reportData.title)}</span>
+              <span>Generated: ${escapeHtml(m.generatedAt)}</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-5">
+            ${kpisHtml}
+          </div>
+
+          ${customBodyHtml}
+
+          ${sectionsHtml}
+
+          <div class="mt-10 pt-8 border-t-2 border-slate-200 grid grid-cols-3 gap-6 text-center text-xs">
+            <div>
+              <div class="h-10 border-b border-dashed border-slate-300 mb-2"></div>
+              <p class="font-extrabold text-slate-800">Student Tour Coordinator</p>
+              <p class="text-[10px] text-slate-400">Signature &amp; Verification</p>
+            </div>
+            <div>
+              <div class="h-10 border-b border-dashed border-slate-300 mb-2 flex items-center justify-center">
+                <span class="inline-block px-3 py-1 rounded border-2 border-emerald-600 text-emerald-700 text-[10px] font-black uppercase tracking-wider -rotate-3">
+                  OFFICIALLY VERIFIED
+                </span>
+              </div>
+              <p class="font-extrabold text-slate-800">Faculty In-Charge</p>
+              <p class="text-[10px] text-slate-400">Staff Authorization Seal</p>
+            </div>
+            <div>
+              <div class="h-10 border-b border-dashed border-slate-300 mb-2"></div>
+              <p class="font-extrabold text-slate-800">Principal / Head of Dept</p>
+              <p class="text-[10px] text-slate-400">Institutional Approval</p>
+            </div>
+          </div>
+        `;
+      }
+
+      const headersHtml = (reportData.headers || []).map(h => `
         <th class="py-2.5 px-3 font-extrabold text-[10px] uppercase tracking-wider border-b border-slate-300 text-slate-700 bg-slate-100 text-left">${escapeHtml(h)}</th>
       `).join('');
 
-      const rowsHtml = reportData.rows.map((row, rIdx) => `
+      const rowsHtml = (reportData.rows || []).map((row, rIdx) => `
         <tr class="${rIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50/60'} border-b border-slate-200 text-slate-800 text-xs">
           ${row.map(cell => `<td class="py-2.5 px-3 whitespace-nowrap">${escapeHtml(String(cell !== undefined ? cell : ''))}</td>`).join('')}
         </tr>
       `).join('');
 
       return `
-        
         <div class="border-b-2 border-slate-900 pb-5 mb-6 text-center">
           <div class="flex items-center justify-center gap-2 mb-1.5">
             <span class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold font-display text-sm">TP</span>
@@ -31511,15 +32188,13 @@ Guidelines:
           </div>
         </div>
 
-        
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-5">
           ${kpisHtml}
         </div>
 
         ${customBodyHtml}
 
-        
-        <div class="overflow-x-auto my-6 border border-slate-200 rounded-xl">
+        <div class="overflow-x-auto my-6 border border-slate-200 rounded-xl shadow-2xs">
           <table class="w-full text-left border-collapse">
             <thead>
               <tr>${headersHtml}</tr>
@@ -31530,41 +32205,36 @@ Guidelines:
           </table>
         </div>
 
-        
-        <div class="mt-12 pt-8 border-t-2 border-slate-200 grid grid-cols-2 sm:grid-cols-3 gap-6 text-center text-xs">
+        <div class="mt-10 pt-8 border-t-2 border-slate-200 grid grid-cols-3 gap-6 text-center text-xs">
           <div>
-            <div class="h-12 border-b border-dashed border-slate-300 mb-2"></div>
-            <p class="font-extrabold text-slate-900">Faculty Coordinator</p>
-            <p class="text-[10px] text-slate-500">Trip Operations Committee</p>
+            <div class="h-10 border-b border-dashed border-slate-300 mb-2"></div>
+            <p class="font-extrabold text-slate-800">Student Tour Coordinator</p>
+            <p class="text-[10px] text-slate-400">Signature &amp; Verification</p>
           </div>
           <div>
-            <div class="h-12 border-b border-dashed border-slate-300 mb-2 flex items-center justify-center">
-              <span class="px-3 py-1 rounded-full border border-emerald-500 text-emerald-800 font-extrabold text-[9px] uppercase tracking-wider">
-                Official Document Seal
-              </span>
+            <div class="h-10 border-b border-dashed border-slate-300 mb-2 flex items-center justify-center">
+                <span class="inline-block px-3 py-1 rounded border-2 border-emerald-600 text-emerald-700 text-[10px] font-black uppercase tracking-wider -rotate-3">
+                  OFFICIALLY VERIFIED
+                </span>
             </div>
-            <p class="font-extrabold text-slate-900">Accountant / Treasurer</p>
-            <p class="text-[10px] text-slate-500">Finance & Fee Audit</p>
+            <p class="font-extrabold text-slate-800">Faculty In-Charge</p>
+            <p class="text-[10px] text-slate-400">Staff Authorization Seal</p>
           </div>
-          <div class="col-span-2 sm:col-span-1">
-            <div class="h-12 border-b border-dashed border-slate-300 mb-2"></div>
-            <p class="font-extrabold text-slate-900">Principal / Head of Institution</p>
-            <p class="text-[10px] text-slate-500">Approved & Verified</p>
+          <div>
+            <div class="h-10 border-b border-dashed border-slate-300 mb-2"></div>
+            <p class="font-extrabold text-slate-800">Principal / Head of Dept</p>
+            <p class="text-[10px] text-slate-400">Institutional Approval</p>
           </div>
-        </div>
-
-        <div class="mt-8 text-center text-[10px] text-slate-400 font-mono">
-          Document generated by TripPay Management System • Validated without physical alteration
         </div>
       `;
     }
 
-    // Modal Control & Preview Trigger (Feature 138)
     function generateAndPreviewReport(reportType, customOpts = {}) {
       currentActiveReportType = reportType;
-      currentActiveReportOptions = customOpts;
+      const journeyChoice = customOpts.journey || document.getElementById('reportSelectJourney_' + reportType)?.value || 'both';
+      currentActiveReportOptions = { ...customOpts, journey: journeyChoice };
 
-      const reportData = buildMasterReportData(reportType, customOpts);
+      const reportData = buildMasterReportData(reportType, currentActiveReportOptions);
       if (!reportData) {
         showToast('Could not compile report data.', 'error');
         return;
@@ -31595,24 +32265,22 @@ Guidelines:
       document.body.style.overflow = '';
     }
 
-    // Feature 138: Print Report Trigger
     function triggerReportModalPrint() {
       window.print();
     }
 
-    // Feature 135: Download PDF
     function generateAndDownloadReportPDF(reportType, customOpts = {}) {
       if (typeof html2pdf === 'undefined') {
         showToast('PDF export library is loading, please try again.', 'error');
         return;
       }
 
-      const reportData = buildMasterReportData(reportType, customOpts);
+      const journeyChoice = customOpts.journey || document.getElementById('reportSelectJourney_' + reportType)?.value || 'both';
+      const reportData = buildMasterReportData(reportType, { ...customOpts, journey: journeyChoice });
       if (!reportData) return;
 
       showToast(`Generating PDF for ${reportData.title}...`, 'info');
 
-      // Create off-screen container
       const container = document.createElement('div');
       container.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;background:#ffffff;padding:24px;color:#0f172a;font-family:Inter,sans-serif;';
       container.innerHTML = renderReportDocumentHtml(reportData);
@@ -31640,27 +32308,51 @@ Guidelines:
       generateAndDownloadReportPDF(currentActiveReportType, currentActiveReportOptions);
     }
 
-    // Feature 136: Download Excel (.xls)
     function generateAndDownloadReportExcel(reportType, customOpts = {}) {
-      const reportData = buildMasterReportData(reportType, customOpts);
+      const journeyChoice = customOpts.journey || document.getElementById('reportSelectJourney_' + reportType)?.value || 'both';
+      const reportData = buildMasterReportData(reportType, { ...customOpts, journey: journeyChoice });
       if (!reportData) return;
 
       const title = reportData.title;
-      const headers = reportData.headers;
-      const rows = reportData.rows;
+      let tableRowsHtml = '';
 
-      const tableRowsHtml = [
-        `<tr><th colspan="${headers.length}" style="background-color:#0284c7;color:#ffffff;font-size:16px;font-weight:bold;height:35px;text-align:center;">${escapeHtml(reportData.meta.collegeName)}</th></tr>`,
-        `<tr><th colspan="${headers.length}" style="background-color:#0369a1;color:#ffffff;font-size:14px;font-weight:bold;height:30px;text-align:center;">${escapeHtml(title)} - ${escapeHtml(reportData.meta.tripTitle)}</th></tr>`,
-        `<tr><td colspan="${headers.length}" style="color:#64748b;font-size:11px;height:24px;text-align:center;">Generated on ${escapeHtml(reportData.meta.generatedAt)} | Scope: ${escapeHtml(reportData.meta.scope)}</td></tr>`,
-        `<tr></tr>`,
-        `<tr>${headers.map(h => `<th style="background-color:#f1f5f9;color:#334155;border:1px solid #cbd5e1;padding:8px;font-weight:bold;font-size:12px;">${escapeHtml(h)}</th>`).join('')}</tr>`,
-        ...rows.map((row, idx) => `
-          <tr style="background-color:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
-            ${row.map(cell => `<td style="border:1px solid #e2e8f0;padding:6px;font-size:11px;">${escapeHtml(String(cell !== undefined ? cell : ''))}</td>`).join('')}
-          </tr>
-        `)
-      ].join('');
+      if (reportData.sections && Array.isArray(reportData.sections) && reportData.sections.length > 0) {
+        const maxCols = Math.max(...reportData.sections.map(s => s.headers.length), 6);
+        tableRowsHtml += [
+          `<tr><th colspan="${maxCols}" style="background-color:#0284c7;color:#ffffff;font-size:16px;font-weight:bold;height:35px;text-align:center;">${escapeHtml(reportData.meta.collegeName)}</th></tr>`,
+          `<tr><th colspan="${maxCols}" style="background-color:#0369a1;color:#ffffff;font-size:14px;font-weight:bold;height:30px;text-align:center;">${escapeHtml(title)} - ${escapeHtml(reportData.meta.tripTitle)}</th></tr>`,
+          `<tr><td colspan="${maxCols}" style="color:#64748b;font-size:11px;height:24px;text-align:center;">Generated on ${escapeHtml(reportData.meta.generatedAt)} | Scope: ${escapeHtml(reportData.meta.scope)}</td></tr>`,
+          `<tr></tr>`
+        ].join('');
+
+        reportData.sections.forEach(sec => {
+          tableRowsHtml += [
+            `<tr><th colspan="${sec.headers.length}" style="background-color:#4338ca;color:#ffffff;font-size:13px;font-weight:bold;height:28px;text-align:left;padding-left:8px;">${escapeHtml(sec.title)} - ${escapeHtml(sec.subtitle || '')}</th></tr>`,
+            `<tr>${sec.headers.map(h => `<th style="background-color:#f1f5f9;color:#334155;border:1px solid #cbd5e1;padding:8px;font-weight:bold;font-size:12px;">${escapeHtml(h)}</th>`).join('')}</tr>`,
+            ...sec.rows.map((row, idx) => `
+              <tr style="background-color:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+                ${row.map(cell => `<td style="border:1px solid #e2e8f0;padding:6px;font-size:11px;">${escapeHtml(String(cell !== undefined ? cell : ''))}</td>`).join('')}
+              </tr>
+            `),
+            `<tr></tr>`
+          ].join('');
+        });
+      } else {
+        const headers = reportData.headers || [];
+        const rows = reportData.rows || [];
+        tableRowsHtml = [
+          `<tr><th colspan="${headers.length}" style="background-color:#0284c7;color:#ffffff;font-size:16px;font-weight:bold;height:35px;text-align:center;">${escapeHtml(reportData.meta.collegeName)}</th></tr>`,
+          `<tr><th colspan="${headers.length}" style="background-color:#0369a1;color:#ffffff;font-size:14px;font-weight:bold;height:30px;text-align:center;">${escapeHtml(title)} - ${escapeHtml(reportData.meta.tripTitle)}</th></tr>`,
+          `<tr><td colspan="${headers.length}" style="color:#64748b;font-size:11px;height:24px;text-align:center;">Generated on ${escapeHtml(reportData.meta.generatedAt)} | Scope: ${escapeHtml(reportData.meta.scope)}</td></tr>`,
+          `<tr></tr>`,
+          `<tr>${headers.map(h => `<th style="background-color:#f1f5f9;color:#334155;border:1px solid #cbd5e1;padding:8px;font-weight:bold;font-size:12px;">${escapeHtml(h)}</th>`).join('')}</tr>`,
+          ...rows.map((row, idx) => `
+            <tr style="background-color:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+              ${row.map(cell => `<td style="border:1px solid #e2e8f0;padding:6px;font-size:11px;">${escapeHtml(String(cell !== undefined ? cell : ''))}</td>`).join('')}
+            </tr>
+          `)
+        ].join('');
+      }
 
       const excelTemplate = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' +
         '<head><meta charset="utf-8">' +
@@ -31688,9 +32380,9 @@ Guidelines:
       generateAndDownloadReportExcel(currentActiveReportType, currentActiveReportOptions);
     }
 
-    // Feature 137: Download CSV
     function generateAndDownloadReportCSV(reportType, customOpts = {}) {
-      const reportData = buildMasterReportData(reportType, customOpts);
+      const journeyChoice = customOpts.journey || document.getElementById('reportSelectJourney_' + reportType)?.value || 'both';
+      const reportData = buildMasterReportData(reportType, { ...customOpts, journey: journeyChoice });
       if (!reportData) return;
 
       const rows = [
@@ -31698,12 +32390,22 @@ Guidelines:
         [`"${reportData.title} - ${reportData.meta.tripTitle}"`],
         [`"Destination: ${reportData.meta.destination}"`, `"Dates: ${reportData.meta.dates}"`],
         [`"Generated: ${reportData.meta.generatedAt}"`, `"Scope: ${reportData.meta.scope}"`],
-        [],
-        reportData.headers.map(h => `"${String(h).replace(/"/g, '""')}"`),
-        ...reportData.rows.map(row => row.map(cell => `"${String(cell !== undefined ? cell : '').replace(/"/g, '""')}"`))
+        []
       ];
 
-      const csvContent = '﻿' + rows.map(r => r.join(',')).join('\n');
+      if (reportData.sections && Array.isArray(reportData.sections) && reportData.sections.length > 0) {
+        reportData.sections.forEach(sec => {
+          rows.push([`"=== ${sec.title} (${sec.subtitle || ''}) ==="`]);
+          rows.push(sec.headers.map(h => `"${String(h).replace(/"/g, '""')}"`));
+          sec.rows.forEach(r => rows.push(r.map(cell => `"${String(cell !== undefined ? cell : '').replace(/"/g, '""')}"`)));
+          rows.push([]);
+        });
+      } else {
+        rows.push((reportData.headers || []).map(h => `"${String(h).replace(/"/g, '""')}"`));
+        (reportData.rows || []).forEach(row => rows.push(row.map(cell => `"${String(cell !== undefined ? cell : '').replace(/"/g, '""')}"`)));
+      }
+
+      const csvContent = '\uFEFF' + rows.map(r => r.join(',')).join('\n');
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -31718,7 +32420,6 @@ Guidelines:
       generateAndDownloadReportCSV(currentActiveReportType, currentActiveReportOptions);
     }
 
-    // Quick Bulk Export Helper (Exports All 10 Reports in Sequence)
     function exportBulkSummaryZip() {
       showToast('Exporting all reports to CSV format...', 'info');
       let delay = 0;
