@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -3693,36 +3693,9 @@
             <button type="button" onclick="switchBossDashboardTab('feedback')" id="bossSubTabBtn-feedback"
               class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center gap-1.5 shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900">
               <i data-lucide="message-square" class="w-4 h-4 text-purple-600"></i>
-              <span>4. Student Feedback</span>
+              <span>4. Student Suggestions &amp; Feedback</span>
               <span id="bossTabBadgeFeedback"
                 class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-purple-100 text-purple-800 font-extrabold">0</span>
-            </button>
-
-            <!-- PILLAR 5: GLOBAL OPERATIONS & LOGISTICS -->
-            <button type="button" onclick="switchBossDashboardTab('operations')" id="bossSubTabBtn-operations"
-              class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center gap-1.5 shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900">
-              <i data-lucide="truck" class="w-4 h-4 text-teal-600"></i>
-              <span>5. Global Operations</span>
-              <span id="bossTabBadgeOperations"
-                class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-teal-100 text-teal-800 font-extrabold">Live</span>
-            </button>
-
-            <!-- PILLAR 6: GLOBAL BUDGETS & GATEWAY CONTROL -->
-            <button type="button" onclick="switchBossDashboardTab('finances')" id="bossSubTabBtn-finances"
-              class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center gap-1.5 shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900">
-              <i data-lucide="wallet" class="w-4 h-4 text-emerald-600"></i>
-              <span>6. Global Budgets &amp; Gateway</span>
-              <span id="bossTabBadgeFinances"
-                class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-extrabold">Auto</span>
-            </button>
-
-            <!-- PILLAR 7: SECURITY, AUDITS & DATABASE BACKUP -->
-            <button type="button" onclick="switchBossDashboardTab('security')" id="bossSubTabBtn-security"
-              class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center gap-1.5 shrink-0 bg-white border border-slate-200 text-slate-600 hover:text-slate-900">
-              <i data-lucide="shield-check" class="w-4 h-4 text-purple-600"></i>
-              <span>7. Security &amp; Cloud Backup</span>
-              <span id="bossTabBadgeSecurity"
-                class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-purple-100 text-purple-800 font-extrabold">Active</span>
             </button>
           </div>
 
@@ -3922,205 +3895,6 @@
             </div>
           </div>
 
-          <!-- ========================================== -->
-          <!-- PILLAR 5: GLOBAL OPERATIONS & LOGISTICS   -->
-          <!-- ========================================== -->
-          <div id="bossPillar-operations" class="hidden space-y-5">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-3">
-              <div>
-                <h4 class="font-extrabold text-base text-slate-900">Cross-Trip Logistics &amp; Travel Control</h4>
-                <p class="text-xs text-slate-500">Universal management of railway allocations, hotel vendors, and lost-and-found items across all trips.</p>
-              </div>
-              <div class="flex items-center gap-2">
-                <button type="button" onclick="broadcastGlobalAlertPrompt()"
-                  class="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition">
-                  <i data-lucide="megaphone" class="w-4 h-4"></i>
-                  <span>Broadcast to All Trips</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Operations Summary Counters -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div class="bg-white rounded-2xl p-4 border border-slate-200">
-                <span class="text-[10px] font-extrabold uppercase text-slate-500">Total Railway PNRs</span>
-                <p id="bossOpsTotalPnrs" class="font-display text-2xl font-extrabold text-slate-900 mt-1">0</p>
-                <p class="text-[10px] text-slate-500 mt-0.5">Across all saved trips</p>
-              </div>
-              <div class="bg-white rounded-2xl p-4 border border-slate-200">
-                <span class="text-[10px] font-extrabold uppercase text-teal-600">Hotel &amp; Vendors</span>
-                <p id="bossOpsTotalVendors" class="font-display text-2xl font-extrabold text-teal-700 mt-1">0</p>
-                <p class="text-[10px] text-teal-600 mt-0.5">Active contracts</p>
-              </div>
-              <div class="bg-white rounded-2xl p-4 border border-slate-200">
-                <span class="text-[10px] font-extrabold uppercase text-amber-600">Lost &amp; Found Items</span>
-                <p id="bossOpsTotalLostFound" class="font-display text-2xl font-extrabold text-amber-700 mt-1">0</p>
-                <p class="text-[10px] text-amber-600 mt-0.5">Logged tour items</p>
-              </div>
-              <div class="bg-white rounded-2xl p-4 border border-slate-200">
-                <span class="text-[10px] font-extrabold uppercase text-purple-600">Emergency Broadcasts</span>
-                <p id="bossOpsTotalBroadcasts" class="font-display text-2xl font-extrabold text-purple-700 mt-1">0</p>
-                <p class="text-[10px] text-purple-600 mt-0.5">Dispatches sent</p>
-              </div>
-            </div>
-
-            <!-- Global Operations Master Table Container -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-4 space-y-3">
-              <div class="flex items-center justify-between">
-                <h5 class="font-bold text-xs text-slate-800 uppercase tracking-wider">All Trips Master Operations Roster</h5>
-                <button type="button" onclick="renderBossOperationsHub()" class="text-xs text-purple-600 hover:text-purple-800 font-bold flex items-center gap-1">
-                  <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh
-                </button>
-              </div>
-              <div id="bossOpsRosterContainer" class="overflow-x-auto divide-y divide-slate-100 text-xs">
-                <!-- Injected dynamically -->
-              </div>
-            </div>
-          </div>
-
-          <!-- ========================================== -->
-          <!-- PILLAR 6: GLOBAL BUDGETS & GATEWAY CONTROL-->
-          <!-- ========================================== -->
-          <div id="bossPillar-finances" class="hidden space-y-5">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-3">
-              <div>
-                <h4 class="font-extrabold text-base text-slate-900">Platform Financial Sovereignty &amp; Gateways</h4>
-                <p class="text-xs text-slate-500">Cross-trip target budgets, global collection reconciliation, and multi-gateway overrides.</p>
-              </div>
-              <div class="flex items-center gap-2">
-                <button type="button" onclick="runAutomatedPaymentReconciliation()"
-                  class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition">
-                  <i data-lucide="sparkles" class="w-4 h-4"></i>
-                  <span>Global UTR Auto-Reconcile</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Financial Master KPIs -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div class="bg-white rounded-2xl p-4 border border-slate-200">
-                <span class="text-[10px] font-extrabold uppercase text-slate-500">Global Budget Targets</span>
-                <p id="bossFinGlobalBudget" class="font-display text-2xl font-extrabold text-slate-900 mt-1">₹0</p>
-                <p class="text-[10px] text-slate-500 mt-0.5">Sum of all trips</p>
-              </div>
-              <div class="bg-white rounded-2xl p-4 border border-slate-200">
-                <span class="text-[10px] font-extrabold uppercase text-emerald-600">Total Collections</span>
-                <p id="bossFinGlobalCollected" class="font-display text-2xl font-extrabold text-emerald-700 mt-1">₹0</p>
-                <p class="text-[10px] text-emerald-600 mt-0.5">Verified &amp; Cleared</p>
-              </div>
-              <div class="bg-white rounded-2xl p-4 border border-slate-200">
-                <span class="text-[10px] font-extrabold uppercase text-rose-600">Total Expenses</span>
-                <p id="bossFinGlobalExpenses" class="font-display text-2xl font-extrabold text-rose-700 mt-1">₹0</p>
-                <p class="text-[10px] text-rose-600 mt-0.5">All trip expenditures</p>
-              </div>
-              <div class="bg-white rounded-2xl p-4 border border-slate-200">
-                <span class="text-[10px] font-extrabold uppercase text-indigo-600">Platform Reserves</span>
-                <p id="bossFinGlobalNet" class="font-display text-2xl font-extrabold text-indigo-700 mt-1">₹0</p>
-                <p class="text-[10px] text-indigo-600 mt-0.5">Net cash in hand</p>
-              </div>
-            </div>
-
-            <!-- Global Payment Gateway Configuration Card -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
-              <h5 class="font-bold text-sm text-slate-900 flex items-center gap-2">
-                <i data-lucide="sliders" class="w-4 h-4 text-purple-600"></i>
-                <span>Universal Payment Gateway &amp; UPI Routing Overrides</span>
-              </h5>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label class="block text-[11px] font-bold text-slate-600 mb-1">Active Gateway Engine:</label>
-                  <select id="bossGlobalGatewaySelect" class="w-full text-xs p-2 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800">
-                    <option value="upi_qr">UPI Dynamic QR &amp; Deep Links (Default)</option>
-                    <option value="razorpay">Razorpay Gateway Checkout</option>
-                    <option value="cashfree">Cashfree Payments</option>
-                    <option value="direct_bank">Direct NEFT/RTGS Bank Wire</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-[11px] font-bold text-slate-600 mb-1">Master UPI VPA ID:</label>
-                  <input type="text" id="bossGlobalUpiInput" value="mohdshemeemkp@oksbi" class="w-full text-xs p-2 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800" />
-                </div>
-                <div>
-                  <label class="block text-[11px] font-bold text-slate-600 mb-1">Master Receiver Name:</label>
-                  <input type="text" id="bossGlobalReceiverInput" value="Mohd Shemeem KP" class="w-full text-xs p-2 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800" />
-                </div>
-              </div>
-              <div class="flex justify-end pt-2">
-                <button type="button" onclick="saveBossGlobalGatewayConfig()" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-xs transition">
-                  Save Universal Payment Settings
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- ========================================== -->
-          <!-- PILLAR 7: SECURITY, AUDITS & CLOUD BACKUP -->
-          <!-- ========================================== -->
-          <div id="bossPillar-security" class="hidden space-y-5">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-3">
-              <div>
-                <h4 class="font-extrabold text-base text-slate-900">Supreme Security, Audits &amp; Disaster Recovery</h4>
-                <p class="text-xs text-slate-500">1-Click database backup/restore, user password resets, live login logs, and credential hardening.</p>
-              </div>
-              <div class="flex items-center gap-2">
-                <button type="button" onclick="exportFullDatabaseBackup()"
-                  class="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition">
-                  <i data-lucide="download-cloud" class="w-4 h-4"></i>
-                  <span>Export Database JSON</span>
-                </button>
-                <label class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition cursor-pointer">
-                  <i data-lucide="upload-cloud" class="w-4 h-4"></i>
-                  <span>Restore from Backup</span>
-                  <input type="file" accept=".json" onchange="restoreDatabaseFromJson(this.files[0])" class="hidden" />
-                </label>
-              </div>
-            </div>
-
-            <!-- Quick Password Reset Tool for Boss -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
-              <h5 class="font-bold text-sm text-slate-900 flex items-center gap-2">
-                <i data-lucide="key" class="w-4 h-4 text-amber-600"></i>
-                <span>Direct Password Override Tool (Any User / Admin)</span>
-              </h5>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <input type="email" id="bossDirectResetEmail" placeholder="Target user email..." class="text-xs p-2 rounded-xl bg-slate-50 border border-slate-200 font-bold" />
-                <input type="password" id="bossDirectResetPass" placeholder="Enter new password (min 6 chars)..." class="text-xs p-2 rounded-xl bg-slate-50 border border-slate-200 font-bold" />
-                <button type="button" onclick="executeBossDirectPasswordReset()" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition">
-                  Override Password
-                </button>
-              </div>
-            </div>
-
-            <!-- Login History Roster -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <h5 class="font-bold text-xs text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                  <i data-lucide="history" class="w-4 h-4 text-purple-600"></i>
-                  <span>Live Login History (Audit Trail)</span>
-                  <span id="bossLoginHistoryCountBadge" class="px-2 py-0.2 rounded-full text-[10px] font-extrabold bg-purple-100 text-purple-800">0 Logins</span>
-                </h5>
-                <input type="text" id="bossLoginSearchInput" oninput="renderBossLoginHistoryTable()" placeholder="Filter logins..." class="text-xs py-1 px-3 rounded-lg bg-slate-50 border border-slate-200 font-medium" />
-              </div>
-              <div class="overflow-x-auto max-h-72 overflow-y-auto">
-                <table class="w-full text-left text-xs border-collapse">
-                  <thead>
-                    <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider text-[10px] bg-slate-50/50">
-                      <th class="py-2 px-3">Timestamp</th>
-                      <th class="py-2 px-3">User / Email</th>
-                      <th class="py-2 px-3">Role</th>
-                      <th class="py-2 px-3">Trip Context</th>
-                      <th class="py-2 px-3">Status</th>
-                      <th class="py-2 px-3">Client User-Agent</th>
-                    </tr>
-                  </thead>
-                  <tbody id="bossLoginHistoryTableBody" class="divide-y divide-slate-100">
-                    <!-- Injected dynamically -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
     </section>
@@ -4196,9 +3970,9 @@
     </div>
   </div>
 
-  <!-- FLOATING SOS PILL (Bottom Left) -->
+  <!-- FLOATING SOS PILL (Bottom Right) -->
   <button type="button" onclick="openEmergencySosModal()" id="floatingSosBtn"
-    class="fixed bottom-5 left-5 sm:bottom-6 sm:left-6 z-40 px-4 py-2.5 rounded-full bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs shadow-xl shadow-rose-300 flex items-center gap-2 animate-pulse transition">
+    class="fixed bottom-6 right-6 z-40 px-4 py-2.5 rounded-full bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs shadow-xl shadow-rose-300 flex items-center gap-2 animate-pulse transition">
     <i data-lucide="alert-octagon" class="w-4 h-4"></i>
     <span>EMERGENCY SOS</span>
   </button>
@@ -7313,7 +7087,7 @@
 
           <div>
             <label class="block text-[11px] font-semibold text-slate-600 mb-1">From Sender Address</label>
-            <input type="email" id="cfgEmailFrom" placeholder="College Tour Committee <tour@collegetrip.edu>"
+            <input type="email" id="cfgEmailFrom" placeholder="College Tour Committee (tour@collegetrip.edu)"
               class="w-full px-3 py-1.5 rounded-xl bg-white border border-sky-200 text-xs text-slate-800" />
           </div>
           <button type="button" onclick="testEmailApiConnection()"
@@ -9817,9 +9591,6 @@
     let rawItinList = [];
     let rawContactsList = [];
     let rawAuditList = [];
-    let rawVendorsList = [];
-    let rawLostFoundList = [];
-    let allLoginHistory = [];
 
     // Filtered collections for currentTripId
     let payments = [];
@@ -10122,9 +9893,6 @@
       setCloudBadgeState('connecting', 'Syncing...');
       listenToActiveTripConfig();
       filterAndRenderAllTripData();
-      if (typeof syncOfflineAttendanceQueue === 'function') {
-        syncOfflineAttendanceQueue();
-      }
       setTimeout(() => {
         setCloudBadgeState('connected', 'Live Cloud');
         showToast('All features synchronized with cloud! ✓', 'success');
@@ -10235,8 +10003,6 @@
       pnrRecords = rawPnrList.filter(p => (p.tripId || 'default') === currentTripId);
       pnrRecords.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       renderSavedPNRRecords();
-      allTripVendors = rawVendorsList.filter(v => (v.tripId || 'default') === currentTripId);
-      allLostFoundItems = rawLostFoundList.filter(i => (i.tripId || 'default') === currentTripId);
 
       // Cloud sync vendors collection (Feature 158)
       try {
@@ -10277,14 +10043,10 @@
 
       if (currentPaymentMode === 'balance') renderBalanceLookupResults();
       if (isAdminLoggedIn) {
-        if (currentAdminRole === 'boss' || currentAdminRole === 'super_admin') {
+        if (currentAdminRole === 'boss') {
           updateBossGlobalKPIs();
           if (activeBossDashboardTab === 'trips') renderBossTripsHub();
           else if (activeBossDashboardTab === 'payments') renderBossGlobalPayments();
-          else if (activeBossDashboardTab === 'feedback') renderBossFeedbackList();
-          else if (activeBossDashboardTab === 'operations') renderBossOperationsHub();
-          else if (activeBossDashboardTab === 'finances') renderBossFinancesHub();
-          else if (activeBossDashboardTab === 'security') renderBossSecurityHub();
           else renderBossAdminsList();
         }
         const searchInput = document.getElementById('dashSearchInput');
@@ -10496,38 +10258,6 @@
           renderBossFeedbackList();
         }
       }, (err) => console.error('Feedback listener error:', err));
-
-      // 11. Permanent Vendors Listener (Feature 158)
-      try {
-        const vendorsCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_vendors');
-        onSnapshot(vendorsCol, (snap) => {
-          rawVendorsList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-          allTripVendors = rawVendorsList.filter(v => (v.tripId || 'default') === currentTripId);
-          renderVendorsHub();
-          if (typeof renderBossOperationsHub === 'function') renderBossOperationsHub();
-        }, (err) => console.warn('Vendors sync error:', err));
-      } catch (eVendors) { console.warn('Vendors init error:', eVendors); }
-
-      // 12. Permanent Lost & Found Listener (Feature 160)
-      try {
-        const lfCol = collection(db, 'artifacts', appId, 'public', 'data', 'trip_lost_found');
-        onSnapshot(lfCol, (snap) => {
-          rawLostFoundList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-          allLostFoundItems = rawLostFoundList.filter(i => (i.tripId || 'default') === currentTripId);
-          renderLostFoundHub();
-          if (typeof renderBossOperationsHub === 'function') renderBossOperationsHub();
-        }, (err) => console.warn('Lost & Found sync error:', err));
-      } catch (eLf) { console.warn('Lost & Found init error:', eLf); }
-
-      // 13. Permanent Login History Listener (Feature 147)
-      try {
-        const loginCol = collection(db, 'artifacts', appId, 'public', 'data', 'login_history');
-        onSnapshot(loginCol, (snap) => {
-          allLoginHistory = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-          allLoginHistory.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-          if (typeof renderBossLoginHistoryTable === 'function') renderBossLoginHistoryTable();
-        }, (err) => console.warn('Login history sync error:', err));
-      } catch (eLogin) { console.warn('Login history init error:', eLogin); }
     }
 
     async function logSecurityEvent(action, target, details) {
@@ -10677,14 +10407,7 @@
         if (titleEl) titleEl.textContent = tripConfig.tripTitle || 'College Trip';
 
         const idBadge = document.getElementById('userTripIdBadge');
-        if (idBadge) {
-          if (isAdminLoggedIn) {
-            idBadge.textContent = '#' + (currentTripId || 'default');
-            idBadge.classList.remove('hidden');
-          } else {
-            idBadge.classList.add('hidden');
-          }
-        }
+        if (idBadge) idBadge.textContent = '#' + (currentTripId || 'default');
 
         const destText = document.getElementById('userTripDestText');
         if (destText) destText.textContent = tripConfig.destination || 'Destination';
@@ -12174,7 +11897,7 @@
 
         ${trainStrip}
 
-        <!-- Checkpoints Timing Strip -->
+        
         <div class="grid grid-cols-2 gap-2 bg-white p-2.5 rounded-xl border border-slate-200 text-xs">
           <div>
             <span class="text-[10px] text-slate-400 font-bold block uppercase">1. Boarding Departure</span>
@@ -12538,7 +12261,7 @@
               ${coachInfo}
             </td>
 
-            <!-- Boarding Checkpoint Column (Feature 76) -->
+            
             <td class="py-3 px-4">
               ${isBoarded ? `
                 <div class="space-y-0.5">
@@ -12557,7 +12280,7 @@
               `}
             </td>
 
-            <!-- Arrival Checkpoint Column (Feature 77) -->
+            
             <td class="py-3 px-4">
               ${isArrived ? `
                 <div class="space-y-0.5">
@@ -12576,10 +12299,10 @@
               `}
             </td>
 
-            <!-- Actions (Features 78, 82, 83) -->
+            
             <td class="py-3 px-4 text-right">
               <div class="inline-flex items-center gap-1.5 justify-end flex-wrap">
-                <!-- 1-Click Boarding Toggle (Feature 78) -->
+                
                 <button
                   type="button"
                   onclick="markStudentAttendance('${p.id}', 'boarding', ${!isBoarded})"
@@ -12590,7 +12313,7 @@
                   <span>${isBoarded ? 'Undo' : 'Board'}</span>
                 </button>
 
-                <!-- 1-Click Arrival Toggle (Feature 78) -->
+                
                 <button
                   type="button"
                   onclick="markStudentAttendance('${p.id}', 'arrival', ${!isArrived})"
@@ -12601,7 +12324,7 @@
                   <span>${isArrived ? 'Undo' : 'Arrive'}</span>
                 </button>
 
-                <!-- Correction Modal Button (Feature 82) -->
+                
                 <button
                   type="button"
                   onclick="openAttendanceCorrectionModal('${p.id}')"
@@ -12611,7 +12334,7 @@
                   <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                 </button>
 
-                <!-- History Modal Button (Feature 83) -->
+                
                 <button
                   type="button"
                   onclick="openStudentAttendanceHistoryModal('${p.id}')"
@@ -12621,7 +12344,7 @@
                   <i data-lucide="history" class="w-3.5 h-3.5"></i>
                 </button>
 
-                <!-- Contact Absentee Button (Feature 81) -->
+                
                 ${(!isBoarded || !isArrived) ? `
                   <button
                     type="button"
@@ -12889,7 +12612,7 @@
           </div>
         </div>
 
-        <!-- Executive Summary Cards -->
+        
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px; margin-bottom:14px; font-size:11px;">
           <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:8px 12px; border-radius:8px;">
             <span style="color:#64748b; font-weight:700; display:block; font-size:9px;">TOTAL ENROLLED</span>
@@ -12909,7 +12632,7 @@
           </div>
         </div>
 
-        <!-- Coach-Wise Breakdown Table -->
+        
         <div style="margin-bottom:14px;">
           <p style="font-size:11px; font-weight:800; color:#334155; margin:0 0 6px; text-transform:uppercase; letter-spacing:0.05em;">Coach / Bus Breakdown</p>
           <table style="width:100%; border-collapse:collapse; font-size:10px; text-align:left;">
@@ -12939,7 +12662,7 @@
           </table>
         </div>
 
-        <!-- Student Attendance Register -->
+        
         <p style="font-size:11px; font-weight:800; color:#334155; margin:0 0 6px; text-transform:uppercase; letter-spacing:0.05em;">Student Participation Register</p>
         <table style="width:100%; border-collapse:collapse; font-size:10px; text-align:left;">
           <thead>
@@ -12977,7 +12700,7 @@
           </tbody>
         </table>
 
-        <!-- Signature Footer -->
+        
         <div style="margin-top:28px; display:flex; justify-content:space-between; align-items:flex-end; font-size:11px;">
           <div>
             <p style="margin:0; border-top:1px solid #94a3b8; width:160px; padding-top:4px; font-weight:bold;">Student Coordinator</p>
@@ -15064,13 +14787,13 @@
             </td>
             <td class="py-3.5 px-4 text-right">
               <div class="inline-flex items-center gap-1 flex-wrap justify-end">
-                <!-- Ledger / Payment History Action (Feature 34) -->
+                
                 <button onclick="openStudentPaymentHistoryModal('${s.id}')" class="px-2 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center gap-1 transition" title="View multi-installment history, UTRs & refunds">
                   <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
                   <span>Ledger</span>
                 </button>
 
-                <!-- Pass Actions -->
+                
                 <div class="flex items-center gap-0.5 bg-slate-100 rounded-xl p-0.5" title="Pass & Payment Details Actions">
                   <button onclick="openBoardingPassByStudentId('${s.id}')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-700 text-white text-xs font-bold flex items-center gap-1 transition" title="Open Boarding Pass">
                     <i data-lucide="ticket" class="w-3.5 h-3.5 text-emerald-400"></i>
@@ -15087,7 +14810,7 @@
                   </button>
                 </div>
 
-                <!-- Admin Approve & Reject Actions (Feature 37 & 38) -->
+                
                 ${!isVer ? `
                   <button onclick="approveStudentPayment('${s.id}')" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1 transition" title="Approve Payment">
                     <i data-lucide="check" class="w-3.5 h-3.5"></i>
@@ -15105,14 +14828,14 @@
                   </button>
                 `}
 
-                <!-- WhatsApp Balance Reminder (Feature 44) -->
+                
                 ${bal > 0 ? `
                   <button onclick="sendSingleBalanceReminderWhatsApp('${s.id}')" class="p-1.5 rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 transition" title="Send WhatsApp Dues Reminder">
                     <i data-lucide="bell" class="w-3.5 h-3.5"></i>
                   </button>
                 ` : ''}
 
-                <!-- Edit and Delete Actions -->
+                
                 <button onclick="openAdminEditModal('${s.id}')" class="px-2 py-1 rounded-lg bg-sky-50 text-sky-700 border border-sky-200 text-xs font-bold hover:bg-sky-100 transition">
                   Edit
                 </button>
@@ -15136,7 +14859,7 @@
 
         return `
           <div class="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden transition hover:shadow-md ${isRej ? 'border-rose-300 bg-rose-50/20' : ''}">
-            <!-- Card Header -->
+            
             <div class="flex items-start justify-between px-4 pt-4 pb-3">
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2 flex-wrap mb-1">
@@ -15166,7 +14889,7 @@
               </div>
             </div>
 
-            <!-- Phone + Access Code Strip -->
+            
             <div class="mx-4 mb-3 flex items-center justify-between bg-slate-50 rounded-xl px-3 py-2 gap-2">
               <a href="https://wa.me/91${normalizePhone(s.phone)}" target="_blank" class="flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:underline">
                 <i data-lucide="message-circle" class="w-3.5 h-3.5 text-[#25D366]"></i>
@@ -15179,7 +14902,7 @@
               </div>` : '<span class="text-[10px] text-slate-400 italic">No access code yet</span>'}
             </div>
 
-            <!-- Boarding Pass Actions -->
+            
             <div class="mx-4 mb-3">
               <p class="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 mb-1.5">Boarding Pass</p>
               <div class="grid grid-cols-5 gap-1.5">
@@ -15206,7 +14929,7 @@
               </div>
             </div>
 
-            <!-- Admin Actions (Features 34, 38, 44) -->
+            
             <div class="border-t border-slate-100 px-4 py-2.5 flex items-center justify-between gap-1.5 flex-wrap bg-slate-50/50">
               <div class="flex items-center gap-1.5 flex-wrap">
                 <button onclick="openStudentPaymentHistoryModal('${s.id}')" class="px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center gap-1 transition">
@@ -16114,7 +15837,7 @@ Thank you!`;
         });
 
         printable.innerHTML = `
-          <!-- Statement Header -->
+          
           <div class="flex items-start justify-between border-b-2 border-slate-900 pb-4">
             <div>
               <div class="flex items-center gap-2">
@@ -16132,7 +15855,7 @@ Thank you!`;
             </div>
           </div>
 
-          <!-- Student Profile Strip -->
+          
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs">
             <div>
               <p class="text-[10px] uppercase font-bold text-slate-400">Student Name</p>
@@ -16152,7 +15875,7 @@ Thank you!`;
             </div>
           </div>
 
-          <!-- Ledger Table -->
+          
           <div class="overflow-x-auto border border-slate-200 rounded-xl">
             <table class="w-full text-left text-xs border-collapse">
               <thead class="bg-slate-100 border-b border-slate-200 font-bold text-slate-600 uppercase text-[10px]">
@@ -16190,7 +15913,7 @@ Thank you!`;
             </table>
           </div>
 
-          <!-- Official Sign-off and Digital Stamp -->
+          
           <div class="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
             <div class="space-y-0.5">
               <p class="font-bold text-slate-800">Trip Coordinator: ${escapeHtml(tripConfig.receiverName || 'Trip In-Charge')}</p>
@@ -17396,7 +17119,7 @@ Thank you!`;
                     ` : ''}
                   </div>
 
-                  <!-- Locations Strip: Destination & Boarding (Features 87, 89) -->
+                  
                   ${(itin.location || itin.boardingLocation) ? `
                     <div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
                       ${itin.location ? `
@@ -17414,7 +17137,7 @@ Thank you!`;
                     </div>
                   ` : ''}
 
-                  <!-- Hotel / Accommodation Info (Feature 92) -->
+                  
                   ${(itin.hotelName || itin.roomNotes) ? `
                     <div class="bg-indigo-50/70 border border-indigo-200/80 rounded-xl p-3 text-xs text-indigo-950 space-y-1">
                       <div class="flex items-center justify-between flex-wrap gap-2">
@@ -17429,7 +17152,7 @@ Thank you!`;
                     </div>
                   ` : ''}
 
-                  <!-- Food & Meal Info (Feature 93) -->
+                  
                   ${(itin.mealType || itin.mealMenu) ? `
                     <div class="bg-amber-50/70 border border-amber-200/80 rounded-xl p-3 text-xs text-amber-950 space-y-1">
                       <span class="font-extrabold text-amber-900 flex items-center gap-1.5">
@@ -17440,7 +17163,7 @@ Thank you!`;
                     </div>
                   ` : ''}
 
-                  <!-- Travel Instructions / Specific Note (Feature 94) -->
+                  
                   ${itin.note ? `
                     <div class="text-xs text-amber-950 bg-amber-50/90 border border-amber-200/90 p-2.5 rounded-xl leading-relaxed flex items-start gap-1.5">
                       <i data-lucide="info" class="w-3.5 h-3.5 text-amber-700 shrink-0 mt-0.5"></i>
@@ -17654,7 +17377,7 @@ Thank you!`;
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            <!-- Lead Faculty Staff -->
+            
             <div class="bg-white/10 backdrop-blur-sm border border-emerald-500/30 rounded-2xl p-4 space-y-2.5">
               <div class="flex items-start justify-between">
                 <div>
@@ -17676,7 +17399,7 @@ Thank you!`;
               </div>
             </div>
 
-            <!-- Other Registered Coordinators -->
+            
             ${coordinators.map(c => `
               <div class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl p-4 space-y-2.5">
                 <div class="flex items-start justify-between">
@@ -17967,7 +17690,7 @@ Thank you!`;
           </div>
         </div>
 
-        <!-- Trip Details Strip -->
+        
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 11px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
           <tr>
             <td style="padding: 6px 10px; font-weight: 700; color: #475569; width: 25%;">Destination:</td>
@@ -17984,7 +17707,7 @@ Thank you!`;
         </table>
 
         ${hotels.length > 0 ? `
-          <!-- Hotel & Accommodation Summary (Feature 92) -->
+          
           <div style="margin-bottom: 14px; border: 1px solid #c7d2fe; background: #f5f3ff; border-radius: 8px; padding: 10px;">
             <h3 style="font-size: 12px; font-weight: 800; color: #3730a3; margin: 0 0 6px 0; text-transform: uppercase;">🏨 Hotel & Accommodation Information (Feature 92)</h3>
             <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
@@ -17999,7 +17722,7 @@ Thank you!`;
           </div>
         ` : ''}
 
-        <!-- Day-by-Day Schedule Table (Features 86, 87, 88, 89, 90, 91, 93, 94) -->
+        
         <h3 style="font-size: 13px; font-weight: 800; color: #0f172a; margin: 0 0 8px 0; text-transform: uppercase;">📅 Detailed Schedule & Activity Manifest</h3>
         <table style="width: 100%; border-collapse: collapse; font-size: 10px; border: 1px solid #cbd5e1;">
           <thead>
@@ -18042,7 +17765,7 @@ Thank you!`;
           </tbody>
         </table>
 
-        <!-- Official Guidelines Footer (Feature 94) -->
+        
         <div style="margin-top: 14px; border: 1px solid #fde68a; background: #fffbeb; border-radius: 8px; padding: 10px; font-size: 9px; color: #92400e; line-height: 1.4;">
           <strong>IMPORTANT STUDENT INSTRUCTIONS (Feature 94):</strong>
           1. Original College ID card and Govt Photo ID must be carried at all times.
@@ -18648,7 +18371,14 @@ Thank you!`;
       const publicNotice = document.getElementById('publicNoTripNotice');
       const payGrid = document.getElementById('paymentFormGrid');
 
-      // Seamless access: always show payment grid, fallback to default trip if none specified
+      // Users access strictly via their unique trip link
+      if (!urlTrip && !isAdminLoggedIn) {
+        if (publicNotice) publicNotice.classList.remove('hidden');
+        if (payGrid) payGrid.classList.add('hidden');
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        return;
+      }
+
       if (publicNotice) publicNotice.classList.add('hidden');
       if (payGrid) payGrid.classList.remove('hidden');
 
@@ -18845,7 +18575,7 @@ Thank you!`;
 
                   ${t.description ? `<p class="text-[11px] text-slate-500 line-clamp-1 mt-1">${escapeHtml(t.description)}</p>` : ''}
 
-                  <!-- Capacity & Deadline Bar -->
+                  
                   <div class="flex items-center gap-3 text-xs text-slate-600 mt-2 flex-wrap">
                     <button type="button" onclick="openTripStudentsModal('${t.id}')"
                       class="font-semibold text-indigo-700 bg-indigo-100/70 hover:bg-indigo-200 px-2 py-0.5 rounded-md transition flex items-center gap-1 shadow-2xs"
@@ -18860,7 +18590,7 @@ Thank you!`;
                 </div>
               </div>
 
-              <!-- Action Buttons -->
+              
               <div class="flex items-center gap-1.5 self-end sm:self-center shrink-0 flex-wrap justify-end">
                 <button type="button" onclick="openTripStudentsModal('${t.id}')" class="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200/80 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-2xs" title="View students registered for this trip">
                   <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-600"></i>
@@ -19207,7 +18937,6 @@ Thank you!`;
       }
     }
 
-    function switchTrip(id) { return switchActiveTrip(id); }
     function switchActiveTrip(newTripId) {
       if (!newTripId) return;
 
@@ -20122,7 +19851,7 @@ Thank you!`;
 
     function switchBossDashboardTab(tab) {
       activeBossDashboardTab = tab;
-      const tabs = ['admins', 'trips', 'payments', 'feedback', 'operations', 'finances', 'security'];
+      const tabs = ['admins', 'trips', 'payments', 'feedback'];
 
       tabs.forEach(t => {
         const btn = document.getElementById(`bossSubTabBtn-${t}`);
@@ -20148,12 +19877,6 @@ Thank you!`;
         renderBossGlobalPayments();
       } else if (tab === 'feedback') {
         renderBossFeedbackList();
-      } else if (tab === 'operations') {
-        renderBossOperationsHub();
-      } else if (tab === 'finances') {
-        renderBossFinancesHub();
-      } else if (tab === 'security') {
-        renderBossSecurityHub();
       }
 
       if (window.lucide && typeof lucide.createIcons === 'function') {
@@ -20313,7 +20036,7 @@ Thank you!`;
                   ${u.createdAt ? `<span>• 🗓️ ${new Date(u.createdAt).toLocaleDateString('en-IN')}</span>` : ''}
                 </div>
 
-                <!-- Trips Under Admin Summary -->
+                
                 <div class="pt-2 border-t border-slate-100 flex items-center gap-2 flex-wrap">
                   <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
                     <i data-lucide="compass" class="w-3.5 h-3.5 text-purple-600"></i>
@@ -20323,13 +20046,13 @@ Thank you!`;
                     ${isGlobal ? `All Trips (${totalTripsUnderThisAdmin} Trips Total) 🌐` : `${totalTripsUnderThisAdmin} ${totalTripsUnderThisAdmin === 1 ? 'Trip' : 'Trips'} Assigned`}
                   </span>
 
-                  <!-- Performance metrics under this admin -->
+                  
                   <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                     👥 ${totalStudentsUnderAdmin} Students (${formatINR(totalCollectedUnderAdmin)} Collected)
                   </span>
                 </div>
 
-                <!-- Assigned Trip Badges -->
+                
                 <div class="flex items-center gap-1.5 flex-wrap pt-0.5">
                   ${matchedTrips.length > 0 ? matchedTrips.map(t => `
                     <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-50 text-slate-700 border border-slate-200 flex items-center gap-1" title="${escapeHtml(t.destination || '')}">
@@ -20340,7 +20063,7 @@ Thank you!`;
                 </div>
               </div>
 
-              <!-- Action Buttons -->
+              
               <div class="flex items-center gap-1.5 self-end lg:self-center shrink-0 flex-wrap justify-end">
                 ${isPending ? `
                   <button
@@ -20353,7 +20076,7 @@ Thank you!`;
                   </button>
                 ` : ''}
 
-                <!-- Edit Admin Details Button -->
+                
                 <button
                   type="button"
                   onclick="openBossEditAdminModal('${u.id}')"
@@ -20364,7 +20087,7 @@ Thank you!`;
                   <span>Edit Details</span>
                 </button>
 
-                <!-- Assign Trips Button -->
+                
                 <button
                   type="button"
                   onclick="openBossAssignTripsModal('${u.id}')"
@@ -20486,7 +20209,7 @@ Thank you!`;
               </div>
             </div>
 
-            <!-- In-Charge Admins (Admin 1, Admin 2, Admin 3...) -->
+            
             <div class="p-2.5 rounded-xl bg-purple-50/70 border border-purple-100 text-xs mb-3 space-y-1.5">
               <div class="flex items-center justify-between text-[11px]">
                 <span class="text-purple-900 font-extrabold flex items-center gap-1">
@@ -20517,7 +20240,7 @@ Thank you!`;
               </div>
             </div>
 
-            <!-- Fee, Capacity & Deadline Meta -->
+            
             <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs mb-3 space-y-1.5">
               <div class="flex items-center justify-between">
                 <span class="text-slate-500 font-medium">Trip Fee / Advance:</span>
@@ -20542,7 +20265,7 @@ Thank you!`;
               ` : ''}
             </div>
 
-            <!-- Financials & Stats Grid -->
+            
             <div class="grid grid-cols-3 gap-2 text-center mb-4">
               <button type="button" onclick="openTripStudentsModal('${t.id}')"
                 class="p-2 rounded-xl bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-200 transition text-center"
@@ -20566,7 +20289,7 @@ Thank you!`;
               </div>
             </div>
 
-            <!-- Action Buttons -->
+            
             <div class="flex items-center gap-1.5 pt-3 border-t border-slate-100 flex-wrap">
               <button
                 type="button"
@@ -22842,7 +22565,7 @@ Thank you!`;
 
       container.innerHTML = `
         <div class="expressive-card border border-amber-200 rounded-3xl p-5 sm:p-7 bg-white shadow-lg space-y-6">
-          <!-- Train Summary Card -->
+          
           <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-5 shadow-sm border border-slate-800 space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
               <div class="flex items-center gap-3">
@@ -22877,7 +22600,7 @@ Thank you!`;
               </div>
             </div>
 
-            <!-- Route & Timings Strip -->
+            
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center text-xs">
               <div class="bg-black/30 rounded-xl p-3 border border-white/5">
                 <p class="text-[10px] uppercase font-bold text-slate-400">Boarding Origin</p>
@@ -22900,7 +22623,7 @@ Thank you!`;
             </div>
           </div>
 
-          <!-- Train Date, Timing & Station Adjustment Panel -->
+          
           <div class="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 space-y-3">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/70 pb-2.5">
               <div class="flex items-center gap-2">
@@ -22981,7 +22704,7 @@ Thank you!`;
             </div>
           </div>
 
-          <!-- Passenger Slot Mapping Table -->
+          
           <div class="space-y-3">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
@@ -23024,7 +22747,7 @@ Thank you!`;
             </div>
           </div>
 
-          <!-- Action Save Bar -->
+          
           <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-100">
             <p class="text-xs text-slate-500">
               Saving updates both master PNR records and each student's personal boarding pass atomically.
@@ -24549,7 +24272,7 @@ Thank you!`;
 
         return `
           <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-4">
-            <!-- Header -->
+            
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/80 pb-3">
               <div>
                 <div class="flex items-center gap-2 flex-wrap">
@@ -24587,7 +24310,7 @@ Thank you!`;
                      </span>`
           }
 
-                <!-- e-Ticket PDF Management Buttons -->
+                
                 ${hasPdf ? `
                   <button
                     type="button"
@@ -24626,7 +24349,7 @@ Thank you!`;
                   </button>
                 `}
 
-                <!-- Edit Train & Ticket Details Button (Features 46-53) -->
+                
                 <button
                   type="button"
                   onclick="openManualPnrModal('${record.pnrNumber}')"
@@ -24636,7 +24359,7 @@ Thank you!`;
                   <i data-lucide="edit-3" class="w-3.5 h-3.5 text-amber-600"></i>
                   <span>Edit Train</span>
                 </button>
-                <!-- Edit / Reassign Seats Button -->
+                
                 <button
                   type="button"
                   onclick="editSavedPNR('${record.pnrNumber}')"
@@ -24647,7 +24370,7 @@ Thank you!`;
                   <span>Edit / Reassign</span>
                 </button>
 
-                <!-- Refresh PNR Status Button -->
+                
                 <button
                   type="button"
                   id="refreshPnrBtn_${record.pnrNumber}"
@@ -24659,7 +24382,7 @@ Thank you!`;
                   <span>Refresh Status</span>
                 </button>
 
-                <!-- Delete Record Button -->
+                
                 <button
                   type="button"
                   onclick="handleDeletePNRRecord('${record.pnrNumber}')"
@@ -24671,7 +24394,7 @@ Thank you!`;
               </div>
             </div>
 
-            <!-- Slots Grid -->
+            
             <div>
               <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
                 <span class="font-bold">Passenger Allocations (${assignedCount} / ${mappings.length} assigned):</span>
@@ -25575,7 +25298,7 @@ Thank you!`;
 
       return `
         <div class="expressive-card border rounded-3xl p-5 sm:p-7 bg-gradient-to-br ${cardGradient} text-white shadow-xl space-y-5">
-          <!-- Ticket Header -->
+          
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
             <div class="flex items-center gap-3">
               <div class="w-12 h-12 rounded-2xl bg-gradient-to-br ${isReturn ? 'from-purple-500 to-indigo-600' : 'from-amber-400 to-amber-600'} text-slate-950 flex items-center justify-center font-black shadow-md shrink-0">
@@ -25589,7 +25312,7 @@ Thank you!`;
               </div>
             </div>
 
-            <!-- PNR Badge with cryptographic hash & role-based masking -->
+            
             <div class="flex flex-wrap items-center gap-2">
               <div class="bg-black/40 border border-white/15 px-3 py-1.5 rounded-xl flex items-center gap-2">
                 <span class="text-[11px] text-slate-400 font-extrabold uppercase">PNR:</span>
@@ -25607,7 +25330,7 @@ Thank you!`;
             </div>
           </div>
 
-          <!-- Stations Route Visual -->
+          
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
             <div class="bg-black/30 rounded-2xl p-4 border border-white/10">
               <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Boarding Origin</p>
@@ -25633,7 +25356,7 @@ Thank you!`;
             </div>
           </div>
 
-          <!-- Highlight Seat Grid -->
+          
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div class="bg-black/40 rounded-2xl p-3.5 border border-white/15 text-center">
               <p class="text-[10px] font-extrabold uppercase tracking-wider text-amber-300">Coach</p>
@@ -25655,7 +25378,7 @@ Thank you!`;
             </div>
           </div>
 
-          <!-- Comprehensive Passenger Details Strip (Age, Gender, Quota, Chart, Distance, Booking & Current Status) -->
+          
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs bg-black/40 p-3.5 rounded-2xl border border-white/10">
             <div>
               <p class="text-[10px] uppercase font-bold text-slate-400">Passenger / Gender</p>
@@ -25675,7 +25398,7 @@ Thank you!`;
             </div>
           </div>
 
-          <!-- Live Train Location Banner -->
+          
           <div class="p-3.5 rounded-2xl bg-black/40 border border-emerald-400/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="flex items-center gap-3">
               <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping shrink-0"></span>
@@ -25699,7 +25422,7 @@ Thank you!`;
             </button>
           </div>
 
-          <!-- Status & Actions Strip -->
+          
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/10">
             <div>
               <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold border ${statusBadgeClass}">
@@ -26335,7 +26058,7 @@ Thank you!`;
 
       container.innerHTML = `
         <div class="space-y-3">
-          <!-- 3D Header Toolbar -->
+          
           <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-white flex flex-wrap items-center justify-between gap-3 text-xs">
             <div class="flex items-center gap-2.5">
               <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-400/30 flex items-center justify-center font-bold">
@@ -26368,7 +26091,7 @@ Thank you!`;
             </div>
           </div>
 
-          <!-- 3D Canvas Viewport Wrap with overlays -->
+          
           <div class="relative w-full h-[450px] sm:h-[550px] rounded-3xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl">
             <div id="virtualTrain3DCanvasWrap" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
 
@@ -26377,11 +26100,11 @@ Thank you!`;
               <span>Train Engine ➔ Forward</span>
             </div>
 
-            <!-- Draggable & Movable 3D Navigation Control Pad Interface -->
+            
             <div id="virtualTrain3DControlPad"
               class="absolute bottom-16 right-3 sm:bottom-16 sm:right-4 z-20 bg-slate-900/90 backdrop-blur-md border border-white/15 rounded-2xl shadow-2xl p-2.5 text-white w-44 sm:w-48 transition-opacity select-none">
               
-              <!-- Draggable Header Handle -->
+              
               <div id="virtualTrain3DControlPadHeader" onpointerdown="init3DControlPadDrag(event)"
                 class="flex items-center justify-between pb-1.5 border-b border-white/10 cursor-move text-slate-300">
                 <div class="flex items-center gap-1.5 font-extrabold text-[11px] text-white">
@@ -26400,9 +26123,9 @@ Thank you!`;
                 </div>
               </div>
 
-              <!-- Pad Body with Movement Buttons -->
+              
               <div id="virtualTrain3DControlPadBody" class="space-y-2 pt-2">
-                <!-- D-pad cross for Walking & Strafing -->
+                
                 <div class="grid grid-cols-3 gap-1 w-28 mx-auto">
                   <div></div>
                   <button type="button"
@@ -26441,7 +26164,7 @@ Thank you!`;
                   <div></div>
                 </div>
 
-                <!-- Rotation & Look Buttons -->
+                
                 <div class="grid grid-cols-4 gap-1 pt-1.5 border-t border-white/10 text-slate-300">
                   <button type="button"
                     onpointerdown="start3DContinuousMove('turnLeft')" onpointerup="stop3DContinuousMove()" onpointerleave="stop3DContinuousMove()"
@@ -26469,7 +26192,7 @@ Thank you!`;
                   </button>
                 </div>
 
-                <!-- Zoom In/Out -->
+                
                 <div class="grid grid-cols-2 gap-1 text-slate-300">
                   <button type="button"
                     onpointerdown="start3DContinuousMove('zoomIn')" onpointerup="stop3DContinuousMove()" onpointerleave="stop3DContinuousMove()"
@@ -26489,7 +26212,7 @@ Thank you!`;
               </div>
             </div>
 
-            <!-- Quick Bay Jumper Strip -->
+            
             <div class="absolute bottom-3 inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 p-1.5 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-white/10 flex items-center gap-1.5 overflow-x-auto max-w-full scrollbar-none shadow-xl">
               <span class="text-[10px] font-extrabold uppercase text-slate-400 px-2 shrink-0">Bays:</span>
               <div id="virtualTrain3DBayButtons" class="flex items-center gap-1"></div>
@@ -26896,7 +26619,7 @@ Thank you!`;
             </div>
 
             <div class="space-y-2">
-              <!-- Top Row: Main Compartment Window & Berths -->
+              
               <div class="flex items-center gap-2">
                 <div class="w-6 text-center text-slate-500 shrink-0" title="Compartment Window Side">
                   <i data-lucide="app-window" class="w-4 h-4 text-blue-400 mx-auto"></i>
@@ -26911,14 +26634,14 @@ Thank you!`;
                 </div>
               </div>
 
-              <!-- Central Walking Aisle -->
+              
               <div class="py-1 px-8 rounded-xl bg-slate-950/70 border border-slate-800/60 text-center text-[10px] font-bold text-slate-500 flex items-center justify-center gap-2">
                 <div class="h-px bg-slate-800 flex-1"></div>
                 <span>🚶 Central Walking Aisle / Corridor</span>
                 <div class="h-px bg-slate-800 flex-1"></div>
               </div>
 
-              <!-- Bottom Row: Side Window & Side Berths -->
+              
               <div class="flex items-center gap-2">
                 <div class="w-6 text-center text-slate-500 shrink-0" title="Side Window">
                   <i data-lucide="app-window" class="w-4 h-4 text-emerald-400 mx-auto"></i>
@@ -27136,7 +26859,7 @@ Thank you!`;
       if (!hasOnward && !hasReturn) {
         container.innerHTML = `
           <div class="expressive-card border-2 border-rose-300/80 rounded-3xl p-5 sm:p-7 bg-gradient-to-br from-rose-950 via-slate-900 to-slate-950 text-white shadow-xl space-y-5">
-            <!-- Prominent Header -->
+            
             <div class="flex items-center justify-between border-b border-rose-500/20 pb-4">
               <div class="flex items-center gap-3">
                 <div class="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center font-black shadow-md shrink-0">
@@ -27155,12 +26878,12 @@ Thank you!`;
               </span>
             </div>
 
-            <!-- Explanation -->
+            
             <p class="text-xs text-slate-300 leading-relaxed">
               Your Indian Railways train tickets for this trip have not been assigned or confirmed yet. Your trip coordinators will allocate your onward &amp; return train seats, coach numbers, and berths shortly.
             </p>
 
-            <!-- 3-point status checklist -->
+            
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
               <div class="p-3 rounded-2xl bg-black/40 border border-white/10 flex items-start gap-2.5">
                 <div class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">1</div>
@@ -27185,7 +26908,7 @@ Thank you!`;
               </div>
             </div>
 
-            <!-- Live Status & Helper Actions -->
+            
             <div class="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-400">
               <span class="flex items-center gap-1.5">
                 <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-rose-400"></i>
@@ -28125,7 +27848,7 @@ Thank you!`;
 
       resBox.innerHTML = `
         <div class="expressive-card rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white shadow-xl space-y-4 border border-blue-400/40">
-          <!-- Card Header -->
+          
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-2xl bg-blue-500/20 border border-blue-400/30 text-blue-400 flex items-center justify-center font-bold">
@@ -28145,7 +27868,7 @@ Thank you!`;
             </span>
           </div>
 
-          <!-- Route Info with Departure Date & Arrival Date -->
+          
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             <div class="p-3.5 rounded-2xl bg-black/30 border border-white/10 space-y-1">
               <p class="text-[10px] font-bold text-slate-400 uppercase">Origin Station</p>
@@ -28159,7 +27882,7 @@ Thank you!`;
             </div>
           </div>
 
-          <!-- Quota, Chart & Distance Summary Strip (FARE REMOVED FROM USER VIEW) -->
+          
           <div class="grid grid-cols-3 gap-2 text-center text-xs bg-black/30 p-2.5 rounded-2xl border border-white/10">
             <div>
               <p class="text-[9px] uppercase font-bold text-slate-400">Booking Quota</p>
@@ -28175,7 +27898,7 @@ Thank you!`;
             </div>
           </div>
 
-          <!-- Passenger Seats Roster -->
+          
           <div class="space-y-2 pt-1">
             <h5 class="text-xs font-bold text-slate-300 flex items-center justify-between">
               <span>Passenger Berth Allocations (${passengers.length} Slots):</span>
@@ -28215,7 +27938,7 @@ Thank you!`;
             </div>
           </div>
 
-          <!-- Live Route & Track Action -->
+          
           <div class="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2">
             <button
               type="button"
@@ -28499,11 +28222,11 @@ Thank you!`;
 
         return `
           <div class="relative flex items-start gap-3 pl-2">
-            <!-- Line Connector -->
+            
             ${idx < displayStations.length - 1 ? '<div class="absolute left-[17px] top-6 bottom-0 w-0.5 bg-slate-200"></div>' : ''}
-            <!-- Dot -->
+            
             <div class="w-3.5 h-3.5 rounded-full ${dotColor} shrink-0 mt-3 border-2 border-white shadow-xs z-10"></div>
-            <!-- Card -->
+            
             <div class="flex-1 p-3.5 rounded-2xl border ${cardBg} space-y-1.5 transition">
               <div class="flex items-center justify-between gap-2 flex-wrap">
                 <div class="flex items-center gap-2 flex-wrap">
@@ -29616,7 +29339,7 @@ Guidelines:
               </div>
             </div>
 
-            <!-- Student Info & Trip -->
+            
             <div class="flex items-center justify-between text-xs text-slate-600 gap-2 flex-wrap">
               <div class="flex items-center gap-2">
                 <span class="font-extrabold text-slate-900">${escapeHtml(fb.studentName || 'Anonymous Participant')}</span>
@@ -29627,7 +29350,7 @@ Guidelines:
               </span>
             </div>
 
-            <!-- Message Body -->
+            
             <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs text-slate-800 leading-relaxed font-medium whitespace-pre-wrap">
               "${escapeHtml(fb.message)}"
             </div>
@@ -30172,7 +29895,7 @@ Guidelines:
           <div class="flex-1 flex flex-col items-center h-full justify-end group relative cursor-pointer" title="${formatDisplayDate(dateKey)}: ${formatINR(amt)}">
             <div class="w-full ${isPeak ? 'bg-indigo-600' : 'bg-emerald-500 hover:bg-emerald-600'} rounded-t-md transition-all duration-300" style="height: ${heightPct}%"></div>
             <span class="text-[9px] text-slate-500 font-mono mt-1 truncate max-w-full hidden sm:block">${dateKey.slice(8)}</span>
-            <!-- Tooltip -->
+            
             <div class="absolute -top-7 bg-slate-900 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none z-10 font-mono">
               ${formatINR(amt)}
             </div>
@@ -30904,30 +30627,30 @@ Guidelines:
               ${extraControls}
             </div>
 
-            <!-- Action Buttons Strip (Features 135-138) -->
+            
             <div class="mt-4 pt-3.5 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <!-- Feature 138: Print / Preview -->
+              
               <button type="button" onclick="generateAndPreviewReport('${r.id}')"
                 class="px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold transition flex items-center justify-center gap-1">
                 <i data-lucide="printer" class="w-3.5 h-3.5"></i>
                 <span>Print</span>
               </button>
 
-              <!-- Feature 135: PDF -->
+              
               <button type="button" onclick="generateAndDownloadReportPDF('${r.id}')"
                 class="px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition flex items-center justify-center gap-1">
                 <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
                 <span>PDF</span>
               </button>
 
-              <!-- Feature 136: Excel -->
+              
               <button type="button" onclick="generateAndDownloadReportExcel('${r.id}')"
                 class="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition flex items-center justify-center gap-1">
                 <i data-lucide="sheet" class="w-3.5 h-3.5"></i>
                 <span>Excel</span>
               </button>
 
-              <!-- Feature 137: CSV -->
+              
               <button type="button" onclick="generateAndDownloadReportCSV('${r.id}')"
                 class="px-2.5 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 text-xs font-bold transition flex items-center justify-center gap-1">
                 <i data-lucide="table" class="w-3.5 h-3.5"></i>
@@ -31479,7 +31202,7 @@ Guidelines:
       `).join('');
 
       return `
-        <!-- Institutional Letterhead Header -->
+        
         <div class="border-b-2 border-slate-900 pb-5 mb-6 text-center">
           <div class="flex items-center justify-center gap-2 mb-1.5">
             <span class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold font-display text-sm">TP</span>
@@ -31497,14 +31220,14 @@ Guidelines:
           </div>
         </div>
 
-        <!-- KPI Summary Ribbon -->
+        
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-5">
           ${kpisHtml}
         </div>
 
         ${customBodyHtml}
 
-        <!-- Main Document Table -->
+        
         <div class="overflow-x-auto my-6 border border-slate-200 rounded-xl">
           <table class="w-full text-left border-collapse">
             <thead>
@@ -31516,7 +31239,7 @@ Guidelines:
           </table>
         </div>
 
-        <!-- Official Signatures & Seal Block (Feature 138) -->
+        
         <div class="mt-12 pt-8 border-t-2 border-slate-200 grid grid-cols-2 sm:grid-cols-3 gap-6 text-center text-xs">
           <div>
             <div class="h-12 border-b border-dashed border-slate-300 mb-2"></div>
@@ -31648,28 +31371,17 @@ Guidelines:
         `)
       ].join('');
 
-      const excelTemplate = `
-        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-        <head>
-          <meta charset="utf-8">
-          <!--[if gte mso 9]>
-          <xml>
-            <x:ExcelWorkbook>
-              <x:ExcelWorksheets>
-                <x:ExcelWorksheet>
-                  <x:Name>${reportData.id.slice(0, 31)}</x:Name>
-                  <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>
-                </x:ExcelWorksheet>
-              </x:ExcelWorksheets>
-            </x:ExcelWorkbook>
-          </xml>
-          <![endif]-->
-        </head>
-        <body>
-          <table>${tableRowsHtml}</table>
-        </body>
-        </html>
-      `;
+      const excelTemplate = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' +
+        '<head><meta charset="utf-8">' +
+        '<' + '!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>' +
+        '<x:Name>' + String(reportData.id).slice(0, 31) + '</x:Name>' +
+        '<x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>' +
+        '</x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--' + '>' +
+        '<' + '/head>' +
+        '<' + 'body>' +
+        '<table>' + tableRowsHtml + '</table>' +
+        '<' + '/body>' +
+        '<' + '/html>';
 
       const blob = new Blob([excelTemplate], { type: 'application/vnd.ms-excel;charset=utf-8' });
       const a = document.createElement('a');
@@ -32373,184 +32085,7 @@ Found ${duplicates.length} duplicate UTR numbers across multiple students:
       syncOfflineAttendanceQueue();
     });
 
-    
-    // =========================================================================
-    // BOSS MASTER COMMAND CENTER: PILLARS 5, 6, 7 LOGIC
-    // =========================================================================
-    function renderBossOperationsHub() {
-      const elPnrs = document.getElementById('bossOpsTotalPnrs');
-      const elVendors = document.getElementById('bossOpsTotalVendors');
-      const elLost = document.getElementById('bossOpsTotalLostFound');
-      const elBrd = document.getElementById('bossOpsTotalBroadcasts');
-      const container = document.getElementById('bossOpsRosterContainer');
-
-      if (elPnrs) elPnrs.textContent = rawPnrList.length;
-      if (elVendors) elVendors.textContent = rawVendorsList.length;
-      if (elLost) elLost.textContent = rawLostFoundList.length;
-      if (elBrd) elBrd.textContent = rawNotifList.length;
-
-      if (!container) return;
-
-      if (allTrips.length === 0) {
-        container.innerHTML = '<p class="text-center py-6 text-slate-400">No trips created yet.</p>';
-        return;
-      }
-
-      container.innerHTML = allTrips.map(t => {
-        const tPnrs = rawPnrList.filter(p => (p.tripId || 'default') === t.id);
-        const tVendors = rawVendorsList.filter(v => (v.tripId || 'default') === t.id);
-        const tLost = rawLostFoundList.filter(l => (l.tripId || 'default') === t.id);
-        const tStudents = rawPaymentsList.filter(s => (s.tripId || 'default') === t.id);
-
-        return `
-          <div class="py-3 px-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50 transition">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="font-extrabold text-sm text-slate-900">${escapeHtml(t.tripTitle || t.id)}</span>
-                <span class="px-2 py-0.2 rounded-full text-[10px] font-bold ${t.status === 'Active' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700'}">${t.status || 'Active'}</span>
-              </div>
-              <p class="text-[11px] text-slate-500 font-medium mt-0.5">${escapeHtml(t.destination || 'Munnar')} • ${tStudents.length} Students</p>
-            </div>
-            <div class="flex items-center gap-3 text-xs">
-              <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-bold">${tPnrs.length} PNRs</span>
-              <span class="px-2.5 py-1 rounded-lg bg-teal-50 text-teal-700 font-bold">${tVendors.length} Vendors</span>
-              <span class="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-700 font-bold">${tLost.length} Lost Items</span>
-              <button type="button" onclick="switchTrip('${t.id}')" class="px-3 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-bold transition">Manage Trip</button>
-            </div>
-          </div>
-        `;
-      }).join('');
-      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
-    }
-
-    function broadcastGlobalAlertPrompt() {
-      const msg = prompt('Enter Global Announcement to dispatch to ALL trips:');
-      if (!msg) return;
-      dispatchNotification({
-        title: '📢 Global Platform Announcement',
-        message: msg,
-        type: 'Announcement',
-        channel: 'both',
-        isEmergency: false
-      }).then(() => {
-        showToast('Universal broadcast sent to all platform participants!', 'success');
-      });
-    }
-
-    function renderBossFinancesHub() {
-      const totalBudget = allTrips.reduce((a, t) => a + (Number(t.tripBudget || t.targetBudget) || 100000), 0);
-      const totalCollected = rawPaymentsList.reduce((a, p) => a + (getStudentPaymentSummary(p).netPaid || 0), 0);
-      const totalExpenses = rawExpensesList.reduce((a, e) => a + (Number(e.amount) || 0), 0);
-      const netPlatform = totalCollected - totalExpenses;
-
-      const elB = document.getElementById('bossFinGlobalBudget');
-      const elC = document.getElementById('bossFinGlobalCollected');
-      const elE = document.getElementById('bossFinGlobalExpenses');
-      const elN = document.getElementById('bossFinGlobalNet');
-
-      if (elB) elB.textContent = formatINR(totalBudget);
-      if (elC) elC.textContent = formatINR(totalCollected);
-      if (elE) elE.textContent = formatINR(totalExpenses);
-      if (elN) {
-        elN.textContent = formatINR(netPlatform);
-        elN.className = netPlatform >= 0 ? 'font-display text-2xl font-extrabold text-indigo-700 mt-1' : 'font-display text-2xl font-extrabold text-rose-700 mt-1';
-      }
-
-      const upiInp = document.getElementById('bossGlobalUpiInput');
-      const recInp = document.getElementById('bossGlobalReceiverInput');
-      if (upiInp && tripConfig.upiId) upiInp.value = tripConfig.upiId;
-      if (recInp && tripConfig.receiverName) recInp.value = tripConfig.receiverName;
-    }
-
-    async function saveBossGlobalGatewayConfig() {
-      const gw = document.getElementById('bossGlobalGatewaySelect')?.value || 'upi_qr';
-      const upi = document.getElementById('bossGlobalUpiInput')?.value?.trim() || 'mohdshemeemkp@oksbi';
-      const receiver = document.getElementById('bossGlobalReceiverInput')?.value?.trim() || 'Mohd Shemeem KP';
-
-      try {
-        tripConfig.paymentGateway = gw;
-        tripConfig.upiId = upi;
-        tripConfig.receiverName = receiver;
-
-        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', 'main_config'), {
-          paymentGateway: gw,
-          upiId: upi,
-          receiverName: receiver,
-          updatedAt: Date.now()
-        }, { merge: true });
-
-        showToast('Universal payment gateway settings saved and synced to cloud! ✓', 'success');
-      } catch (e) {
-        console.error('Error saving global gateway settings:', e);
-        showToast('Failed to save settings.', 'error');
-      }
-    }
-
-    function renderBossSecurityHub() {
-      renderBossLoginHistoryTable();
-      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
-    }
-
-    function renderBossLoginHistoryTable() {
-      const tbody = document.getElementById('bossLoginHistoryTableBody');
-      const badge = document.getElementById('bossLoginHistoryCountBadge');
-      if (!tbody) return;
-
-      const q = (document.getElementById('bossLoginSearchInput')?.value || '').toLowerCase().trim();
-      let logs = [...allLoginHistory];
-
-      if (badge) badge.textContent = `${logs.length} Logins`;
-
-      if (q) {
-        logs = logs.filter(l =>
-          (l.email || '').toLowerCase().includes(q) ||
-          (l.name || '').toLowerCase().includes(q) ||
-          (l.role || '').toLowerCase().includes(q) ||
-          (l.tripId || '').toLowerCase().includes(q)
-        );
-      }
-
-      if (logs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-slate-400">No login events recorded.</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = logs.slice(0, 40).map(l => `
-        <tr class="hover:bg-slate-50 transition">
-          <td class="py-2.5 px-3 font-mono text-slate-500">${new Date(l.timestamp || Date.now()).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })}</td>
-          <td class="py-2.5 px-3 font-bold text-slate-900">${escapeHtml(l.name || 'User')} <span class="text-slate-400 font-normal">(${escapeHtml(l.email || '')})</span></td>
-          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-50 text-purple-700 uppercase">${escapeHtml(l.role || 'admin')}</span></td>
-          <td class="py-2.5 px-3 font-mono text-slate-600">${escapeHtml(l.tripId || 'default')}</td>
-          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${l.status === 'SUCCESS' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${l.status || 'SUCCESS'}</span></td>
-          <td class="py-2.5 px-3 font-mono text-[10px] text-slate-400 truncate max-w-xs">${escapeHtml(l.userAgent || 'Web Client')}</td>
-        </tr>
-      `).join('');
-    }
-
-    async function executeBossDirectPasswordReset() {
-      const email = document.getElementById('bossDirectResetEmail')?.value?.trim().toLowerCase();
-      const pass = document.getElementById('bossDirectResetPass')?.value?.trim();
-
-      if (!email || !pass || pass.length < 6) {
-        showToast('Please enter target email and new password (min 6 chars).', 'error');
-        return;
-      }
-
-      const ok = await executePasswordReset(email, pass);
-      if (ok) {
-        document.getElementById('bossDirectResetEmail').value = '';
-        document.getElementById('bossDirectResetPass').value = '';
-      }
-    }
-
     Object.assign(window, {
-      renderBossOperationsHub,
-      broadcastGlobalAlertPrompt,
-      renderBossFinancesHub,
-      saveBossGlobalGatewayConfig,
-      renderBossSecurityHub,
-      renderBossLoginHistoryTable,
-      executeBossDirectPasswordReset,
       hasPermission,
       recordLoginHistory,
       createSpecializedAccount,
@@ -33094,584 +32629,6 @@ Found ${duplicates.length} duplicate UTR numbers across multiple students:
     } else {
       initApp();
     }
-
-
-    // Supreme Global Bridge: Expose all module-scoped functions to window for 100% error-free execution
-    Object.assign(window, {
-      resolveFirebaseConfig,
-      getTripIdFromUrl,
-      getActiveBossEmail,
-      getActiveBossPassword,
-      getActiveBossMasterPin,
-      isCustomBossSecurityActive,
-      normalizePhone,
-      formatINR,
-      escapeHtml,
-      normalizeUtr,
-      checkDuplicateUtr,
-      validateUtrInputRealtime,
-      getStudentPaymentSummary,
-      getBalanceDue,
-      generateSecureAccessCode,
-      playScanBeep,
-      copyText,
-      copyUpiId,
-      showToast,
-      hideToast,
-      setCloudBadgeState,
-      syncCloudNow,
-      initFirebaseAndListeners,
-      listenToActiveTripConfig,
-      filterAndRenderAllTripData,
-      startFirestoreListeners,
-      logSecurityEvent,
-      renderAuditLogs,
-      clearAuditLogs,
-      getActiveLogoUrl,
-      applyLogoAcrossApp,
-      previewCustomLogoUrl,
-      resetCustomLogoToDefault,
-      handleLogoFileUpload,
-      applyTripConfigToUI,
-      updateUserTabsVisibility,
-      updateAdminVisibilityPills,
-      toggleStudentFeatureVisibility,
-      renderDepartmentDropdowns,
-      renderExpenseCategoryDropdown,
-      toggleInlineCustomCategoryBox,
-      saveInlineCustomCategory,
-      getStudentInitials,
-      generateUniqueStudentTripId,
-      getStudentTripId,
-      generateSecurityHash,
-      buildBoardingQrPayload,
-      togglePassActivation,
-      togglePassActivationFromModal,
-      openBoardingPassModal,
-      populateBoardingPassDataSilent,
-      openBoardingPassByStudentId,
-      openBoardingPassFromLastReceipt,
-      openBoardingPassModalForLoggedParticipant,
-      closeBoardingPassModal,
-      printBoardingPassTicket,
-      downloadBoardingPassPDF,
-      buildWhatsAppBoardingPassText,
-      clonePassForCapture,
-      finish,
-      buildPdfBlobFromPass,
-      capturePassAsImageBlob,
-      shareCurrentBoardingPassWhatsApp,
-      shareStudentBoardingPassWhatsApp,
-      buildWhatsAppPaymentVerificationText,
-      sendVerificationMessage,
-      shareVerifiedPaymentWhatsApp,
-      sharePassAsImage,
-      sharePassPDFWhatsApp,
-      savePassAsImageForStudent,
-      shareStudentPDFWhatsApp,
-      downloadStudentPassPDF,
-      printStudentPass,
-      openQrScannerModal,
-      closeQrScannerModal,
-      setScannerAttendanceSession,
-      switchAttendanceSessionView,
-      updateScannerModalCounters,
-      startCameraQrScanner,
-      stopCameraQrScanner,
-      handleManualScannerLookup,
-      processScannedBoardingPassPayload,
-      renderScannedStudentCard,
-      markStudentAttendance,
-      markParticipantBoardingStatus,
-      markAllVisibleAttendance,
-      getFilteredAttendanceStudents,
-      renderCheckinRoster,
-      openAttendanceCorrectionModal,
-      closeAttendanceCorrectionModal,
-      handleCorrectionPresetChange,
-      handleAttendanceCorrectionSubmit,
-      openStudentAttendanceHistoryModal,
-      closeStudentAttendanceHistoryModal,
-      contactAbsenteeWhatsApp,
-      broadcastAbsenteesWhatsApp,
-      exportAttendancePDF,
-      exportAttendanceCSV,
-      shareAttendanceWhatsApp,
-      copyBoardingAttendanceWhatsApp,
-      switchPaymentMode,
-      selectPaymentPreset,
-      syncSelectedAppFromDropdown,
-      getCurrentPayableAmount,
-      updateDynamicUpiLinks,
-      chooseAndOpenUpiApp,
-      handleStudentFormSubmit,
-      renderBalanceLookupResults,
-      selectStudentForBalance,
-      clearSelectedBalanceStudent,
-      handleBalanceFormSubmit,
-      showDigitalReceipt,
-      resetReceiptView,
-      closePaymentReceiptModal,
-      openPaymentReceiptForStudent,
-      openPaymentReceiptForLoggedParticipant,
-      openPaymentReceiptFromBoardingPass,
-      handleUserReceiptNavClick,
-      openUserReceiptLookupModal,
-      closeUserReceiptLookupModal,
-      handleUserReceiptLookupSubmit,
-      cloneReceiptForCapture,
-      buildReceiptPDFBlob,
-      shareReceiptAsImage,
-      shareReceiptPDFWhatsApp,
-      downloadReceiptPDF,
-      printReceiptPass,
-      shareReceiptToUserWhatsApp,
-      sendStudentWhatsAppReceipt,
-      broadcastBalanceAlertsWhatsApp,
-      handleParticipantPortalClick,
-      handleParticipantLoginSubmit,
-      registerFailedLogin,
-      updateParticipantDashboardUI,
-      logoutParticipant,
-      initiateBalancePaymentFromPortal,
-      shareMyParticipantPassWhatsApp,
-      openRecoveryModal,
-      closeRecoveryModal,
-      handleInitiateRecovery,
-      autoLoginWithRecoveredCode,
-      renderAccessCodesSuite,
-      generateMissingAccessCodesForVerified,
-      openAdminCodeControllerModal,
-      closeAdminCodeModal,
-      adminGenerateRandomCode,
-      adminResetFailedAttempts,
-      saveAdminAccessCode,
-      sendAccessPassWhatsApp,
-      handleAdminAccessClick,
-      closeAdminLoginModal,
-      handleAdminLoginSubmit,
-      logoutAdmin,
-      updateAdminUIState,
-      switchTab,
-      switchManagerSubTab,
-      setPaymentListPill,
-      updateNavBadge,
-      renderKPIs,
-      handleDashSearch,
-      clearDashSearch,
-      updateDeptFilterOptions,
-      renderDashboard,
-      toggleVerifyStudent,
-      approveStudentPayment,
-      openRejectPaymentModal,
-      closeRejectPaymentModal,
-      handleRejectPaymentSubmit,
-      openStudentPaymentHistoryModal,
-      closeStudentPaymentHistoryModal,
-      openRecordInstallmentModal,
-      closeRecordInstallmentModal,
-      handleRecordInstallmentSubmit,
-      deletePaymentInstallment,
-      openRecordRefundModal,
-      closeRecordRefundModal,
-      handleRecordRefundSubmit,
-      deleteStudentRefund,
-      calculateDeptCollectionStats,
-      openDeptCollectionReportModal,
-      closeDeptCollectionReportModal,
-      exportDeptCollectionReportCSV,
-      printDeptCollectionReport,
-      sendSingleBalanceReminderWhatsApp,
-      openStudentStatementModal,
-      closeStudentStatementModal,
-      downloadStudentStatementPDF,
-      printStudentStatement,
-      renderExpenses,
-      openAddExpenseModal,
-      openEditExpenseModal,
-      closeExpenseModal,
-      handleSaveExpenseSubmit,
-      playNotificationChime,
-      sendWhatsAppApiNotification,
-      sendEmailApiNotification,
-      dispatchNotification,
-      renderNotificationsUI,
-      dismissEmergencyBanner,
-      renderNotificationCenterList,
-      openNotificationCenterModal,
-      closeNotificationCenterModal,
-      setNotifCenterFilter,
-      markAllNotificationsRead,
-      markNotificationAsRead,
-      renderNotificationsManagerUI,
-      handleNotifHistorySearch,
-      handleNotifHistoryFilterChange,
-      openCreateAnnouncementModal,
-      closeCreateAnnouncementModal,
-      handleCreateAnnouncementSubmit,
-      openEmergencyBroadcastModal,
-      closeEmergencyBroadcastModal,
-      handleEmergencyBroadcastSubmit,
-      openScheduleChangeModal,
-      closeScheduleChangeModal,
-      handleScheduleChangeSubmit,
-      openNotificationApiConfigModal,
-      closeNotificationApiConfigModal,
-      saveNotificationApiConfig,
-      testWhatsAppApiConnection,
-      testEmailApiConnection,
-      exportNotificationHistoryCSV,
-      printNotificationHistory,
-      resendNotification,
-      broadcastPendingPaymentReminders,
-      toggleItinCategoryFields,
-      getActivityTypeBadge,
-      renderItinerary,
-      openAddItineraryModal,
-      openEditItineraryModal,
-      closeItineraryModal,
-      handleSaveItinerarySubmit,
-      shareItineraryToWhatsApp,
-      renderContacts,
-      openAddContactModal,
-      openEditContactModal,
-      closeContactModal,
-      handleSaveContactSubmit,
-      downloadItineraryPDF,
-      openDeleteDialog,
-      closeDeleteModal,
-      executeConfirmedDelete,
-      copyWhatsAppList,
-      openPaymentReceiptByStudentId,
-      downloadPaymentDetailsPDF,
-      exportPaymentsPDF,
-      exportStudentsCSV,
-      openManualAddModal,
-      openAdminEditModal,
-      fillFullFeeInAdminModal,
-      updateAdminModalBalanceText,
-      closeAdminEditModal,
-      handleAdminSaveStudentSubmit,
-      openSettingsModal,
-      closeSettingsModal,
-      renderDraftDeptTags,
-      addDepartmentOption,
-      removeDraftDept,
-      renderDraftExpenseCategoryTags,
-      addExpenseCategoryOption,
-      removeDraftExpenseCategory,
-      saveTripSettings,
-      getBaseAppUrl,
-      getTripShareUrl,
-      updateActiveTripUI,
-      setTripManagerStatusFilter,
-      setBossTripStatusFilter,
-      formatTripDates,
-      getTripStatusBadge,
-      renderTripsListInModal,
-      openTripManagerModal,
-      closeTripManagerModal,
-      syncNewTripDates,
-      toggleAllNewTripDepts,
-      toggleAllEditTripDepts,
-      openCreateTripModal,
-      closeCreateTripModal,
-      autoGenerateTripSlug,
-      handleCreateTripSubmit,
-      switchTrip,
-      switchActiveTrip,
-      copyShareTripId,
-      openShareTripModal,
-      closeShareTripModal,
-      copyShareLink,
-      copyFallback,
-      shareTripOnWhatsApp,
-      handleInitialUrlRouting,
-      openEditTripModal,
-      closeEditTripModal,
-      handleEditTripSubmit,
-      archiveTrip,
-      unarchiveTrip,
-      archiveTripFromEditModal,
-      archiveCurrentTargetTrip,
-      downloadTripBackupJson,
-      promptDeleteTrip,
-      closeDeleteTripKeyModal,
-      executeDeleteTripWithKey,
-      openTripStudentsModal,
-      closeTripStudentsModal,
-      setTripStudentsFilter,
-      renderTripStudentsList,
-      exportTripStudentsRosterExcel,
-      switchBossDashboardTab,
-      setBossAdminStatusFilter,
-      updateBossGlobalKPIs,
-      renderBossAdminsList,
-      renderBossTripsHub,
-      openTripAdminAssignmentModal,
-      closeTripAdminAssignmentModal,
-      saveTripAdminAssignments,
-      renderBossGlobalPayments,
-      exportBossMasterPaymentsPDF,
-      openBossAssignTripsModal,
-      closeBossAssignTripsModal,
-      saveBossTripAssignments,
-      toggleAdminSuspension,
-      deleteAdminAccount,
-      openBossCreateAdminModal,
-      closeBossCreateAdminModal,
-      handleBossCreateAdminSubmit,
-      openAdminRegisterModal,
-      closeAdminRegisterModal,
-      handleAdminRegisterSubmit,
-      setForgotPasswordMode,
-      openAdminForgotPasswordModal,
-      closeAdminForgotPasswordModal,
-      handleAdminForgotPasswordSubmit,
-      openBossCredentialsModal,
-      closeBossCredentialsModal,
-      handleSaveBossCredentialsSubmit,
-      openBossEditAdminModal,
-      closeBossEditAdminModal,
-      handleBossEditAdminSubmit,
-      hashPNR,
-      maskPNR,
-      isStaffOrManagerSession,
-      getSecureUserPNRDisplay,
-      isValidPNR,
-      parsePassengerStatus,
-      parseJourneyDate,
-      formatDisplayDate,
-      toIsoDateString,
-      formatDisplayTime,
-      computeReturnTripDate,
-      computeArrivalDate,
-      checkTrainJourneyStatus,
-      getMockPNRDetails,
-      normalizeStationName,
-      fetchPNRDetails,
-      toggleMockPNRModeUI,
-      fillSamplePNR,
-      handleFetchPNRSubmit,
-      renderPNRFetchedSummaryAndSlots,
-      updatePnrFetchedField,
-      syncPnrWithTripDate,
-      setReturnTrainPreset,
-      handleSelectPassengerStudent,
-      clearPassengerSlotAssignment,
-      clearAllPassengerSlotAssignments,
-      autoAssignUnallocatedStudents,
-      editSavedPNR,
-      handleSavePNRAllocationSubmit,
-      setRailwayViewMode,
-      setRailwayStatusFilter,
-      setRailwayCoachFilter,
-      updateCoachFilterDropdown,
-      updateUnassignedCountBadge,
-      toggleUnassignedAuditDrawer,
-      setUnassignedAuditFilter,
-      renderUnassignedAuditDrawer,
-      focusPnrAssignmentForStudent,
-      handleAdminPnrStudentSearch,
-      clearAdminPnrStudentSearch,
-      setPnrRosterJourneyFilter,
-      openManualPnrModal,
-      closeManualPnrModal,
-      addManualPassengerSlot,
-      removeManualPassengerSlot,
-      presetManualSlots,
-      renderManualSlots,
-      handleSaveManualPnrSubmit,
-      getWaitingListPassengersList,
-      openWaitingListReportModal,
-      closeWaitingListReportModal,
-      sendWaitingListStatusWhatsApp,
-      exportWaitingListCSV,
-      exportWaitingListPDF,
-      printWaitingListReport,
-      openCoachManifestModal,
-      closeCoachManifestModal,
-      renderCoachManifestModal,
-      setManifestSelectedCoach,
-      renderRailwayViews,
-      renderRailwayManagerUI,
-      renderSavedPNRRecords,
-      renderCoachGroupingView,
-      selectVisualCoach,
-      renderVisualCoachMapView,
-      openAdminBerthInspector,
-      closeAdminBerthInspector,
-      triggerPnrTicketPdfUpload,
-      handlePnrTicketPdfFileSelected,
-      previewTicketPdf,
-      closeTicketPdfViewerModal,
-      downloadTicketPdf,
-      exportRailwayCoachListExcel,
-      exportRailwayCoachManifestPDF,
-      handleRefreshPNRStatus,
-      handleDeletePNRRecord,
-      renderSingleTrainTicketItem,
-      computeCoachBayNumber,
-      computeBerthType,
-      openUserTrainSeatingModal,
-      closeUserTrainSeatingModal,
-      setUserTrainSeatingTab,
-      selectUserTrainCoach,
-      handleUserTrainSeatingSearch,
-      renderUserTrainSeatingModalContent,
-      stop3DContinuousMove,
-      cleanup3DVirtualCoach,
-      create3DTextSprite,
-      focus3DUserSeat,
-      set3DAisleWalkView,
-      set3DOverheadView,
-      jump3DToBay,
-      execute3DMoveAction,
-      start3DContinuousMove,
-      toggle3DControlPadCompact,
-      dock3DControlPad,
-      init3DControlPadDrag,
-      render3DVirtualTrainCoach,
-      renderTrainCoachVisualMap,
-      renderBerthTile,
-      renderTrainCompanionsList,
-      openSeatDetailsPopup,
-      closeSeatInspectorPopup,
-      renderUserTrainTicketCard,
-      copyPNRToClipboard,
-      shareUserTrainTicketWhatsApp,
-      getMockStationResults,
-      searchRailwayStation,
-      handleSearchStationSubmit,
-      renderStationSearchResults,
-      fillStationSearch,
-      copyStationCode,
-      applyStationAsTripDestination,
-      openRapidApiConfigModal,
-      closeRapidApiConfigModal,
-      saveRapidApiConfig,
-      testRapidApiConnection,
-      computeHaltDateString,
-      fetchTrainScheduleFromApi,
-      getTrainScheduleAndLiveStatus,
-      openUserPNRSearchModal,
-      closeUserPNRSearchModal,
-      fillUserPNRSearch,
-      handleUserPNRSearchSubmit,
-      renderUserPNRSearchResult,
-      openLiveTrainTrackerModal,
-      handleTrackCustomTrainSubmit,
-      closeLiveTrainTrackerModal,
-      refreshLiveTrainStatus,
-      filterLiveTrackerHalts,
-      renderLiveTrainTimeline,
-      toggleAppFullscreen,
-      updateFullscreenState,
-      getPWAClientPlatform,
-      isPWAStandaloneMode,
-      updatePWAInstallUIState,
-      triggerPWAInstall,
-      executeNativePWAInstall,
-      openPWAInstallGuideModal,
-      closePWAInstallGuideModal,
-      checkFirstTimePWAInstallPrompt,
-      dismissFirstTimePWAPrompt,
-      initPWAServiceWorker,
-      toggleTripAiModal,
-      openTripAiModal,
-      closeTripAiModal,
-      switchAiModalMode,
-      initAiChatWelcome,
-      renderAiChatMessages,
-      formatAiMessageText,
-      sendQuickAiQuery,
-      openAiApiConfigModal,
-      closeAiApiConfigModal,
-      handleAiProviderChange,
-      toggleAiApiKeyVisibility,
-      saveAiApiConfig,
-      testAiApiConnection,
-      updateAiModelBadge,
-      buildTripAiSystemPrompt,
-      callChatbotApi,
-      handleAiChatSubmit,
-      generateAiResponse,
-      handleStudentFeedbackSubmit,
-      updateBossFeedbackBadge,
-      setBossFeedbackFilter,
-      renderBossFeedbackList,
-      updateBossFeedbackStatus,
-      deleteBossFeedback,
-      setAnalyticsScope,
-      refreshExecutiveAnalytics,
-      jumpToStudentsWithFilter,
-      filterAnalyticsDeptTable,
-      setActivityStreamFilter,
-      handleActivitySearch,
-      formatRelativeTime,
-      renderExecutiveAnalytics,
-      renderAnalyticsDonutChart,
-      renderAnalyticsBudgetAndPaymentMethods,
-      renderAnalyticsDailyTimeline,
-      renderAnalyticsDepartmentStats,
-      jumpToStudentsWithDept,
-      renderAnalyticsTripsComparison,
-      renderAnalyticsActivityFeed,
-      exportExecutiveAnalyticsCSV,
-      exportActivityLogCSV,
-      setReportsScope,
-      filterReportsCatalog,
-      filterReportsByCategory,
-      renderReportsHub,
-      buildMasterReportData,
-      renderReportDocumentHtml,
-      generateAndPreviewReport,
-      closeReportPreviewModal,
-      triggerReportModalPrint,
-      generateAndDownloadReportPDF,
-      downloadCurrentReportPDF,
-      generateAndDownloadReportExcel,
-      downloadCurrentReportExcel,
-      generateAndDownloadReportCSV,
-      downloadCurrentReportCSV,
-      exportBulkSummaryZip,
-      hasPermission,
-      recordLoginHistory,
-      createSpecializedAccount,
-      toggleAccountStatus,
-      executePasswordReset,
-      exportFullDatabaseBackup,
-      restoreDatabaseFromJson,
-      broadcastTrainDelayAlert,
-      openGoogleMapsForLocation,
-      toggleConsentLocationSharing,
-      updateBudgetGaugeUI,
-      promptEditTripBudget,
-      renderVendorsHub,
-      openAddVendorModal,
-      deleteVendorRecord,
-      openEmergencySosModal,
-      closeEmergencySosModal,
-      triggerEmergencySosAlert,
-      renderLostFoundHub,
-      openReportLostItemModal,
-      claimLostFoundItem,
-      deleteLostFoundItem,
-      runAutomatedPaymentReconciliation,
-      enqueueOfflineAttendanceScan,
-      updateOfflineQueueBanner,
-      syncOfflineAttendanceQueue,
-      renderBossOperationsHub,
-      broadcastGlobalAlertPrompt,
-      renderBossFinancesHub,
-      saveBossGlobalGatewayConfig,
-      renderBossSecurityHub,
-      renderBossLoginHistoryTable,
-      executeBossDirectPasswordReset,
-      restoreSessionsFromStorage,
-      initApp
-    });
-
   </script>
 </body>
 
