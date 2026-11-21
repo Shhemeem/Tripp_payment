@@ -10266,9 +10266,11 @@
               advanceAmount: Number(meta.advanceAmount) || tripConfig.advanceAmount,
               upiId: meta.upiId || tripConfig.upiId,
               receiverName: meta.receiverName || tripConfig.receiverName,
-              customLogoUrl: meta.customLogoUrl || tripConfig.customLogoUrl
+              customLogoUrl: meta.customLogoUrl || tripConfig.customLogoUrl,
+              maxStudentsLimit: meta.maxStudentsLimit !== undefined ? Number(meta.maxStudentsLimit) : (Number(tripConfig.maxStudentsLimit) || 0)
             };
             applyTripConfigToUI();
+            syncPaymentCapacityUI();
             if (isAdminLoggedIn) renderDashboard();
             if (loggedInParticipant) updateParticipantDashboardUI();
           }
@@ -10326,6 +10328,8 @@
       setCloudBadgeState('connected', 'Live Cloud');
       updateNavBadge();
       updateActiveTripUI();
+      applyTripConfigToUI();
+      syncPaymentCapacityUI();
       renderTripsListInModal();
       renderItinerary();
       renderContacts();
@@ -10449,7 +10453,13 @@
           }
         }
 
+        const curActiveMeta = allTrips.find(t => t.id === currentTripId);
+        if (curActiveMeta && curActiveMeta.maxStudentsLimit !== undefined) {
+          tripConfig.maxStudentsLimit = Number(curActiveMeta.maxStudentsLimit) || 0;
+        }
         updateActiveTripUI();
+        applyTripConfigToUI();
+        syncPaymentCapacityUI();
         renderTripsListInModal();
         if (typeof updateBossGlobalKPIs === 'function') updateBossGlobalKPIs();
         if (typeof renderBossTripsHub === 'function') renderBossTripsHub();
@@ -10818,97 +10828,8 @@
           }
         }
 
-        // Capacity Gauge
-        const currentCount = payments.length;
-        const maxLimit = Number(tripConfig.maxStudentsLimit) || 0;
-        const capNumbers = document.getElementById('userTripCapacityNumbers');
-        const capProgress = document.getElementById('userTripCapacityProgressBar');
-        const capStatus = document.getElementById('userTripCapacityStatusText');
-        if (capNumbers && capProgress && capStatus) {
-          if (maxLimit > 0) {
-            capNumbers.textContent = `${currentCount} / ${maxLimit}`;
-            const pct = Math.min(100, Math.round((currentCount / maxLimit) * 100));
-            capProgress.style.width = pct + '%';
-            if (currentCount >= maxLimit) {
-              capProgress.className = 'h-full bg-rose-600 rounded-full transition-all';
-              capStatus.textContent = 'Trip Full / Capacity Reached';
-              capStatus.className = 'text-[10px] text-rose-600 font-bold';
-            } else if (pct >= 80) {
-              capProgress.className = 'h-full bg-amber-500 rounded-full transition-all';
-              capStatus.textContent = `Only ${maxLimit - currentCount} seats remaining!`;
-              capStatus.className = 'text-[10px] text-amber-700 font-bold';
-            } else {
-              capProgress.className = 'h-full bg-indigo-600 rounded-full transition-all';
-              capStatus.textContent = `${maxLimit - currentCount} seats available (${pct}% filled)`;
-              capStatus.className = 'text-[10px] text-slate-400 font-medium';
-            }
-          } else {
-            capNumbers.textContent = `${currentCount} Registered`;
-            capProgress.style.width = '100%';
-            capProgress.className = 'h-full bg-emerald-500 rounded-full';
-            capStatus.textContent = 'Open enrollment (No limit)';
-            capStatus.className = 'text-[10px] text-emerald-600 font-medium';
-          }
-        }
-
-        // Deadline Box
-        const dlBox = document.getElementById('userTripDeadlineBox');
-        const dlTime = document.getElementById('userTripDeadlineTime');
-        const dlCountdown = document.getElementById('userTripDeadlineCountdown');
-        let isDeadlinePassed = false;
-        if (dlBox && dlTime && dlCountdown) {
-          if (tripConfig.registrationDeadline) {
-            const dlMs = new Date(tripConfig.registrationDeadline).getTime();
-            if (!isNaN(dlMs)) {
-              dlBox.classList.remove('hidden');
-              dlTime.textContent = new Date(dlMs).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-              const diffMs = dlMs - Date.now();
-              if (diffMs > 0) {
-                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-                const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                dlCountdown.textContent = diffDays > 0 ? `${diffDays}d ${diffHours}h remaining to register` : `${diffHours} hours remaining!`;
-                dlCountdown.className = 'text-[10px] text-amber-700 font-bold mt-0.5';
-              } else {
-                isDeadlinePassed = true;
-                dlCountdown.textContent = 'Deadline Expired';
-                dlCountdown.className = 'text-[10px] text-rose-600 font-extrabold mt-0.5';
-              }
-            } else {
-              dlBox.classList.add('hidden');
-            }
-          } else {
-            dlBox.classList.add('hidden');
-          }
-        }
-
-        // Check if registration closed
-        const isClosedStatus = ['Completed', 'Cancelled', 'Archived'].includes(st);
-        const isFull = maxLimit > 0 && currentCount >= maxLimit;
-        const closedBanner = document.getElementById('tripRegistrationClosedBanner');
-        const closedReason = document.getElementById('tripRegistrationClosedReason');
-        const submitBtn = document.getElementById('btnSubmitNewPay');
-
-        if (isClosedStatus || isDeadlinePassed || isFull) {
-          if (closedBanner) closedBanner.classList.remove('hidden');
-          let reason = 'Registrations are closed for this trip.';
-          if (isClosedStatus) reason = `Registrations are closed because this trip is marked as ${st}.`;
-          else if (isDeadlinePassed) reason = `Registrations are closed: The registration deadline has passed.`;
-          else if (isFull) reason = `Registrations are closed: All ${maxLimit} seats are fully booked!`;
-
-          if (closedReason) closedReason.textContent = reason;
-          if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            submitBtn.title = reason;
-          }
-        } else {
-          if (closedBanner) closedBanner.classList.add('hidden');
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            submitBtn.title = '';
-          }
-        }
+        // Capacity Gauge & Registration Status
+        syncPaymentCapacityUI();
       }
 
       applyLogoAcrossApp();
@@ -10916,6 +10837,121 @@
       renderExpenseCategoryDropdown();
       updateUserTabsVisibility();
       updateDynamicUpiLinks();
+    }
+
+    function syncPaymentCapacityUI() {
+      const activeTrip = (Array.isArray(allTrips) && allTrips.find(t => t.id === currentTripId)) || {};
+      let maxLimit = 0;
+      if (tripConfig.maxStudentsLimit !== undefined && tripConfig.maxStudentsLimit !== null && tripConfig.maxStudentsLimit !== '') {
+        maxLimit = Number(tripConfig.maxStudentsLimit) || 0;
+      } else if (activeTrip.maxStudentsLimit !== undefined && activeTrip.maxStudentsLimit !== null && activeTrip.maxStudentsLimit !== '') {
+        maxLimit = Number(activeTrip.maxStudentsLimit) || 0;
+      }
+
+      // Enrolled count for active trip
+      const tripPayments = (Array.isArray(payments) && payments.length > 0)
+        ? payments
+        : (Array.isArray(rawPaymentsList) ? rawPaymentsList.filter(p => (p.tripId || 'default') === currentTripId) : []);
+      const currentCount = tripPayments.length;
+
+      const capNumbers = document.getElementById('userTripCapacityNumbers');
+      const capProgress = document.getElementById('userTripCapacityProgressBar');
+      const capStatus = document.getElementById('userTripCapacityStatusText');
+      const st = tripConfig.status || activeTrip.status || 'Active';
+
+      // Registration Deadline check
+      const dlBox = document.getElementById('userTripDeadlineBox');
+      const dlTime = document.getElementById('userTripDeadlineTime');
+      const dlCountdown = document.getElementById('userTripDeadlineCountdown');
+      let isDeadlinePassed = false;
+      const dlVal = tripConfig.registrationDeadline || activeTrip.registrationDeadline;
+      if (dlBox && dlTime && dlCountdown) {
+        if (dlVal) {
+          const dlMs = new Date(dlVal).getTime();
+          if (!isNaN(dlMs)) {
+            dlBox.classList.remove('hidden');
+            dlTime.textContent = new Date(dlMs).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            const diffMs = dlMs - Date.now();
+            if (diffMs > 0) {
+              const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+              const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+              dlCountdown.textContent = diffDays > 0 ? `${diffDays}d ${diffHours}h remaining to register` : `${diffHours} hours remaining!`;
+              dlCountdown.className = 'text-[10px] text-amber-700 font-bold mt-0.5';
+            } else {
+              isDeadlinePassed = true;
+              dlCountdown.textContent = 'Deadline Expired';
+              dlCountdown.className = 'text-[10px] text-rose-600 font-extrabold mt-0.5';
+            }
+          } else {
+            dlBox.classList.add('hidden');
+          }
+        } else {
+          dlBox.classList.add('hidden');
+        }
+      }
+
+      // Sync Seat Capacity Gauge
+      if (capNumbers && capProgress && capStatus) {
+        if (maxLimit > 0) {
+          capNumbers.textContent = `${currentCount} / ${maxLimit}`;
+          const pct = Math.min(100, Math.round((currentCount / maxLimit) * 100));
+          capProgress.style.width = pct + '%';
+          if (currentCount >= maxLimit) {
+            capProgress.className = 'h-full bg-rose-600 rounded-full transition-all';
+            capStatus.innerHTML = `<span class="text-rose-600 font-extrabold flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> Trip Full (${maxLimit}/${maxLimit} Seats Booked)</span>`;
+          } else if (pct >= 80) {
+            capProgress.className = 'h-full bg-amber-500 rounded-full transition-all';
+            capStatus.innerHTML = `<span class="text-amber-700 font-bold flex items-center gap-1"><i data-lucide="flame" class="w-3 h-3 text-amber-500"></i> Only ${maxLimit - currentCount} seats remaining (${pct}% booked)</span>`;
+          } else {
+            capProgress.className = 'h-full bg-indigo-600 rounded-full transition-all';
+            capStatus.innerHTML = `<span class="text-slate-500 font-medium">${maxLimit - currentCount} of ${maxLimit} seats available (${pct}% booked)</span>`;
+          }
+        } else {
+          capNumbers.textContent = `${currentCount} Enrolled`;
+          capProgress.style.width = '100%';
+          capProgress.className = 'h-full bg-emerald-500 rounded-full';
+          capStatus.innerHTML = `<span class="text-emerald-600 font-medium flex items-center gap-1"><i data-lucide="check" class="w-3 h-3"></i> Open enrollment (No seat limit)</span>`;
+        }
+      }
+
+      // Check if registration closed or seat capacity reached
+      const isClosedStatus = ['Completed', 'Cancelled', 'Archived'].includes(st);
+      const isFull = maxLimit > 0 && currentCount >= maxLimit;
+      const closedBanner = document.getElementById('tripRegistrationClosedBanner');
+      const closedReason = document.getElementById('tripRegistrationClosedReason');
+      const submitBtn = document.getElementById('btnSubmitNewPay');
+
+      if (isClosedStatus || isDeadlinePassed || isFull) {
+        if (closedBanner) closedBanner.classList.remove('hidden');
+        let reason = 'Registrations are closed for this trip.';
+        if (isClosedStatus) reason = `Registrations are closed because this trip is marked as ${st}.`;
+        else if (isDeadlinePassed) reason = `Registrations are closed: The registration deadline has passed.`;
+        else if (isFull) reason = `Registrations are closed: All ${maxLimit} seats are fully booked!`;
+
+        if (closedReason) closedReason.textContent = reason;
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+          submitBtn.title = reason;
+        }
+      } else {
+        if (closedBanner) closedBanner.classList.add('hidden');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          submitBtn.title = '';
+        }
+      }
+
+      // Keep settings modal input in sync if open and not being typed in
+      const setCapEl = document.getElementById('setSeatCapacity');
+      if (setCapEl && document.activeElement !== setCapEl) {
+        setCapEl.value = maxLimit > 0 ? maxLimit : '';
+      }
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
     }
 
     function updateUserTabsVisibility() {
@@ -18635,6 +18671,8 @@ Thank you!`;
     async function saveTripSettings(e) {
       e.preventDefault();
       const customLogoInput = (document.getElementById('setCustomLogoUrl')?.value || '').trim();
+      const setCapVal = (document.getElementById('setSeatCapacity')?.value || '').trim();
+      const maxStudentsLimit = (setCapVal && !isNaN(Number(setCapVal)) && Number(setCapVal) > 0) ? Number(setCapVal) : 0;
       const updated = {
         customLogoUrl: customLogoInput || DEFAULT_LOGO_URL,
         tripTitle: document.getElementById('setTripTitle').value.trim(),
@@ -18642,6 +18680,7 @@ Thank you!`;
         tripDate: document.getElementById('setTripDate').value,
         tripAmount: Number(document.getElementById('setTripAmount').value) || 1500,
         advanceAmount: Number(document.getElementById('setAdvanceAmount').value) || 500,
+        maxStudentsLimit,
         upiId: document.getElementById('setUpiId').value.trim(),
         receiverName: document.getElementById('setReceiverName').value.trim(),
         adminEmail: document.getElementById('setAdminEmail').value.trim() || 'admin@trippay.com',
@@ -18657,7 +18696,7 @@ Thank you!`;
         const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_settings', configDocId);
         await setDoc(ref, updated, { merge: true });
 
-        // Also update master trip record so switcher immediately reflects new title & pricing
+        // Also update master trip record so switcher immediately reflects new title, pricing & capacity
         try {
           const tripMasterRef = doc(db, 'artifacts', appId, 'public', 'data', 'trips_master', currentTripId);
           await setDoc(tripMasterRef, {
@@ -18667,6 +18706,7 @@ Thank you!`;
             tripDate: updated.tripDate,
             tripAmount: updated.tripAmount,
             advanceAmount: updated.advanceAmount,
+            maxStudentsLimit,
             upiId: updated.upiId,
             receiverName: updated.receiverName,
             customLogoUrl: updated.customLogoUrl,
@@ -18676,7 +18716,7 @@ Thank you!`;
           console.warn('Could not update trips_master doc:', eMaster);
         }
 
-        tripConfig = updated;
+        tripConfig = { ...tripConfig, ...updated };
         // Keep in-memory allTrips entry in sync
         const curIdx = allTrips.findIndex(t => t.id === currentTripId);
         if (curIdx !== -1) {
@@ -18684,6 +18724,7 @@ Thank you!`;
         }
         applyTripConfigToUI();
         updateActiveTripUI();
+        syncPaymentCapacityUI();
         if (typeof renderBossTripsHub === 'function') renderBossTripsHub();
         if (typeof updateBossGlobalKPIs === 'function') updateBossGlobalKPIs();
         closeSettingsModal();
@@ -18749,6 +18790,8 @@ Thank you!`;
       if (totalCountBadge) {
         totalCountBadge.textContent = `${allTrips.length} ${allTrips.length === 1 ? 'Trip' : 'Trips'} Active`;
       }
+
+      syncPaymentCapacityUI();
 
       if (window.lucide && typeof lucide.createIcons === 'function') {
         lucide.createIcons();
@@ -20844,7 +20887,9 @@ Thank you!`;
           tripConfig.maxStudentsLimit = newLimit;
           const setCapEl = document.getElementById('setSeatCapacity');
           if (setCapEl) setCapEl.value = newLimit > 0 ? newLimit : '';
+          applyTripConfigToUI();
           updateActiveTripUI();
+          syncPaymentCapacityUI();
           if (isAdminLoggedIn) renderDashboard();
         }
 
@@ -20885,6 +20930,7 @@ Thank you!`;
             tripConfig = { ...tripConfig, ...freshData };
             applyTripConfigToUI();
             updateActiveTripUI();
+            syncPaymentCapacityUI();
           }
         }
         renderBossTripsHub();
@@ -34068,6 +34114,7 @@ Found ${duplicates.length} duplicate UTR numbers across multiple students:
       getBaseAppUrl,
       getTripShareUrl,
       updateActiveTripUI,
+      syncPaymentCapacityUI,
       setTripManagerStatusFilter,
       setBossTripStatusFilter,
       formatTripDates,
