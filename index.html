@@ -658,47 +658,6 @@
       <!-- This container is kept as a hidden placeholder so the tab section renders correctly -->
       <div id="receiptCardContainer" class="hidden"></div>
 
-      <!-- QUICK ACCESS: HOTEL STAYS & LOST & FOUND CARDS -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
-        <div onclick="openUserHotelsModal()"
-          class="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-teal-500/10 via-teal-50 to-white border border-teal-200/80 shadow-2xs hover:shadow-sm transition cursor-pointer flex items-center justify-between group">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-              <i data-lucide="building-2" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <h4 class="font-display font-extrabold text-sm text-slate-900 group-hover:text-teal-700 transition">
-                Hotel Stays &amp; Facilities
-              </h4>
-              <p class="text-[11px] text-slate-500">View resort photos, AC rooms, pool &amp; amenities</p>
-            </div>
-          </div>
-          <span class="text-xs font-bold text-teal-700 flex items-center gap-0.5 shrink-0">
-            <span>View</span>
-            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-          </span>
-        </div>
-
-        <div onclick="openUserLostFoundModal()"
-          class="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-50 to-white border border-amber-200/80 shadow-2xs hover:shadow-sm transition cursor-pointer flex items-center justify-between group">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-              <i data-lucide="help-circle" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <h4 class="font-display font-extrabold text-sm text-slate-900 group-hover:text-amber-700 transition">
-                Lost &amp; Found Portal
-              </h4>
-              <p class="text-[11px] text-slate-500">Report lost items or check items found by peers</p>
-            </div>
-          </div>
-          <span class="text-xs font-bold text-amber-700 flex items-center gap-0.5 shrink-0">
-            <span>Open</span>
-            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-          </span>
-        </div>
-      </div>
-
       <!-- Payment & Form Split Layout -->
       <!-- PUBLIC USER NOTICE: Trip Link Required when no ?trip= parameter is in URL -->
       <div id="publicNoTripNotice"
@@ -1235,16 +1194,8 @@
             <button type="button" onclick="openUserPNRSearchModal()"
               class="font-extrabold text-blue-700 hover:text-blue-800 underline">Search PNR &amp; Seat Status</button>
           </p>
-          <p class="text-[11.5px] text-slate-600">
-            Check hotel &amp; accommodation details?
-            <button type="button" onclick="openUserHotelsModal()"
-              class="font-extrabold text-teal-700 hover:text-teal-800 underline">View Hotels &amp; Facilities</button>
-          </p>
-          <p class="text-[11.5px] text-slate-600">
-            Lost or found an item on tour?
-            <button type="button" onclick="openUserLostFoundModal()"
-              class="font-extrabold text-amber-700 hover:text-amber-800 underline">Lost &amp; Found Portal</button>
-          </p>
+          
+          
           <p class="text-[11px] text-slate-500">
             Haven't registered or paid yet?
             <button type="button" onclick="switchTab('pay')" class="font-bold text-emerald-600 hover:underline">Pay /
@@ -1394,6 +1345,66 @@
         </div>
 
         <!-- Train Boarding Pass & Railway Seat Allocation -->
+        
+        <!-- PARTICIPANT PROFILE: HOTEL STAYS & LOST/FOUND CARDS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div onclick="openUserHotelsModal()"
+            class="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-teal-500/10 via-teal-50/40 to-white border border-teal-200/90 shadow-2xs hover:shadow-md transition cursor-pointer flex flex-col justify-between group">
+            <div>
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition">
+                  <i data-lucide="building-2" class="w-6 h-6"></i>
+                </div>
+                <div>
+                  <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-teal-100 text-teal-800 border border-teal-200 mb-1">
+                    Stay &amp; Accommodations
+                  </span>
+                  <h4 class="font-display font-extrabold text-base text-slate-900 group-hover:text-teal-700 transition">
+                    Hotel Stays &amp; Facilities
+                  </h4>
+                </div>
+              </div>
+              <p class="text-xs text-slate-500 mt-3 leading-relaxed">
+                Check your tour resort, AC rooms, check-in schedules, swimming pool, WiFi, and verified stay amenities.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-teal-100 flex items-center justify-between">
+              <span class="text-xs font-bold text-teal-700 group-hover:underline">View Hotel Stays &amp; Photos</span>
+              <span class="w-7 h-7 rounded-xl bg-teal-100 group-hover:bg-teal-600 text-teal-700 group-hover:text-white flex items-center justify-center transition">
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </span>
+            </div>
+          </div>
+
+          <div onclick="openUserLostFoundModal()"
+            class="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-amber-500/10 via-amber-50/40 to-white border border-amber-200/90 shadow-2xs hover:shadow-md transition cursor-pointer flex flex-col justify-between group">
+            <div>
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-amber-600 text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition">
+                  <i data-lucide="help-circle" class="w-6 h-6"></i>
+                </div>
+                <div>
+                  <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200 mb-1">
+                    Campus &amp; Tour Safety
+                  </span>
+                  <h4 class="font-display font-extrabold text-base text-slate-900 group-hover:text-amber-700 transition">
+                    Lost &amp; Found Portal
+                  </h4>
+                </div>
+              </div>
+              <p class="text-xs text-slate-500 mt-3 leading-relaxed">
+                Report lost items during transit or check items found by peers and trip coordinators with direct contact.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-amber-100 flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-700 group-hover:underline">Open Lost &amp; Found Center</span>
+              <span class="w-7 h-7 rounded-xl bg-amber-100 group-hover:bg-amber-600 text-amber-700 group-hover:text-white flex items-center justify-center transition">
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+
         <div id="userTrainTicketCardContainer"></div>
       </div>
     </section>
