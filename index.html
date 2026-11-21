@@ -1231,6 +1231,12 @@
                 <i data-lucide="receipt" class="w-4 h-4 text-slate-950"></i>
                 <span>Payment Receipt</span>
               </button>
+              <button type="button" onclick="openVisualSeatArrangement()"
+                class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md shadow-purple-950/40 transition active:scale-95 cursor-pointer"
+                title="View interactive 3D virtual train &amp; 2D coach visual seat layout">
+                <i data-lucide="layout-grid" class="w-4 h-4 text-amber-300"></i>
+                <span>Visual Seat Arrangement</span>
+              </button>
               <button type="button" onclick="openBoardingPassModalForLoggedParticipant()"
                 class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition">
                 <i data-lucide="printer" class="w-4 h-4"></i>
@@ -3213,6 +3219,12 @@
                   Live API Priority
                 </button>
               </div>
+              <button type="button" onclick="openUserTrainSeatingModal('', '', '', 'onward')"
+                class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs flex items-center gap-1.5 shadow-md shadow-purple-200 transition active:scale-95 cursor-pointer"
+                title="Open Visual Coach Map &amp; 3D Train Seating Arrangement">
+                <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-amber-300"></i>
+                <span>Visual Seat Arrangement</span>
+              </button>
               <button type="button" onclick="openRapidApiConfigModal()"
                 class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-extrabold text-xs flex items-center gap-1.5 shadow-2xs transition"
                 title="Configure RapidAPI Key / Host">
@@ -4293,6 +4305,13 @@
         <span class="hidden sm:inline">View Receipt</span>
         <span class="sm:hidden">Receipt</span>
       </button>
+      <button type="button" onclick="openVisualSeatArrangementFromBoardingPass()"
+        class="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs flex items-center gap-1.5 transition shadow-sm shrink-0"
+        title="View 3D Virtual Train &amp; 2D Coach Visual Seat Layout">
+        <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-amber-300"></i>
+        <span class="hidden sm:inline">Visual Seats</span>
+        <span class="sm:hidden">Seats</span>
+      </button>
       <div id="bpAdminPassControlBar" class="hidden flex items-center gap-2">
         <button type="button" id="btnTogglePassActivationInModal" onclick="togglePassActivationFromModal()"
           class="px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 border border-rose-500/40">
@@ -5354,37 +5373,39 @@
       </div>
     </div>
 
-    <!-- Subheader: Coach Tabs, View Switcher & Search -->
+    <!-- Subheader: Coach Tabs, View Switcher & Search (Fully Responsive) -->
     <div
-      class="px-4 sm:px-6 py-3 bg-slate-900/90 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-3 shrink-0">
-      <!-- Coach Tabs -->
-      <div id="trainSeatingCoachTabs" class="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+      class="px-3 sm:px-6 py-2.5 sm:py-3 bg-slate-900/95 border-b border-slate-800/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3 shrink-0">
+      <!-- Coach Tabs (Horizontally scrollable on mobile) -->
+      <div id="trainSeatingCoachTabs" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar max-w-full pb-1 sm:pb-0 shrink-0">
         <!-- Rendered dynamically (e.g. Coach S5, S6) -->
       </div>
 
       <!-- Controls: View Mode Tabs & Search -->
-      <div class="flex items-center gap-2.5 flex-1 sm:flex-initial justify-end">
+      <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap justify-between sm:justify-end">
         <!-- View Mode Switcher -->
-        <div class="inline-flex items-center p-1 rounded-xl bg-slate-800 border border-slate-700/80 text-xs font-bold">
+        <div class="inline-flex items-center p-0.5 sm:p-1 rounded-xl bg-slate-800 border border-slate-700/80 text-xs font-bold shrink-0">
           <button type="button" id="trainSeatingTab_3d" onclick="setUserTrainSeatingTab('3d')"
-            class="px-3 py-1 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-2xs font-extrabold flex items-center gap-1.5 transition">
+            class="px-2.5 sm:px-3 py-1 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-2xs font-extrabold flex items-center gap-1 sm:gap-1.5 transition">
             <i data-lucide="box" class="w-3.5 h-3.5 text-amber-300"></i>
-            <span>3D Virtual Train</span>
+            <span class="hidden xs:inline">3D Virtual</span>
+            <span class="xs:hidden">3D</span>
           </button>
           <button type="button" id="trainSeatingTab_map" onclick="setUserTrainSeatingTab('map')"
-            class="px-3 py-1 rounded-lg text-slate-400 hover:text-white font-bold flex items-center gap-1.5 transition">
+            class="px-2.5 sm:px-3 py-1 rounded-lg text-slate-400 hover:text-white font-bold flex items-center gap-1 sm:gap-1.5 transition">
             <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
-            <span>2D Coach Map</span>
+            <span class="hidden xs:inline">2D Map</span>
+            <span class="xs:hidden">2D</span>
           </button>
           <button type="button" id="trainSeatingTab_list" onclick="setUserTrainSeatingTab('list')"
-            class="px-3 py-1 rounded-lg text-slate-400 hover:text-white font-bold flex items-center gap-1.5 transition">
+            class="px-2.5 sm:px-3 py-1 rounded-lg text-slate-400 hover:text-white font-bold flex items-center gap-1 sm:gap-1.5 transition">
             <i data-lucide="users" class="w-3.5 h-3.5"></i>
             <span>Companions</span>
           </button>
         </div>
 
         <!-- Search Input -->
-        <div class="relative w-44 sm:w-56">
+        <div class="relative flex-1 sm:flex-initial sm:w-48 lg:w-56 min-w-[130px]">
           <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
           <input type="text" id="trainSeatingSearchInput" oninput="handleUserTrainSeatingSearch(this.value)"
             placeholder="Search seat, name..."
@@ -25537,6 +25558,15 @@ Thank you!`;
                 
                 <button
                   type="button"
+                  onclick="openUserTrainSeatingModal('${record.pnrNumber}', '', '', '${record.journeyType || 'onward'}')"
+                  class="px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-bold flex items-center gap-1 shadow-2xs transition"
+                  title="View 3D Virtual Train &amp; 2D Coach Visual Seating Arrangement"
+                >
+                  <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-purple-600"></i>
+                  <span>Visual Seats</span>
+                </button>
+                <button
+                  type="button"
                   onclick="openManualPnrModal('${record.pnrNumber}')"
                   class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-xs font-bold flex items-center gap-1 shadow-2xs transition"
                   title="Edit Train Number, Name, Coaches, Seats & Berths"
@@ -26643,6 +26673,15 @@ Thank you!`;
               </button>
               <button
                 type="button"
+                onclick="openUserTrainSeatingModal('${ta.pnrNumber}', '${ta.coach || ''}', '${ta.seatNumber || ''}', '${isReturn ? 'return' : 'onward'}')"
+                class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md shadow-purple-900/30 transition active:scale-95 cursor-pointer"
+                title="View interactive 3D virtual train &amp; 2D coach visual seat layout"
+              >
+                <i data-lucide="layout-grid" class="w-4 h-4 text-amber-300"></i>
+                <span>Visual Seat Arrangement</span>
+              </button>
+              <button
+                type="button"
                 onclick="shareUserTrainTicketWhatsApp()"
                 class="px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md transition"
               >
@@ -26683,6 +26722,43 @@ Thank you!`;
       if (mod === 3 || mod === 6) return 'UB';
       if (mod === 7) return 'SL';
       return 'SU';
+    }
+
+    function openVisualSeatArrangement(journeyType = 'onward') {
+      let pnr = '';
+      let coach = '';
+      let seat = '';
+
+      if (typeof loggedInParticipant !== 'undefined' && loggedInParticipant) {
+        const alloc = (journeyType === 'return') ? loggedInParticipant.returnTrainAllocation : loggedInParticipant.trainAllocation;
+        if (alloc) {
+          pnr = alloc.pnrNumber || '';
+          coach = alloc.coach || '';
+          seat = alloc.seatNumber || '';
+        }
+      }
+
+      if (!pnr && Array.isArray(pnrRecords) && pnrRecords.length > 0) {
+        const rec = pnrRecords.find(r => (r.journeyType || 'onward') === journeyType) || pnrRecords[0];
+        if (rec) {
+          pnr = rec.pnrNumber;
+        }
+      }
+
+      openUserTrainSeatingModal(pnr, coach, seat, journeyType);
+    }
+
+    function openVisualSeatArrangementFromBoardingPass() {
+      if (typeof currentBoardingPassData !== 'undefined' && currentBoardingPassData) {
+        const ta = currentBoardingPassData.trainAllocation || currentBoardingPassData.returnTrainAllocation;
+        const pnr = ta ? ta.pnrNumber : '';
+        const coach = ta ? ta.coach : '';
+        const seat = ta ? ta.seatNumber : '';
+        const journeyType = currentBoardingPassData.trainAllocation ? 'onward' : 'return';
+        openUserTrainSeatingModal(pnr, coach, seat, journeyType);
+      } else {
+        openVisualSeatArrangement('onward');
+      }
     }
 
     function openUserTrainSeatingModal(pnrNumber, userCoach, userSeatNumber, journeyType = 'onward', initialTab = '3d') {
@@ -33998,6 +34074,8 @@ Found ${duplicates.length} duplicate UTR numbers across multiple students:
       handleRefreshPNRStatus,
       handleDeletePNRRecord,
       renderUserTrainTicketCard,
+      openVisualSeatArrangement,
+      openVisualSeatArrangementFromBoardingPass,
       openUserTrainSeatingModal,
       closeUserTrainSeatingModal,
       setUserTrainSeatingTab,
