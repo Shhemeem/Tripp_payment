@@ -10030,17 +10030,49 @@
 
     // Comprehensive Payment Summary Calculator (Feature 33, 34, 39)
     function getStudentPaymentSummary(p) {
-      const totalFee = Number(tripConfig.tripAmount) || 1500;
+      if (!p) {
+        return {
+          totalFee: 1500,
+          grossPaid: 0,
+          totalRefunded: 0,
+          netPaid: 0,
+          balanceDue: 1500,
+          installments: [],
+          refunds: [],
+          isFullyPaid: false
+        };
+      }
+
+      // Dynamic trip fee resolution based on student's tripId
+      let tripFee = 1500;
+      if (p.tripId) {
+        const tripObj = Array.isArray(allTrips) ? allTrips.find(t => t.id === p.tripId) : null;
+        if (tripObj && tripObj.tripAmount) {
+          tripFee = Number(tripObj.tripAmount) || 1500;
+        } else if (p.tripId === currentTripId && tripConfig.tripAmount) {
+          tripFee = Number(tripConfig.tripAmount) || 1500;
+        }
+      } else if (tripConfig.tripAmount) {
+        tripFee = Number(tripConfig.tripAmount) || 1500;
+      }
+      const totalFee = tripFee;
+
       let installments = [];
       if (Array.isArray(p.paymentInstallments) && p.paymentInstallments.length > 0) {
         installments = [...p.paymentInstallments];
+        // Ensure consistency if p.amountPaid was set directly by admin
+        const validSum = installments.filter(i => i.status !== 'Rejected').reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+        const directAmt = Number(p.amountPaid);
+        if (!isNaN(directAmt) && directAmt >= 0 && directAmt !== validSum && installments.length === 1) {
+          installments[0] = { ...installments[0], amount: directAmt };
+        }
       } else {
         const legacyAmt = Number(p.amountPaid) || 0;
-        if (legacyAmt > 0) {
+        if (legacyAmt > 0 || p.createdAt) {
           installments.push({
             id: 'inst_legacy',
             amount: legacyAmt,
-            type: legacyAmt >= totalFee ? 'Full Fee' : 'Advance',
+            type: legacyAmt >= totalFee ? 'Full Fee' : (legacyAmt > 0 ? 'Advance' : 'Registered'),
             paymentApp: p.paymentApp || 'UPI',
             utr: p.utr || '',
             recordedAt: p.createdAt || Date.now(),
@@ -10052,12 +10084,12 @@
       }
 
       const refunds = Array.isArray(p.refunds) ? [...p.refunds] : [];
-
-      const validInstallments = installments.filter(i => i.status !== 'Rejected');
+      const isRecordRejected = p.status === 'Rejected';
+      const validInstallments = isRecordRejected ? [] : installments.filter(i => i.status !== 'Rejected');
       const grossPaid = validInstallments.reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
       const totalRefunded = refunds.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
       const netPaid = Math.max(0, grossPaid - totalRefunded);
-      const balanceDue = Math.max(0, totalFee - netPaid);
+      const balanceDue = isRecordRejected ? 0 : Math.max(0, totalFee - netPaid);
 
       return {
         totalFee,
@@ -10067,7 +10099,7 @@
         balanceDue,
         installments,
         refunds,
-        isFullyPaid: balanceDue === 0
+        isFullyPaid: !isRecordRejected && balanceDue === 0
       };
     }
 
@@ -11258,9 +11290,10 @@
       if (!student) return;
       currentBoardingPassData = student;
 
-      const totalFee = Number(tripConfig.tripAmount) || 1500;
-      const paid = Number(student.amountPaid) || 0;
-      const due = Math.max(0, totalFee - paid);
+      const sum = getStudentPaymentSummary(student);
+      const totalFee = sum.totalFee || Number(tripConfig.tripAmount) || 1500;
+      const paid = (sum.netPaid !== undefined && sum.netPaid !== null) ? sum.netPaid : (Number(student.amountPaid) || 0);
+      const due = (sum.balanceDue !== undefined && sum.balanceDue !== null) ? sum.balanceDue : Math.max(0, totalFee - paid);
       const isVer = student.status === 'Verified';
       const isDeactivated = student.accessStatus === 'Deactivated' || student.accessStatus === 'Suspended';
       const stTripId = getStudentTripId(student);
@@ -14966,29 +14999,34 @@
     }
 
     function renderKPIs() {
-      const totalCollected = payments.reduce((acc, p) => acc + (Number(p.amountPaid) || 0), 0);
-      const totalDues = payments.reduce((acc, p) => acc + getBalanceDue(p), 0);
+      const activeList = payments.filter(p => p.status !== 'Rejected');
+      const totalCollected = activeList.reduce((acc, p) => {
+        const sum = getStudentPaymentSummary(p);
+        return acc + (sum.netPaid !== undefined ? sum.netPaid : (Number(p.amountPaid) || 0));
+      }, 0);
+
+      const verifiedList = payments.filter(p => p.status === 'Verified');
+      const verifiedAmount = verifiedList.reduce((acc, p) => {
+        const sum = getStudentPaymentSummary(p);
+        return acc + (sum.netPaid !== undefined ? sum.netPaid : (Number(p.amountPaid) || 0));
+      }, 0);
+
+      const totalDues = activeList.reduce((acc, p) => acc + getBalanceDue(p), 0);
       const totalExp = expenses.reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
       const net = totalCollected - totalExp;
 
-      const verifiedAmount = payments
-        .filter(p => p.status === 'Verified')
-        .reduce((acc, p) => acc + (Number(p.amountPaid) || 0), 0);
-
-      const pendingCount = payments.filter(p => getBalanceDue(p) > 0).length;
+      const duesCount = activeList.filter(p => getBalanceDue(p) > 0).length;
+      const fullCount = activeList.filter(p => getBalanceDue(p) === 0).length;
+      const pendingVerifCount = payments.filter(p => p.status === 'Pending Verification').length;
+      const rejectedCount = payments.filter(p => p.status === 'Rejected').length;
 
       document.getElementById('statTotalCollected').textContent = formatINR(totalCollected);
       document.getElementById('statVerifiedAmount').textContent = `Verified: ${formatINR(verifiedAmount)}`;
       document.getElementById('statTotalBalanceDue').textContent = formatINR(totalDues);
-      document.getElementById('statAdvanceCountText').textContent = `${pendingCount} balance dues`;
+      document.getElementById('statAdvanceCountText').textContent = `${duesCount} balance ${duesCount === 1 ? 'due' : 'dues'}`;
       document.getElementById('statTotalExpenses').textContent = formatINR(totalExp);
       document.getElementById('statExpensesCount').textContent = `${expenses.length} expenses logged`;
       document.getElementById('statNetTripBalance').textContent = formatINR(net);
-
-      const pendingVerifCount = payments.filter(p => p.status === 'Pending Verification').length;
-      const duesCount = payments.filter(p => getBalanceDue(p) > 0).length;
-      const fullCount = payments.filter(p => getBalanceDue(p) === 0).length;
-      const rejectedCount = payments.filter(p => p.status === 'Rejected').length;
 
       document.getElementById('pillCountAll').textContent = payments.length;
       document.getElementById('pillCountPending').textContent = pendingVerifCount;
@@ -15366,6 +15404,7 @@
         const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', id);
         await updateDoc(ref, updatePayload);
         logSecurityEvent(isNextVerified ? 'VERIFY_STUDENT' : 'UNVERIFY_STUDENT', p.phone, `Status updated to ${nextStatus}`);
+        refreshAllApplicationViewsAfterPaymentChange(id, updatePayload);
         showToast(
           isNextVerified ? `Verified payment for ${p.studentName}.` : `Marked ${p.studentName} as Pending.`,
           'success',
@@ -15418,6 +15457,7 @@
         const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', id);
         await updateDoc(ref, updatePayload);
         logSecurityEvent('APPROVE_PAYMENT', p.phone, `Approved payment and issued access code ${accessCode}`);
+        refreshAllApplicationViewsAfterPaymentChange(id, updatePayload);
         showToast(
           `Payment verified for ${p.studentName}! Access Code: ${accessCode}`,
           'success',
@@ -15502,6 +15542,7 @@
         const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', id);
         await updateDoc(ref, updatePayload);
         logSecurityEvent('REJECT_PAYMENT', p.phone, `Rejected payment: ${fullReason}`);
+        refreshAllApplicationViewsAfterPaymentChange(id, updatePayload);
         closeRejectPaymentModal();
         showToast(`Payment rejected for ${p.studentName}.`, 'info');
 
@@ -15763,6 +15804,7 @@ Thank you.`;
           utr: instUtr || p.utr || ''
         });
         logSecurityEvent('RECORD_INSTALLMENT', p.phone, `Recorded installment of ₹${amount} (${instType})`);
+        refreshAllApplicationViewsAfterPaymentChange(id, { paymentInstallments: currentInstallments, amountPaid: newNet });
         closeRecordInstallmentModal();
         showToast(`Recorded installment of ₹${amount} for ${p.studentName}!`, 'success');
         openStudentPaymentHistoryModal(id);
@@ -15791,6 +15833,7 @@ Thank you.`;
           amountPaid: newNet
         });
         logSecurityEvent('DELETE_INSTALLMENT', p.phone, `Deleted installment ${instId}`);
+        refreshAllApplicationViewsAfterPaymentChange(studentId, { paymentInstallments: updated, amountPaid: newNet });
         showToast('Installment removed.', 'info');
         openStudentPaymentHistoryModal(studentId);
       } catch (e) {
@@ -15866,6 +15909,7 @@ Thank you.`;
           amountPaid: newNet
         });
         logSecurityEvent('RECORD_REFUND', p.phone, `Issued refund of ₹${amount} (${reason})`);
+        refreshAllApplicationViewsAfterPaymentChange(id, { refunds, amountPaid: newNet });
         closeRecordRefundModal();
         showToast(`Issued refund of ₹${amount} for ${p.studentName}!`, 'success');
         openStudentPaymentHistoryModal(id);
@@ -18205,6 +18249,11 @@ Thank you!`;
       try {
         await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', colName, id));
         logSecurityEvent('DELETE_RECORD', id, `Removed record from ${colName}`);
+        if (type === 'payment') {
+          payments = payments.filter(p => p.id !== id);
+          rawPaymentsList = rawPaymentsList.filter(p => p.id !== id);
+          refreshAllApplicationViewsAfterPaymentChange(id, null);
+        }
         showToast(`Record removed.`);
         closeDeleteModal();
       } catch (e) {
@@ -18493,16 +18542,77 @@ Thank you!`;
       document.getElementById('adminEditPaymentModal').classList.remove('hidden');
     }
 
+    // Central Real-Time Propagation Helper: Synchronizes changes everywhere across the app
+    function refreshAllApplicationViewsAfterPaymentChange(studentId, updatedData) {
+      if (studentId && updatedData) {
+        const pIdx = payments.findIndex(p => p.id === studentId);
+        if (pIdx !== -1) {
+          payments[pIdx] = { ...payments[pIdx], ...updatedData };
+        }
+        const rIdx = rawPaymentsList.findIndex(p => p.id === studentId);
+        if (rIdx !== -1) {
+          rawPaymentsList[rIdx] = { ...rawPaymentsList[rIdx], ...updatedData };
+        }
+      }
+
+      // 1. Live Dashboard & KPIs
+      renderKPIs();
+      renderDashboard();
+
+      // 2. Executive Analytics
+      if (typeof renderExecutiveAnalytics === 'function') renderExecutiveAnalytics();
+
+      // 3. Reports Hub
+      if (typeof renderReportsHub === 'function') renderReportsHub();
+
+      // 4. Boss Master Command Center
+      if (typeof updateBossGlobalKPIs === 'function') updateBossGlobalKPIs();
+      if (typeof renderBossGlobalPayments === 'function') renderBossGlobalPayments();
+      if (typeof renderBossTripsHub === 'function') renderBossTripsHub();
+      if (typeof renderTripStudentsList === 'function' && currentTripStudentsTargetId) renderTripStudentsList();
+
+      // 5. Public Payment Interface (Seat Capacity & Counters)
+      if (typeof syncPaymentCapacityUI === 'function') syncPaymentCapacityUI();
+      if (typeof renderBalanceLookupResults === 'function') renderBalanceLookupResults();
+
+      // 6. Railway & Coach Manifests
+      if (typeof renderRailwayManagerUI === 'function') renderRailwayManagerUI();
+
+      // 7. Active Modals & Pass views
+      if (studentId) {
+        if (window.activeHistoryStudentId === studentId && typeof openStudentPaymentHistoryModal === 'function') {
+          openStudentPaymentHistoryModal(studentId);
+        }
+        if (currentBoardingPassData && currentBoardingPassData.id === studentId && typeof openBoardingPassModal === 'function') {
+          const freshSt = payments.find(p => p.id === studentId) || rawPaymentsList.find(p => p.id === studentId);
+          if (freshSt) openBoardingPassModal(freshSt);
+        }
+        if (loggedInParticipant && loggedInParticipant.id === studentId && typeof updateParticipantDashboardUI === 'function') {
+          const freshSt = payments.find(p => p.id === studentId) || rawPaymentsList.find(p => p.id === studentId);
+          if (freshSt) {
+            loggedInParticipant = freshSt;
+            updateParticipantDashboardUI();
+          }
+        }
+      }
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
     function openAdminEditModal(id) {
-      const st = payments.find(p => p.id === id);
+      const st = payments.find(p => p.id === id) || rawPaymentsList.find(p => p.id === id);
       if (!st) return;
+      const sum = getStudentPaymentSummary(st);
       renderDepartmentDropdowns();
       document.getElementById('adminEditModalTitle').textContent = `Edit ${st.studentName}`;
       document.getElementById('editStudentId').value = st.id;
-      document.getElementById('editName').value = st.studentName;
-      document.getElementById('editDept').value = st.department;
-      document.getElementById('editPhone').value = st.phone;
-      document.getElementById('editAmountPaid').value = st.amountPaid;
+      document.getElementById('editName').value = st.studentName || '';
+      document.getElementById('editDept').value = st.department || 'General';
+      document.getElementById('editPhone').value = st.phone || '';
+      const currentPaid = (sum.netPaid !== undefined && sum.netPaid !== null) ? sum.netPaid : (Number(st.amountPaid) || 0);
+      document.getElementById('editAmountPaid').value = currentPaid;
       document.getElementById('editApp').value = st.paymentApp || 'Google Pay';
       document.getElementById('editStatus').value = st.status || 'Verified';
       document.getElementById('editRemarks').value = st.remarks || '';
@@ -18511,17 +18621,30 @@ Thank you!`;
     }
 
     function fillFullFeeInAdminModal() {
-      document.getElementById('editAmountPaid').value = tripConfig.tripAmount;
+      const id = document.getElementById('editStudentId')?.value;
+      const st = id ? (payments.find(p => p.id === id) || rawPaymentsList.find(p => p.id === id)) : null;
+      let total = Number(tripConfig.tripAmount) || 1500;
+      if (st && st.tripId) {
+        const tripObj = allTrips.find(t => t.id === st.tripId);
+        if (tripObj && tripObj.tripAmount) total = Number(tripObj.tripAmount) || total;
+      }
+      document.getElementById('editAmountPaid').value = total;
       updateAdminModalBalanceText();
     }
 
     function updateAdminModalBalanceText() {
       const paid = Number(document.getElementById('editAmountPaid').value) || 0;
-      const total = Number(tripConfig.tripAmount) || 1500;
+      const id = document.getElementById('editStudentId')?.value;
+      const st = id ? (payments.find(p => p.id === id) || rawPaymentsList.find(p => p.id === id)) : null;
+      let total = Number(tripConfig.tripAmount) || 1500;
+      if (st && st.tripId) {
+        const tripObj = allTrips.find(t => t.id === st.tripId);
+        if (tripObj && tripObj.tripAmount) total = Number(tripObj.tripAmount) || total;
+      }
       const due = Math.max(0, total - paid);
       document.getElementById('editModalBalanceText').innerHTML = due > 0
-        ? `Paid: ${formatINR(paid)} • <span class="text-amber-700">Balance Due: ${formatINR(due)}</span>`
-        : `<span class="text-emerald-700">Full Trip Fee Covered (Balance Due: ₹0)</span>`;
+        ? `Paid: ${formatINR(paid)} • <span class="text-amber-700 font-extrabold">Balance Due: ${formatINR(due)}</span>`
+        : `<span class="text-emerald-700 font-extrabold">Full Trip Fee Covered (Balance Due: ₹0)</span>`;
     }
 
     function closeAdminEditModal() {
@@ -18533,41 +18656,112 @@ Thank you!`;
       const id = document.getElementById('editStudentId').value;
       const isVerified = document.getElementById('editStatus').value === 'Verified';
 
-      const existing = payments.find(p => p.id === id);
+      const existing = id ? (payments.find(p => p.id === id) || rawPaymentsList.find(p => p.id === id)) : null;
       let accessCode = existing?.accessCode || '';
       if (isVerified && !accessCode) {
         accessCode = generateSecureAccessCode();
       }
 
+      const tripId = existing?.tripId || currentTripId;
+      const tripObj = allTrips.find(t => t.id === tripId) || tripConfig;
+      const totalFee = Number(tripObj.tripAmount) || Number(tripConfig.tripAmount) || 1500;
+      const newAmount = Number(document.getElementById('editAmountPaid').value) || 0;
+      const newStatus = document.getElementById('editStatus').value;
+      const newApp = document.getElementById('editApp').value;
+      const newRemarks = document.getElementById('editRemarks').value.trim();
+      const newName = document.getElementById('editName').value.trim();
+      const newDept = document.getElementById('editDept').value;
+      const newPhone = normalizePhone(document.getElementById('editPhone').value);
+      const newDue = Math.max(0, totalFee - newAmount);
+      const now = Date.now();
+      const nowStr = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+      // Synchronize installments so ledger, receipts, analytics, and summary all reflect the new amount
+      let installments = (Array.isArray(existing?.paymentInstallments) && existing.paymentInstallments.length > 0)
+        ? [...existing.paymentInstallments]
+        : [];
+
+      if (installments.length <= 1) {
+        installments = [{
+          id: installments[0]?.id || 'inst_1',
+          amount: newAmount,
+          type: newAmount >= totalFee ? 'Full Fee' : (newAmount > 0 ? 'Advance' : 'Registered'),
+          paymentApp: newApp,
+          utr: installments[0]?.utr || existing?.utr || '',
+          recordedAt: installments[0]?.recordedAt || existing?.createdAt || now,
+          recordedAtStr: installments[0]?.recordedAtStr || existing?.createdDateStr || nowStr,
+          status: newStatus,
+          remarks: newRemarks || 'Updated by Admin'
+        }];
+      } else {
+        const priorSum = installments.slice(0, -1).filter(i => i.status !== 'Rejected').reduce((s, i) => s + (Number(i.amount) || 0), 0);
+        const lastIdx = installments.length - 1;
+        const remainingForLast = Math.max(0, newAmount - priorSum);
+        installments[lastIdx] = {
+          ...installments[lastIdx],
+          amount: remainingForLast,
+          paymentApp: newApp,
+          status: newStatus,
+          remarks: newRemarks || installments[lastIdx].remarks || 'Adjusted by Admin'
+        };
+        const newSum = installments.filter(i => i.status !== 'Rejected').reduce((s, i) => s + (Number(i.amount) || 0), 0);
+        if (newSum !== newAmount) {
+          installments = [{
+            id: 'inst_adj_' + now,
+            amount: newAmount,
+            type: newAmount >= totalFee ? 'Full Fee' : (newAmount > 0 ? 'Advance' : 'Registered'),
+            paymentApp: newApp,
+            utr: existing?.utr || '',
+            recordedAt: now,
+            recordedAtStr: nowStr,
+            status: newStatus,
+            remarks: newRemarks || 'Admin Consolidated Payment'
+          }];
+        }
+      }
+
       const data = {
-        tripId: existing?.tripId || currentTripId,
-        studentName: document.getElementById('editName').value.trim(),
-        department: document.getElementById('editDept').value,
-        phone: normalizePhone(document.getElementById('editPhone').value),
-        amountPaid: Number(document.getElementById('editAmountPaid').value) || 0,
-        paymentApp: document.getElementById('editApp').value,
-        status: document.getElementById('editStatus').value,
-        remarks: document.getElementById('editRemarks').value.trim(),
+        tripId,
+        studentName: newName,
+        department: newDept,
+        phone: newPhone,
+        amountPaid: newAmount,
+        balanceDue: newDue,
+        paymentApp: newApp,
+        status: newStatus,
+        remarks: newRemarks,
+        paymentInstallments: installments,
         accessCode,
-        accessStatus: existing?.accessStatus || 'Active'
+        accessStatus: existing?.accessStatus || 'Active',
+        updatedAt: now,
+        updatedAtStr: nowStr
       };
 
       try {
         if (id) {
           await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_payments', id), data);
-          showToast(`Updated ${data.studentName}!`);
+          logSecurityEvent('EDIT_STUDENT_AMOUNT', data.phone, `Admin updated ${data.studentName}: amount ₹${newAmount}, due ₹${newDue}, status ${newStatus}`);
+          showToast(`Updated ${data.studentName} (₹${newAmount}) everywhere! ✅`, 'success');
+          refreshAllApplicationViewsAfterPaymentChange(id, data);
         } else {
           data.receiptCode = 'TRP-' + Date.now().toString().slice(-6);
           data.boarded = false;
           data.boardedAt = 0;
           data.boardedAtStr = '';
-          data.createdAt = Date.now();
-          data.createdDateStr = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
-          await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'trip_payments'), data);
-          showToast(`Added ${data.studentName}!`);
+          data.createdAt = now;
+          data.createdDateStr = nowStr;
+          const docRef = await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'trip_payments'), data);
+          data.id = docRef.id;
+          if (data.tripId === currentTripId) {
+            payments.unshift(data);
+          }
+          rawPaymentsList.unshift(data);
+          showToast(`Added ${data.studentName}! ✅`, 'success');
+          refreshAllApplicationViewsAfterPaymentChange(data.id, data);
         }
         closeAdminEditModal();
       } catch (err) {
+        console.error('Save failed:', err);
         showToast('Save failed.', 'error');
       }
     }
@@ -20297,9 +20491,15 @@ Thank you!`;
 
     function updateBossGlobalKPIs() {
       // Grand collections across all trips
-      const totalCol = rawPaymentsList.reduce((sum, p) => sum + (Number(p.amountPaid) || 0), 0);
-      const verCol = rawPaymentsList.filter(p => p.status === 'Verified').reduce((sum, p) => sum + (Number(p.amountPaid) || 0), 0);
-      const totalDues = rawPaymentsList.reduce((sum, p) => sum + getBalanceDue(p), 0);
+      const totalCol = rawPaymentsList
+        .filter(p => p.status !== 'Rejected')
+        .reduce((sum, p) => sum + (getStudentPaymentSummary(p).netPaid !== undefined ? getStudentPaymentSummary(p).netPaid : (Number(p.amountPaid) || 0)), 0);
+      const verCol = rawPaymentsList
+        .filter(p => p.status === 'Verified')
+        .reduce((sum, p) => sum + (getStudentPaymentSummary(p).netPaid !== undefined ? getStudentPaymentSummary(p).netPaid : (Number(p.amountPaid) || 0)), 0);
+      const totalDues = rawPaymentsList
+        .filter(p => p.status !== 'Rejected')
+        .reduce((sum, p) => sum + getBalanceDue(p), 0);
 
       const totalAdmins = allAdminUsers.length;
       const pendingAdmins = allAdminUsers.filter(u => u.status === 'Pending Approval').length;
@@ -30177,7 +30377,9 @@ Guidelines:
       let partialRemainingDues = 0;
       let unpaidExpectedAmount = 0;
 
-      studentList.forEach(p => {
+      const activeStudentList = studentList.filter(p => p.status !== 'Rejected');
+
+      activeStudentList.forEach(p => {
         const sum = getStudentPaymentSummary(p);
         if (sum.isFullyPaid && sum.netPaid > 0) {
           paidCount++;
@@ -30221,15 +30423,15 @@ Guidelines:
       if (elUnpaidExpectedText) elUnpaidExpectedText.textContent = `${formatINR(unpaidExpectedAmount)} pending`;
 
       // Features 115, 116: Total Collection & Outstanding Balances
-      const totalCollected = studentList.reduce((acc, p) => acc + (getStudentPaymentSummary(p).netPaid || 0), 0);
+      const totalCollected = activeStudentList.reduce((acc, p) => acc + (getStudentPaymentSummary(p).netPaid || 0), 0);
       const verifiedAmount = studentList
         .filter(p => p.status === 'Verified')
         .reduce((acc, p) => acc + (getStudentPaymentSummary(p).netPaid || 0), 0);
       const pendingVerifAmount = Math.max(0, totalCollected - verifiedAmount);
-      const totalOutstanding = studentList.reduce((acc, p) => acc + (getStudentPaymentSummary(p).balanceDue || 0), 0);
+      const totalOutstanding = activeStudentList.reduce((acc, p) => acc + (getStudentPaymentSummary(p).balanceDue || 0), 0);
 
       const feeRate = Number(targetTrip.tripAmount || tripConfig.tripAmount) || 1500;
-      const targetRevenue = totalStudents * feeRate;
+      const targetRevenue = activeStudentList.length * feeRate;
       const targetPct = targetRevenue > 0 ? Math.min(100, Math.round((totalCollected / targetRevenue) * 100)) : 0;
       const avgDue = (partialCount + unpaidCount) > 0 ? Math.round(totalOutstanding / (partialCount + unpaidCount)) : 0;
 
@@ -34115,6 +34317,7 @@ Found ${duplicates.length} duplicate UTR numbers across multiple students:
       getTripShareUrl,
       updateActiveTripUI,
       syncPaymentCapacityUI,
+      refreshAllApplicationViewsAfterPaymentChange,
       setTripManagerStatusFilter,
       setBossTripStatusFilter,
       formatTripDates,
