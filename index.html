@@ -3749,6 +3749,8 @@
                   class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200">Approved</button>
                 <button type="button" onclick="setBossAdminStatusFilter('suspended')" id="bossAdminFilterBtn-suspended"
                   class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200">Suspended</button>
+                <button type="button" onclick="setBossAdminStatusFilter('rejected')" id="bossAdminFilterBtn-rejected"
+                  class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200">Rejected</button>
               </div>
             </div>
 
@@ -20474,18 +20476,76 @@ Thank you!`;
       }
     }
 
-    function setBossAdminStatusFilter(status) {
-      activeBossAdminFilter = status;
-      const statuses = ['all', 'pending', 'approved', 'suspended'];
+    // Real-Time Helper: Bi-directionally sync assigned trips with trips_master
+    async function syncTripAdminsBidirectional(adminEmail, assignedTripIds = []) {
+      if (!adminEmail) return;
+      const isGlobal = assignedTripIds.includes('*');
+
+      for (const t of allTrips) {
+        let adminsList = Array.isArray(t.assignedAdmins) ? [...t.assignedAdmins] : [];
+        const shouldHave = isGlobal || assignedTripIds.includes(t.id);
+        const currentlyHas = adminsList.includes(adminEmail);
+
+        if (shouldHave && !currentlyHas) {
+          adminsList.push(adminEmail);
+          t.assignedAdmins = adminsList;
+          try {
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trips_master', t.id), {
+              assignedAdmins: adminsList
+            }, { merge: true });
+          } catch (err) {
+            console.warn('Sync admin to trip failed:', t.id, err);
+          }
+        } else if (!shouldHave && currentlyHas) {
+          adminsList = adminsList.filter(e => e !== adminEmail);
+          t.assignedAdmins = adminsList;
+          try {
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trips_master', t.id), {
+              assignedAdmins: adminsList
+            }, { merge: true });
+          } catch (err) {
+            console.warn('Remove admin from trip failed:', t.id, err);
+          }
+        }
+      }
+    }
+
+    function updateBossFilterButtonsUI() {
+      const statuses = ['all', 'pending', 'approved', 'suspended', 'rejected'];
+      const totalCount = allAdminUsers.length;
+      const pendingCount = allAdminUsers.filter(u => u.status === 'Pending Approval').length;
+      const approvedCount = allAdminUsers.filter(u => u.status === 'Approved').length;
+      const suspendedCount = allAdminUsers.filter(u => u.status === 'Suspended').length;
+      const rejectedCount = allAdminUsers.filter(u => u.status === 'Rejected').length;
+
+      const counts = {
+        all: totalCount,
+        pending: pendingCount,
+        approved: approvedCount,
+        suspended: suspendedCount,
+        rejected: rejectedCount
+      };
+
       statuses.forEach(s => {
         const btn = document.getElementById(`bossAdminFilterBtn-${s}`);
         if (!btn) return;
-        if (s === status) {
-          btn.className = 'px-3 py-1.5 rounded-xl bg-purple-600 text-white font-bold text-xs shadow-xs transition';
+        const count = counts[s] || 0;
+        const label = s.charAt(0).toUpperCase() + s.slice(1);
+
+        if (s === activeBossAdminFilter) {
+          btn.className = 'px-3 py-1.5 rounded-xl bg-purple-600 text-white font-bold text-xs shadow-xs transition flex items-center gap-1.5';
+          btn.innerHTML = `<span>${label}</span> <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-white/20 text-white font-extrabold">${count}</span>`;
         } else {
-          btn.className = 'px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs transition';
+          const isPendingAlert = s === 'pending' && count > 0;
+          btn.className = `px-3 py-1.5 rounded-xl ${isPendingAlert ? 'bg-amber-100 text-amber-900 border border-amber-300 font-extrabold animate-pulse' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold'} text-xs transition flex items-center gap-1.5`;
+          btn.innerHTML = `<span>${label}</span> <span class="px-1.5 py-0.2 rounded-full text-[10px] ${isPendingAlert ? 'bg-amber-500 text-white font-black' : 'bg-slate-200/80 text-slate-700 font-bold'}">${count}</span>`;
         }
       });
+    }
+
+    function setBossAdminStatusFilter(status) {
+      activeBossAdminFilter = status;
+      updateBossFilterButtonsUI();
       renderBossAdminsList();
     }
 
@@ -20504,12 +20564,13 @@ Thank you!`;
       const totalAdmins = allAdminUsers.length;
       const pendingAdmins = allAdminUsers.filter(u => u.status === 'Pending Approval').length;
       const activeAdmins = allAdminUsers.filter(u => u.status === 'Approved').length;
+      const suspendedAdmins = allAdminUsers.filter(u => u.status === 'Suspended').length;
 
       let uniqueTripsCount = allTrips.length;
       if (uniqueTripsCount === 0 || !allTrips.some(t => t.id === 'default')) {
         uniqueTripsCount = Math.max(1, uniqueTripsCount);
       }
-      const totalStudents = rawPaymentsList.length;
+      const totalStudents = rawPaymentsList.filter(p => p.status !== 'Rejected').length;
 
       const elTotCol = document.getElementById('bossStatTotalCollections');
       const elVerCol = document.getElementById('bossStatVerifiedCollections');
@@ -20523,7 +20584,7 @@ Thank you!`;
       if (elVerCol) elVerCol.textContent = formatINR(verCol);
       if (elTotDue) elTotDue.textContent = formatINR(totalDues);
       if (elTotAdm) elTotAdm.textContent = totalAdmins;
-      if (elAdmSub) elAdmSub.textContent = `${activeAdmins} Active • ${pendingAdmins} Pending`;
+      if (elAdmSub) elAdmSub.textContent = `${activeAdmins} Active • ${pendingAdmins} Pending${suspendedAdmins > 0 ? ` • ${suspendedAdmins} Suspended` : ''}`;
       if (elTotTrp) elTotTrp.textContent = uniqueTripsCount;
       if (elTotStu) elTotStu.textContent = totalStudents;
 
@@ -20532,13 +20593,32 @@ Thank you!`;
       const badgeTrp = document.getElementById('bossTabBadgeTrips');
       const badgePay = document.getElementById('bossTabBadgePayments');
 
-      if (badgeAdm) badgeAdm.textContent = totalAdmins;
+      if (badgeAdm) {
+        badgeAdm.textContent = pendingAdmins > 0 ? `${totalAdmins} (${pendingAdmins} new)` : totalAdmins;
+        if (pendingAdmins > 0) {
+          badgeAdm.className = 'ml-1 px-2 py-0.5 rounded-full text-[10px] bg-amber-400 text-slate-900 font-black animate-pulse';
+        } else {
+          badgeAdm.className = 'ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-white text-purple-900 font-extrabold';
+        }
+      }
       if (badgeTrp) badgeTrp.textContent = uniqueTripsCount;
       if (badgePay) badgePay.textContent = totalStudents;
+
+      // Subtab badge on main Manager navigation bar
+      const pendingBadge = document.getElementById('subTabBadgePendingAdmins');
+      if (pendingBadge) {
+        if (pendingAdmins > 0) {
+          pendingBadge.textContent = `${pendingAdmins} pending`;
+          pendingBadge.classList.remove('hidden');
+        } else {
+          pendingBadge.classList.add('hidden');
+        }
+      }
     }
 
     function renderBossAdminsList() {
       updateBossGlobalKPIs();
+      updateBossFilterButtonsUI();
       const container = document.getElementById('bossAdminsListContainer');
       if (!container) return;
 
@@ -20553,6 +20633,8 @@ Thank you!`;
         filtered = filtered.filter(u => u.status === 'Approved');
       } else if (activeBossAdminFilter === 'suspended') {
         filtered = filtered.filter(u => u.status === 'Suspended');
+      } else if (activeBossAdminFilter === 'rejected') {
+        filtered = filtered.filter(u => u.status === 'Rejected');
       }
 
       if (query) {
@@ -20560,7 +20642,8 @@ Thank you!`;
           (u.name || '').toLowerCase().includes(query) ||
           (u.email || '').toLowerCase().includes(query) ||
           (u.phone || '').includes(query) ||
-          (u.requestedTrip || '').toLowerCase().includes(query)
+          (u.requestedTrip || '').toLowerCase().includes(query) ||
+          (Array.isArray(u.assignedTrips) && u.assignedTrips.some(tid => tid.toLowerCase().includes(query)))
         );
       }
 
@@ -20584,6 +20667,7 @@ Thank you!`;
         const isPending = u.status === 'Pending Approval';
         const isApproved = u.status === 'Approved';
         const isSuspended = u.status === 'Suspended';
+        const isRejected = u.status === 'Rejected';
         const assigned = Array.isArray(u.assignedTrips) ? u.assignedTrips : [];
         const isGlobal = assigned.includes('*');
 
@@ -20607,48 +20691,76 @@ Thank you!`;
 
         // Calculate total students & total collections under this admin's trips
         const matchedTripIds = matchedTrips.map(t => t.id);
-        const adminPayments = rawPaymentsList.filter(p => isGlobal || matchedTripIds.includes(p.tripId));
-        const totalStudentsUnderAdmin = adminPayments.length;
-        const totalCollectedUnderAdmin = adminPayments.filter(p => p.status === 'Verified').reduce((sum, p) => sum + (Number(p.amountPaid) || 0), 0);
+        const adminPayments = rawPaymentsList.filter(p => isGlobal || matchedTripIds.includes(p.tripId || 'default'));
+        const activeAdminPayments = adminPayments.filter(p => p.status !== 'Rejected');
+        const totalStudentsUnderAdmin = activeAdminPayments.length;
+
+        let totalCollectedUnderAdmin = 0;
+        let totalDueUnderAdmin = 0;
+        let boardedCountUnderAdmin = 0;
+
+        activeAdminPayments.forEach(p => {
+          const sum = getStudentPaymentSummary(p);
+          if (p.status === 'Verified') {
+            totalCollectedUnderAdmin += (sum.netPaid !== undefined ? sum.netPaid : (Number(p.amountPaid) || 0));
+          }
+          totalDueUnderAdmin += (sum.balanceDue !== undefined ? sum.balanceDue : getBalanceDue(p));
+          if (p.boarded) boardedCountUnderAdmin++;
+        });
+
+        // Status pill classes
+        let statusBadgeClass = 'bg-slate-100 text-slate-800 border border-slate-300';
+        if (isPending) statusBadgeClass = 'bg-amber-100 text-amber-900 border border-amber-300 font-extrabold animate-pulse';
+        else if (isApproved) statusBadgeClass = 'bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold';
+        else if (isSuspended) statusBadgeClass = 'bg-rose-100 text-rose-800 border border-rose-300 font-bold';
+        else if (isRejected) statusBadgeClass = 'bg-slate-200 text-slate-700 border border-slate-300 font-bold';
 
         return `
-          <div class="p-4 sm:p-5 rounded-2xl border ${isPending ? 'border-amber-300 bg-amber-50/40' : (isSuspended ? 'border-rose-200 bg-rose-50/30' : 'border-slate-200 bg-white')} shadow-xs transition hover:border-purple-300">
+          <div class="p-4 sm:p-5 rounded-2xl border ${isPending ? 'border-amber-300 bg-amber-50/40 ring-2 ring-amber-300/30' : (isSuspended ? 'border-rose-200 bg-rose-50/30' : (isRejected ? 'border-slate-200 bg-slate-50/40 opacity-80' : 'border-slate-200 bg-white'))} shadow-xs transition hover:border-purple-300">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div class="space-y-2 min-w-0 flex-1">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${u.role === 'boss' ? 'bg-purple-600 text-white shadow-xs' : 'bg-purple-100 text-purple-900 border border-purple-200'}">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase ${u.role === 'boss' ? 'bg-purple-600 text-white shadow-xs' : 'bg-purple-100 text-purple-900 border border-purple-200'}">
                     ${adminBadgeTitle}
                   </span>
                   <h5 class="font-bold text-slate-900 text-sm sm:text-base">${escapeHtml(u.name || 'Unnamed')}</h5>
-                  <span class="font-mono text-xs text-slate-500">${escapeHtml(u.email || '')}</span>
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${isPending ? 'bg-amber-100 text-amber-800 border border-amber-300' : (isApproved ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-rose-100 text-rose-800 border border-rose-300')}">
+                  <span class="font-mono text-xs text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">${escapeHtml(u.email || '')}</span>
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase ${statusBadgeClass}">
                     ${escapeHtml(u.status || 'Pending Approval')}
                   </span>
                 </div>
 
                 <div class="flex items-center gap-3 text-xs text-slate-500 flex-wrap">
-                  <span>📱 ${escapeHtml(u.phone || 'N/A')}</span>
-                  ${u.requestedTrip ? `<span>• 🎯 Proposed: <strong class="text-slate-700">${escapeHtml(u.requestedTrip)}</strong></span>` : ''}
-                  ${u.createdAt ? `<span>• 🗓️ ${new Date(u.createdAt).toLocaleDateString('en-IN')}</span>` : ''}
+                  <span class="flex items-center gap-1 font-mono"><i data-lucide="phone" class="w-3.5 h-3.5 text-purple-600"></i> ${escapeHtml(u.phone || 'N/A')}</span>
+                  ${u.requestedTrip ? `<span class="flex items-center gap-1"><i data-lucide="target" class="w-3.5 h-3.5 text-amber-600"></i> Proposed: <strong class="text-slate-800 font-bold">${escapeHtml(u.requestedTrip)}</strong></span>` : ''}
+                  ${u.createdAt ? `<span class="flex items-center gap-1"><i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i> Reg: ${new Date(u.createdAt).toLocaleDateString('en-IN')}</span>` : ''}
+                  ${u.approvedAt ? `<span class="flex items-center gap-1 text-emerald-700 font-semibold"><i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i> Approved: ${new Date(u.approvedAt).toLocaleDateString('en-IN')}</span>` : ''}
                 </div>
 
-                
+                <!-- Admin Scope & Real-Time Financial/Operational Metrics -->
                 <div class="pt-2 border-t border-slate-100 flex items-center gap-2 flex-wrap">
-                  <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
-                    <i data-lucide="compass" class="w-3.5 h-3.5 text-purple-600"></i>
-                    <span>Assigned Trips:</span>
-                  </span>
                   <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${totalTripsUnderThisAdmin > 0 ? 'bg-purple-100 text-purple-900 border border-purple-200' : 'bg-slate-100 text-slate-600'}">
                     ${isGlobal ? `All Trips (${totalTripsUnderThisAdmin} Trips Total) 🌐` : `${totalTripsUnderThisAdmin} ${totalTripsUnderThisAdmin === 1 ? 'Trip' : 'Trips'} Assigned`}
                   </span>
 
-                  
-                  <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                    👥 ${totalStudentsUnderAdmin} Students (${formatINR(totalCollectedUnderAdmin)} Collected)
+                  <span class="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200 flex items-center gap-1">
+                    👥 ${totalStudentsUnderAdmin} Students • ${formatINR(totalCollectedUnderAdmin)} Collected
                   </span>
+
+                  ${totalDueUnderAdmin > 0 ? `
+                    <span class="text-xs font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200 flex items-center gap-1">
+                      ⏳ ${formatINR(totalDueUnderAdmin)} Pending
+                    </span>
+                  ` : ''}
+
+                  ${boardedCountUnderAdmin > 0 ? `
+                    <span class="text-xs font-bold text-indigo-800 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200 flex items-center gap-1">
+                      🎫 ${boardedCountUnderAdmin} Boarded
+                    </span>
+                  ` : ''}
                 </div>
 
-                
+                <!-- Matched Trips Badges -->
                 <div class="flex items-center gap-1.5 flex-wrap pt-0.5">
                   ${matchedTrips.length > 0 ? matchedTrips.map(t => `
                     <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-50 text-slate-700 border border-slate-200 flex items-center gap-1" title="${escapeHtml(t.destination || '')}">
@@ -20659,20 +20771,52 @@ Thank you!`;
                 </div>
               </div>
 
-              
+              <!-- Action Buttons -->
               <div class="flex items-center gap-1.5 self-end lg:self-center shrink-0 flex-wrap justify-end">
                 ${isPending ? `
                   <button
                     type="button"
-                    onclick="openBossAssignTripsModal('${u.id}')"
+                    onclick="bossQuickApproveAdmin('${u.id}')"
                     class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-sm transition flex items-center gap-1"
+                    title="1-Click Quick Approve & assign default/requested trip"
                   >
-                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                    <span>Approve & Assign</span>
+                    <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                    <span>Quick Approve</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onclick="openBossAssignTripsModal('${u.id}')"
+                    class="px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-bold transition flex items-center gap-1 shadow-2xs"
+                    title="Choose specific trips to assign"
+                  >
+                    <i data-lucide="check" class="w-3.5 h-3.5 text-purple-600"></i>
+                    <span>Assign &amp; Approve</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onclick="bossRejectAdmin('${u.id}')"
+                    class="px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition flex items-center gap-1 shadow-2xs"
+                    title="Decline admin registration request"
+                  >
+                    <i data-lucide="x" class="w-3.5 h-3.5 text-rose-600"></i>
+                    <span>Decline</span>
                   </button>
                 ` : ''}
 
-                
+                ${isRejected ? `
+                  <button
+                    type="button"
+                    onclick="bossQuickApproveAdmin('${u.id}')"
+                    class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-sm transition flex items-center gap-1"
+                    title="Re-evaluate & Approve"
+                  >
+                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                    <span>Approve Admin</span>
+                  </button>
+                ` : ''}
+
                 <button
                   type="button"
                   onclick="openBossEditAdminModal('${u.id}')"
@@ -20683,7 +20827,6 @@ Thank you!`;
                   <span>Edit Details</span>
                 </button>
 
-                
                 <button
                   type="button"
                   onclick="openBossAssignTripsModal('${u.id}')"
@@ -21645,6 +21788,7 @@ Thank you!`;
       if (container) {
         const assigned = Array.isArray(admin.assignedTrips) ? admin.assignedTrips : [];
         const isGlobal = assigned.includes('*');
+        const reqTripLower = (admin.requestedTrip || '').toLowerCase().trim();
 
         let html = `
           <label class="flex items-center gap-2 p-2 rounded-xl bg-purple-50/70 border border-purple-200 cursor-pointer">
@@ -21665,13 +21809,19 @@ Thank you!`;
         tripsList.forEach(t => { if (!uniqueTrips.has(t.id)) uniqueTrips.set(t.id, t); });
 
         Array.from(uniqueTrips.values()).forEach(t => {
-          const isChecked = isGlobal || assigned.includes(t.id);
+          const matchesRequested = !isGlobal && assigned.length === 0 && reqTripLower && (
+            (t.tripTitle || '').toLowerCase().includes(reqTripLower) ||
+            (t.destination || '').toLowerCase().includes(reqTripLower) ||
+            (t.id || '').toLowerCase() === reqTripLower
+          );
+          const isChecked = isGlobal || assigned.includes(t.id) || matchesRequested;
           html += `
             <label class="flex items-center gap-2 p-2 rounded-xl bg-white border border-slate-200 cursor-pointer hover:bg-slate-50">
               <input type="checkbox" name="bossTripAssignmentOption" value="${escapeHtml(t.id)}" class="w-4 h-4 text-purple-600 rounded" ${isChecked ? 'checked' : ''} />
               <div class="text-xs">
                 <span class="font-bold text-slate-900">${escapeHtml(t.tripTitle || 'Trip')}</span>
                 <span class="font-mono text-[10px] text-slate-500 ml-1">#${escapeHtml(t.id)}</span>
+                ${matchesRequested ? '<span class="ml-1.5 px-1.5 py-0.2 rounded text-[9px] bg-amber-100 text-amber-800 font-extrabold">Proposed</span>' : ''}
               </div>
             </label>
           `;
@@ -21689,6 +21839,75 @@ Thank you!`;
     function closeBossAssignTripsModal() {
       const modal = document.getElementById('bossAssignTripsModal');
       if (modal) modal.classList.add('hidden');
+    }
+
+    async function bossQuickApproveAdmin(adminId) {
+      const admin = allAdminUsers.find(u => u.id === adminId);
+      if (!admin) return;
+
+      let targetTripId = currentTripId || 'default';
+      if (admin.requestedTrip) {
+        const reqLower = admin.requestedTrip.toLowerCase().trim();
+        const matched = allTrips.find(t =>
+          (t.tripTitle || '').toLowerCase().includes(reqLower) ||
+          (t.destination || '').toLowerCase().includes(reqLower) ||
+          (t.id || '').toLowerCase() === reqLower
+        );
+        if (matched) targetTripId = matched.id;
+      }
+
+      const assignedTrips = [targetTripId];
+      admin.status = 'Approved';
+      admin.assignedTrips = assignedTrips;
+      admin.approvedAt = Date.now();
+
+      renderBossAdminsList();
+      updateBossGlobalKPIs();
+
+      try {
+        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admin_users', adminId), {
+          status: 'Approved',
+          assignedTrips: assignedTrips,
+          approvedAt: admin.approvedAt
+        });
+
+        await syncTripAdminsBidirectional(admin.email, assignedTrips);
+
+        logSecurityEvent('ADMIN_QUICK_APPROVE', admin.email, `Boss quick-approved admin with trip ${targetTripId}`);
+        showToast(`Admin ${admin.name} approved & assigned to trip! ✅`, 'success');
+        if (typeof renderBossTripsHub === 'function') renderBossTripsHub();
+      } catch (err) {
+        console.error('Quick approve error:', err);
+        showToast('Failed to approve admin.', 'error');
+      }
+    }
+
+    async function bossRejectAdmin(adminId) {
+      const admin = allAdminUsers.find(u => u.id === adminId);
+      if (!admin) return;
+
+      if (!confirm(`Decline registration application for "${admin.name}" (${admin.email})?`)) {
+        return;
+      }
+
+      admin.status = 'Rejected';
+      admin.rejectedAt = Date.now();
+
+      renderBossAdminsList();
+      updateBossGlobalKPIs();
+
+      try {
+        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admin_users', adminId), {
+          status: 'Rejected',
+          rejectedAt: admin.rejectedAt
+        });
+
+        logSecurityEvent('ADMIN_REJECT', admin.email, `Boss rejected admin application for ${admin.name}`);
+        showToast(`Application for ${admin.name} declined.`, 'info');
+      } catch (err) {
+        console.error('Reject admin error:', err);
+        showToast('Failed to reject admin.', 'error');
+      }
     }
 
     async function saveBossTripAssignments() {
@@ -21714,16 +21933,26 @@ Thank you!`;
         btn.textContent = 'Saving...';
       }
 
+      admin.status = 'Approved';
+      admin.assignedTrips = selectedTrips;
+      admin.approvedAt = admin.approvedAt || Date.now();
+
+      renderBossAdminsList();
+      updateBossGlobalKPIs();
+
       try {
         await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admin_users', adminId), {
           status: 'Approved',
           assignedTrips: selectedTrips,
-          approvedAt: Date.now()
+          approvedAt: admin.approvedAt
         });
+
+        await syncTripAdminsBidirectional(admin.email, selectedTrips);
 
         logSecurityEvent('ADMIN_APPROVE', admin.email, `Approved admin with ${selectedTrips.length} assigned trip(s)`);
         closeBossAssignTripsModal();
-        showToast(`Admin ${admin.name} approved & trips assigned!`, 'success');
+        showToast(`Admin ${admin.name} approved & trips assigned! ✅`, 'success');
+        if (typeof renderBossTripsHub === 'function') renderBossTripsHub();
       } catch (err) {
         console.error('Error assigning trips:', err);
         showToast('Failed to save assignments.', 'error');
@@ -21741,12 +21970,16 @@ Thank you!`;
       if (!admin) return;
 
       const newStatus = admin.status === 'Suspended' ? 'Approved' : 'Suspended';
+      admin.status = newStatus;
+      renderBossAdminsList();
+      updateBossGlobalKPIs();
+
       try {
         await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admin_users', adminId), {
           status: newStatus
         });
         logSecurityEvent('ADMIN_STATUS_CHANGE', admin.email, `Changed status to ${newStatus}`);
-        showToast(`Admin ${admin.name} is now ${newStatus}.`, 'info');
+        showToast(`Admin ${admin.name} is now ${newStatus}. ✅`, 'info');
       } catch (err) {
         showToast('Failed to change admin status.', 'error');
       }
@@ -21760,10 +21993,17 @@ Thank you!`;
         return;
       }
 
+      const emailToDelete = admin.email;
+      allAdminUsers = allAdminUsers.filter(u => u.id !== adminId);
+      renderBossAdminsList();
+      updateBossGlobalKPIs();
+
       try {
         await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admin_users', adminId));
-        logSecurityEvent('ADMIN_DELETE', admin.email, 'Removed admin account');
-        showToast(`Admin account ${admin.name} removed.`, 'info');
+        await syncTripAdminsBidirectional(emailToDelete, []);
+        logSecurityEvent('ADMIN_DELETE', emailToDelete, 'Removed admin account');
+        showToast(`Admin account ${admin.name} deleted successfully! ✅`, 'info');
+        if (typeof renderBossTripsHub === 'function') renderBossTripsHub();
       } catch (err) {
         showToast('Failed to delete admin account.', 'error');
       }
@@ -21836,7 +22076,7 @@ Thank you!`;
       }
 
       try {
-        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'admin_users'), {
+        const newAdminDoc = {
           name,
           email,
           phone,
@@ -21847,11 +22087,20 @@ Thank you!`;
           securityAnswer: 'boss_created',
           approvedAt: Date.now(),
           createdAt: Date.now()
-        });
+        };
+
+        const docRef = await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'admin_users'), newAdminDoc);
+        newAdminDoc.id = docRef.id;
+        allAdminUsers.push(newAdminDoc);
+        await syncTripAdminsBidirectional(email, newAdminDoc.assignedTrips);
+
+        renderBossAdminsList();
+        updateBossGlobalKPIs();
+        if (typeof renderBossTripsHub === 'function') renderBossTripsHub();
 
         logSecurityEvent('ADMIN_CREATE', email, `Boss Admin directly created admin ${name}`);
         closeBossCreateAdminModal();
-        showToast(`Admin "${name}" created & pre-approved successfully!`, 'success');
+        showToast(`Admin "${name}" created & pre-approved successfully! ✅`, 'success');
       } catch (err) {
         console.error('Error creating admin:', err);
         showToast('Failed to create admin.', 'error');
@@ -22383,7 +22632,12 @@ Thank you!`;
           updatePayload.password = newPassword;
         }
 
+        Object.assign(admin, updatePayload);
+        renderBossAdminsList();
+        updateBossGlobalKPIs();
+
         await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admin_users', adminId), updatePayload);
+        await syncTripAdminsBidirectional(email, selectedTrips);
 
         // If editing self
         if (currentAdminUser && currentAdminUser.id === adminId) {
@@ -22393,7 +22647,8 @@ Thank you!`;
 
         logSecurityEvent('ADMIN_UPDATE', email, `Boss Admin updated admin details for ${name}`);
         closeBossEditAdminModal();
-        showToast(`Admin "${name}" updated successfully!`, 'success');
+        showToast(`Admin "${name}" updated successfully! ✅`, 'success');
+        if (typeof renderBossTripsHub === 'function') renderBossTripsHub();
       } catch (err) {
         console.error('Error updating admin:', err);
         showToast('Failed to update admin details.', 'error');
@@ -34359,8 +34614,12 @@ Found ${duplicates.length} duplicate UTR numbers across multiple students:
       exportTripStudentsRosterExcel,
       switchBossDashboardTab,
       setBossAdminStatusFilter,
+      updateBossFilterButtonsUI,
       updateBossGlobalKPIs,
       renderBossAdminsList,
+      bossQuickApproveAdmin,
+      bossRejectAdmin,
+      syncTripAdminsBidirectional,
       renderBossTripsHub,
       openTripAdminAssignmentModal,
       closeTripAdminAssignmentModal,
