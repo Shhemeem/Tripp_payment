@@ -487,6 +487,18 @@
             <i data-lucide="phone-call" class="w-3.5 h-3.5"></i>
             <span>Helpline</span>
           </button>
+          <button onclick="openUserHotelsModal()" id="userTabBtn-hotels"
+            class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-teal-700 hover:text-teal-900 bg-teal-50/70 border border-teal-200/60 ml-0.5"
+            title="View Hotel Stays, Photos & Facilities">
+            <i data-lucide="building-2" class="w-3.5 h-3.5"></i>
+            <span>Hotels</span>
+          </button>
+          <button onclick="openUserLostFoundModal()" id="userTabBtn-lostfound"
+            class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-amber-700 hover:text-amber-900 bg-amber-50/70 border border-amber-200/60 ml-0.5"
+            title="Report or Find Lost Items">
+            <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
+            <span>Lost &amp; Found</span>
+          </button>
           <button onclick="handleParticipantPortalClick()" id="userTabBtn-portal"
             class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-indigo-700 hover:text-indigo-900 bg-indigo-50/70 border border-indigo-200/60 ml-0.5">
             <i data-lucide="ticket" class="w-3.5 h-3.5"></i>
@@ -657,6 +669,47 @@
       <!-- Payment Receipt Modal is now a full-screen modal (see #paymentReceiptModal below) -->
       <!-- This container is kept as a hidden placeholder so the tab section renders correctly -->
       <div id="receiptCardContainer" class="hidden"></div>
+
+      <!-- QUICK ACCESS: HOTEL STAYS & LOST & FOUND CARDS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+        <div onclick="openUserHotelsModal()"
+          class="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-teal-500/10 via-teal-50 to-white border border-teal-200/80 shadow-2xs hover:shadow-sm transition cursor-pointer flex items-center justify-between group">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <i data-lucide="building-2" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h4 class="font-display font-extrabold text-sm text-slate-900 group-hover:text-teal-700 transition">
+                Hotel Stays &amp; Facilities
+              </h4>
+              <p class="text-[11px] text-slate-500">View resort photos, AC rooms, pool &amp; amenities</p>
+            </div>
+          </div>
+          <span class="text-xs font-bold text-teal-700 flex items-center gap-0.5 shrink-0">
+            <span>View</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+          </span>
+        </div>
+
+        <div onclick="openUserLostFoundModal()"
+          class="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-50 to-white border border-amber-200/80 shadow-2xs hover:shadow-sm transition cursor-pointer flex items-center justify-between group">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <i data-lucide="help-circle" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h4 class="font-display font-extrabold text-sm text-slate-900 group-hover:text-amber-700 transition">
+                Lost &amp; Found Portal
+              </h4>
+              <p class="text-[11px] text-slate-500">Report lost items or check items found by peers</p>
+            </div>
+          </div>
+          <span class="text-xs font-bold text-amber-700 flex items-center gap-0.5 shrink-0">
+            <span>Open</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+          </span>
+        </div>
+      </div>
 
       <!-- Payment & Form Split Layout -->
       <!-- PUBLIC USER NOTICE: Trip Link Required when no ?trip= parameter is in URL -->
@@ -1194,6 +1247,16 @@
             <button type="button" onclick="openUserPNRSearchModal()"
               class="font-extrabold text-blue-700 hover:text-blue-800 underline">Search PNR &amp; Seat Status</button>
           </p>
+          <p class="text-[11.5px] text-slate-600">
+            Check hotel &amp; accommodation details?
+            <button type="button" onclick="openUserHotelsModal()"
+              class="font-extrabold text-teal-700 hover:text-teal-800 underline">View Hotels &amp; Facilities</button>
+          </p>
+          <p class="text-[11.5px] text-slate-600">
+            Lost or found an item on tour?
+            <button type="button" onclick="openUserLostFoundModal()"
+              class="font-extrabold text-amber-700 hover:text-amber-800 underline">Lost &amp; Found Portal</button>
+          </p>
           <p class="text-[11px] text-slate-500">
             Haven't registered or paid yet?
             <button type="button" onclick="switchTab('pay')" class="font-bold text-emerald-600 hover:underline">Pay /
@@ -1230,6 +1293,18 @@
                 title="View Official Payment Receipt Voucher">
                 <i data-lucide="receipt" class="w-4 h-4 text-slate-950"></i>
                 <span>Payment Receipt</span>
+              </button>
+              <button type="button" onclick="openUserHotelsModal()"
+                class="px-3.5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition active:scale-95 cursor-pointer"
+                title="View Hotel Details, Rooms, Facilities & Photos">
+                <i data-lucide="building-2" class="w-4 h-4 text-teal-200"></i>
+                <span>Hotels &amp; Stays</span>
+              </button>
+              <button type="button" onclick="openUserLostFoundModal()"
+                class="px-3.5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition active:scale-95 cursor-pointer"
+                title="Lost &amp; Found: Report or track belongings">
+                <i data-lucide="help-circle" class="w-4 h-4 text-amber-200"></i>
+                <span>Lost &amp; Found</span>
               </button>
               <button type="button" onclick="openVisualSeatArrangement()"
                 class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md shadow-purple-950/40 transition active:scale-95 cursor-pointer"
@@ -4149,6 +4224,506 @@
   <!-- ========================================================================= -->
   <!-- UNIVERSAL EMERGENCY SOS CONTACT & SAFETY MODAL (Feature 159)               -->
   <!-- ========================================================================= -->
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: USER TRIP ACCOMMODATIONS & HOTELS (STRICTLY WITHOUT PHONE / AMOUNTS)-->
+  <!-- ========================================================================= -->
+  <div id="userHotelsModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-5"
+    style="background:rgba(15,23,42,0.85);backdrop-filter:blur(8px);">
+    <div
+      class="bg-white rounded-3xl p-5 sm:p-7 max-w-4xl w-full border border-slate-200 shadow-2xl relative max-h-[90vh] flex flex-col animate-in fade-in zoom-in duration-200">
+      
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-4 shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center shrink-0 border border-teal-200">
+            <i data-lucide="building-2" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 border border-teal-200">
+                Official Stay Details
+              </span>
+              <span id="userHotelsTripBadge" class="text-xs font-mono font-bold text-slate-500"></span>
+            </div>
+            <h3 class="font-display font-extrabold text-lg sm:text-2xl text-slate-900 mt-0.5">
+              Tour Accommodations &amp; Hotel Stays
+            </h3>
+            <p class="text-xs text-slate-500">
+              Verified hotel stays, room facilities, check-in schedules, and amenities for students.
+            </p>
+          </div>
+        </div>
+        <button type="button" onclick="closeUserHotelsModal()"
+          class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Quick Info Notice -->
+      <div class="my-3 px-3.5 py-2.5 rounded-xl bg-teal-50/70 border border-teal-200/80 flex items-center gap-2 text-xs text-teal-900 shrink-0">
+        <i data-lucide="info" class="w-4 h-4 text-teal-600 shrink-0"></i>
+        <span>Room allocations are arranged by your college coordinators. Tap any photo to expand in full screen.</span>
+      </div>
+
+      <!-- Hotels List Container (Scrollable) -->
+      <div id="userHotelsListContainer" class="flex-1 overflow-y-auto space-y-5 pr-1 py-1">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: ADMIN VENDOR & HOTEL MANAGEMENT (FACILITIES, PICTURES & CONTRACTS)  -->
+  <!-- ========================================================================= -->
+  <div id="adminVendorHotelModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-5"
+    style="background:rgba(15,23,42,0.85);backdrop-filter:blur(8px);">
+    <div
+      class="bg-white rounded-3xl p-5 sm:p-7 max-w-3xl w-full border border-slate-200 shadow-2xl relative max-h-[92vh] flex flex-col animate-in fade-in zoom-in duration-200">
+      
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-3.5 shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center shrink-0 border border-teal-200">
+            <i data-lucide="building" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 id="vendorModalTitle" class="font-display font-extrabold text-lg sm:text-xl text-slate-900">
+              Add Hotel / Vendor Record
+            </h3>
+            <p class="text-xs text-slate-500">
+              Configure accommodations, amenities, image gallery, and coordinator contracts.
+            </p>
+          </div>
+        </div>
+        <button type="button" onclick="closeVendorHotelModal()"
+          class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Form Body (Scrollable) -->
+      <form id="vendorHotelForm" onsubmit="handleVendorHotelFormSubmit(event)" class="flex-1 overflow-y-auto pr-1 py-3 space-y-4">
+        <input type="hidden" id="vendorEditId" value="" />
+
+        <!-- Basic Info -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-1">
+            <label class="block text-xs font-bold text-slate-700 mb-1">Category *</label>
+            <select id="vendorCategoryInp" required
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-teal-500 text-xs font-bold text-slate-800">
+              <option value="Hotel/Resort" selected>Hotel / Resort</option>
+              <option value="Bus Operator">Bus Operator</option>
+              <option value="Caterer">Caterer / Dining</option>
+              <option value="Tour Guide">Tour Guide</option>
+              <option value="Activity / Sightseeing">Activity / Sightseeing</option>
+              <option value="Other Vendor">Other Vendor</option>
+            </select>
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-bold text-slate-700 mb-1">Hotel / Vendor Name *</label>
+            <input type="text" id="vendorNameInp" required placeholder="e.g. Whispering Pines Resort & Spa"
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-teal-500 text-xs sm:text-sm font-bold text-slate-900" />
+          </div>
+        </div>
+
+        <!-- Address & Accommodation details -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Location / Address</label>
+            <input type="text" id="vendorAddressInp" placeholder="e.g. Colony Road, Old Munnar, Kerala 685612"
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-teal-500 text-xs text-slate-800" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Room / Accommodation Type</label>
+            <input type="text" id="vendorRoomDetailsInp" placeholder="e.g. Deluxe Quad-Sharing AC Cottages"
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-teal-500 text-xs text-slate-800" />
+          </div>
+        </div>
+
+        <!-- Check-in & Check-out -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Check-in Date &amp; Time</label>
+            <input type="text" id="vendorCheckInInp" placeholder="e.g. 15 Nov 2026, 12:00 PM"
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-teal-500 text-xs text-slate-800" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Check-out Date &amp; Time</label>
+            <input type="text" id="vendorCheckOutInp" placeholder="e.g. 18 Nov 2026, 11:00 AM"
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-teal-500 text-xs text-slate-800" />
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Description &amp; Guidelines for Students</label>
+          <textarea id="vendorDescInp" rows="2" placeholder="Overview of the stay, resort amenities, nature trails, or campus rules..."
+            class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-teal-500 text-xs text-slate-800 leading-relaxed"></textarea>
+        </div>
+
+        <!-- Hotel Facilities / Amenities -->
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-teal-600"></i>
+              <span>Hotel Facilities &amp; Amenities</span>
+            </span>
+            <span class="text-[11px] text-slate-400">Tap to toggle or add custom tags</span>
+          </div>
+
+          <!-- Predefined Facility Chips -->
+          <div id="vendorPresetFacilitiesGrid" class="flex flex-wrap gap-1.5 pt-1">
+            <!-- Injected / toggled via JS -->
+          </div>
+
+          <!-- Custom Facility Input -->
+          <div class="flex items-center gap-2 pt-1">
+            <input type="text" id="vendorCustomFacilityInp" placeholder="Add custom facility (e.g. DJ Night, Bonfire, Lawn)..."
+              onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomVendorFacility();}"
+              class="flex-1 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-teal-500" />
+            <button type="button" onclick="addCustomVendorFacility()"
+              class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-xs transition">
+              + Add
+            </button>
+          </div>
+        </div>
+
+        <!-- Hotel Pictures / Gallery Upload -->
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
+              <i data-lucide="image" class="w-3.5 h-3.5 text-teal-600"></i>
+              <span>Hotel Pictures &amp; Gallery</span>
+            </span>
+            <span class="text-[11px] text-slate-400">Upload photos or paste URLs</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <!-- File Upload -->
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">Upload Photos from Device</label>
+              <input type="file" id="vendorPhotoFileInput" accept="image/*" multiple onchange="handleVendorPhotoUpload(event)"
+                class="w-full text-xs text-slate-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-teal-100 file:text-teal-800 hover:file:bg-teal-200 cursor-pointer" />
+            </div>
+
+            <!-- Image URL -->
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">Or Paste Image URL</label>
+              <div class="flex items-center gap-1.5">
+                <input type="url" id="vendorPhotoUrlInp" placeholder="https://..."
+                  class="flex-1 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-teal-500" />
+                <button type="button" onclick="addVendorPhotoUrl()"
+                  class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-xs transition">
+                  Add URL
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Photos Preview Strip -->
+          <div id="vendorPhotoPreviewStrip" class="flex items-center gap-2 overflow-x-auto py-1 empty:hidden">
+            <!-- Thumbnails injected dynamically -->
+          </div>
+        </div>
+
+        <!-- Admin Only Confidential Section -->
+        <div class="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 text-[10px] font-black uppercase tracking-wider">
+              Admin Only • Strictly Hidden from Students
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Contact Person Name</label>
+              <input type="text" id="vendorContactPersonInp" placeholder="e.g. Ramesh Manager"
+                class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-800" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Phone Number (Admin View Only)</label>
+              <input type="tel" id="vendorPhoneInp" placeholder="e.g. 9876543210"
+                class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-mono font-bold text-slate-800" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Total Contract (₹)</label>
+              <input type="number" id="vendorContractAmountInp" placeholder="50000"
+                class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-mono font-bold text-slate-900" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Advance Paid (₹)</label>
+              <input type="number" id="vendorAdvancePaidInp" placeholder="10000"
+                class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-mono font-bold text-emerald-700" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Booking Ref / Voucher</label>
+              <input type="text" id="vendorBookingRefInp" placeholder="e.g. BK-2026-88"
+                class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-mono text-slate-800" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Private Coordinator Notes</label>
+            <textarea id="vendorAdminNotesInp" rows="1" placeholder="Internal remarks, billing instructions, GST notes..."
+              class="w-full px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-800"></textarea>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeVendorHotelModal()"
+            class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+            Cancel
+          </button>
+          <button type="submit" id="btnSaveVendorHotel"
+            class="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-extrabold text-xs shadow-md transition flex items-center gap-1.5">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            <span>Save Hotel / Vendor Record</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: USER & PUBLIC LOST AND FOUND PORTAL                                 -->
+  <!-- ========================================================================= -->
+  <div id="userLostFoundModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-5"
+    style="background:rgba(15,23,42,0.85);backdrop-filter:blur(8px);">
+    <div
+      class="bg-white rounded-3xl p-5 sm:p-7 max-w-4xl w-full border border-slate-200 shadow-2xl relative max-h-[90vh] flex flex-col animate-in fade-in zoom-in duration-200">
+      
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-4 shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200">
+            <i data-lucide="help-circle" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                Tour Safety &amp; Assistance
+              </span>
+              <span id="userLfTripBadge" class="text-xs font-mono font-bold text-slate-500"></span>
+            </div>
+            <h3 class="font-display font-extrabold text-lg sm:text-2xl text-slate-900 mt-0.5">
+              Lost &amp; Found Portal
+            </h3>
+            <p class="text-xs text-slate-500">
+              Report lost belongings or check items found during transit, hotel stays, and tour stops.
+            </p>
+          </div>
+        </div>
+        <button type="button" onclick="closeUserLostFoundModal()"
+          class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Controls & Actions Bar -->
+      <div class="my-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shrink-0">
+        <!-- Filter Tabs -->
+        <div class="flex items-center bg-slate-100 p-1 rounded-xl gap-1">
+          <button type="button" onclick="setUserLfFilter('all')" id="userLfTabBtn-all"
+            class="px-3 py-1 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow-2xs">
+            All Items (<span id="userLfCountAll">0</span>)
+          </button>
+          <button type="button" onclick="setUserLfFilter('Lost')" id="userLfTabBtn-Lost"
+            class="px-3 py-1 rounded-lg text-xs font-bold transition text-slate-600 hover:text-rose-700">
+            Lost (<span id="userLfCountLost">0</span>)
+          </button>
+          <button type="button" onclick="setUserLfFilter('Found')" id="userLfTabBtn-Found"
+            class="px-3 py-1 rounded-lg text-xs font-bold transition text-slate-600 hover:text-emerald-700">
+            Found (<span id="userLfCountFound">0</span>)
+          </button>
+          <button type="button" onclick="setUserLfFilter('Claimed')" id="userLfTabBtn-Claimed"
+            class="px-3 py-1 rounded-lg text-xs font-bold transition text-slate-600 hover:text-blue-700">
+            Claimed
+          </button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="openReportLostItemModal('lost')"
+            class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition">
+            <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+            <span>Report Lost</span>
+          </button>
+          <button type="button" onclick="openReportLostItemModal('found')"
+            class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition">
+            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+            <span>Report Found</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Search Input -->
+      <div class="relative mb-3 shrink-0">
+        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+        <input type="text" id="userLfSearchInp" oninput="handleUserLfSearch(this.value)"
+          placeholder="Search items by name, category, or location (e.g. watch, coach S4, wallet)..."
+          class="w-full pl-9 pr-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 focus:bg-white focus:border-amber-500 focus:outline-none" />
+      </div>
+
+      <!-- Items List Container (Scrollable) -->
+      <div id="userLostFoundListContainer" class="flex-1 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 pr-1 py-1">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: REPORT LOST / FOUND ITEM (UNIVERSAL USER & ADMIN)                  -->
+  <!-- ========================================================================= -->
+  <div id="reportLostFoundModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-5"
+    style="background:rgba(15,23,42,0.85);backdrop-filter:blur(8px);">
+    <div
+      class="bg-white rounded-3xl p-5 sm:p-7 max-w-lg w-full border border-slate-200 shadow-2xl relative max-h-[92vh] flex flex-col animate-in fade-in zoom-in duration-200">
+      
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-3.5 shrink-0">
+        <div class="flex items-center gap-3">
+          <div id="reportModalIconContainer" class="w-11 h-11 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-200">
+            <i id="reportModalIcon" data-lucide="alert-circle" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 id="reportLostFoundTitle" class="font-display font-extrabold text-lg sm:text-xl text-slate-900">
+              Report Item
+            </h3>
+            <p class="text-xs text-slate-500">
+              Submit details so coordinators and peers can quickly assist you.
+            </p>
+          </div>
+        </div>
+        <button type="button" onclick="closeReportLostItemModal()"
+          class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Form Body (Scrollable) -->
+      <form id="reportLostFoundForm" onsubmit="handleReportLostFoundFormSubmit(event)" class="flex-1 overflow-y-auto pr-1 py-3 space-y-3.5">
+        
+        <!-- Toggle Status: Lost vs Found -->
+        <div class="bg-slate-100 p-1 rounded-2xl grid grid-cols-2 gap-1 border border-slate-200">
+          <button type="button" id="rfTypeBtn-lost" onclick="setReportFormType('lost')"
+            class="py-2 px-3 rounded-xl text-xs font-extrabold transition-all bg-rose-600 text-white shadow-sm flex items-center justify-center gap-1.5">
+            <i data-lucide="alert-circle" class="w-4 h-4"></i>
+            <span>I Lost an Item</span>
+          </button>
+          <button type="button" id="rfTypeBtn-found" onclick="setReportFormType('found')"
+            class="py-2 px-3 rounded-xl text-xs font-extrabold transition-all text-slate-600 hover:text-emerald-700 flex items-center justify-center gap-1.5">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+            <span>I Found an Item</span>
+          </button>
+        </div>
+
+        <!-- Item Name & Category -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Item Name *</label>
+            <input type="text" id="lfItemNameInp" required placeholder="e.g. Fastrack Watch, College ID"
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 text-xs font-bold text-slate-900" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Category</label>
+            <select id="lfItemCategoryInp"
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 text-xs font-bold text-slate-800">
+              <option value="Electronics" selected>Electronics (Phone, Earbuds, Charger)</option>
+              <option value="ID & Cards">College ID &amp; Cards</option>
+              <option value="Wallet & Cash">Wallet &amp; Cash</option>
+              <option value="Clothing & Bags">Clothing, Backpack &amp; Caps</option>
+              <option value="Keys">Keys</option>
+              <option value="Accessories">Watch, Glasses, Jewelry</option>
+              <option value="Other">Other Personal Item</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Location & Time -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Location Where Lost/Found *</label>
+            <input type="text" id="lfLocationInp" required placeholder="e.g. Bus 1 Seat 12, Hotel Lobby"
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 text-xs text-slate-800" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Date &amp; Approximate Time</label>
+            <input type="text" id="lfTimeInp" placeholder="e.g. Today around 3:00 PM"
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 text-xs text-slate-800" />
+          </div>
+        </div>
+
+        <!-- Detailed Description -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Description (Color, brand, markings) *</label>
+          <textarea id="lfDescInp" rows="2" required placeholder="Describe distinguishing marks, color, brand, stickers..."
+            class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 text-xs text-slate-800"></textarea>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Your Name *</label>
+            <input type="text" id="lfContactPersonInp" required placeholder="Your full name"
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 text-xs text-slate-800" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Your WhatsApp / Phone Number *</label>
+            <input type="tel" id="lfContactPhoneInp" required placeholder="10-digit mobile number"
+              class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-amber-500 text-xs font-mono font-bold text-slate-800" />
+          </div>
+        </div>
+
+        <!-- Optional Photo of Item -->
+        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+          <label class="block text-xs font-bold text-slate-700">Optional Photo of Item</label>
+          <input type="file" id="lfPhotoFileInput" accept="image/*" onchange="handleLfPhotoUpload(event)"
+            class="w-full text-xs text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-100 file:text-amber-800 hover:file:bg-amber-200 cursor-pointer" />
+          <div id="lfPhotoPreviewContainer" class="hidden relative w-20 h-20 rounded-xl overflow-hidden border border-slate-300">
+            <img id="lfPhotoPreviewImg" src="" alt="Item photo" class="w-full h-full object-cover" />
+            <button type="button" onclick="clearLfPhoto()"
+              class="absolute top-1 right-1 w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs font-bold shadow">
+              &times;
+            </button>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeReportLostItemModal()"
+            class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+            Cancel
+          </button>
+          <button type="submit" id="btnSubmitReportLostFound"
+            class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-extrabold text-xs shadow-md transition flex items-center gap-1.5">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            <span>Submit Report</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: IMAGE LIGHTBOX PREVIEW (FULL RESOLUTION ZOOM)                      -->
+  <!-- ========================================================================= -->
+  <div id="imageLightboxModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-6"
+    style="background:rgba(10,15,28,0.94);backdrop-filter:blur(10px);" onclick="if(event.target===this)closeImageLightboxModal();">
+    <div class="relative max-w-4xl max-h-[92vh] flex flex-col items-center">
+      <button type="button" onclick="closeImageLightboxModal()"
+        class="absolute -top-10 right-0 sm:-right-10 w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <img id="lightboxImg" src="" alt="Enlarged preview" class="max-w-full max-h-[82vh] object-contain rounded-2xl shadow-2xl border border-white/10" />
+      <p id="lightboxCaption" class="text-xs text-slate-300 font-medium text-center mt-2.5 px-4"></p>
+    </div>
+  </div>
+
   <div id="emergencySosModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4"
     style="background:rgba(15,23,42,0.92);backdrop-filter:blur(8px);">
     <div
@@ -10367,6 +10942,7 @@
         onSnapshot(vendorsCol, (snap) => {
           allTripVendors = snap.docs.map(d => ({ id: d.id, ...d.data() }));
           renderVendorsHub();
+          if (typeof renderUserHotelsModal === "function") renderUserHotelsModal();
         });
       } catch (eVendors) { console.warn('Vendors listener error:', eVendors); }
 
@@ -10376,6 +10952,7 @@
         onSnapshot(lfCol, (snap) => {
           allLostFoundItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
           renderLostFoundHub();
+          if (typeof renderUserLostFoundModal === "function") renderUserLostFoundModal();
         });
       } catch (eLf) { console.warn('Lost and found listener error:', eLf); }
 
@@ -33398,7 +33975,325 @@ Guidelines:
       }
     }
 
-    // Feature 158: Hotel & Vendor Management
+    // =========================================================================
+    // FEATURE: IMAGE COMPRESSION ENGINE FOR HOTELS & LOST/FOUND
+    // =========================================================================
+    function compressImageFile(file, maxWidth = 850, quality = 0.75) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            let w = img.width;
+            let h = img.height;
+            if (w > maxWidth || h > maxWidth) {
+              if (w > h) {
+                h = Math.round((h * maxWidth) / w);
+                w = maxWidth;
+              } else {
+                w = Math.round((w * maxWidth) / h);
+                h = maxWidth;
+              }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.onerror = () => resolve(e.target.result);
+          img.src = e.target.result;
+        };
+        reader.onerror = () => resolve('');
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // =========================================================================
+    // FEATURE 158: HOTEL & VENDOR MANAGEMENT WITH FACILITIES & PICTURES
+    // =========================================================================
+    const PRESET_HOTEL_FACILITIES = [
+      { name: 'Free High-Speed WiFi', icon: 'wifi' },
+      { name: 'Swimming Pool', icon: 'waves' },
+      { name: 'Air Conditioning (AC)', icon: 'wind' },
+      { name: '24/7 Hot Water / Geyser', icon: 'droplet' },
+      { name: 'Multi-Cuisine Restaurant', icon: 'utensils' },
+      { name: 'Buffet Breakfast & Dinner', icon: 'coffee' },
+      { name: 'Campfire & Music Night', icon: 'flame' },
+      { name: '24/7 Power Backup', icon: 'zap' },
+      { name: 'Mountain / Valley View', icon: 'mountain' },
+      { name: 'Daily Housekeeping', icon: 'sparkles' },
+      { name: 'Elevator / Lift', icon: 'arrow-up-down' },
+      { name: 'Secure Bus Parking', icon: 'car' },
+      { name: '24/7 CCTV & Security', icon: 'shield-check' },
+      { name: 'Room Service', icon: 'bell' },
+      { name: 'First Aid & Medical Support', icon: 'cross' }
+    ];
+
+    let currentVendorEditId = null;
+    let currentVendorFacilities = [];
+    let currentVendorPhotos = [];
+
+    function getFacilityIcon(name = '') {
+      const lower = name.toLowerCase();
+      if (lower.includes('wifi') || lower.includes('internet')) return 'wifi';
+      if (lower.includes('pool') || lower.includes('swim')) return 'waves';
+      if (lower.includes('ac') || lower.includes('air')) return 'wind';
+      if (lower.includes('water') || lower.includes('geyser') || lower.includes('hot')) return 'droplet';
+      if (lower.includes('rest') || lower.includes('dine') || lower.includes('food')) return 'utensils';
+      if (lower.includes('buffet') || lower.includes('break') || lower.includes('coffee') || lower.includes('tea')) return 'coffee';
+      if (lower.includes('fire') || lower.includes('camp') || lower.includes('music')) return 'flame';
+      if (lower.includes('power') || lower.includes('backup') || lower.includes('gen')) return 'zap';
+      if (lower.includes('mountain') || lower.includes('view') || lower.includes('valley') || lower.includes('nature')) return 'mountain';
+      if (lower.includes('park')) return 'car';
+      if (lower.includes('cctv') || lower.includes('security') || lower.includes('guard')) return 'shield-check';
+      if (lower.includes('room') || lower.includes('bell') || lower.includes('service')) return 'bell';
+      if (lower.includes('lift') || lower.includes('elev')) return 'arrow-up-down';
+      if (lower.includes('aid') || lower.includes('medic') || lower.includes('doctor')) return 'cross';
+      return 'sparkles';
+    }
+
+    function openAddVendorModal() {
+      currentVendorEditId = null;
+      currentVendorFacilities = ['Free High-Speed WiFi', '24/7 Hot Water / Geyser', 'Air Conditioning (AC)'];
+      currentVendorPhotos = [];
+
+      const modal = document.getElementById('adminVendorHotelModal');
+      const title = document.getElementById('vendorModalTitle');
+      const editInp = document.getElementById('vendorEditId');
+      if (title) title.textContent = 'Add Hotel / Vendor Record';
+      if (editInp) editInp.value = '';
+
+      const form = document.getElementById('vendorHotelForm');
+      if (form) form.reset();
+
+      renderVendorFacilitiesUI();
+      renderVendorPhotosUI();
+      if (modal) modal.classList.remove('hidden');
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function openEditVendorModal(vendorId) {
+      const v = allTripVendors.find(x => x.id === vendorId);
+      if (!v) {
+        showToast('Vendor record not found.', 'error');
+        return;
+      }
+      currentVendorEditId = vendorId;
+      currentVendorFacilities = Array.isArray(v.facilities) ? [...v.facilities] : [];
+      currentVendorPhotos = Array.isArray(v.photos) ? [...v.photos] : (v.photo ? [v.photo] : []);
+
+      const modal = document.getElementById('adminVendorHotelModal');
+      const title = document.getElementById('vendorModalTitle');
+      const editInp = document.getElementById('vendorEditId');
+      if (title) title.textContent = 'Edit Hotel / Vendor Record';
+      if (editInp) editInp.value = vendorId;
+
+      const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val || '';
+      };
+
+      setVal('vendorCategoryInp', v.category || 'Hotel/Resort');
+      setVal('vendorNameInp', v.name || '');
+      setVal('vendorAddressInp', v.address || v.location || '');
+      setVal('vendorRoomDetailsInp', v.roomDetails || v.roomType || '');
+      setVal('vendorCheckInInp', v.checkIn || '');
+      setVal('vendorCheckOutInp', v.checkOut || '');
+      setVal('vendorDescInp', v.description || '');
+      setVal('vendorContactPersonInp', v.contactPerson || '');
+      setVal('vendorPhoneInp', v.phone || '');
+      setVal('vendorContractAmountInp', v.contractAmount || '');
+      setVal('vendorAdvancePaidInp', v.advancePaid || '');
+      setVal('vendorBookingRefInp', v.bookingRef || '');
+      setVal('vendorAdminNotesInp', v.adminNotes || '');
+
+      renderVendorFacilitiesUI();
+      renderVendorPhotosUI();
+      if (modal) modal.classList.remove('hidden');
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function closeVendorHotelModal() {
+      const modal = document.getElementById('adminVendorHotelModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function renderVendorFacilitiesUI() {
+      const container = document.getElementById('vendorPresetFacilitiesGrid');
+      if (!container) return;
+
+      container.innerHTML = PRESET_HOTEL_FACILITIES.map(fac => {
+        const isSelected = currentVendorFacilities.includes(fac.name);
+        return `
+          <button type="button" onclick="toggleVendorFacility('${escapeHtml(fac.name)}')"
+            class="px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition ${
+              isSelected
+                ? 'bg-teal-600 text-white shadow-2xs font-bold'
+                : 'bg-white border border-slate-200 text-slate-700 hover:border-teal-400'
+            }">
+            <i data-lucide="${fac.icon}" class="w-3.5 h-3.5 ${isSelected ? 'text-teal-200' : 'text-slate-400'}"></i>
+            <span>${escapeHtml(fac.name)}</span>
+            ${isSelected ? '<span class="text-teal-200 text-[10px] ml-0.5">&times;</span>' : ''}
+          </button>
+        `;
+      }).join('');
+
+      const customOnes = currentVendorFacilities.filter(f => !PRESET_HOTEL_FACILITIES.some(p => p.name === f));
+      if (customOnes.length > 0) {
+        container.innerHTML += customOnes.map(f => `
+          <button type="button" onclick="toggleVendorFacility('${escapeHtml(f)}')"
+            class="px-2.5 py-1 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-indigo-600 text-white shadow-2xs transition">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-200"></i>
+            <span>${escapeHtml(f)}</span>
+            <span class="text-indigo-200 text-[10px] ml-0.5">&times;</span>
+          </button>
+        `).join('');
+      }
+
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function toggleVendorFacility(facilityName) {
+      if (currentVendorFacilities.includes(facilityName)) {
+        currentVendorFacilities = currentVendorFacilities.filter(f => f !== facilityName);
+      } else {
+        currentVendorFacilities.push(facilityName);
+      }
+      renderVendorFacilitiesUI();
+    }
+
+    function addCustomVendorFacility() {
+      const inp = document.getElementById('vendorCustomFacilityInp');
+      if (!inp) return;
+      const val = inp.value.trim();
+      if (!val) return;
+      if (!currentVendorFacilities.includes(val)) {
+        currentVendorFacilities.push(val);
+      }
+      inp.value = '';
+      renderVendorFacilitiesUI();
+    }
+
+    function renderVendorPhotosUI() {
+      const container = document.getElementById('vendorPhotoPreviewStrip');
+      if (!container) return;
+
+      if (currentVendorPhotos.length === 0) {
+        container.innerHTML = '<span class="text-[11px] text-slate-400 italic">No photos added yet.</span>';
+        return;
+      }
+
+      container.innerHTML = currentVendorPhotos.map((photoUrl, idx) => `
+        <div class="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border border-slate-200 shrink-0 group">
+          <img src="${escapeHtml(photoUrl)}" alt="Hotel preview" class="w-full h-full object-cover cursor-pointer" onclick="openImageLightboxModal('${escapeHtml(photoUrl)}', 'Hotel Photo Preview')" />
+          <button type="button" onclick="removeVendorPhoto(${idx})"
+            class="absolute top-1 right-1 w-5 h-5 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center text-xs font-bold shadow transition"
+            title="Remove photo">&times;</button>
+        </div>
+      `).join('');
+    }
+
+    function removeVendorPhoto(index) {
+      if (index >= 0 && index < currentVendorPhotos.length) {
+        currentVendorPhotos.splice(index, 1);
+        renderVendorPhotosUI();
+      }
+    }
+
+    function addVendorPhotoUrl() {
+      const inp = document.getElementById('vendorPhotoUrlInp');
+      if (!inp) return;
+      const url = inp.value.trim();
+      if (!url) {
+        showToast('Please enter an image URL.', 'error');
+        return;
+      }
+      currentVendorPhotos.push(url);
+      inp.value = '';
+      renderVendorPhotosUI();
+      showToast('Photo URL added!', 'success');
+    }
+
+    async function handleVendorPhotoUpload(event) {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+
+      showToast(`Compressing ${files.length} photo(s)...`, 'info');
+      for (let i = 0; i < files.length; i++) {
+        try {
+          const compressed = await compressImageFile(files[i], 850, 0.75);
+          if (compressed) {
+            currentVendorPhotos.push(compressed);
+          }
+        } catch (e) {
+          console.warn('Failed to compress image:', e);
+        }
+      }
+      event.target.value = '';
+      renderVendorPhotosUI();
+      showToast('Photos uploaded and compressed successfully!', 'success');
+    }
+
+    async function handleVendorHotelFormSubmit(event) {
+      event.preventDefault();
+      const name = document.getElementById('vendorNameInp')?.value?.trim();
+      if (!name) {
+        showToast('Please enter hotel / vendor name.', 'error');
+        return;
+      }
+
+      const getVal = id => document.getElementById(id)?.value?.trim() || '';
+      const category = getVal('vendorCategoryInp') || 'Hotel/Resort';
+      const address = getVal('vendorAddressInp');
+      const roomDetails = getVal('vendorRoomDetailsInp');
+      const checkIn = getVal('vendorCheckInInp');
+      const checkOut = getVal('vendorCheckOutInp');
+      const description = getVal('vendorDescInp');
+      const contactPerson = getVal('vendorContactPersonInp');
+      const phone = getVal('vendorPhoneInp');
+      const contractAmount = Number(document.getElementById('vendorContractAmountInp')?.value) || 0;
+      const advancePaid = Number(document.getElementById('vendorAdvancePaidInp')?.value) || 0;
+      const bookingRef = getVal('vendorBookingRefInp');
+      const adminNotes = getVal('vendorAdminNotesInp');
+
+      const data = {
+        name,
+        category,
+        address,
+        roomDetails,
+        checkIn,
+        checkOut,
+        description,
+        facilities: currentVendorFacilities,
+        photos: currentVendorPhotos,
+        contactPerson,
+        phone,
+        contractAmount,
+        advancePaid,
+        bookingRef,
+        adminNotes,
+        tripId: currentTripId,
+        updatedAt: Date.now()
+      };
+
+      try {
+        if (currentVendorEditId) {
+          await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_vendors', currentVendorEditId), data, { merge: true });
+          showToast(`${name} updated successfully!`, 'success');
+        } else {
+          data.createdAt = Date.now();
+          await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'trip_vendors'), data);
+          showToast(`${name} added to vendor registry!`, 'success');
+        }
+        closeVendorHotelModal();
+      } catch (err) {
+        console.error('Error saving vendor:', err);
+        showToast('Failed to save hotel/vendor record.', 'error');
+      }
+    }
+
     function renderVendorsHub() {
       const container = document.getElementById('vendorsListContainer');
       const countEl = document.getElementById('vendorCountTotal');
@@ -33425,7 +34320,7 @@ Guidelines:
         container.innerHTML = `
           <div class="col-span-full p-8 text-center text-slate-400 bg-slate-50 border border-slate-200 rounded-2xl">
             <i data-lucide="building" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
-            No hotel or vendor records added yet. Click 'Add Hotel / Vendor' to log contracts.
+            No hotel or vendor records added yet. Click 'Add Hotel / Vendor' to log contracts and accommodations.
           </div>
         `;
         if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
@@ -33434,19 +34329,53 @@ Guidelines:
 
       container.innerHTML = vendors.map(v => {
         const bal = Math.max(0, (Number(v.contractAmount) || 0) - (Number(v.advancePaid) || 0));
+        const photos = Array.isArray(v.photos) ? v.photos : (v.photo ? [v.photo] : []);
+        const heroPhoto = photos[0] || '';
+        const facilities = Array.isArray(v.facilities) ? v.facilities : [];
+
         return `
-          <div class="expressive-card border border-slate-200 bg-white rounded-2xl p-4 flex flex-col justify-between shadow-2xs hover:shadow-md transition">
-            <div>
+          <div class="expressive-card border border-slate-200 bg-white rounded-2xl overflow-hidden flex flex-col justify-between shadow-2xs hover:shadow-md transition">
+            ${heroPhoto ? `
+              <div class="relative w-full h-36 bg-slate-100 overflow-hidden cursor-pointer" onclick="openImageLightboxModal('${escapeHtml(heroPhoto)}', '${escapeHtml(v.name)}')">
+                <img src="${escapeHtml(heroPhoto)}" alt="${escapeHtml(v.name)}" class="w-full h-full object-cover hover:scale-105 transition duration-300" />
+                <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/60 text-white backdrop-blur-xs">
+                  ${photos.length} photo${photos.length > 1 ? 's' : ''}
+                </span>
+                <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-600 text-white">
+                  ${escapeHtml(v.category || 'Hotel')}
+                </span>
+              </div>
+            ` : ''}
+
+            <div class="p-4">
               <div class="flex items-start justify-between gap-2">
                 <div>
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-700 uppercase tracking-wider">${escapeHtml(v.category || 'Vendor')}</span>
+                  ${!heroPhoto ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-700 uppercase tracking-wider">${escapeHtml(v.category || 'Vendor')}</span>` : ''}
                   <h4 class="font-extrabold text-sm text-slate-900 mt-1">${escapeHtml(v.name)}</h4>
-                  <p class="text-[11px] text-slate-500 font-medium">${escapeHtml(v.contactPerson || '')} • ${escapeHtml(v.phone || '')}</p>
+                  ${v.address ? `<p class="text-[11px] text-slate-500 font-medium flex items-center gap-1 mt-0.5"><i data-lucide="map-pin" class="w-3 h-3 text-rose-500 shrink-0"></i><span class="truncate">${escapeHtml(v.address)}</span></p>` : ''}
+                  <p class="text-[11px] text-slate-500 font-medium mt-0.5">${escapeHtml(v.contactPerson || '')} • ${escapeHtml(v.phone || '')}</p>
                 </div>
-                <button type="button" onclick="deleteVendorRecord('${v.id}')" class="text-slate-400 hover:text-rose-600 transition" title="Delete Vendor">
-                  <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
+                <div class="flex items-center gap-1 shrink-0">
+                  <button type="button" onclick="openEditVendorModal('${v.id}')" class="p-1 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-teal-700 transition" title="Edit Hotel / Vendor">
+                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                  </button>
+                  <button type="button" onclick="deleteVendorRecord('${v.id}')" class="p-1 rounded-lg hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition" title="Delete Vendor">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  </button>
+                </div>
               </div>
+
+              ${facilities.length > 0 ? `
+                <div class="mt-2.5 flex flex-wrap gap-1">
+                  ${facilities.slice(0, 3).map(f => `
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-100 flex items-center gap-1">
+                      <i data-lucide="${getFacilityIcon(f)}" class="w-3 h-3 text-teal-600"></i>
+                      <span>${escapeHtml(f)}</span>
+                    </span>
+                  `).join('')}
+                  ${facilities.length > 3 ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-lg bg-slate-100 text-slate-600">+${facilities.length - 3}</span>` : ''}
+                </div>
+              ` : ''}
 
               <div class="mt-3 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
                 <div>
@@ -33460,11 +34389,11 @@ Guidelines:
               </div>
             </div>
 
-            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+            <div class="p-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs bg-slate-50/50">
               <span class="text-[10px] text-slate-400 font-mono">${v.bookingRef ? 'Ref: ' + v.bookingRef : 'Active'}</span>
               <div class="flex items-center gap-1.5">
-                ${v.phone ? `<a href="tel:${v.phone}" class="p-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700"><i data-lucide="phone" class="w-3.5 h-3.5"></i></a>` : ''}
-                ${v.phone ? `<a href="https://wa.me/91${normalizePhone(v.phone)}" target="_blank" class="p-1 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i></a>` : ''}
+                ${v.phone ? `<a href="tel:${v.phone}" class="p-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700" title="Call Vendor"><i data-lucide="phone" class="w-3.5 h-3.5"></i></a>` : ''}
+                ${v.phone ? `<a href="https://wa.me/91${normalizePhone(v.phone)}" target="_blank" class="p-1 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700" title="WhatsApp Vendor"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i></a>` : ''}
               </div>
             </div>
           </div>
@@ -33472,34 +34401,6 @@ Guidelines:
       }).join('');
 
       if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
-    }
-
-    function openAddVendorModal() {
-      const name = prompt('Vendor / Hotel Name:');
-      if (!name) return;
-      const category = prompt('Category (Hotel/Resort, Bus Operator, Caterer, Tour Guide):', 'Hotel/Resort') || 'Hotel';
-      const contactPerson = prompt('Contact Person Name:', '') || '';
-      const phone = prompt('Phone Number:', '') || '';
-      const contractAmount = Number(prompt('Total Contract Amount (₹):', '50000')) || 0;
-      const advancePaid = Number(prompt('Advance Paid Amount (₹):', '10000')) || 0;
-      const bookingRef = prompt('Booking / Contract Reference Number:', '') || '';
-
-      addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'trip_vendors'), {
-        name,
-        category,
-        contactPerson,
-        phone,
-        contractAmount,
-        advancePaid,
-        bookingRef,
-        tripId: currentTripId,
-        createdAt: Date.now()
-      }).then(() => {
-        showToast(`${name} added to vendor registry!`, 'success');
-      }).catch(err => {
-        console.error('Error adding vendor:', err);
-        showToast('Failed to save vendor.', 'error');
-      });
     }
 
     async function deleteVendorRecord(vendorId) {
@@ -33510,6 +34411,180 @@ Guidelines:
       } catch (e) {
         showToast('Failed to delete vendor.', 'error');
       }
+    }
+
+    // =========================================================================
+    // FEATURE: USER-FACING HOTELS VIEW (STRICT PRIVACY: NO PHONE, NO AMOUNTS)
+    // =========================================================================
+    function openUserHotelsModal() {
+      const modal = document.getElementById('userHotelsModal');
+      const badge = document.getElementById('userHotelsTripBadge');
+      if (badge) badge.textContent = tripConfig.destination ? `#${currentTripId} • ${tripConfig.destination}` : `#${currentTripId}`;
+      if (modal) modal.classList.remove('hidden');
+      renderUserHotelsModal();
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function closeUserHotelsModal() {
+      const modal = document.getElementById('userHotelsModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function renderUserHotelsModal() {
+      const container = document.getElementById('userHotelsListContainer');
+      if (!container) return;
+
+      const allForTrip = allTripVendors.filter(v => (v.tripId || 'default') === currentTripId);
+      let hotels = allForTrip.filter(v => {
+        const cat = (v.category || '').toLowerCase();
+        return cat.includes('hotel') || cat.includes('resort') || cat.includes('stay') || cat.includes('lodge') || cat.includes('cottage');
+      });
+
+      if (hotels.length === 0 && allForTrip.length > 0) {
+        hotels = allForTrip;
+      }
+
+      if (hotels.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center text-slate-400 bg-slate-50 border border-slate-200 rounded-3xl space-y-2">
+            <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto">
+              <i data-lucide="building-2" class="w-6 h-6"></i>
+            </div>
+            <h4 class="font-bold text-slate-700 text-sm">Stay Details Coming Soon</h4>
+            <p class="text-xs text-slate-500 max-w-sm mx-auto">
+              Hotel and accommodation bookings for <span class="font-bold text-slate-700">${escapeHtml(tripConfig.destination || 'this trip')}</span> are being finalized by the tour organizers. Check back soon!
+            </p>
+          </div>
+        `;
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = hotels.map(hotel => {
+        const photos = Array.isArray(hotel.photos) ? hotel.photos : (hotel.photo ? [hotel.photo] : []);
+        const heroPhoto = photos[0] || '';
+        const facilities = Array.isArray(hotel.facilities) ? hotel.facilities : [];
+        const mapQuery = encodeURIComponent(hotel.address || hotel.name + ' ' + (tripConfig.destination || ''));
+
+        // STRICT PRIVACY: NEVER output hotel.phone, hotel.contactPerson, hotel.contractAmount, hotel.advancePaid, hotel.bookingRef
+        return `
+          <div class="expressive-card border border-teal-200/90 rounded-3xl bg-white overflow-hidden shadow-sm hover:shadow-md transition">
+            ${heroPhoto ? `
+              <div class="relative w-full h-52 sm:h-64 bg-slate-900 overflow-hidden group">
+                <img src="${escapeHtml(heroPhoto)}" alt="${escapeHtml(hotel.name)}"
+                  class="w-full h-full object-cover group-hover:scale-105 transition duration-500 cursor-pointer"
+                  onclick="openImageLightboxModal('${escapeHtml(heroPhoto)}', '${escapeHtml(hotel.name)}')" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none"></div>
+                <div class="absolute bottom-3 left-4 right-4 flex items-end justify-between pointer-events-none">
+                  <div>
+                    <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-teal-500 text-white shadow-xs">
+                      ${escapeHtml(hotel.category || 'Hotel / Resort Stay')}
+                    </span>
+                    <h3 class="font-display font-extrabold text-xl sm:text-2xl text-white mt-1 drop-shadow-sm">
+                      ${escapeHtml(hotel.name)}
+                    </h3>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-xl bg-black/60 backdrop-blur-xs text-white text-xs font-bold pointer-events-auto cursor-pointer"
+                    onclick="openImageLightboxModal('${escapeHtml(heroPhoto)}', '${escapeHtml(hotel.name)}')">
+                    <i data-lucide="image" class="w-3.5 h-3.5 inline mr-1"></i> ${photos.length} Photo${photos.length > 1 ? 's' : ''}
+                  </span>
+                </div>
+              </div>
+            ` : `
+              <div class="p-5 sm:p-6 bg-gradient-to-r from-teal-500/10 via-teal-50 to-white border-b border-teal-100 flex items-center justify-between">
+                <div>
+                  <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-teal-100 text-teal-800 border border-teal-200 mb-1">
+                    ${escapeHtml(hotel.category || 'Hotel / Resort Stay')}
+                  </span>
+                  <h3 class="font-display font-extrabold text-xl text-slate-900">
+                    ${escapeHtml(hotel.name)}
+                  </h3>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-teal-100 text-teal-700 flex items-center justify-center">
+                  <i data-lucide="building-2" class="w-6 h-6"></i>
+                </div>
+              </div>
+            `}
+
+            ${photos.length > 1 ? `
+              <div class="flex items-center gap-2 px-4 py-2 bg-slate-50 border-b border-slate-100 overflow-x-auto scrollbar-none">
+                ${photos.map((p, idx) => `
+                  <div class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 border-2 border-white shadow-xs cursor-pointer hover:opacity-90"
+                    onclick="openImageLightboxModal('${escapeHtml(p)}', '${escapeHtml(hotel.name)} (Photo ${idx + 1})')">
+                    <img src="${escapeHtml(p)}" alt="Thumbnail" class="w-full h-full object-cover" />
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+
+            <div class="p-5 sm:p-6 space-y-4">
+              ${hotel.address ? `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+                  <div class="flex items-start gap-2 min-w-0">
+                    <i data-lucide="map-pin" class="w-4 h-4 text-rose-500 shrink-0 mt-0.5"></i>
+                    <div>
+                      <p class="text-[10px] font-extrabold uppercase text-slate-400">Location / Address</p>
+                      <p class="text-xs font-semibold text-slate-800 leading-snug">${escapeHtml(hotel.address)}</p>
+                    </div>
+                  </div>
+                  <a href="https://www.google.com/maps/search/?api=1&query=${mapQuery}" target="_blank" rel="noopener"
+                    class="px-3 py-1.5 rounded-xl bg-white border border-slate-300 hover:border-teal-500 text-teal-700 hover:text-teal-800 text-xs font-bold transition flex items-center gap-1.5 shrink-0 self-start sm:self-auto shadow-2xs">
+                    <i data-lucide="navigation" class="w-3.5 h-3.5 text-teal-600"></i>
+                    <span>Open in Maps</span>
+                  </a>
+                </div>
+              ` : ''}
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+                ${hotel.roomDetails ? `
+                  <div class="p-2.5 rounded-xl bg-indigo-50/60 border border-indigo-100">
+                    <span class="text-[10px] font-extrabold uppercase text-indigo-700">Room Sharing</span>
+                    <p class="font-bold text-slate-800 mt-0.5">${escapeHtml(hotel.roomDetails)}</p>
+                  </div>
+                ` : ''}
+                ${hotel.checkIn ? `
+                  <div class="p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
+                    <span class="text-[10px] font-extrabold uppercase text-emerald-700">Check-In</span>
+                    <p class="font-bold text-slate-800 mt-0.5">${escapeHtml(hotel.checkIn)}</p>
+                  </div>
+                ` : ''}
+                ${hotel.checkOut ? `
+                  <div class="p-2.5 rounded-xl bg-amber-50/60 border border-amber-100">
+                    <span class="text-[10px] font-extrabold uppercase text-amber-700">Check-Out</span>
+                    <p class="font-bold text-slate-800 mt-0.5">${escapeHtml(hotel.checkOut)}</p>
+                  </div>
+                ` : ''}
+              </div>
+
+              ${hotel.description ? `
+                <div class="text-xs text-slate-600 leading-relaxed bg-slate-50/50 p-3 rounded-2xl border border-slate-100">
+                  <p class="font-bold text-slate-700 mb-0.5">Stay Overview &amp; Instructions:</p>
+                  <p>${escapeHtml(hotel.description)}</p>
+                </div>
+              ` : ''}
+
+              ${facilities.length > 0 ? `
+                <div class="space-y-2 pt-1 border-t border-slate-100">
+                  <p class="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-teal-600"></i>
+                    <span>Included Facilities &amp; Amenities:</span>
+                  </p>
+                  <div class="flex flex-wrap gap-2">
+                    ${facilities.map(fac => `
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-teal-50 text-teal-900 border border-teal-200/90 text-xs font-semibold shadow-2xs">
+                        <i data-lucide="${getFacilityIcon(fac)}" class="w-3.5 h-3.5 text-teal-600"></i>
+                        <span>${escapeHtml(fac)}</span>
+                      </span>
+                    `).join('')}
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
     }
 
     // Feature 159: Emergency SOS Alert Functionality
@@ -33554,10 +34629,18 @@ Guidelines:
       }
     }
 
-    // Feature 160: Lost & Found Management
+    // =========================================================================
+    // FEATURE 160: USER & ADMIN LOST & FOUND MANAGEMENT
+    // =========================================================================
+    let currentUserLfFilter = 'all';
+    let currentUserLfSearch = '';
+    let currentReportLfType = 'lost';
+    let currentLfPhotoBase64 = '';
+
     function renderLostFoundHub() {
       const container = document.getElementById('lostFoundListContainer');
       const badge = document.getElementById('subTabBadgeLostFound');
+
       if (!container) return;
 
       const items = allLostFoundItems.filter(i => (i.tripId || 'default') === currentTripId);
@@ -33576,25 +34659,35 @@ Guidelines:
 
       container.innerHTML = items.map(item => {
         const isLost = (item.status === 'Lost');
+        const isClaimed = (item.status === 'Claimed');
         return `
           <div class="expressive-card border border-slate-200 bg-white rounded-2xl p-4 flex flex-col justify-between shadow-2xs">
             <div>
               <div class="flex items-center justify-between">
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isLost ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'}">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isClaimed ? 'bg-blue-100 text-blue-800' : (isLost ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800')}">
                   ${escapeHtml(item.status || 'Reported')}
                 </span>
                 <span class="text-[10px] text-slate-400 font-mono">${formatDisplayDate(item.createdAt)}</span>
               </div>
+
+              ${item.photo ? `
+                <div class="mt-2.5 w-full h-32 rounded-xl overflow-hidden border border-slate-200 cursor-pointer"
+                  onclick="openImageLightboxModal('${escapeHtml(item.photo)}', '${escapeHtml(item.itemName)}')">
+                  <img src="${escapeHtml(item.photo)}" alt="${escapeHtml(item.itemName)}" class="w-full h-full object-cover" />
+                </div>
+              ` : ''}
+
               <h4 class="font-extrabold text-sm text-slate-900 mt-2">${escapeHtml(item.itemName)}</h4>
               <p class="text-xs text-slate-500 mt-1 leading-relaxed">${escapeHtml(item.description || '')}</p>
-              <div class="mt-3 text-xs text-slate-600 font-medium">
+              <div class="mt-3 text-xs text-slate-600 font-medium space-y-0.5">
                 <p>📍 Location: ${escapeHtml(item.location || 'Tour Area')}</p>
                 <p>👤 Contact: ${escapeHtml(item.contactPerson || 'Coordinator')}</p>
+                ${item.contactPhone ? `<p>📞 Phone: ${escapeHtml(item.contactPhone)}</p>` : ''}
               </div>
             </div>
 
             <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-              ${item.status !== 'Claimed' ? `
+              ${!isClaimed ? `
                 <button type="button" onclick="claimLostFoundItem('${item.id}')"
                   class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition">
                   Mark as Claimed
@@ -33611,24 +34704,267 @@ Guidelines:
       if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
     }
 
-    function openReportLostItemModal(type = 'lost') {
-      const itemName = prompt(`Item Name (${type === 'lost' ? 'What was lost?' : 'What was found?'}):`);
-      if (!itemName) return;
-      const description = prompt('Description (color, brand, distinguishing marks):', '') || '';
-      const location = prompt('Location where lost/found:', '') || 'Transit / Hotel';
-      const contactPerson = prompt('Contact Person & Phone:', '') || 'Trip Coordinator';
+    function openUserLostFoundModal() {
+      const modal = document.getElementById('userLostFoundModal');
+      const badge = document.getElementById('userLfTripBadge');
+      if (badge) badge.textContent = `#${currentTripId}`;
+      if (modal) modal.classList.remove('hidden');
+      renderUserLostFoundModal();
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
 
-      addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'trip_lost_found'), {
+    function closeUserLostFoundModal() {
+      const modal = document.getElementById('userLostFoundModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function setUserLfFilter(filter = 'all') {
+      currentUserLfFilter = filter;
+      ['all', 'Lost', 'Found', 'Claimed'].forEach(tab => {
+        const btn = document.getElementById(`userLfTabBtn-${tab}`);
+        if (!btn) return;
+        if (tab === filter) {
+          btn.className = 'px-3 py-1 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow-2xs';
+        } else {
+          btn.className = 'px-3 py-1 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900';
+        }
+      });
+      renderUserLostFoundModal();
+    }
+
+    function handleUserLfSearch(query = '') {
+      currentUserLfSearch = query.trim().toLowerCase();
+      renderUserLostFoundModal();
+    }
+
+    function renderUserLostFoundModal() {
+      const container = document.getElementById('userLostFoundListContainer');
+      const countAll = document.getElementById('userLfCountAll');
+      const countLost = document.getElementById('userLfCountLost');
+      const countFound = document.getElementById('userLfCountFound');
+
+      if (!container) return;
+
+      const items = allLostFoundItems.filter(i => (i.tripId || 'default') === currentTripId);
+
+      const lostCount = items.filter(i => i.status === 'Lost').length;
+      const foundCount = items.filter(i => i.status === 'Found').length;
+      if (countAll) countAll.textContent = items.length;
+      if (countLost) countLost.textContent = lostCount;
+      if (countFound) countFound.textContent = foundCount;
+
+      let filtered = items;
+      if (currentUserLfFilter !== 'all') {
+        filtered = filtered.filter(i => i.status === currentUserLfFilter);
+      }
+      if (currentUserLfSearch) {
+        filtered = filtered.filter(i =>
+          (i.itemName || '').toLowerCase().includes(currentUserLfSearch) ||
+          (i.description || '').toLowerCase().includes(currentUserLfSearch) ||
+          (i.location || '').toLowerCase().includes(currentUserLfSearch) ||
+          (i.category || '').toLowerCase().includes(currentUserLfSearch)
+        );
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full p-8 text-center text-slate-400 bg-slate-50 border border-slate-200 rounded-3xl space-y-2">
+            <i data-lucide="help-circle" class="w-8 h-8 mx-auto text-slate-300"></i>
+            <h4 class="font-bold text-slate-700 text-sm">No items found</h4>
+            <p class="text-xs text-slate-500">
+              ${currentUserLfSearch ? 'No items match your search.' : 'No lost or found items reported in this category.'}
+            </p>
+          </div>
+        `;
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        const isLost = (item.status === 'Lost');
+        const isClaimed = (item.status === 'Claimed');
+        const statusBadgeClass = isClaimed
+          ? 'bg-blue-100 text-blue-800 border-blue-200'
+          : isLost
+            ? 'bg-rose-100 text-rose-800 border-rose-200'
+            : 'bg-emerald-100 text-emerald-800 border-emerald-200';
+
+        return `
+          <div class="expressive-card border border-slate-200 bg-white rounded-2xl p-4 flex flex-col justify-between shadow-2xs hover:shadow-sm transition">
+            <div>
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase border ${statusBadgeClass}">
+                  ${escapeHtml(item.status || 'Reported')}
+                </span>
+                <span class="text-[10px] text-slate-400 font-mono">${formatDisplayDate(item.createdAt)}</span>
+              </div>
+
+              ${item.photo ? `
+                <div class="mt-2.5 w-full h-32 rounded-xl overflow-hidden border border-slate-200 cursor-pointer"
+                  onclick="openImageLightboxModal('${escapeHtml(item.photo)}', '${escapeHtml(item.itemName)}')">
+                  <img src="${escapeHtml(item.photo)}" alt="${escapeHtml(item.itemName)}" class="w-full h-full object-cover hover:scale-105 transition duration-300" />
+                </div>
+              ` : ''}
+
+              <h4 class="font-extrabold text-sm text-slate-900 mt-2.5">${escapeHtml(item.itemName)}</h4>
+              ${item.category ? `<span class="inline-block px-1.5 py-0.2 rounded text-[10px] font-semibold bg-slate-100 text-slate-600 mt-0.5">${escapeHtml(item.category)}</span>` : ''}
+              <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">${escapeHtml(item.description || '')}</p>
+
+              <div class="mt-3 p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs space-y-1">
+                <p class="text-slate-700"><strong>📍 Location:</strong> ${escapeHtml(item.location || 'Tour Area')}</p>
+                <p class="text-slate-700"><strong>👤 Contact:</strong> ${escapeHtml(item.contactPerson || 'Coordinator')}</p>
+                ${item.contactPhone ? `<p class="text-slate-700 font-mono"><strong>📞 Phone:</strong> <a href="tel:${item.contactPhone}" class="text-teal-700 font-bold hover:underline">${escapeHtml(item.contactPhone)}</a></p>` : ''}
+              </div>
+            </div>
+
+            <div class="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+              ${!isClaimed ? `
+                <button type="button" onclick="claimLostFoundItem('${item.id}')"
+                  class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition flex items-center gap-1">
+                  <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                  <span>Mark Claimed</span>
+                </button>
+              ` : `
+                <span class="text-xs font-bold text-blue-700 flex items-center gap-1">
+                  <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
+                  <span>Claimed &amp; Returned</span>
+                </span>
+              `}
+
+              ${isAdminLoggedIn ? `
+                <button type="button" onclick="deleteLostFoundItem('${item.id}')" class="text-slate-400 hover:text-rose-600 text-xs">
+                  Delete
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function openReportLostItemModal(type = 'lost') {
+      currentReportLfType = type;
+      currentLfPhotoBase64 = '';
+
+      const modal = document.getElementById('reportLostFoundModal');
+      const title = document.getElementById('reportLostFoundTitle');
+      const icon = document.getElementById('reportModalIcon');
+      const iconBox = document.getElementById('reportModalIconContainer');
+
+      setReportFormType(type);
+
+      if (loggedInParticipant) {
+        const nameInp = document.getElementById('lfContactPersonInp');
+        const phoneInp = document.getElementById('lfContactPhoneInp');
+        if (nameInp && !nameInp.value) nameInp.value = loggedInParticipant.studentName || '';
+        if (phoneInp && !phoneInp.value) phoneInp.value = loggedInParticipant.phone || '';
+      }
+
+      clearLfPhoto();
+      if (modal) modal.classList.remove('hidden');
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function closeReportLostItemModal() {
+      const modal = document.getElementById('reportLostFoundModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function setReportFormType(type) {
+      currentReportLfType = type;
+      const btnLost = document.getElementById('rfTypeBtn-lost');
+      const btnFound = document.getElementById('rfTypeBtn-found');
+      const title = document.getElementById('reportLostFoundTitle');
+      const iconBox = document.getElementById('reportModalIconContainer');
+      const icon = document.getElementById('reportModalIcon');
+
+      if (type === 'lost') {
+        if (btnLost) btnLost.className = 'py-2 px-3 rounded-xl text-xs font-extrabold transition-all bg-rose-600 text-white shadow-sm flex items-center justify-center gap-1.5';
+        if (btnFound) btnFound.className = 'py-2 px-3 rounded-xl text-xs font-extrabold transition-all text-slate-600 hover:text-emerald-700 flex items-center justify-center gap-1.5';
+        if (title) title.textContent = 'Report Lost Belonging';
+        if (iconBox) iconBox.className = 'w-11 h-11 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-200';
+        if (icon) icon.setAttribute('data-lucide', 'alert-circle');
+      } else {
+        if (btnFound) btnFound.className = 'py-2 px-3 rounded-xl text-xs font-extrabold transition-all bg-emerald-600 text-white shadow-sm flex items-center justify-center gap-1.5';
+        if (btnLost) btnLost.className = 'py-2 px-3 rounded-xl text-xs font-extrabold transition-all text-slate-600 hover:text-rose-700 flex items-center justify-center gap-1.5';
+        if (title) title.textContent = 'Report Found Item';
+        if (iconBox) iconBox.className = 'w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-200';
+        if (icon) icon.setAttribute('data-lucide', 'check-circle');
+      }
+
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    async function handleLfPhotoUpload(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      try {
+        const compressed = await compressImageFile(file, 800, 0.75);
+        if (compressed) {
+          currentLfPhotoBase64 = compressed;
+          const previewBox = document.getElementById('lfPhotoPreviewContainer');
+          const previewImg = document.getElementById('lfPhotoPreviewImg');
+          if (previewImg) previewImg.src = compressed;
+          if (previewBox) previewBox.classList.remove('hidden');
+        }
+      } catch (e) {
+        console.warn('Lost/found photo compression error:', e);
+      }
+    }
+
+    function clearLfPhoto() {
+      currentLfPhotoBase64 = '';
+      const previewBox = document.getElementById('lfPhotoPreviewContainer');
+      const fileInp = document.getElementById('lfPhotoFileInput');
+      if (previewBox) previewBox.classList.add('hidden');
+      if (fileInp) fileInp.value = '';
+    }
+
+    async function handleReportLostFoundFormSubmit(event) {
+      event.preventDefault();
+
+      const itemName = document.getElementById('lfItemNameInp')?.value?.trim();
+      const location = document.getElementById('lfLocationInp')?.value?.trim();
+      const description = document.getElementById('lfDescInp')?.value?.trim();
+      const contactPerson = document.getElementById('lfContactPersonInp')?.value?.trim();
+      const contactPhone = document.getElementById('lfContactPhoneInp')?.value?.trim();
+      const category = document.getElementById('lfItemCategoryInp')?.value || 'Other';
+      const approxTime = document.getElementById('lfTimeInp')?.value?.trim() || '';
+
+      if (!itemName || !location || !description || !contactPerson) {
+        showToast('Please fill out all required fields.', 'error');
+        return;
+      }
+
+      const status = (currentReportLfType === 'lost' ? 'Lost' : 'Found');
+
+      const data = {
         itemName,
-        description,
         location,
+        description,
         contactPerson,
-        status: (type === 'lost' ? 'Lost' : 'Found'),
+        contactPhone,
+        category,
+        approxTime,
+        status,
+        photo: currentLfPhotoBase64 || '',
         tripId: currentTripId,
         createdAt: Date.now()
-      }).then(() => {
-        showToast('Lost & Found item reported!', 'success');
-      });
+      };
+
+      try {
+        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'trip_lost_found'), data);
+        showToast(`Item reported as ${status}! All coordinators & students can now view it.`, 'success');
+        closeReportLostItemModal();
+        renderUserLostFoundModal();
+        renderLostFoundHub();
+      } catch (err) {
+        console.error('Error reporting lost/found:', err);
+        showToast('Failed to report item. Please try again.', 'error');
+      }
     }
 
     async function claimLostFoundItem(itemId) {
@@ -33638,6 +34974,8 @@ Guidelines:
           claimedAt: Date.now()
         }, { merge: true });
         showToast('Item marked as claimed and returned!', 'success');
+        renderLostFoundHub();
+        renderUserLostFoundModal();
       } catch (e) { showToast('Could not update item.', 'error'); }
     }
 
@@ -33646,7 +34984,27 @@ Guidelines:
       try {
         await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trip_lost_found', itemId));
         showToast('Record deleted.', 'info');
+        renderLostFoundHub();
+        renderUserLostFoundModal();
       } catch (e) { showToast('Could not delete.', 'error'); }
+    }
+
+    // =========================================================================
+    // FEATURE: IMAGE LIGHTBOX MODAL FOR HIGH-RES FULL SCREEN ZOOM
+    // =========================================================================
+    function openImageLightboxModal(src, caption = '') {
+      const modal = document.getElementById('imageLightboxModal');
+      const img = document.getElementById('lightboxImg');
+      const cap = document.getElementById('lightboxCaption');
+      if (img) img.src = src;
+      if (cap) cap.textContent = caption || '';
+      if (modal) modal.classList.remove('hidden');
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function closeImageLightboxModal() {
+      const modal = document.getElementById('imageLightboxModal');
+      if (modal) modal.classList.add('hidden');
     }
 
     // Feature 164: Automated Payment Reconciliation
@@ -33940,14 +35298,43 @@ Found ${duplicates.length} duplicate UTR numbers across multiple students:
       updateBudgetGaugeUI,
       promptEditTripBudget,
       renderVendorsHub,
+            compressImageFile,
+      getFacilityIcon,
       openAddVendorModal,
+      openEditVendorModal,
+      closeVendorHotelModal,
+      renderVendorFacilitiesUI,
+      toggleVendorFacility,
+      addCustomVendorFacility,
+      renderVendorPhotosUI,
+      removeVendorPhoto,
+      addVendorPhotoUrl,
+      handleVendorPhotoUpload,
+      handleVendorHotelFormSubmit,
+      renderVendorsHub,
       deleteVendorRecord,
+      openUserHotelsModal,
+      closeUserHotelsModal,
+      renderUserHotelsModal,
       openEmergencySosModal,
       closeEmergencySosModal,
       triggerEmergencySosAlert,
       renderLostFoundHub,
+      openUserLostFoundModal,
+      closeUserLostFoundModal,
+      setUserLfFilter,
+      handleUserLfSearch,
+      renderUserLostFoundModal,
       openReportLostItemModal,
+      closeReportLostItemModal,
+      setReportFormType,
+      handleLfPhotoUpload,
+      clearLfPhoto,
+      handleReportLostFoundFormSubmit,
       claimLostFoundItem,
+      deleteLostFoundItem,
+      openImageLightboxModal,
+      closeImageLightboxModal,
       deleteLostFoundItem,
       runAutomatedPaymentReconciliation,
       enqueueOfflineAttendanceScan,
@@ -34208,6 +35595,43 @@ Found ${duplicates.length} duplicate UTR numbers across multiple students:
       openAddItineraryModal,
       downloadItineraryPDF,
       syncCloudNow,
+      compressImageFile,
+      getFacilityIcon,
+      openAddVendorModal,
+      openEditVendorModal,
+      closeVendorHotelModal,
+      renderVendorFacilitiesUI,
+      toggleVendorFacility,
+      addCustomVendorFacility,
+      renderVendorPhotosUI,
+      removeVendorPhoto,
+      addVendorPhotoUrl,
+      handleVendorPhotoUpload,
+      handleVendorHotelFormSubmit,
+      renderVendorsHub,
+      deleteVendorRecord,
+      openUserHotelsModal,
+      closeUserHotelsModal,
+      renderUserHotelsModal,
+      openEmergencySosModal,
+      closeEmergencySosModal,
+      triggerEmergencySosAlert,
+      renderLostFoundHub,
+      openUserLostFoundModal,
+      closeUserLostFoundModal,
+      setUserLfFilter,
+      handleUserLfSearch,
+      renderUserLostFoundModal,
+      openReportLostItemModal,
+      closeReportLostItemModal,
+      setReportFormType,
+      handleLfPhotoUpload,
+      clearLfPhoto,
+      handleReportLostFoundFormSubmit,
+      claimLostFoundItem,
+      deleteLostFoundItem,
+      openImageLightboxModal,
+      closeImageLightboxModal,
       openEditContactModal,
       toggleItinCategoryFields,
       openNotificationCenterModal,
