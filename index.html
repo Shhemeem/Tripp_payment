@@ -9017,206 +9017,262 @@
 
   <!-- MODAL: SETTINGS (WITH ADMIN CUSTOM LOGO MANAGER) -->
   <div id="settingsModal"
-    class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto no-print">
+    class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto no-print">
     <div
-      class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-        <div>
-          <div class="flex items-center gap-2 flex-wrap">
-            <h3 class="font-display text-base sm:text-lg font-extrabold text-slate-900">Trip, Logo &amp; System Settings</h3>
-            <span id="settingsModalActiveTripBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide bg-purple-100 text-purple-900 border border-purple-200">
-              Trip: #default
-            </span>
+      class="bg-white border border-slate-200/90 rounded-3xl max-w-4xl w-full shadow-2xl my-auto max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+      
+      <!-- Fixed Modal Header -->
+      <div class="flex items-center justify-between border-b border-slate-100 px-5 sm:px-7 py-4 shrink-0 bg-white">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center shrink-0 border border-purple-200">
+            <i data-lucide="sliders" class="w-5 h-5"></i>
           </div>
-          <p id="settingsModalSubtitle" class="text-xs text-slate-500 mt-0.5">Changes reflect instantly on Boarding Passes &amp; Portals</p>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 class="font-display text-base sm:text-xl font-extrabold text-slate-900">Trip &amp; System Configuration</h3>
+              <span id="settingsModalActiveTripBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide bg-purple-100 text-purple-900 border border-purple-200">
+                Trip: #default
+              </span>
+            </div>
+            <p id="settingsModalSubtitle" class="text-xs text-slate-500 mt-0.5">Configure trip itinerary, fees, branding, UPI gateway, and visibility</p>
+          </div>
         </div>
-        <button type="button" onclick="closeSettingsModal()" class="p-1.5 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition">
+        <button type="button" onclick="closeSettingsModal()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <form onsubmit="saveTripSettings(event)" class="space-y-4">
-        <!-- Custom Brand / Boarding Pass Logo Manager -->
-        <div
-          class="p-4 rounded-2xl bg-gradient-to-br from-emerald-50/90 via-white to-teal-50/70 border border-emerald-200 space-y-3">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <i data-lucide="image" class="w-4 h-4 text-emerald-700"></i>
-              <label class="block text-xs font-extrabold uppercase tracking-wider text-emerald-950">
-                Custom Trip / College Logo
-              </label>
-            </div>
-            <button type="button" onclick="resetCustomLogoToDefault()"
-              class="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 underline">
-              Reset Default
-            </button>
-          </div>
+      <!-- Scrollable Form Body -->
+      <form onsubmit="saveTripSettings(event)" class="flex-1 flex flex-col overflow-hidden">
+        <div class="flex-1 overflow-y-auto px-5 sm:px-7 py-5 space-y-5">
 
-          <div class="flex items-center gap-3.5">
-            <div
-              class="w-16 h-16 rounded-2xl bg-white border-2 border-emerald-300 shadow-sm p-1 shrink-0 flex items-center justify-center overflow-hidden">
-              <img id="setLogoPreviewImg"
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFi3ISGVLtcfjKcyZ1e0JtiIJHb4P1OTjldSIj3H5zNg&s=10"
-                alt="Logo Preview" class="w-full h-full object-cover rounded-xl" />
+          <!-- SECTION 1: Trip Identity & Destination -->
+          <div class="p-4 sm:p-5 rounded-2xl bg-slate-50/80 border border-slate-200/90 space-y-3.5">
+            <div class="flex items-center gap-2 border-b border-slate-200/60 pb-2">
+              <i data-lucide="map-pin" class="w-4 h-4 text-emerald-600"></i>
+              <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-800">Trip Identity &amp; Schedule</h4>
             </div>
-            <div class="flex-1 space-y-2">
-              <input type="text" id="setCustomLogoUrl" oninput="previewCustomLogoUrl(this.value)"
-                placeholder="Paste Logo Image URL (https://...)"
-                class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500" />
-              <div class="flex items-center gap-2">
-                <label
-                  class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold cursor-pointer inline-flex items-center gap-1.5 shadow-sm transition">
-                  <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-                  <span>Upload Logo File</span>
-                  <input type="file" id="setCustomLogoFile" accept="image/*" onchange="handleLogoFileUpload(event)"
-                    class="hidden" />
-                </label>
-                <span class="text-[10px] text-slate-500">Appears on Header & PDF Boarding Pass</span>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Official Trip Title *</label>
+              <input type="text" id="setTripTitle" required placeholder="e.g. Annual College Industrial & Leisure Trip"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 focus:bg-white focus:border-emerald-500 text-sm font-semibold text-slate-900" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Destination Places *</label>
+                <input type="text" id="setDestination" required placeholder="e.g. Munnar, Vagamon & Kochi"
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 focus:bg-white focus:border-emerald-500 text-sm font-medium text-slate-900" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Trip Departure Date</label>
+                <input type="date" id="setTripDate"
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 focus:bg-white focus:border-emerald-500 text-sm font-medium text-slate-900" />
               </div>
             </div>
           </div>
-        </div>
 
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Trip Name</label>
-          <input type="text" id="setTripTitle" required
-            class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900" />
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Destination Places</label>
-            <input type="text" id="setDestination" required
-              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Trip Date</label>
-            <input type="date" id="setTripDate"
-              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Total Fee (₹)</label>
-            <input type="number" id="setTripAmount" min="1" required
-              class="w-full px-3.5 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-sm font-extrabold text-emerald-700" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Advance Fee (₹)</label>
-            <input type="number" id="setAdvanceAmount" min="1" required
-              class="w-full px-3.5 py-2 rounded-xl bg-amber-50 border border-amber-200 text-sm font-extrabold text-amber-800" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center justify-between">
-              <span>Seat Capacity</span>
-              <span class="text-[10px] text-purple-700 font-normal">0 = Unlimited</span>
-            </label>
-            <input type="number" id="setSeatCapacity" min="0" placeholder="e.g. 120"
-              class="w-full px-3.5 py-2 rounded-xl bg-purple-50 border border-purple-200 text-sm font-extrabold text-purple-700 focus:bg-white focus:border-purple-500 focus:outline-none" />
-          </div>
-        </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Receiver UPI ID</label>
-            <input type="text" id="setUpiId" required
-              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-mono font-bold text-slate-900" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Receiver Name</label>
-            <input type="text" id="setReceiverName" required
-              class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900" />
-          </div>
-        </div>
-
-        <!-- Departments -->
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-          <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-700">
-            Selectable Departments
-          </label>
-          <div class="flex gap-2">
-            <input type="text" id="newDeptInput" placeholder="e.g., BCA, B.Sc CS"
-              class="flex-1 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none" />
-            <button type="button" onclick="addDepartmentOption()"
-              class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shrink-0 flex items-center gap-1">
-              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-              <span>Add</span>
-            </button>
-          </div>
-          <div id="deptTagsContainer" class="flex flex-wrap gap-2 pt-1"></div>
-        </div>
-
-        <!-- Expense Categories -->
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-          <div class="flex items-center justify-between">
-            <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-700">
-              Expense Categories (Custom & External)
-            </label>
-            <span class="text-[10px] text-slate-400">Add any external spend heads</span>
-          </div>
-          <div class="flex gap-2">
-            <input type="text" id="newExpenseCategoryInput" placeholder="e.g., Campfire & DJ, Boating"
-              class="flex-1 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none" />
-            <button type="button" onclick="addExpenseCategoryOption()"
-              class="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shrink-0 flex items-center gap-1">
-              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-              <span>Add</span>
-            </button>
-          </div>
-          <div id="expenseCategoryTagsContainer" class="flex flex-wrap gap-2 pt-1"></div>
-        </div>
-
-        <!-- Student Visibility Controls -->
-        <div class="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200 space-y-3">
-          <div class="flex items-center gap-2">
-            <i data-lucide="eye" class="w-4 h-4 text-indigo-700"></i>
-            <p class="text-xs font-extrabold uppercase tracking-wider text-indigo-900">Student Visibility Permissions
-            </p>
-          </div>
-          <p class="text-[11px] text-indigo-950/80">Control whether students can view the trip schedule and emergency
-            helpline numbers.</p>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            <label
-              class="flex items-center justify-between p-3 rounded-xl bg-white border border-indigo-200/90 cursor-pointer shadow-sm">
-              <span class="text-xs font-bold text-slate-800">Show Itinerary / Schedule</span>
-              <input type="checkbox" id="setShowItineraryToUsers" class="w-4 h-4 accent-indigo-600 rounded" />
-            </label>
-            <label
-              class="flex items-center justify-between p-3 rounded-xl bg-white border border-indigo-200/90 cursor-pointer shadow-sm">
-              <span class="text-xs font-bold text-slate-800">Show Helpline & Crew</span>
-              <input type="checkbox" id="setShowContactsToUsers" class="w-4 h-4 accent-indigo-600 rounded" />
-            </label>
-          </div>
-        </div>
-
-        <!-- Admin Credentials -->
-        <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 space-y-2">
-          <p class="text-xs font-extrabold uppercase tracking-wider text-emerald-800">Admin Credentials</p>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-600 mb-1">Admin Email</label>
-              <input type="email" id="setAdminEmail" required
-                class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-900" />
+          <!-- SECTION 2: Pricing & Seat Capacity -->
+          <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-emerald-50/40 via-white to-purple-50/30 border border-emerald-200/80 space-y-3.5">
+            <div class="flex items-center gap-2 border-b border-emerald-100 pb-2">
+              <i data-lucide="wallet" class="w-4 h-4 text-emerald-700"></i>
+              <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-800">Fee Structure &amp; Passenger Capacity</h4>
             </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-600 mb-1">Admin Password</label>
-              <input type="text" id="setAdminPassword" required
-                class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-mono font-bold text-slate-900" />
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+              <div class="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 space-y-1">
+                <label class="block text-xs font-bold text-emerald-900">Total Trip Fee (₹) *</label>
+                <input type="number" id="setTripAmount" min="1" required placeholder="1500"
+                  class="w-full px-3 py-2 rounded-lg bg-white border border-emerald-300 text-base font-extrabold text-emerald-800 focus:outline-none focus:border-emerald-500" />
+                <span class="text-[10px] text-emerald-700 font-medium">Standard package per student</span>
+              </div>
+
+              <div class="p-3 rounded-xl bg-amber-50/80 border border-amber-200 space-y-1">
+                <label class="block text-xs font-bold text-amber-900">Minimum Advance (₹) *</label>
+                <input type="number" id="setAdvanceAmount" min="1" required placeholder="500"
+                  class="w-full px-3 py-2 rounded-lg bg-white border border-amber-300 text-base font-extrabold text-amber-800 focus:outline-none focus:border-amber-500" />
+                <span class="text-[10px] text-amber-700 font-medium">Advance required to book</span>
+              </div>
+
+              <div class="p-3 rounded-xl bg-purple-50/80 border border-purple-200 space-y-1">
+                <div class="flex items-center justify-between">
+                  <label class="block text-xs font-bold text-purple-900">Seat Capacity</label>
+                  <span class="text-[10px] text-purple-700 font-bold">0 = Unlimited</span>
+                </div>
+                <input type="number" id="setSeatCapacity" min="0" placeholder="e.g. 120"
+                  class="w-full px-3 py-2 rounded-lg bg-white border border-purple-300 text-base font-extrabold text-purple-800 focus:outline-none focus:border-purple-500" />
+                <span class="text-[10px] text-purple-700 font-medium">Automated lock when full</span>
+              </div>
             </div>
           </div>
+
+          <!-- SECTION 3: Custom Brand Logo & PDF Header -->
+          <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-teal-50/70 via-white to-emerald-50/50 border border-teal-200/80 space-y-3.5">
+            <div class="flex items-center justify-between border-b border-teal-100 pb-2">
+              <div class="flex items-center gap-2">
+                <i data-lucide="image" class="w-4 h-4 text-teal-700"></i>
+                <h4 class="text-xs font-extrabold uppercase tracking-wider text-teal-950">
+                  Custom Trip / College Logo &amp; Pass Branding
+                </h4>
+              </div>
+              <button type="button" onclick="resetCustomLogoToDefault()"
+                class="text-[11px] font-bold text-teal-700 hover:text-teal-900 underline">
+                Reset Default
+              </button>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center gap-4">
+              <div class="w-20 h-20 rounded-2xl bg-white border-2 border-teal-300 shadow-sm p-1.5 shrink-0 flex items-center justify-center overflow-hidden">
+                <img id="setLogoPreviewImg"
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFi3ISGVLtcfjKcyZ1e0JtiIJHb4P1OTjldSIj3H5zNg&s=10"
+                  alt="Logo Preview" class="w-full h-full object-cover rounded-xl" />
+              </div>
+              <div class="flex-1 w-full space-y-2">
+                <input type="text" id="setCustomLogoUrl" oninput="previewCustomLogoUrl(this.value)"
+                  placeholder="Paste Logo Image URL (https://...)"
+                  class="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:border-teal-500" />
+                <div class="flex flex-wrap items-center gap-2">
+                  <label
+                    class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold cursor-pointer inline-flex items-center gap-1.5 shadow-sm transition">
+                    <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                    <span>Upload Logo Image</span>
+                    <input type="file" id="setCustomLogoFile" accept="image/*" onchange="handleLogoFileUpload(event)"
+                      class="hidden" />
+                  </label>
+                  <span class="text-[11px] text-slate-500">Auto-synced to Header, Student Pass &amp; PDF Ticket</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 4: UPI & Direct Payment Destination -->
+          <div class="p-4 sm:p-5 rounded-2xl bg-slate-50/80 border border-slate-200/90 space-y-3.5">
+            <div class="flex items-center gap-2 border-b border-slate-200/60 pb-2">
+              <i data-lucide="qr-code" class="w-4 h-4 text-slate-700"></i>
+              <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-800">Receiver UPI &amp; Banking Gateway</h4>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Receiver UPI ID (VPA) *</label>
+                <input type="text" id="setUpiId" required placeholder="e.g. mohdshemeemkp@oksbi"
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 focus:bg-white focus:border-emerald-500 text-sm font-mono font-bold text-slate-900" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Receiver Account / Display Name *</label>
+                <input type="text" id="setReceiverName" required placeholder="e.g. MOHD SHEMEEM KP"
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 focus:bg-white focus:border-emerald-500 text-sm font-medium text-slate-900" />
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 5: Academic Departments -->
+          <div class="p-4 sm:p-5 rounded-2xl bg-slate-50/80 border border-slate-200/90 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-200/60 pb-2">
+              <div class="flex items-center gap-2">
+                <i data-lucide="graduation-cap" class="w-4 h-4 text-indigo-600"></i>
+                <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-800">Selectable Departments</h4>
+              </div>
+              <span class="text-[11px] text-slate-500">Classes eligible for trip registration</span>
+            </div>
+
+            <div class="flex gap-2">
+              <input type="text" id="newDeptInput" placeholder="Add department (e.g. BCA, B.Sc CS, B.Com, BBA)..."
+                onkeydown="if(event.key==='Enter'){event.preventDefault();addDepartmentOption();}"
+                class="flex-1 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:border-indigo-500" />
+              <button type="button" onclick="addDepartmentOption()"
+                class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shrink-0 flex items-center gap-1.5 shadow-sm transition">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>Add Dept</span>
+              </button>
+            </div>
+            <div id="deptTagsContainer" class="flex flex-wrap gap-2 pt-1 empty:hidden"></div>
+          </div>
+
+          <!-- SECTION 6: Expense Categories -->
+          <div class="p-4 sm:p-5 rounded-2xl bg-slate-50/80 border border-slate-200/90 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-200/60 pb-2">
+              <div class="flex items-center gap-2">
+                <i data-lucide="receipt" class="w-4 h-4 text-rose-600"></i>
+                <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-800">Custom Expense Categories</h4>
+              </div>
+              <span class="text-[11px] text-slate-500">Budget tracking categories</span>
+            </div>
+
+            <div class="flex gap-2">
+              <input type="text" id="newExpenseCategoryInput" placeholder="Add expense head (e.g. Campfire & DJ, Boating)..."
+                onkeydown="if(event.key==='Enter'){event.preventDefault();addExpenseCategoryOption();}"
+                class="flex-1 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:border-rose-500" />
+              <button type="button" onclick="addExpenseCategoryOption()"
+                class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shrink-0 flex items-center gap-1.5 shadow-sm transition">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>Add Category</span>
+              </button>
+            </div>
+            <div id="expenseCategoryTagsContainer" class="flex flex-wrap gap-2 pt-1 empty:hidden"></div>
+          </div>
+
+          <!-- SECTION 7: Student Portal Permissions -->
+          <div class="p-4 sm:p-5 rounded-2xl bg-indigo-50/60 border border-indigo-200 space-y-3">
+            <div class="flex items-center gap-2 border-b border-indigo-100 pb-2">
+              <i data-lucide="eye" class="w-4 h-4 text-indigo-700"></i>
+              <h4 class="text-xs font-extrabold uppercase tracking-wider text-indigo-950">Student Visibility Permissions</h4>
+            </div>
+            <p class="text-[11px] text-indigo-900/80">Control public student access to timetable, itinerary, and coordinator emergency helplines.</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <label class="flex items-center justify-between p-3.5 rounded-xl bg-white border border-indigo-200/90 cursor-pointer shadow-2xs hover:border-indigo-400 transition">
+                <div>
+                  <span class="text-xs font-bold text-slate-800 block">Show Itinerary / Schedule</span>
+                  <span class="text-[10px] text-slate-500">Public schedule tab for students</span>
+                </div>
+                <input type="checkbox" id="setShowItineraryToUsers" class="w-4 h-4 accent-indigo-600 rounded" />
+              </label>
+
+              <label class="flex items-center justify-between p-3.5 rounded-xl bg-white border border-indigo-200/90 cursor-pointer shadow-2xs hover:border-indigo-400 transition">
+                <div>
+                  <span class="text-xs font-bold text-slate-800 block">Show Helpline &amp; Duty Crew</span>
+                  <span class="text-[10px] text-slate-500">Public emergency contact numbers</span>
+                </div>
+                <input type="checkbox" id="setShowContactsToUsers" class="w-4 h-4 accent-indigo-600 rounded" />
+              </label>
+            </div>
+          </div>
+
+          <!-- SECTION 8: Admin Credentials -->
+          <div class="p-4 sm:p-5 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-3">
+            <div class="flex items-center gap-2 border-b border-amber-100 pb-2">
+              <i data-lucide="shield" class="w-4 h-4 text-amber-700"></i>
+              <h4 class="text-xs font-extrabold uppercase tracking-wider text-amber-950">Trip Coordinator Login Credentials</h4>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Coordinator Admin Email *</label>
+                <input type="email" id="setAdminEmail" required placeholder="admin@trippay.com"
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:border-amber-500" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Coordinator Password *</label>
+                <input type="text" id="setAdminPassword" required placeholder="admin123"
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-amber-500" />
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+        <!-- Sticky Bottom Actions Footer -->
+        <div class="px-5 sm:px-7 py-3.5 border-t border-slate-100 bg-slate-50/90 flex items-center justify-between sm:justify-end gap-3 shrink-0">
           <button type="button" onclick="closeSettingsModal()"
-            class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold">
+            class="px-5 py-2.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold transition">
             Cancel
           </button>
           <button type="submit"
-            class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm">
-            Save All Settings
+            class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold shadow-md transition flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Save All Settings</span>
           </button>
         </div>
       </form>
